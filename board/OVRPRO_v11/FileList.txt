@@ -1,0 +1,33 @@
+● 株式会社しのびや.com Wizapply事業部
+送付ファイルリスト 2015/10/16
+
+first_board5.1l      ：第１層パターン A
+first_board5.2l      ：第２層パターン B
+first_board5.3l	     ：第３層パターン C
+first_board5.4l      ：第４層パターン D
+
+first_board5.stc     ：部品面レジスト
+first_board5.sts     ：半田面レジスト
+first_board5.plc     ：部品面シルクデータ
+first_board5.pls     ：半田面シルクデータ
+
+first_board5.mkc     ：部品面メタルマスク
+first_board5.mks     ：半田面メタルマスク
+
+first_board5.out     ：外形データ
+
+first_board5.drd     ：ドリルデータ
+first_board5.dri     ：ドリルリスト
+
+first_board5.dca     ：ドキュメントデータ
+
+PartsList.xls        ：部品リスト(追加部分を赤字で変更）
+PartsPosition.xls    ：部品座標リスト
+Schematic.pdf        ：回路図
+board_partsAMB_t.pdf ：第１層部品実装図
+board_partsAMB_b.pdf ：第４層部品実装図
+
+4層基板 0.7ｔ.xlsl   ：指定の基板データ
+
+不備等御座いましたらご連絡くださいませ。
+西岡
