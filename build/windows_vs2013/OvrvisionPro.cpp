@@ -23,12 +23,12 @@ namespace OVR
 		_formatMap.image_channel_data_type = CL_FLOAT;
 		_formatMap.image_channel_order = CL_R;
 
-		// if (selectDevice("NVIDIA", CL_DEVICE_TYPE_GPU, "OPENCL C 1.2") != 0) // TODO: accept anonimous platform
-		if (SelectGPU("", "OpenCL C 1.2") == NULL)
+		if (SelectGPU("", "OpenCL C 1.2") == NULL) // Find OpenCL(version 1.2 and above) device 
 		{
 			throw std::runtime_error("Insufficient OpenCL version");
 		}
-		/*			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
+		
+		_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 
 		// UMatを使うとパフォーマンスが落ちるので、ocl::Image2Dは使わない
 		_src = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_format16UC1, size.width, size.height, 0, 0, &_errorCode);
@@ -48,19 +48,11 @@ namespace OVR
 		_my[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, size.width, size.height, 0, 0, &_errorCode);
 		_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, size.width, size.height, 0, 0, &_errorCode);
 		_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, size.width, size.height, 0, 0, &_errorCode);
-		*/
 	}
 
 
 	OvrvisionPro::~OvrvisionPro()
 	{
-		//intrinsic.release();
-		//distortion.release();
-		//mapX[0]->release();
-		//mapY[0]->release();
-		//mapX[1]->release();
-		//mapY[1]->release();
-		/*
 		delete mapX[0];
 		delete mapY[0];
 		delete mapX[1];
@@ -80,7 +72,6 @@ namespace OVR
 		clReleaseMemObject(_mx[1]);
 		clReleaseMemObject(_my[1]);
 		}
-		*/
 	}
 
 	// Select GPU device
