@@ -22,23 +22,29 @@ namespace OVR
 		OvrvisionPro(int width, int height);
 		virtual ~OvrvisionPro();
 
-		// Load camera parameters
-		bool LoadCameraParams(const char *filename);
-		// Demosaicing
-		void Demosaic(const Mat src, Mat &left, Mat &right);
-		// Demosaic and Remap
-		void DemosaicRemap(const Mat src, Mat &left, Mat &right);
-
 		// Select GPU device
 		cl_device_id SelectGPU(const char *platform, const char *version);
 
+		// Load Kernel Program
 		void CreateProgram(const char *filename, bool binary = false);
 
-		OvrvisionSetting _settings;
-		Size size;
-		Mat *mapX[2], *mapY[2]; // camera parameter
+		// Load camera parameters
+		bool LoadCameraParams(const char *filename);
+
+		//////////////// KERNEL EXECUTION FUNCTIONS
+		// Demosaicing
+		void Demosaic(const ushort *src, Mat &left, Mat &right);
+		void Demosaic(const Mat src, Mat &left, Mat &right);
+
+		// Demosaic and Remap
+		void DemosaicRemap(const ushort *src, Mat &left, Mat &right);
+		void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
 	protected:
+		OvrvisionSetting _settings;
+		Size	_size;
+		bool	_remapAvailable;
+		Mat		*_mapX[2], *_mapY[2]; // camera parameter
 
 		// OpenCL variables
 		cl_platform_id	_platformId;
@@ -57,7 +63,6 @@ namespace OVR
 		cl_mem	_src;
 		cl_mem	_l, _r, _L, _R;
 		cl_mem	_mx[2], _my[2]; // map for remap in GPU
-		bool	_remapAvailable;
 	};
 
 }
