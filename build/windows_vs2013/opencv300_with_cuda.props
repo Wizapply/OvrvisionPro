@@ -8,7 +8,7 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 7.0.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <OPENCV_INSTALL_DIR>C:\OpenCV-3.0.0\build</OPENCV_INSTALL_DIR>
+    <OPENCV_INSTALL_DIR>..\..\3rdparty\opencv\build</OPENCV_INSTALL_DIR>
   </PropertyGroup>
   <!-- Debug|Win32 -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
