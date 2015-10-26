@@ -26,7 +26,7 @@ namespace OVR
 		cl_device_id SelectGPU(const char *platform, const char *version);
 
 		// Load Kernel Program
-		void CreateProgram(const char *filename, bool binary = false);
+		bool CreateProgram(const char *filename, bool binary = false);
 
 		// Load camera parameters
 		bool LoadCameraParams(const char *filename);
