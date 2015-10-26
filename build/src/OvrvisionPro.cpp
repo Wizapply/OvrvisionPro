@@ -90,11 +90,15 @@ string opencl_error_to_str(cl_int error)
 #undef CASE_CL_CONSTANT
 }
 
-#define SAMPLE_CHECK_ERRORS(ERR) if (ERR != CL_SUCCESS) throw runtime_error(opencl_error_to_str(ERR));
+#define SAMPLE_CHECK_ERRORS(ERR) if (ERR != CL_SUCCESS) { throw std::runtime_error(opencl_error_to_str(ERR)); }
 #endif
 
 namespace OVR
 {
+	namespace OPENCL
+	{
+#include "OpenCL_kernel.h" // const char kernel[];
+	}
 
 	OvrvisionPro::OvrvisionPro(int width, int height)
 	{
@@ -111,7 +115,7 @@ namespace OVR
 		{
 			throw std::runtime_error("Insufficient OpenCL version");
 		}
-		
+
 		_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 
 		// UMatを使うとパフォーマンスが落ちるので、ocl::Image2Dは使わない
@@ -134,6 +138,25 @@ namespace OVR
 		_my[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, width, height, 0, 0, &_errorCode);
 		_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, width, height, 0, 0, &_errorCode);
 		_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, width, height, 0, 0, &_errorCode);
+#if 1
+		size_t size = sizeof(OPENCL::kernel);
+		_program = clCreateProgramWithSource(_context, 1, (const char **)&OPENCL::kernel, &size, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
+		if (_errorCode == CL_SUCCESS)
+		{
+			_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_remap = clCreateKernel(_program, "remap", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			//return true;
+		}
+#else
+		if (CreateProgram() == false)
+		{
+			throw std::runtime_error("FAIL TO CREATE KERNEL");
+		}
+#endif
 	}
 
 
@@ -327,6 +350,31 @@ namespace OVR
 		return true;
 	}
 
+	// Create kernel from internal string
+	bool OvrvisionPro::CreateProgram(bool binary)
+	{
+		size_t size = sizeof(OPENCL::kernel);
+		if (binary)
+		{
+			//_program = clCreateProgramWithBinary(_context, 1, &_deviceId, &size, (const unsigned char **)&buffer, &status, &_errorCode);
+			//SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+		else
+		{
+			_program = clCreateProgramWithSource(_context, 1, (const char **)&OPENCL::kernel, &size, &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
+			if (_errorCode == CL_SUCCESS)
+			{
+				_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_remap = clCreateKernel(_program, "remap", &_errorCode);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				return true;
+			}
+		}
+		return false;
+	}
 
 	// Demosaicing
 	void OvrvisionPro::Demosaic(const ushort *src, Mat &left, Mat &right)

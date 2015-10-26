@@ -27,6 +27,7 @@ namespace OVR
 
 		// Load Kernel Program
 		bool CreateProgram(const char *filename, bool binary = false);
+		bool CreateProgram(bool binary = false);
 
 		// Load camera parameters
 		bool LoadCameraParams(const char *filename);
@@ -65,4 +66,8 @@ namespace OVR
 		cl_mem	_mx[2], _my[2]; // map for remap in GPU
 	};
 
+	namespace OPENCL
+	{
+	//	const char kernel[];
+	}
 }
