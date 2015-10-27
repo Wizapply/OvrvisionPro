@@ -6,11 +6,11 @@
 #include <math.h>
 #include <string.h>
 
-#ifdef _OVRVISION_EXPORTS
-#define OVRVISIONPRODLL_API __declspec(dllexport)
-#else
-#define OVRVISIONPRODLL_API __declspec(dllimport)
-#endif
+//#ifdef _OVRVISION_EXPORTS
+//#define OVRVISIONPRODLL_API __declspec(dllexport)
+//#else
+//#define OVRVISIONPRODLL_API __declspec(dllimport)
+//#endif
 
 //Marker 
 #ifdef _OVRVISION_EXPORTS  
@@ -51,7 +51,7 @@ namespace OVR
 
 		// Calculate Undistortion Matrix
 		void GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &mapY, int width, int height);
-
+	
 	protected:
 		//Initialize Data
 		void InitValue();

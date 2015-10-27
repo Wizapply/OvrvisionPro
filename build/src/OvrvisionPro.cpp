@@ -299,17 +299,20 @@ namespace OVR
 				fread(buffer, size, 1, file);
 				fclose(file);
 				_program = clCreateProgramWithBinary(_context, 1, &_deviceId, &size, (const unsigned char **)&buffer, &status, &_errorCode);
-				SAMPLE_CHECK_ERRORS(_errorCode);
 				delete[] buffer;
-			}
-			else
-			{
-				return false;
+				SAMPLE_CHECK_ERRORS(_errorCode);
+
+				_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_remap = clCreateKernel(_program, "remap", &_errorCode);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+
+				return true;
 			}
 		}
 		else
 		{
-			errno_t res = fopen_s(&file, filename, "r");
+			errno_t res = fopen_s(&file, filename, "rb");
 			if (res == 0)
 			{
 				fseek(file, 0, SEEK_END);
@@ -317,7 +320,11 @@ namespace OVR
 				buffer = new char[size];
 				fread(buffer, size, 1, file);
 				fclose(file);
+//#ifdef _DEBUG
+				printf("%s\n", buffer);
+//#endif
 				_program = clCreateProgramWithSource(_context, 1, (const char **)&buffer, &size, &_errorCode);
+				delete[] buffer;
 				SAMPLE_CHECK_ERRORS(_errorCode);
 				_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
 				if (_errorCode == CL_BUILD_PROGRAM_FAILURE)
@@ -335,22 +342,23 @@ namespace OVR
 					// Print the log
 					printf("%s\n", log);
 				}
-				SAMPLE_CHECK_ERRORS(_errorCode);
-				delete[] buffer;
+				else
+				{
+					_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
+					SAMPLE_CHECK_ERRORS(_errorCode);
+					_remap = clCreateKernel(_program, "remap", &_errorCode);
+					SAMPLE_CHECK_ERRORS(_errorCode);
+					return true;
+				}
 			}
 			else
 			{
 #ifdef _DEBUG
 				printf("%s: %d\n", filename, res);
 #endif
-				return false;
 			}
 		}
-		_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		_remap = clCreateKernel(_program, "remap", &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		return true;
+		return false;
 	}
 
 	// Create kernel from internal string

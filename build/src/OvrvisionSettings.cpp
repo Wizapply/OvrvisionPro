@@ -1,8 +1,6 @@
-//
-//
-//
-#include "OvrvisionSettings.h"
 
+
+#include "OvrvisionSettings.h"
 
 /////////// VARS AND DEFS ///////////
 

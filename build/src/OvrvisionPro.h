@@ -49,7 +49,6 @@ namespace OVR
 	protected:
 		int _width, _height;
 		OvrvisionSetting _settings;
-		//Size	_size;
 		bool	_remapAvailable;
 		Mat		*_mapX[2], *_mapY[2]; // camera parameter
 

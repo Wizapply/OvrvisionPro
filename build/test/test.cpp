@@ -16,8 +16,8 @@ using namespace OVR;
 int main(int argc, char* argv[])
 {
 	ushort *pImage = new ushort[BUFFER_SIZE];
-	Mat left(Size(WIDTH, HEIGHT), CV_8UC4);
-	Mat right(Size(WIDTH, HEIGHT), CV_8UC4);
+	Mat *left = new Mat(Size(WIDTH, HEIGHT), CV_8UC4);
+	Mat *right = new Mat(Size(WIDTH, HEIGHT), CV_8UC4);
 
 	if (3 < argc)
 	{
@@ -40,18 +40,18 @@ int main(int argc, char* argv[])
 				if (ovrvision.CreateProgram(kernel_file))
 				{
 					//ovrvision.DemosaicRemap(pImage, *left, *right);
-					ovrvision.Demosaic(pImage, left, right);
+					ovrvision.Demosaic(pImage, *left, *right);
 
-					imshow("Left", left);
-					imshow("Right", right);
+					imshow("Left", *left);
+					imshow("Right", *right);
 
 					int key;
 					while ((key = waitKey(100)) != 'q')
 					{
 						if (key == 's')
 						{
-							imwrite("Left.png", left);
-							imwrite("Right.png", right);
+							imwrite("Left.png", *left);
+							imwrite("Right.png", *right);
 						}
 					}
 				}
@@ -69,9 +69,10 @@ int main(int argc, char* argv[])
 			}
 		}
 	}
-
-	//delete left;
-	//delete right;
+	//left.release();
+	//right.release();
+	delete left;
+	delete right;
 	delete[] pImage;
 
 	return 0;
