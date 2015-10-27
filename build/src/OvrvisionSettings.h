@@ -6,11 +6,11 @@
 #include <math.h>
 #include <string.h>
 
-//#ifdef _OVRVISION_EXPORTS
-//#define OVRVISIONPRODLL_API __declspec(dllexport)
-//#else
-//#define OVRVISIONPRODLL_API __declspec(dllimport)
-//#endif
+#ifdef _OVRVISION_EXPORTS
+#define OVRVISIONPRODLL_API __declspec(dllexport)
+#else
+#define OVRVISIONPRODLL_API __declspec(dllimport)
+#endif
 
 //Marker 
 #ifdef _OVRVISION_EXPORTS  

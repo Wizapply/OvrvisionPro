@@ -3,6 +3,11 @@
 // OvrvisionPro gpu class definition
 //
 
+#ifdef _OVRVISION_EXPORTS
+#define OVRVISIONPRODLL_API __declspec(dllexport)
+#else
+#define OVRVISIONPRODLL_API __declspec(dllimport)
+#endif
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/core/ocl.hpp>
@@ -16,7 +21,7 @@ using namespace cv;
 
 namespace OVR
 {
-	class OvrvisionPro
+	class OVRVISIONPRODLL_API OvrvisionPro
 	{
 	public:
 		OvrvisionPro(int width, int height);
@@ -42,8 +47,9 @@ namespace OVR
 		void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
 	protected:
+		int _width, _height;
 		OvrvisionSetting _settings;
-		Size	_size;
+		//Size	_size;
 		bool	_remapAvailable;
 		Mat		*_mapX[2], *_mapY[2]; // camera parameter
 

@@ -102,7 +102,8 @@ namespace OVR
 
 	OvrvisionPro::OvrvisionPro(int width, int height)
 	{
-		this->_size = Size(width, height);
+		_width = width;
+		_height = height;
 		// TODO: check GPU memory size
 		_format16UC1.image_channel_data_type = CL_UNSIGNED_INT16;
 		_format16UC1.image_channel_order = CL_R;
@@ -139,8 +140,9 @@ namespace OVR
 		_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, width, height, 0, 0, &_errorCode);
 		_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, width, height, 0, 0, &_errorCode);
 #if 1
+		/*
 		size_t size = sizeof(OPENCL::kernel);
-		_program = clCreateProgramWithSource(_context, 1, (const char **)&OPENCL::kernel, &size, &_errorCode);
+		_program = clCreateProgramWithSource(_context, 1, (const char **)OPENCL::kernel, &size, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
 		if (_errorCode == CL_SUCCESS)
@@ -151,6 +153,7 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			//return true;
 		}
+		*/
 #else
 		if (CreateProgram() == false)
 		{
@@ -252,20 +255,20 @@ namespace OVR
 	bool OvrvisionPro::LoadCameraParams(const char *filename)
 	{
 		size_t origin[3] = { 0, 0, 0 };
-		size_t region[3] = { _size.width, _size.height, 1 };
+		size_t region[3] = { _width, _height, 1 };
 
 		if (_settings.Read(filename))
 		{
 			// Left camera
-			_settings.GetUndistortionMatrix(OV_CAMEYE_LEFT, *_mapX[0], *_mapY[0], _size.width, _size.height);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[0], CL_TRUE, origin, region, _size.width * sizeof(float), 0, _mapX[0]->ptr(0), 0, NULL, NULL);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _my[0], CL_TRUE, origin, region, _size.width * sizeof(float), 0, _mapY[0]->ptr(0), 0, NULL, NULL);
+			_settings.GetUndistortionMatrix(OV_CAMEYE_LEFT, *_mapX[0], *_mapY[0], _width, _height);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[0], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapX[0]->ptr(0), 0, NULL, NULL);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _my[0], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapY[0]->ptr(0), 0, NULL, NULL);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// Right camera
-			_settings.GetUndistortionMatrix(OV_CAMEYE_RIGHT, *_mapX[1], *_mapY[1], _size.width, _size.height);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[1], CL_TRUE, origin, region, _size.width * sizeof(float), 0, _mapX[1]->ptr(0), 0, NULL, NULL);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _size.width * sizeof(float), 0, _mapY[1]->ptr(0), 0, NULL, NULL);
+			_settings.GetUndistortionMatrix(OV_CAMEYE_RIGHT, *_mapX[1], *_mapY[1], _width, _height);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[1], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapX[1]->ptr(0), 0, NULL, NULL);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapY[1]->ptr(0), 0, NULL, NULL);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			_remapAvailable = true;
@@ -338,7 +341,7 @@ namespace OVR
 			else
 			{
 #ifdef _DEBUG
-				printf("errno: %d\n", res);
+				printf("%s: %d\n", filename, res);
 #endif
 				return false;
 			}
@@ -380,10 +383,10 @@ namespace OVR
 	void OvrvisionPro::Demosaic(const ushort *src, Mat &left, Mat &right)
 	{
 		size_t origin[3] = { 0, 0, 0 };
-		size_t region[3] = { _size.width, _size.height, 1 };
-		size_t demosaicSize[] = { _size.width / 2, _size.height / 2 };
+		size_t region[3] = { _width, _height, 1 };
+		size_t demosaicSize[] = { _width / 2, _height / 2 };
 		cl_event writeEvent, executeEvent;
-		_errorCode = clEnqueueWriteImage(_commandQueue, _src, CL_TRUE, origin, region, _size.width * sizeof(ushort), 0, src, 0, NULL, &writeEvent);
+		_errorCode = clEnqueueWriteImage(_commandQueue, _src, CL_TRUE, origin, region, _width * sizeof(ushort), 0, src, 0, NULL, &writeEvent);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		//__kernel void demosaic(
@@ -417,10 +420,10 @@ namespace OVR
 	void OvrvisionPro::DemosaicRemap(const ushort *src, Mat &left, Mat &right)
 	{
 		size_t origin[3] = { 0, 0, 0 };
-		size_t region[3] = { _size.width, _size.height, 1 };
-		size_t demosaicSize[] = { _size.width / 2, _size.height / 2 };
+		size_t region[3] = { _width, _height, 1 };
+		size_t demosaicSize[] = { _width / 2, _height / 2 };
 		cl_event writeEvent, executeEvent;
-		_errorCode = clEnqueueWriteImage(_commandQueue, _src, CL_TRUE, origin, region, _size.width * sizeof(ushort), 0, src, 0, NULL, &writeEvent);
+		_errorCode = clEnqueueWriteImage(_commandQueue, _src, CL_TRUE, origin, region, _width * sizeof(ushort), 0, src, 0, NULL, &writeEvent);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		//__kernel void demosaic(
@@ -438,7 +441,7 @@ namespace OVR
 
 		if (_remapAvailable)
 		{
-			size_t remapSize[] = { _size.width, _size.height };
+			size_t remapSize[] = { _width, _height };
 
 			//__kernel void remap(
 			//	__read_only image2d_t src,		// CL_UNSIGNED_INT8 x 4

@@ -22,9 +22,10 @@ int main(int argc, char* argv[])
 	if (3 < argc)
 	{
 		const char *input_file = argv[1];
-		const char *config_file = argv[2];
-		const char *kernel_file = argv[3];
-		printf("%s\n%s\n%s\n", input_file, config_file, kernel_file);
+		const char *kernel_file = argv[2];
+		const char *config_file = argv[3];
+
+		printf("INPUT: %s\nKERNEL: %s\nCONFIG: %s\n", input_file, kernel_file, config_file);
 
 		FILE *file;
 		errno_t result = fopen_s(&file, input_file, "rb");
@@ -55,7 +56,7 @@ int main(int argc, char* argv[])
 					}
 				}
 				else{
-					printf("ERROR: can't create OpenCL kernel\n");
+					printf("ERROR: can't create OpenCL kernel\n%s\n", kernel_file);
 				}
 			}
 			catch (cv::Exception e)

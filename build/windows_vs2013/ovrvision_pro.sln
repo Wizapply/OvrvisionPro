@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_pro", "ovrvision_pro.vcxproj", "{299E8DC3-30E9-4938-90F0-A64E46AA4D8A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "..\test\test.vcxproj", "{E47E1489-AA02-4CEA-9057-70D33B47A86F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test.vcxproj", "{E47E1489-AA02-4CEA-9057-70D33B47A86F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{299E8DC3-30E9-4938-90F0-A64E46AA4D8A} = {299E8DC3-30E9-4938-90F0-A64E46AA4D8A}
 	EndProjectSection
