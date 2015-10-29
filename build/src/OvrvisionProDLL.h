@@ -14,7 +14,7 @@
 // OpenCL header
 #include <CL/opencl.h>
 
-#include "OvrvisionSettings.h"
+//#include "OvrvisionSettings.h"
 
 using namespace cv;
 
@@ -49,18 +49,18 @@ namespace OVR
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
 			// Remap with CPU
-			void Remap(Cameye eye, const Mat src, Mat &dst);
+			//void Remap(Cameye eye, const Mat src, Mat &dst);
 
 			cl_device_id SelectGPU(const char *platform, const char *version);
 
 			void createProgram(const char *filename, bool binary = false);
 			int saveBinary(const char *filename);
-			bool SaveSettings(const char *filename);
+			//bool SaveSettings(const char *filename);
 
 		private:
-			void createProgram();
+			//void createProgram();
 			int _width, _height;
-			OvrvisionSetting _settings;
+			//OvrvisionSetting _settings;
 			Mat *mapX[2], *mapY[2]; // camera parameter
 
 		protected:

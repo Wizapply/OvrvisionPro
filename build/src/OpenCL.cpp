@@ -9,6 +9,7 @@
 #include <opencv2/core/ocl.hpp>
 
 #include "OvrvisionProDLL.h"
+#include "OvrvisionSettings.h"
 
 //static const unsigned char kernelSource[] =
 //#include "./kernel.cl"
@@ -219,6 +220,7 @@ namespace OVR
 		{
 			size_t origin[3] = { 0, 0, 0 };
 			size_t region[3] = { _width, _height, 1 };
+			OvrvisionSetting _settings;
 
 			if (_settings.Read(filename))
 			{
@@ -355,18 +357,18 @@ namespace OVR
 		}
 
 		// Remap with CPU
-		void OvrvisionPro::Remap(Cameye eye, const Mat src, Mat &dst)
-		{
-			if (eye == OV_CAMEYE_LEFT)
-				cv::remap(src, dst, *mapX[0], *mapY[0], INTER_LINEAR);
-			else if (eye == OV_CAMEYE_RIGHT)
-				cv::remap(src, dst, *mapX[1], *mapY[1], INTER_LINEAR);
-		}
+		//void OvrvisionPro::Remap(Cameye eye, const Mat src, Mat &dst)
+		//{
+		//	if (eye == OV_CAMEYE_LEFT)
+		//		cv::remap(src, dst, *mapX[0], *mapY[0], INTER_LINEAR);
+		//	else if (eye == OV_CAMEYE_RIGHT)
+		//		cv::remap(src, dst, *mapX[1], *mapY[1], INTER_LINEAR);
+		//}
 
-		bool OvrvisionPro::SaveSettings(const char *filename)
-		{
-			return _settings.Write(filename);
-		}
+		//bool OvrvisionPro::SaveSettings(const char *filename)
+		//{
+		//	return _settings.Write(filename);
+		//}
 
 
 		// CreateProgram from file

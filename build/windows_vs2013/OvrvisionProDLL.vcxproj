@@ -55,6 +55,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_OVRVISION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\OpenCV-3.0.0\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -70,6 +71,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_OVRVISION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -83,12 +85,12 @@
     <None Include="kernel.cl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\OvrvisionProDLL.h" />
-    <ClInclude Include="..\..\src\OvrvisionSettings.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\src\OpenCL.cpp" />
     <ClCompile Include="..\src\OvrvisionSettings.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\OvrvisionProDLL.h" />
+    <ClInclude Include="..\src\OvrvisionSettings.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
