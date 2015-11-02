@@ -70,10 +70,10 @@ int main(int argc, char* argv[])
 			try
 			{
 				OvrvisionPro ovrvision(WIDTH, HEIGHT);
-				ovrvision.createProgram(argv[3]);
+				ovrvision.createProgram(kernel_file);
 				//ovrvision.saveBinary("binary.nvidia");
 				//ovrvision.SaveSettings("ovrvision.xml");
-				ovrvision.LoadCameraParams(argv[2]);
+				ovrvision.LoadCameraParams(config_file);
 
 				int64 start = getTickCount();
 
