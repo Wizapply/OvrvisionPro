@@ -13,7 +13,7 @@
 #include <opencv2/core/ocl.hpp>
 #include <CL/opencl.h>
 
-#include "OvrvisionSettings.h"
+//#include "OvrvisionSettings.h"
 
 using namespace cv;
 
@@ -48,7 +48,7 @@ namespace OVR
 
 	protected:
 		int _width, _height;
-		OvrvisionSetting _settings;
+		//OvrvisionSetting _settings;
 		bool	_remapAvailable;
 		Mat		*_mapX[2], *_mapY[2]; // camera parameter
 

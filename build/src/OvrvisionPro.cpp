@@ -6,6 +6,7 @@
 //#include <sys/stat.h>
 
 #include "OvrvisionPro.h"
+#include "OvrvisionSettings.h"
 
 using namespace std;
 
@@ -256,7 +257,7 @@ namespace OVR
 	{
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { _width, _height, 1 };
-
+		OvrvisionSetting _settings;
 		if (_settings.Read(filename))
 		{
 			// Left camera
