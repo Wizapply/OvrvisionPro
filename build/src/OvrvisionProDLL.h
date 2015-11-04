@@ -14,8 +14,6 @@
 // OpenCL header
 #include <CL/opencl.h>
 
-//#include "OvrvisionSettings.h"
-
 using namespace cv;
 
 namespace OVR
@@ -60,7 +58,6 @@ namespace OVR
 		private:
 			//void createProgram();
 			int _width, _height;
-			//OvrvisionSetting _settings;
 			Mat *mapX[2], *mapY[2]; // camera parameter
 
 		protected:
