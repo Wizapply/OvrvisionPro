@@ -5,8 +5,18 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>$(ProjectDir)1280x960x2.raw $(ProjectDir)kernel.cl $(ProjectDir)ovrvision_conf2.xml </LocalDebuggerCommandArguments>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerWorkingDirectory>$(OPENCV_INSTALL_DIR)\x64\vc12\bin</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>$(ProjectDir)1280x960x2.raw $(ProjectDir)kernel.cl $(ProjectDir)ovrvision_conf2.xml </LocalDebuggerCommandArguments>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerWorkingDirectory>$(OPENCV_INSTALL_DIR)\x86\vc12\bin</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>$(ProjectDir)1280x960x2.raw $(ProjectDir)kernel.cl $(ProjectDir)ovrvision_conf2.xml</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LocalDebuggerWorkingDirectory>$(OPENCV_INSTALL_DIR)\x64\vc12\bin</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>$(ProjectDir)1280x960x2.raw $(ProjectDir)kernel.cl $(ProjectDir)ovrvision_conf2.xml</LocalDebuggerCommandArguments>
   </PropertyGroup>
