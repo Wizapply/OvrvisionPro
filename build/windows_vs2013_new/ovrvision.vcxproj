@@ -191,7 +191,7 @@
       <ImportLibrary>$(OutDir)ovrvision64.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetDir)\ovrvision_64.dll $(SolutionDir)..\unity_package\Assets\Plugins\x86_64\ovrvision.dll /Y /B</Command>
+      <Command>copy $(TargetDir)ovrvision.dll $(SolutionDir)..\unity_package\Assets\Plugins\x86_64\ovrvision.dll /Y /B</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
