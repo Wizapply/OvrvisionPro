@@ -90,10 +90,12 @@ typedef enum ov_cameraeye {
 
 //Open Flags
 typedef enum ov_cameraprop {
-	OV_CAMHD_FULL = 0,		//1280x960 @45fps x2
-	OV_CAMVR_FULL, 			//960x950  @60fps x2
-	OV_CAMVR_WIDE,			//1280x800 @60fps x2
-	OV_CAMVR_VGA,			//640x480  @90fps x2
+	OV_CAM5MP_FULL = 0,		//2560x1920 @15fps x2
+	OV_CAM5MP_FHD,			//1920x1080 @30fps x2
+	OV_CAMHD_FULL,			//1280x960  @45fps x2
+	OV_CAMVR_FULL, 			//960x950   @60fps x2
+	OV_CAMVR_WIDE,			//1280x800  @60fps x2
+	OV_CAMVR_VGA,			//640x480   @90fps x2
 
 	OV_CAM20HD_FULL,		//1280x960 @15fps x2
 	OV_CAM20VR_VGA,			//640x480  @30fps x2
@@ -132,6 +134,20 @@ public:
 	int GetCamWidth();
 	int GetCamHeight();
 	int GetCamFramerate();
+
+	//Camera Propaty
+	int GetCameraExposure();
+	void SetCameraExposure(int value);
+
+	int GetCameraGain();
+	void SetCameraGain(int value);
+
+	int GetCameraWhiteBalanceR();
+	void GetCameraWhiteBalanceR(int value);
+	int GetCameraWhiteBalanceG();
+	void GetCameraWhiteBalanceG(int value);
+	int GetCameraWhiteBalanceB();
+	void GetCameraWhiteBalanceB(int value);
 
 private:
 #ifdef WIN32

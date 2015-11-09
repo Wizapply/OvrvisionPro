@@ -79,6 +79,16 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 	int cam_framerate = 60;
 
 	switch (prop) {
+	case OV_CAM5MP_FULL:
+		cam_width = 2560;
+		cam_height = 1920;
+		cam_framerate = 15;
+		break;
+	case OV_CAM5MP_FHD:
+		cam_width = 1920;
+		cam_height = 1080;
+		cam_framerate = 30;
+		break;
 	case OV_CAMHD_FULL:
 		cam_width = 1280;
 		cam_height = 960;
@@ -188,7 +198,7 @@ void OvrvisionPro::PreStoreCamData()
 	}*/
 	
 	//cv::cvtColor(raw8_left, rgb24, CV_BayerGR2BGR);
-	memcpy(m_pPixels[0], raw8_left.data, m_width*m_height*OV_PIXELSIZE_RGB);
+	memcpy(m_pPixels[0], raw8_left.data, m_width*m_height*OV_PIXELSIZE_RGB);	//‰ü‘P—\’è
 	//cv::cvtColor(raw8_right, rgb24, CV_BayerGR2BGR);
 	memcpy(m_pPixels[1], raw8_right.data, m_width*m_height*OV_PIXELSIZE_RGB);
 }
@@ -216,6 +226,176 @@ int OvrvisionPro::GetCamHeight(){
 int OvrvisionPro::GetCamFramerate(){
 	return m_framerate;
 }
+
+//Camera Propaty
+int OvrvisionPro::GetCameraExposure(){
+	int value = 0;
+	bool automode = false;
+
+	if (!m_isOpen)
+		return (-1);
+
+	m_pODS->GetCameraSetting(OV_CAMSET_BRIGHTNESS, &value, &automode);
+	return value;
+}
+void OvrvisionPro::SetCameraExposure(int value){
+	if (!m_isOpen)
+		return;
+
+	//The range specification
+	if (value < 0)	//low
+		value = 0;
+	if (value > 127)	//high
+		value = 127;
+
+	//set
+	//m_propExposure = value;
+
+#ifdef WIN32
+	m_pODS->SetCameraSetting(OV_CAMSET_BRIGHTNESS, value, false);
+	m_pODS->SetCameraSetting(OV_CAMSET_BRIGHTNESS, value, false);
+#elif MACOSX
+	[m_pOAV setCameraSetting:OV_CAMSET_BRIGHTNESS value : value automode : false];
+	[m_pOAV setCameraSetting:OV_CAMSET_BRIGHTNESS value : value automode : false];
+#elif LINUX
+	//NONE
+#endif
+}
+
+int OvrvisionPro::GetCameraGain(){
+	int value = 0;
+	bool automode = false;
+
+	if (!m_isOpen)
+		return (-1);
+
+	m_pODS->GetCameraSetting(OV_CAMSET_BRIGHTNESS, &value, &automode);
+	return value;
+}
+void OvrvisionPro::SetCameraGain(int value){
+	if (!m_isOpen)
+		return;
+
+	//The range specification
+	if (value < 0)	//low
+		value = 0;
+	if (value > 127)	//high
+		value = 127;
+
+	//set
+	//m_propExposure = value;
+
+#ifdef WIN32
+	m_pODS->SetCameraSetting(OV_CAMSET_BRIGHTNESS, value, false);
+	m_pODS->SetCameraSetting(OV_CAMSET_BRIGHTNESS, value, false);
+#elif MACOSX
+	[m_pOAV setCameraSetting : OV_CAMSET_BRIGHTNESS value : value automode : false];
+	[m_pOAV setCameraSetting : OV_CAMSET_BRIGHTNESS value : value automode : false];
+#elif LINUX
+	//NONE
+#endif
+}
+
+int OvrvisionPro::GetCameraWhiteBalanceR(){
+	int value = 0;
+	bool automode = false;
+
+	if (!m_isOpen)
+		return (-1);
+
+	m_pODS->GetCameraSetting(OV_CAMSET_BRIGHTNESS, &value, &automode);
+	return value;
+}
+void OvrvisionPro::GetCameraWhiteBalanceR(int value){
+	if (!m_isOpen)
+		return;
+
+	//The range specification
+	if (value < 0)	//low
+		value = 0;
+	if (value > 127)	//high
+		value = 127;
+
+	//set
+	//m_propExposure = value;
+
+#ifdef WIN32
+	m_pODS->SetCameraSetting(OV_CAMSET_BRIGHTNESS, value, false);
+	m_pODS->SetCameraSetting(OV_CAMSET_BRIGHTNESS, value, false);
+#elif MACOSX
+	[m_pOAV setCameraSetting : OV_CAMSET_BRIGHTNESS value : value automode : false];
+	[m_pOAV setCameraSetting : OV_CAMSET_BRIGHTNESS value : value automode : false];
+#elif LINUX
+	//NONE
+#endif
+}
+int OvrvisionPro::GetCameraWhiteBalanceG(){
+	int value = 0;
+	bool automode = false;
+
+	if (!m_isOpen)
+		return (-1);
+
+	m_pODS->GetCameraSetting(OV_CAMSET_BRIGHTNESS, &value, &automode);
+	return value;
+}
+void OvrvisionPro::GetCameraWhiteBalanceG(int value){
+	if (!m_isOpen)
+		return;
+
+	//The range specification
+	if (value < 0)	//low
+		value = 0;
+	if (value > 127)	//high
+		value = 127;
+
+	//set
+	//m_propExposure = value;
+
+#ifdef WIN32
+	m_pODS->SetCameraSetting(OV_CAMSET_BRIGHTNESS, value, false);
+	m_pODS->SetCameraSetting(OV_CAMSET_BRIGHTNESS, value, false);
+#elif MACOSX
+	[m_pOAV setCameraSetting : OV_CAMSET_BRIGHTNESS value : value automode : false];
+	[m_pOAV setCameraSetting : OV_CAMSET_BRIGHTNESS value : value automode : false];
+#elif LINUX
+	//NONE
+#endif
+}
+int OvrvisionPro::GetCameraWhiteBalanceB(){
+	int value = 0;
+	bool automode = false;
+
+	if (!m_isOpen)
+		return (-1);
+
+	m_pODS->GetCameraSetting(OV_CAMSET_BRIGHTNESS, &value, &automode);
+	return value;
+}
+void OvrvisionPro::GetCameraWhiteBalanceB(int value){
+	if (!m_isOpen)
+		return;
+
+	//The range specification
+	if (value < 0)	//low
+		value = 0;
+	if (value > 127)	//high
+		value = 127;
+
+	//set
+	//m_propExposure = value;
+
+#ifdef WIN32
+	m_pODS->SetCameraSetting(OV_CAMSET_BRIGHTNESS, value, false);
+	m_pODS->SetCameraSetting(OV_CAMSET_BRIGHTNESS, value, false);
+#elif MACOSX
+	[m_pOAV setCameraSetting : OV_CAMSET_BRIGHTNESS value : value automode : false];
+	[m_pOAV setCameraSetting : OV_CAMSET_BRIGHTNESS value : value automode : false];
+#elif LINUX
+	//NONE
+#endif
+}
+
 
 /*
 
