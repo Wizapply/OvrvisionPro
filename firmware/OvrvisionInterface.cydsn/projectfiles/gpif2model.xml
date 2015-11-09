@@ -27,14 +27,6 @@
       <GPIOPinNumber>GPIO_27</GPIOPinNumber>
       <Polarity>ActiveHigh</Polarity>
     </Signal>
-    <Signal ElementId="OUTPUT0" SignalType="Output" SpecialFunction="None">
-      <DisplayName>nSensor_Sync</DisplayName>
-      <GPIOPinNumber>GPIO_25</GPIOPinNumber>
-      <IntialValue>Low</IntialValue>
-      <Polarity>ActiveLow</Polarity>
-      <Delay>Alpha</Delay>
-      <AssetionType>Assert</AssetionType>
-    </Signal>
     <Signal ElementId="INPUT2" SignalType="Input" SpecialFunction="None">
       <DisplayName>LV2</DisplayName>
       <GPIOPinNumber>GPIO_28</GPIOPinNumber>

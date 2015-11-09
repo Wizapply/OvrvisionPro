@@ -60,15 +60,35 @@ extern void OV5653SensorReset(void);		// Reset sensor
 extern uint8_t OV5653SensorBusTest(void);	// Test sensor
 
 // Sensor setup
-extern void OV5653Sensor_5MP15FPS();		//2560 x 1920 @ 15fps	X 2
-extern void OV5653Sensor_FullHD30FPS();		//1920 x 1080 @ 30fps	X 2
-extern void OV5653Sensor_UVGA45FPS();		//1280 x 960 @ 45fps	X 2
-extern void OV5653Sensor_VR60FPS();			//1280 x 800 @ 60fps	X 2 Oculus Rift
-extern void OV5653Sensor_VR10FPS();			//1280 x 800 @ 10fps	X 2 Oculus Rift, For USB2.0
-extern void OV5653Sensor_VGA90FPS();		//640 x 480 @ 90fps	    X 2
-extern void OV5653Sensor_VGA60FPS();		//640 x 480 @ 60fps		X 2, For USB2.0
-extern void OV5653Sensor_QVGA120FPS();		//320 x 240 @ 120fps	X 2
 
+//Frame Index : frameIdx
+// 1 = 2560 x 1920 @ 15fps	X 2
+// 2 = 1920 x 1080 @ 30fps	X 2
+// 3 = 1280 x 960 @ 45fps	X 2
+// 4 = 1280 x 800 @ 60fps	X 2 Oculus Rift
+// 5 = 640 x 480 @ 90fps    X 2
+// 6 = 320 x 240 @ 120fps	X 2
+//11 = 1280 x 800 @ 10fps	X 2 Oculus Rift, For USB2.0
+//12 = 640 x 480 @ 60fps	X 2 For USB2.0
+extern void OV5653SensorControl(unsigned char frameIdx);
 
+//Processing Unit specific UVC control function
+extern uint16_t OV5653SensorGetExp();
+extern void OV5653SensorSetExp(uint16_t v);
+extern unsigned char OV5653SensorGetGain();
+extern void OV5653SensorSetGain(unsigned char v);
+
+extern uint16_t OV5653SensorGetRGainWB();
+extern void OV5653SensorSetRGainWB(uint16_t v);
+extern uint16_t OV5653SensorGetGGainWB();
+extern void OV5653SensorSetGGainWB(uint16_t v);
+extern uint16_t OV5653SensorGetBGainWB();
+extern void OV5653SensorSetBGainWB(uint16_t v);
+extern unsigned char OV5653SensorGetWBTAuto();
+extern void OV5653SensorSetWBTAuto(unsigned char v);
+
+//Camera Terminal specific UVC control function
+extern unsigned char OV5653SensorGetCurRoll();
+extern void OV5653SensorSetModRoll(unsigned char v);
 
 #endif /*_OV5653_SENSOR_H_*/

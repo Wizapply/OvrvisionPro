@@ -33,4 +33,3 @@ or implied, of Rafael Muñoz Salinas.
 int omp_get_max_threads();
 int omp_get_thread_num();
 #endif
-

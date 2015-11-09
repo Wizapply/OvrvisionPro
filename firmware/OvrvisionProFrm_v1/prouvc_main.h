@@ -100,6 +100,45 @@
 #define OVRPRO_GPIO2_PIN	(37)
 #define OVRPRO_GPIO3_PIN	(38)
 
+/* Processing Unit specific UVC control selector codes defined in the USB Video Class specification. */
+#define OVRPRO_UVC_PU_BACKLIGHT_COMPENSATION_CONTROL         (uint16_t)(0x0100)
+#define OVRPRO_UVC_PU_BRIGHTNESS_CONTROL                     (uint16_t)(0x0200)
+#define OVRPRO_UVC_PU_CONTRAST_CONTROL                       (uint16_t)(0x0300)
+#define OVRPRO_UVC_PU_GAIN_CONTROL                           (uint16_t)(0x0400)
+#define OVRPRO_UVC_PU_POWER_LINE_FREQUENCY_CONTROL           (uint16_t)(0x0500)
+#define OVRPRO_UVC_PU_HUE_CONTROL                            (uint16_t)(0x0600)
+#define OVRPRO_UVC_PU_SATURATION_CONTROL                     (uint16_t)(0x0700)
+#define OVRPRO_UVC_PU_SHARPNESS_CONTROL                      (uint16_t)(0x0800)
+#define OVRPRO_UVC_PU_GAMMA_CONTROL                          (uint16_t)(0x0900)
+#define OVRPRO_UVC_PU_WHITE_BALANCE_TEMPERATURE_CONTROL      (uint16_t)(0x0A00)
+#define OVRPRO_UVC_PU_WHITE_BALANCE_TEMPERATURE_AUTO_CONTROL (uint16_t)(0x0B00)
+#define OVRPRO_UVC_PU_WHITE_BALANCE_COMPONENT_CONTROL        (uint16_t)(0x0C00)
+#define OVRPRO_UVC_PU_WHITE_BALANCE_COMPONENT_AUTO_CONTROL   (uint16_t)(0x0D00)
+#define OVRPRO_UVC_PU_DIGITAL_MULTIPLIER_CONTROL             (uint16_t)(0x0E00)
+#define OVRPRO_UVC_PU_DIGITAL_MULTIPLIER_LIMIT_CONTROL       (uint16_t)(0x0F00)
+#define OVRPRO_UVC_PU_HUE_AUTO_CONTROL                       (uint16_t)(0x1000)
+#define OVRPRO_UVC_PU_ANALOG_VIDEO_STANDARD_CONTROL          (uint16_t)(0x1100)
+#define OVRPRO_UVC_PU_ANALOG_LOCK_STATUS_CONTROL             (uint16_t)(0x1200)
+
+/* Camera Terminal specific UVC control selector codes defined in the USB Video Class specification. */
+#define OVRPRO_UVC_CT_SCANNING_MODE_CONTROL                  (uint16_t)(0x0100)
+#define OVRPRO_UVC_CT_AE_MODE_CONTROL                        (uint16_t)(0x0200)
+#define OVRPRO_UVC_CT_AE_PRIORITY_CONTROL                    (uint16_t)(0x0300)
+#define OVRPRO_UVC_CT_EXPOSURE_TIME_ABSOLUTE_CONTROL         (uint16_t)(0x0400)
+#define OVRPRO_UVC_CT_EXPOSURE_TIME_RELATIVE_CONTROL         (uint16_t)(0x0500)
+#define OVRPRO_UVC_CT_FOCUS_ABSOLUTE_CONTROL                 (uint16_t)(0x0600)
+#define OVRPRO_UVC_CT_FOCUS_RELATIVE_CONTROL                 (uint16_t)(0x0700)
+#define OVRPRO_UVC_CT_FOCUS_AUTO_CONTROL                     (uint16_t)(0x0800)
+#define OVRPRO_UVC_CT_IRIS_ABSOLUTE_CONTROL                  (uint16_t)(0x0900)
+#define OVRPRO_UVC_CT_IRIS_RELATIVE_CONTROL                  (uint16_t)(0x0A00)
+#define OVRPRO_UVC_CT_ZOOM_ABSOLUTE_CONTROL                  (uint16_t)(0x0B00)
+#define OVRPRO_UVC_CT_ZOOM_RELATIVE_CONTROL                  (uint16_t)(0x0C00)
+#define OVRPRO_UVC_CT_PANTILT_ABSOLUTE_CONTROL               (uint16_t)(0x0D00)
+#define OVRPRO_UVC_CT_PANTILT_RELATIVE_CONTROL               (uint16_t)(0x0E00)
+#define OVRPRO_UVC_CT_ROLL_ABSOLUTE_CONTROL                  (uint16_t)(0x0F00)
+#define OVRPRO_UVC_CT_ROLL_RELATIVE_CONTROL                  (uint16_t)(0x1000)
+#define OVRPRO_UVC_CT_PRIVACY_CONTROL                        (uint16_t)(0x1100)
+
 /* Extern definitions of the USB Enumeration constant arrays used for the UVC application.
    These arrays are defined in the cyfxuvcdscr.c file.
  */

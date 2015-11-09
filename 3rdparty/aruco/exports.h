@@ -25,7 +25,7 @@ The views and conclusions contained in the software and documentation are those 
 authors and should not be interpreted as representing official policies, either expressed
 or implied, of Rafael Muñoz Salinas.
 ********************************/
- 
+
 
 
 #ifndef __OPENARUCO_CORE_TYPES_H__
@@ -36,10 +36,10 @@ or implied, of Rafael Muñoz Salinas.
 #endif
 
 
-#if (defined WIN32 || defined _WIN32 || defined WINCE)   && defined DSO_EXPORTS
-     #define ARUCO_EXPORTS __declspec(dllexport)  
+#if (defined WIN32 || defined _WIN32 || defined WINCE) && defined DSO_EXPORTS
+#define ARUCO_EXPORTS __declspec(dllexport)
 #else
-    #define ARUCO_EXPORTS  
+#define ARUCO_EXPORTS
 #endif
 
 

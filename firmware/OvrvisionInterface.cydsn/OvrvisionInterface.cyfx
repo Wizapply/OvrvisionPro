@@ -19,11 +19,17 @@
 <CyGuid_7d237b03-d944-11da-aaba-00164119d63b type_name="CyGpif2Designer.Common.PrjMgmt.Model.CyPrjMgmtItem" name="cyfxgpif2config.h" persistent="C:\Cypress\GPIF II Designer\ImageSensorInterface.cydsn\cyfxgpif2config.h" target="7d237afd-d944-11da-aaba-00164119d63b">
 <Hidden v="False" />
 </CyGuid_7d237b03-d944-11da-aaba-00164119d63b>
+<CyGuid_7d237b03-d944-11da-aaba-00164119d63b type_name="CyGpif2Designer.Common.PrjMgmt.Model.CyPrjMgmtItem" name="cyfxgpif2config.h" persistent="C:\Users\Wizapply1\Desktop\OvrvisionProSDK\firmware\OvrvisionInterface.cydsn\OvrvisionInterface.cydsn\cyfxgpif2config.h" target="7d237afd-d944-11da-aaba-00164119d63b">
+<Hidden v="False" />
+</CyGuid_7d237b03-d944-11da-aaba-00164119d63b>
+<CyGuid_7d237b03-d944-11da-aaba-00164119d63b type_name="CyGpif2Designer.Common.PrjMgmt.Model.CyPrjMgmtItem" name="cyfxgpif2config.h" persistent="C:\Users\Wizapply1\Desktop\OvrvisionProSDK\firmware\OvrvisionInterface.cydsn\Release\cyfxgpif2config.h" target="7d237afd-d944-11da-aaba-00164119d63b">
+<Hidden v="False" />
+</CyGuid_7d237b03-d944-11da-aaba-00164119d63b>
 </OutputDocs>
 </CyGuid_7d237b00-d944-11da-aaba-00164119d63b>
 <Settings>
 <Setting name="GPIF2_OutputName" value="cyfxgpif2config" />
-<Setting name="GPIF2_OutputLocation" value="C:\Cypress\GPIF II Designer\ImageSensorInterface.cydsn" />
+<Setting name="GPIF2_OutputLocation" value="Release" />
 <Setting name="GPIF2_Template" value="C:\Program Files (x86)\Cypress\EZ-USB FX3 SDK\1.3\GPIFII Designer\inputs\outputtemplates\cygpif2cheadertemplate.tpl" />
 </Settings>
 </CyGuid_7d237aff-d944-11da-aaba-00164119d63b>
