@@ -55,15 +55,15 @@ extern "C" {
 #endif
 
 // int ovOpen(void)
-CSHARP_EXPORT int ovOpen(int locationID, float arMeter, int hmdType)
+CSHARP_EXPORT int ovOpen(int locationID, float arMeter, int type)
 {
 	//Create object
 	if(g_ovOvrvision==NULL)
 		g_ovOvrvision = new OVR::OvrvisionPro();	//MainVideo
 
 	//Ovrvision Open
-	if(g_ovOvrvision->Open(locationID,OVR::OV_CAMHD_FULL)!=0)
-		return 1;
+	if (g_ovOvrvision->Open(locationID, (OVR::Camprop)type) == 0)	//0=Error
+		return 1;	//FALSE
 
 	//Create AR object
 	if(g_ovOvrvisionAR==NULL)
@@ -71,7 +71,7 @@ CSHARP_EXPORT int ovOpen(int locationID, float arMeter, int hmdType)
 														 g_ovOvrvision->GetCamHeight(),
 														 g_ovOvrvision->GetCamFocalPoint());	//AR
 
-	return 0;	//S_OK
+	return 0;	//OK
 }
 
 // int ovClose(void)
@@ -89,32 +89,97 @@ CSHARP_EXPORT int ovClose(void)
 		g_ovOvrvisionAR = NULL;
 	}
 
-	if (g_ovOvrvision) {
-		delete g_ovOvrvision;
-		g_ovOvrvision = NULL;
-	}
+	delete g_ovOvrvision;
+	g_ovOvrvision = NULL;
 
-	return 0;	//S_OK
+	return 0;	//OK
 }
 
 // int ovPreStoreCamData() -> need ovGetCamImage : ovGetCamImageBGR
 CSHARP_EXPORT void ovPreStoreCamData(int qt)
 {
 	g_ovOvrvision->PreStoreCamData((OVR::Camqt)qt);	//Renderer
+
 }
 
 // int ovGetCamImage(unsigned char* pImage, int eye, int qt)
-CSHARP_EXPORT void ovGetCamImage(unsigned char* pImage, int eye)
+CSHARP_EXPORT void ovGetCamImageBGRA(unsigned char* pImage, int eye, int useAR)
 {
 	if(g_ovOvrvision==NULL)
 		return;
 
 	//Get image
-	g_ovOvrvision->GetCamImageBGR(pImage, (OVR::Cameye)eye);
+	g_ovOvrvision->GetCamImageBGRA(pImage, (OVR::Cameye)eye);
+
+	//AR System
+	if (useAR) {
+		if (g_ovOvrvisionAR != NULL) g_ovOvrvisionAR->SetImageBGRA(pImage);
+	}
 
 }
-// int ovGetCamImageBGR(unsigned char* pImage, int eye, int qt)
-CSHARP_EXPORT void ovGetCamImageBGR(unsigned char* pImage, int eye)
+// int ovGetCamImageRGB(unsigned char* pImage, int eye, int qt)
+CSHARP_EXPORT void ovGetCamImageRGB(unsigned char* pImage, int eye, int useAR)
+{
+	if(g_ovOvrvision==NULL)
+		return;
+
+	//local var
+	int i, srcj = 0;
+
+	//Get image
+	unsigned char* pData = g_ovOvrvision->GetCamImageBGRA((OVR::Cameye)eye);
+
+	int length = g_ovOvrvision->GetCamWidth() * g_ovOvrvision->GetCamHeight() * 3;
+	int offsetlen = g_ovOvrvision->GetCamPixelsize();
+
+	//Image copy
+	for (i = 0; i < length; i += 3) {
+		//Left Eye
+		pImage[i + 0] = pData[srcj + 2];	//R
+		pImage[i + 1] = pData[srcj + 1];	//G
+		pImage[i + 2] = pData[srcj + 0];	//B
+		srcj += offsetlen;
+	}
+
+	//AR System
+	if (useAR) {
+		if (g_ovOvrvisionAR != NULL) g_ovOvrvisionAR->SetImageBGRA(pImage);
+	}
+}
+
+// int ovGetCamImageRGB(unsigned char* pImage, int eye, int qt)
+CSHARP_EXPORT void ovGetCamImageBGR(unsigned char* pImage, int eye, int useAR)
+{
+	if (g_ovOvrvision == NULL)
+		return;
+
+	//local var
+	int i, srcj = 0;
+
+	//Get image
+	unsigned char* pData = g_ovOvrvision->GetCamImageBGRA((OVR::Cameye)eye);
+
+	int length = g_ovOvrvision->GetCamWidth() * g_ovOvrvision->GetCamHeight() * 3;
+	int offsetlen = g_ovOvrvision->GetCamPixelsize();
+
+	//Image copy
+	for (i = 0; i < length; i += 3) {
+		//Left Eye
+		pImage[i + 0] = pData[srcj + 0];	//B
+		pImage[i + 1] = pData[srcj + 1];	//G
+		pImage[i + 2] = pData[srcj + 2];	//R
+		srcj += offsetlen;
+	}
+
+	//AR System
+	if (useAR) {
+		if (g_ovOvrvisionAR != NULL) g_ovOvrvisionAR->SetImageBGRA(pImage);
+	}
+}
+
+// void ovGetCamImageForUnity(unsigned char* pImagePtr_Left, unsigned char* pImagePtr_Right, int qt)
+CSHARP_EXPORT void ovGetCamImageForUnity(unsigned char* pImagePtr_Left,
+										 unsigned char* pImagePtr_Right, int qt, int useAR)
 {
 	if(g_ovOvrvision==NULL)
 		return;
@@ -123,85 +188,34 @@ CSHARP_EXPORT void ovGetCamImageBGR(unsigned char* pImage, int eye)
 	int i;
 
 	//Get image
-	unsigned char* pData = g_ovOvrvision->GetCamImageBGR((OVR::Cameye)eye);
-
-	int length = g_ovOvrvision->GetCamBuffersize();
-	int offsetlen = g_ovOvrvision->GetCamPixelsize();
-
-	//Image copy
-	for (i = 0; i < length; i+=offsetlen) {
-		//Left Eye
-		pImage[i+0] = pData[i+2];	//B
-		pImage[i+1] = pData[i+1];	//G
-		pImage[i+2] = pData[i+0];	//R
-	}
-}
-
-// void ovGetCamImageForUnity(unsigned char* pImagePtr_Left, unsigned char* pImagePtr_Right, int qt)
-CSHARP_EXPORT void ovGetCamImageForUnity(unsigned char* pImagePtr_Left,
-										 unsigned char* pImagePtr_Right, int qt)
-{
-	if(g_ovOvrvision==NULL)
-		return;
-
-	//local var
-	int i, n;
-
-	//Get image
 	g_ovOvrvision->PreStoreCamData((OVR::Camqt)qt);	//Renderer
-	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGR(OVR::OV_CAMEYE_LEFT);
-	unsigned char* pRight = g_ovOvrvision->GetCamImageBGR(OVR::OV_CAMEYE_RIGHT);
+	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
+	unsigned char* pRight = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
-	int length = g_ovOvrvision->GetCamBuffersize();
+	int length = g_ovOvrvision->GetCamWidth() * g_ovOvrvision->GetCamHeight() * 3;
 	int offsetlen = g_ovOvrvision->GetCamPixelsize();
 
 	//Image copy
-	n = 0;
 	for (i = 0; i < length; i+=offsetlen) {
 		//Left Eye
-		pImagePtr_Left[n+0] = pLeft[i+0];	//R
-		pImagePtr_Left[n+1] = pLeft[i+1];	//G
-		pImagePtr_Left[n+2] = pLeft[i+2];	//B
-		pImagePtr_Left[n+3] = 255;			//A
-		n+=4;
+		pImagePtr_Left[i + 0] = pLeft[i + 2];	//R
+		pImagePtr_Left[i + 1] = pLeft[i + 1];	//G
+		pImagePtr_Left[i + 2] = pLeft[i + 0];	//B
+		pImagePtr_Left[i + 3] = pLeft[i + 3];	//A
 	}
 
-	n = 0;
 	for (i = 0; i < length; i+=offsetlen) {
 		//Right Eye
-		pImagePtr_Right[n+0] = pRight[i+0];
-		pImagePtr_Right[n+1] = pRight[i+1];
-		pImagePtr_Right[n+2] = pRight[i+2];
-		pImagePtr_Right[n+3] = 255;
-		n+=4;
+		pImagePtr_Right[i + 0] = pRight[i + 2];
+		pImagePtr_Right[i + 1] = pRight[i + 1];
+		pImagePtr_Right[i + 2] = pRight[i + 0];
+		pImagePtr_Right[i + 3] = pRight[i + 3];
 	}
-}
 
-//AR
-CSHARP_EXPORT void ovGetCamImageWithAR(unsigned char* pImage, int eye, int qt)
-{
-	if(g_ovOvrvision==NULL || g_ovOvrvisionAR==NULL)
-		return;
-
-	ovGetCamImage(pImage, (OVR::Cameye)eye);
-	g_ovOvrvisionAR->SetImageRGB(pImage);
-}
-CSHARP_EXPORT void ovGetCamImageBGRWithAR(unsigned char* pImage, int eye, int qt)
-{
-	if(g_ovOvrvision==NULL || g_ovOvrvisionAR==NULL)
-		return;
-
-	ovGetCamImageBGR(pImage, (OVR::Cameye)eye);
-	g_ovOvrvisionAR->SetImageRGB(pImage);
-}
-CSHARP_EXPORT void ovGetCamImageForUnityWithAR(unsigned char* pImagePtr_Left,
-												unsigned char* pImagePtr_Right, int qt)
-{
-	if(g_ovOvrvision==NULL || g_ovOvrvisionAR==NULL)
-		return;
-
-	ovGetCamImageForUnity(pImagePtr_Left, pImagePtr_Right, qt);
-	g_ovOvrvisionAR->SetImageRGB(pImagePtr_Left);
+	//AR System
+	if (useAR) {
+		if (g_ovOvrvisionAR != NULL) g_ovOvrvisionAR->SetImageBGRA(pLeft);
+	}
 }
 
 //This method will be detected if a hand is put in front of a camera. 
@@ -246,6 +260,14 @@ CSHARP_EXPORT int ovGetBufferSize()
 	return g_ovOvrvision->GetCamBuffersize();
 }
 
+//Get buffer size
+CSHARP_EXPORT int ovGetPixelSize()
+{
+	if (g_ovOvrvision == NULL)
+		return 0;
+
+	return g_ovOvrvision->GetCamPixelsize();
+}
 
 //Set exposure
 CSHARP_EXPORT void ovSetExposure(int value)
@@ -386,12 +408,12 @@ CSHARP_EXPORT void ovSaveParamXMLtoTempFile(int* config1, float* config2)
 ////////////// Ovrvision AR //////////////
 
 // ovARSetImage(unsigned char* pImgSrc)
-CSHARP_EXPORT void ovARSetImage(unsigned char* pImgSrc)
+CSHARP_EXPORT void ovARSetImageBGRA(unsigned char* pImgSrc)
 {
 	if(g_ovOvrvisionAR==NULL)
 		return;
 
-	g_ovOvrvisionAR->SetImageRGB(pImgSrc);
+	g_ovOvrvisionAR->SetImageBGRA(pImgSrc);
 }
 
 // void ovARRender(void)
@@ -477,14 +499,14 @@ CSHARP_EXPORT void ovCalibInitialize(int pattern_size_w, int pattern_size_h, dou
 		pattern_size_w,pattern_size_h,chessSizeMM);
 }
 
-CSHARP_EXPORT int ovCalibFindChess(int hmdType)
+CSHARP_EXPORT int ovCalibFindChess()
 {
 	if(g_ovOvrvisionCalib == NULL)
 		return 0;
 
 	g_ovOvrvision->PreStoreCamData(OVR::Camqt::OV_CAMQT_DMS);	//ReRenderer
-	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGR(OVR::OV_CAMEYE_LEFT);
-	unsigned char* pRight = g_ovOvrvision->GetCamImageBGR(OVR::OV_CAMEYE_RIGHT);
+	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
+	unsigned char* pRight = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
 	return g_ovOvrvisionCalib->FindChessBoardCorners(pLeft,pRight);
 }

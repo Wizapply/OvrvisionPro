@@ -20,8 +20,7 @@
 
 /////////// VARS AND DEFS ///////////
 
-#define OV_RGB_DATASIZE		(3)	//24bit
-#define OV_RGBA_DATASIZE	(4)	//32bit
+#define OV_RGB_DATASIZE		(4)	//32bit
 
 /////////// CLASS ///////////
 
@@ -129,7 +128,7 @@ void OvrvisionAR::RotMatToQuaternion( OvVector4D* outQuat, const float* inMat )
 //Methods
 
 //image set
-void OvrvisionAR::SetImageRGB(unsigned char* pImage)
+void OvrvisionAR::SetImageBGRA(unsigned char* pImage)
 {
 	m_pImageSrc = pImage;
 	m_pImageOpenCVMat = NULL;
@@ -145,7 +144,7 @@ void OvrvisionAR::SetImageOpenCVImage(ovMat* pImageMat)
 void OvrvisionAR::Render()
 {
 	//opencv var
-	cv::Mat	pCamRGBImg;
+	cv::Mat	pCamBGRAImg;
 	cv::Mat	pGrayImg;
 	std::vector<aruco::Marker> markers;
 
@@ -155,13 +154,13 @@ void OvrvisionAR::Render()
 	//create image
 	pGrayImg = cv::Mat(cv::Size(m_width,m_height),CV_MAKETYPE(CV_8U,1));
 	if(m_pImageSrc != NULL) {
-		pCamRGBImg = cv::Mat(cv::Size(m_width,m_height),CV_MAKETYPE(CV_8U,OV_RGB_DATASIZE));
+		pCamBGRAImg = cv::Mat(cv::Size(m_width,m_height),CV_MAKETYPE(CV_8U,OV_RGB_DATASIZE));
 		//dataset
-		memcpy(pCamRGBImg.data, m_pImageSrc, sizeof(unsigned char) * m_width * m_height * OV_RGB_DATASIZE);
+		memcpy(pCamBGRAImg.data, m_pImageSrc, sizeof(unsigned char) * m_width * m_height * OV_RGB_DATASIZE);
 		//convert color
-		cv::cvtColor(pCamRGBImg, pGrayImg, CV_RGB2GRAY);
+		cv::cvtColor(pCamBGRAImg, pGrayImg, CV_BGRA2GRAY);
 	} else {
-		cv::cvtColor((*m_pImageOpenCVMat), pGrayImg, CV_RGB2GRAY);
+		cv::cvtColor((*m_pImageOpenCVMat), pGrayImg, CV_BGRA2GRAY);
 	}
 	
 	//detect

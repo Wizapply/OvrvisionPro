@@ -81,6 +81,9 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 	int cam_height;
 	int cam_framerate;
 
+	if (m_isOpen)
+		return 0;
+
 	switch (prop) {
 	case OV_CAM5MP_FULL:
 		cam_width = 2560;
@@ -161,6 +164,9 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 //Close the Ovrvision
 void OvrvisionPro::Close()
 {
+	if (!m_isOpen)
+		return;
+
 	m_pODS->DeleteDevice();
 
 	if (m_pOpenCL) {
@@ -197,12 +203,12 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 	memcpy(m_pPixels[1], raw8_right.data, m_width*m_height*OV_PIXELSIZE_RGB);
 }
 
-unsigned char* OvrvisionPro::GetCamImageBGR(OVR::Cameye eye)
+unsigned char* OvrvisionPro::GetCamImageBGRA(OVR::Cameye eye)
 {
 	return m_pPixels[(int)eye];
 }
 
-void OvrvisionPro::GetCamImageBGR(unsigned char* pImageBuf, OVR::Cameye eye)
+void OvrvisionPro::GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye)
 {
 	memcpy(pImageBuf, m_pPixels[(int)eye], m_width*m_height*OV_PIXELSIZE_RGB);
 }

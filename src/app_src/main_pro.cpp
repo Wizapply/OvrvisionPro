@@ -110,7 +110,7 @@ void DrawLoop(void)
 	if (g_pOvrvision->isOpen()) {
 		//Full Draw
 		g_pOvrvision->PreStoreCamData(OVR::Camqt::OV_CAMQT_DMS);
-		unsigned char* p = g_pOvrvision->GetCamImageBGR(OVR::OV_CAMEYE_LEFT);
+		unsigned char* p = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 
 		wzChangeTextureBuffer(&g_screen_texture, 0, 0, g_camWidth, g_camHeight, WZ_FORMATTYPE_C_BGRA, (char*)p, 0);
 		wzSetSpritePosition(0.0f, 70.0f, 0.0f);
@@ -120,7 +120,7 @@ void DrawLoop(void)
 		wzSetSpriteTexture(&g_screen_texture);
 		wzSpriteDraw();	//Draw
 
-		p = g_pOvrvision->GetCamImageBGR(OVR::OV_CAMEYE_RIGHT);
+		p = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
 		wzChangeTextureBuffer(&g_screen_texture, 0, 0, g_camWidth, g_camHeight, WZ_FORMATTYPE_C_BGRA, (char*)p, 0);
 		wzSetSpritePosition(960.0f, 70.0f, 0.0f);

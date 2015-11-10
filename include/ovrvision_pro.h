@@ -132,8 +132,8 @@ public:
 	void Close();
 
 	void PreStoreCamData(OVR::Camqt qt);
-	unsigned char* GetCamImageBGR(OVR::Cameye eye);
-	void GetCamImageBGR(unsigned char* pImageBuf, OVR::Cameye eye);
+	unsigned char* GetCamImageBGRA(OVR::Cameye eye);
+	void GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye);
 
 	bool isOpen();
 

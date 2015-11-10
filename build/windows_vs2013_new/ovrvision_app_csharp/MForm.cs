@@ -23,7 +23,7 @@ namespace ovrvision_app
 
 			//Create Ovrvision Class
 			Ovrvision = new COvrvision();
-			comboBox1.SelectedIndex = 1;	//LOW
+			comboBox1.SelectedIndex = 0;	//DEMOSAIC & REMAP
 		}
         private void runbutton_Click(object sender, EventArgs e)
         {

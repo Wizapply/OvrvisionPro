@@ -156,7 +156,7 @@ public:
 	//Methods
 
 	//image set
-	void SetImageRGB(unsigned char* pImage);
+	void SetImageBGRA(unsigned char* pImage);
 	void SetImageOpenCVImage(ovMat* pImageMat);
 	//Detect marker
 	void Render();				//RGB 24bit
