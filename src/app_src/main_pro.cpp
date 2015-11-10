@@ -65,7 +65,7 @@ int Initialize()
 
 	//Create Ovrvision object
 	g_pOvrvision = new OVR::OvrvisionPro();
-	if (g_pOvrvision->Open(0, OVR::OV_CAMHD_FULL) == 0) {	//Open 1280x960@45
+	if (g_pOvrvision->Open(0, OVR::OV_CAMVR_FULL) == 0) {	//Open 1280x960@45
 		printf("ERROR");
 	}
 
@@ -109,7 +109,7 @@ void DrawLoop(void)
 
 	if (g_pOvrvision->isOpen()) {
 		//Full Draw
-		g_pOvrvision->PreStoreCamData();
+		g_pOvrvision->PreStoreCamData(OVR::Camqt::OV_CAMQT_DMS);
 		unsigned char* p = g_pOvrvision->GetCamImageBGR(OVR::OV_CAMEYE_LEFT);
 
 		wzChangeTextureBuffer(&g_screen_texture, 0, 0, g_camWidth, g_camHeight, WZ_FORMATTYPE_C_BGRA, (char*)p, 0);

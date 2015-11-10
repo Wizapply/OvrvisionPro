@@ -666,19 +666,15 @@ int OvrvisionDirectShow::SetCameraSetting(CamSetting proc, int value, bool autom
 
 	//set
 	switch(proc) {
-		case OV_CAMSET_EXPOSURE: m_pIAMCameraControl->Set(CameraControl_Exposure, value, autoflag);
+		case OV_CAMSET_EXPOSURE: m_pAMVideoProcAmp->Set(CameraControl_Exposure, value, autoflag);
 			break;
-		case OV_CAMSET_CONTRAST: m_pAMVideoProcAmp->Set(VideoProcAmp_Contrast, value, autoflag);
+		case OV_CAMSET_GAIN: m_pAMVideoProcAmp->Set(VideoProcAmp_Gain, value, autoflag);
 			break;
-		case OV_CAMSET_SATURATION: m_pAMVideoProcAmp->Set(VideoProcAmp_Saturation, value, autoflag);
+		case OV_CAMSET_WHITEBALANCER: m_pAMVideoProcAmp->Set(VideoProcAmp_Sharpness, value, autoflag);
 			break;
-		case OV_CAMSET_BRIGHTNESS: m_pAMVideoProcAmp->Set(VideoProcAmp_Brightness, value, autoflag);
+		case OV_CAMSET_WHITEBALANCEG: m_pAMVideoProcAmp->Set(VideoProcAmp_Gamma, value, autoflag);
 			break;
-		case OV_CAMSET_SHARPNESS: m_pAMVideoProcAmp->Set(VideoProcAmp_Sharpness, value, autoflag);
-			break;
-		case OV_CAMSET_GAMMA: m_pAMVideoProcAmp->Set(VideoProcAmp_Gamma, value, autoflag);
-			break;
-		case OV_CAMSET_WHITEBALANCE: m_pAMVideoProcAmp->Set(VideoProcAmp_WhiteBalance, value, autoflag);
+		case OV_CAMSET_WHITEBALANCEB: m_pAMVideoProcAmp->Set(VideoProcAmp_WhiteBalance, value, autoflag);
 			break;
 		default:
 			return RESULT_FAILED;
@@ -699,19 +695,15 @@ int OvrvisionDirectShow::GetCameraSetting(CamSetting proc, int* value, bool* aut
 
 	//set
 	switch(proc) {
-		case OV_CAMSET_EXPOSURE: m_pIAMCameraControl->Get(CameraControl_Exposure, (long*)value, &autoflag);
+	case OV_CAMSET_EXPOSURE: m_pAMVideoProcAmp->Get(VideoProcAmp_Brightness, (long*)value, &autoflag);
 			break;
-		case OV_CAMSET_CONTRAST: m_pAMVideoProcAmp->Get(VideoProcAmp_Contrast, (long*)value, &autoflag);
+		case OV_CAMSET_GAIN: m_pAMVideoProcAmp->Get(VideoProcAmp_Gain, (long*)value, &autoflag);
 			break;
-		case OV_CAMSET_SATURATION: m_pAMVideoProcAmp->Get(VideoProcAmp_Saturation, (long*)value, &autoflag);
+		case OV_CAMSET_WHITEBALANCER: m_pAMVideoProcAmp->Get(VideoProcAmp_Sharpness, (long*)value, &autoflag);
 			break;
-		case OV_CAMSET_BRIGHTNESS: m_pAMVideoProcAmp->Get(VideoProcAmp_Brightness, (long*)value, &autoflag);
+		case OV_CAMSET_WHITEBALANCEG: m_pAMVideoProcAmp->Get(VideoProcAmp_Gamma, (long*)value, &autoflag);
 			break;
-		case OV_CAMSET_SHARPNESS: m_pAMVideoProcAmp->Get(VideoProcAmp_Sharpness, (long*)value, &autoflag);
-			break;
-		case OV_CAMSET_GAMMA: m_pAMVideoProcAmp->Get(VideoProcAmp_Gamma, (long*)value, &autoflag);
-			break;
-		case OV_CAMSET_WHITEBALANCE: m_pAMVideoProcAmp->Get(VideoProcAmp_WhiteBalance, (long*)value, &autoflag);
+		case OV_CAMSET_WHITEBALANCEB: m_pAMVideoProcAmp->Get(VideoProcAmp_WhiteBalance, (long*)value, &autoflag);
 			break;
 		default:
 			return RESULT_FAILED;

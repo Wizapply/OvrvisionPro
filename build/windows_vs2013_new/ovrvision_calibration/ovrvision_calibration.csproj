@@ -146,6 +146,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy $(SolutionDir)..\..\bin\x86\ovrvision.dll $(TargetDir)ovrvision.dll /Y /B</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

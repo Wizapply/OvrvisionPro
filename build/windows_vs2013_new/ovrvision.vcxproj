@@ -74,6 +74,7 @@
     <OutDir>.\..\..\bin\x64\</OutDir>
     <IntDir>$(ProjectName)\$(Configuration)_$(Platform)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\..\..\bin\x86\</OutDir>
@@ -84,6 +85,7 @@
     <OutDir>.\..\..\bin\x64\</OutDir>
     <IntDir>$(ProjectName)\$(Configuration)_$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -134,6 +136,9 @@
       <TargetMachine>MachineX64</TargetMachine>
       <ImportLibrary>$(OutDir)ovrvision64d.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(TargetDir)ovrvision.dll $(SolutionDir)..\unity_package\Assets\Plugins\x86_64\ovrvision.dll /Y /B</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

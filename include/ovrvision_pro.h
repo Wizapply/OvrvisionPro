@@ -101,6 +101,13 @@ typedef enum ov_cameraprop {
 	OV_CAM20VR_VGA,			//640x480  @30fps x2
 } Camprop;
 
+//Open Flags
+typedef enum ov_cameraquality {
+	OV_CAMQT_DMSRMP = 0,	//Demosaic & Remap
+	OV_CAMQT_DMS,			//Demosaic
+	OV_CAMQT_NONE,			//None
+} Camqt;
+
 //unsigned char to byte
 typedef unsigned char byte;
 typedef unsigned char* pbyte;
@@ -124,7 +131,7 @@ public:
 	//Close the Ovrvision
 	void Close();
 
-	void PreStoreCamData();
+	void PreStoreCamData(OVR::Camqt qt);
 	unsigned char* GetCamImageBGR(OVR::Cameye eye);
 	void GetCamImageBGR(unsigned char* pImageBuf, OVR::Cameye eye);
 
@@ -134,6 +141,11 @@ public:
 	int GetCamWidth();
 	int GetCamHeight();
 	int GetCamFramerate();
+	float GetCamFocalPoint();
+	float GetHMDRightGap(int at);
+
+	int GetCamBuffersize();
+	int GetCamPixelsize();
 
 	//Camera Propaty
 	int GetCameraExposure();
@@ -169,6 +181,8 @@ private:
 	int				m_width;
 	int				m_height;
 	int				m_framerate;
+	float			m_focalpoint;
+	float			m_rightgap[3];	//vector
 
 	bool			m_isOpen;
 };

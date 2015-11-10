@@ -71,13 +71,11 @@ typedef enum ov_devstatus {
 
 //Camera Setting enum
 typedef enum ov_camseet {
-	OV_CAMSET_EXPOSURE = 0,	//Exposure
-	OV_CAMSET_CONTRAST,		//Contrast
-	OV_CAMSET_SATURATION,	//Saturation
-	OV_CAMSET_BRIGHTNESS,	//Brightness
-	OV_CAMSET_SHARPNESS,	//Sharpness
-	OV_CAMSET_GAMMA,		//Gamma
-	OV_CAMSET_WHITEBALANCE,	//White balance
+	OV_CAMSET_EXPOSURE = 0,		//Exposure
+	OV_CAMSET_GAIN,				//Gain
+	OV_CAMSET_WHITEBALANCER,	//Saturation
+	OV_CAMSET_WHITEBALANCEG,	//Brightness
+	OV_CAMSET_WHITEBALANCEB,	//Sharpness
 } CamSetting;
 
 /////////// CLASS ///////////
