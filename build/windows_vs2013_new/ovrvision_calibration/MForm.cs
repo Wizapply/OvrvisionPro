@@ -26,22 +26,13 @@ namespace ovrvision_calibration
 
 			//Create Ovrvision Class
 			Ovrvision = new COvrvision();
-			comboBox1.SelectedIndex = 0;
 		}
 
 		private void runbutton_Click(object sender, EventArgs e)
 		{
 			if (runbutton.Text == "Open Ovrvision")
 			{
-				int hmd = 0;
-				if (comboBox1.SelectedIndex == 0)
-					hmd = COvrvision.VERSION2_DK2;
-				else if (comboBox1.SelectedIndex == 1)
-					hmd = COvrvision.VERSION2_DK1;
-				else
-					hmd = COvrvision.VERSION2_OHR;
-
-				if (Ovrvision.Open(hmd))
+                if (Ovrvision.Open(COvrvision.OV_CAMHD_FULL))
 				{	//true
                     statelabel.Text = "State : Opened";
 					runbutton.Text = "Close Ovrvision";
@@ -52,7 +43,6 @@ namespace ovrvision_calibration
 					cameraPicRight.Image = Ovrvision.imageDataRight;
 
                     cabliButton.Enabled = true;
-					comboBox1.Enabled = false;
 				}
 				else
 				{	//false
@@ -77,7 +67,6 @@ namespace ovrvision_calibration
 					cameraPicLeft.Image = null;
 
                     cabliButton.Enabled = false;
-					comboBox1.Enabled = true;
 				}
 			}
 		}
@@ -98,7 +87,6 @@ namespace ovrvision_calibration
 					cameraPicLeft.Image = null;
 
                     cabliButton.Enabled = false;
-					comboBox1.Enabled = true;
 				}
 			}
 		}
@@ -193,7 +181,6 @@ namespace ovrvision_calibration
                     cameraPicLeft.Image = null;
 
                     cabliButton.Enabled = false;
-					comboBox1.Enabled = true;
                 }
 
                 textBox1.AppendText(String.Format("Ovrvision calibration is done.\r\n"));

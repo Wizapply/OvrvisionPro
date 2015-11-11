@@ -15,6 +15,8 @@
 /////////// INCLUDE ///////////
 
 #include "ovrvision_setting.h"
+//for eeprom system
+#include "Ovrvision_pro.h"
 
 /////////// VARS AND DEFS ///////////
 
@@ -25,16 +27,10 @@ namespace OVR
 /////////// CLASS ///////////
 
 //Ovrvision Setting Class
-OvrvisionSetting::OvrvisionSetting()
+OvrvisionSetting::OvrvisionSetting(OvrvisionPro* system)
 {
+	m_pSystem = system;
 	InitValue();
-}
-OvrvisionSetting::OvrvisionSetting(char* filepath)
-{
-	InitValue();
-
-	//Read data
-	Read(filepath);
 }
 
 //Initialize Data
@@ -45,9 +41,9 @@ void OvrvisionSetting::InitValue()
 	//initialize Camera Setting
 	m_propExposure = (-1);		//Exposure
 	m_propGain = 8;				//Gain
-	m_propWhiteBalanceR = 30;	//WhitebalanceR
-	m_propWhiteBalanceG = 40;	//WhitebalanceG
-	m_propWhiteBalanceB = 90;	//WhitebalanceB
+	m_propWhiteBalanceR = 1472;	//WhitebalanceR
+	m_propWhiteBalanceG = 1024;	//WhitebalanceG
+	m_propWhiteBalanceB = 1336;	//WhitebalanceB
 
 	m_leftCameraInstric = (cv::Mat_<double>(3,3)
 		<< 4.0768711844201607e+002, 0., 3.1599488824979869e+002, 0., 4.0750044944511359e+002, 2.5007314115490510e+002, 0., 0., 1.);
@@ -66,29 +62,21 @@ void OvrvisionSetting::InitValue()
 	m_trans = (cv::Mat_<double>(1,3)
 		<< -4.9835903233329809e+001, 4.1639373820797368e-002, 1.1584886767486973e+000);
 
-	m_focalPoint = (-320.0f);
+	m_focalPoint = (320.0f);
 }
 
-//Read Setting
-bool OvrvisionSetting::Read(const char* filepath)
-{
-	//file
-	cv::FileStorage cvfs(filepath, CV_STORAGE_READ | CV_STORAGE_FORMAT_XML);
+//Read EEPROM Setting
+bool OvrvisionSetting::ReadEEPROM() {
+	//テスト用
+	cv::FileStorage cvfs("ovrvisionpro_dev_conf.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML);
 
-	if(!cvfs.isOpened())
+	if (!cvfs.isOpened())
 		return isReaded;
 
 	//get data node
 	cv::FileNode data(cvfs.fs, NULL);
 
-	//Write camera param
-	m_propExposure = data["exposure"];
-	m_propGain = data["gain"];
-	m_propWhiteBalanceR = data["whitebalance_r"];
-	m_propWhiteBalanceG = data["whitebalance_g"];
-	m_propWhiteBalanceB = data["whitebalance_b"];
-
-	//Write undistort param
+	//read undistort param
 	data["LeftCameraInstric"] >> m_leftCameraInstric;
 	data["RightCameraInstric"] >> m_rightCameraInstric;
 	data["LeftCameraDistortion"] >> m_leftCameraDistortion;
@@ -107,18 +95,12 @@ bool OvrvisionSetting::Read(const char* filepath)
 	return isReaded;
 }
 
-//Write Setting
-bool OvrvisionSetting::Write(const char* filepath)
-{
+//Write EEPROM Setting
+bool OvrvisionSetting::WriteEEPROM() {
 	//OpenCV XML Writer
-	cv::FileStorage cvfs(filepath, CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
+	cv::FileStorage cvfs("ovrvisionpro_dev_conf.xml", CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
 
-	//Write camera param
-	cv::write(cvfs, "exposure", m_propExposure);
-	cv::write(cvfs, "gain", m_propGain);
-	cv::write(cvfs, "whitebalance_r", m_propWhiteBalanceR);
-	cv::write(cvfs, "whitebalance_g", m_propWhiteBalanceG);
-	cv::write(cvfs, "whitebalance_b", m_propWhiteBalanceB);
+	//Write camera param save
 
 	//Write undistort param
 	cv::write(cvfs, "LeftCameraInstric", m_leftCameraInstric);
@@ -136,6 +118,10 @@ bool OvrvisionSetting::Write(const char* filepath)
 	cvfs.release();
 
 	return true;
+}
+
+bool OvrvisionSetting::SaveStatusEEPROM() {
+	return false;
 }
 
 // Calculate Undistortion Matrix
@@ -158,12 +144,10 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 
 	//Undistort
 	if (eye == OV_CAMEYE_LEFT) {
-		//Mat camPs = getOptimalNewCameraMatrix(m_leftCameraInstric, distorsionCoeff, size, 0, size, 0);
 		initUndistortRectifyMap(m_leftCameraInstric, m_leftCameraDistortion, m_R1,
 			camPs, size, CV_32FC1, mapX, mapY);
 	}
 	if (eye == OV_CAMEYE_RIGHT) {
-		//Mat camPs = getOptimalNewCameraMatrix(m_rightCameraInstric, distorsionCoeff, size, 0, size, 0);
 		initUndistortRectifyMap(m_rightCameraInstric, m_rightCameraDistortion, m_R2,
 			camPs, size, CV_32FC1, mapX, mapY);
 	}

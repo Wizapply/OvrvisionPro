@@ -43,6 +43,7 @@
 #ifdef _OVRVISION_EXPORTS	//in ovrvision
 #include "ovrvision_ds.h"	//DirectShow
 #include "ovrvision_avf.h"	//AVFoundation
+
 #include "OvrvisionProCL.h"	//OpenCL Engine
 #else
 //USB cameras driver
@@ -112,9 +113,6 @@ typedef enum ov_cameraquality {
 typedef unsigned char byte;
 typedef unsigned char* pbyte;
 
-//File path
-#define OV_DEFAULT_SETTING_FILEPATH		"ovrvision_conf2.xml"
-
 /////////// CLASS ///////////
 
 //Ovrvision
@@ -155,11 +153,14 @@ public:
 	void SetCameraGain(int value);
 
 	int GetCameraWhiteBalanceR();
-	void GetCameraWhiteBalanceR(int value);
+	void SetCameraWhiteBalanceR(int value);
 	int GetCameraWhiteBalanceG();
-	void GetCameraWhiteBalanceG(int value);
+	void SetCameraWhiteBalanceG(int value);
 	int GetCameraWhiteBalanceB();
-	void GetCameraWhiteBalanceB(int value);
+	void SetCameraWhiteBalanceB(int value);
+
+	//Parameter save
+	int SaveCamStatusToEEPROM();
 
 private:
 #ifdef WIN32
@@ -185,6 +186,9 @@ private:
 	float			m_rightgap[3];	//vector
 
 	bool			m_isOpen;
+
+	//initialize setting
+	void InitCameraSetting();
 };
 
 };

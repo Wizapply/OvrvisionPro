@@ -22,18 +22,6 @@
     <ClCompile Include="..\..\src\lib_src\ovrvision_ar_metaio.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib_src\ovrvision_calibration.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\lib_src\ovrvision_ds.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\lib_src\ovrvision_setting.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\lib_src\ovrvision_csharp.cpp">
-      <Filter>ソース ファイル\C#</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\3rdparty\aruco\ar_omp.cpp">
       <Filter>ソース ファイル\ArUco</Filter>
     </ClCompile>
@@ -67,10 +55,25 @@
     <ClCompile Include="..\..\3rdparty\aruco\subpixelcorner.cpp">
       <Filter>ソース ファイル\ArUco</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_calibration.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_ds.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_linux.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_pro.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_csharp.cpp">
+      <Filter>ソース ファイル\C#</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\lib_src\OpenCL.cpp">
       <Filter>ソース ファイル\OpenCL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib_src\ovrvision_pro.cpp">
+    <ClCompile Include="..\..\src\lib_src\ovrvision_setting.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -134,6 +137,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\lib_src\OvrvisionProCL.h">
       <Filter>ソース ファイル\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib_src\ovrvision_linux.h">
+      <Filter>ソース ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

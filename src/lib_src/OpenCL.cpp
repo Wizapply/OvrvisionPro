@@ -9,7 +9,6 @@
 #include <opencv2/core/ocl.hpp>
 
 #include "OvrvisionProCL.h"
-#include "ovrvision_setting.h"
 
 //static const unsigned char kernelSource[] =
 //#include "./kernel.cl"
@@ -220,9 +219,9 @@ namespace OVR
 		{
 			size_t origin[3] = { 0, 0, 0 };
 			size_t region[3] = { _width, _height, 1 };
-			OvrvisionSetting _settings;
+			OvrvisionSetting _settings(NULL);
 
-			if (_settings.Read(filename))
+			if (_settings.ReadEEPROM())
 			{
 				// Left camera
 				_settings.GetUndistortionMatrix(OV_CAMEYE_LEFT, *mapX[0], *mapY[0], _width, _height);
@@ -243,6 +242,28 @@ namespace OVR
 			{
 				return false;
 			}
+		}
+
+		// Load camera parameters 
+		bool OvrvisionProOpenCL::LoadCameraParams(OvrvisionSetting* ovrset)
+		{
+			size_t origin[3] = { 0, 0, 0 };
+			size_t region[3] = { _width, _height, 1 };
+
+			// Left camera
+			ovrset->GetUndistortionMatrix(OV_CAMEYE_LEFT, *mapX[0], *mapY[0], _width, _height);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[0]->ptr(0), 0, NULL, NULL);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _my[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[0]->ptr(0), 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+
+			// Right camera
+			ovrset->GetUndistortionMatrix(OV_CAMEYE_RIGHT, *mapX[1], *mapY[1], _width, _height);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[1]->ptr(0), 0, NULL, NULL);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[1]->ptr(0), 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+
+			_remapAvailable = true;
+			return true;
 		}
 
 		// Demosaicing

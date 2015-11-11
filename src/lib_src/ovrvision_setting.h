@@ -24,15 +24,14 @@
 #include <string.h>
 
 //Marker 
-#ifdef _OVRVISION_EXPORTS  
 #include <opencv2/opencv.hpp>
 typedef cv::Mat ovMat;
-#else
-#define ovMat int
-#endif
 
 //OVR Group
 namespace OVR {
+
+//for system
+class OvrvisionPro;
 
 //Left or Right camera.
 #ifndef _OV_CAMEYE_ENUM_
@@ -44,21 +43,21 @@ namespace OVR {
 	} Cameye;
 #endif
 
-
 /////////// CLASS ///////////
 
 class OvrvisionSetting
 {
 public:
 	//Constructor
-	OvrvisionSetting();
-	OvrvisionSetting(char* filepath);
+	OvrvisionSetting(OvrvisionPro* system);
 
 	//Methods
 	//Read Setting
-	bool Read(const char* filepath);
+	bool ReadEEPROM();
 	//Write Setting
-	bool Write(const char* filepath);
+	bool WriteEEPROM();
+	//Save status
+	bool SaveStatusEEPROM();
 
 	// Calculate Undistortion Matrix
 	void GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &mapY, int width, int height);
@@ -77,9 +76,7 @@ public:
 	int	m_propWhiteBalanceG;	//WhiteBaranceG
 	int	m_propWhiteBalanceB;	//WhiteBaranceB
 
-	float m_ipd_horizontal;		//IPD(not used)
-
-	//UndistortSetting
+	//UndistortSetting : External variable
 	ovMat	m_leftCameraInstric;
 	ovMat	m_rightCameraInstric;
 	ovMat	m_leftCameraDistortion;
@@ -90,6 +87,9 @@ public:
 	ovMat	m_P2;	//nope
 	ovMat	m_trans;
 	float	m_focalPoint;
+
+	//system
+	OvrvisionPro*	m_pSystem;
 };
 
 };

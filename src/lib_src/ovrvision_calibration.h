@@ -70,7 +70,7 @@ public:
 	void SolveStereoParameter();
 
 	//Save
-	void SaveCalibrationParameter(char* filename = NULL);
+	void SaveCalibrationParameter(OvrvisionPro* ovrpro);
 
 	int GetImageCount() const{ return m_image_count; }	
 

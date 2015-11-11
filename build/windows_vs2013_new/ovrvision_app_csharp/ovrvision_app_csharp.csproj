@@ -53,7 +53,6 @@
   <ItemGroup>
     <Compile Include="COvrvision.cs">
     </Compile>
-    <Compile Include="COvrvisionProperty.cs" />
     <Compile Include="MForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,6 +120,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy $(SolutionDir)..\..\bin\x86\ovrvision.dll $(TargetDir)ovrvision.dll /Y /B</PostBuildEvent>
+    <PostBuildEvent>if exist $(SolutionDir)..\..\bin\x86\ovrvision.dll copy $(SolutionDir)..\..\bin\x86\ovrvision.dll $(TargetDir)ovrvision.dll /Y /B</PostBuildEvent>
   </PropertyGroup>
 </Project>

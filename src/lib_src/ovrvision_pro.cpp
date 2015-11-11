@@ -18,6 +18,8 @@
 #include "ovrvision_pro.h"
 #include <opencv2/opencv.hpp>
 
+#include "ovrvision_setting.h"
+
 /////////// VARS AND DEFS ///////////
 
 //OVRVISION USB SETTING
@@ -145,12 +147,12 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 	if (objs == 0)
 		return 0;
 
-	//Initialize Camera system
-
 	//Initialize OpenCL system
 	m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height);
 	m_pOpenCL->createProgram("kernel.cl");	//今はパスを直接入れているが、変更予定
-	m_pOpenCL->LoadCameraParams("ovrvision_conf2.xml");
+
+	//Initialize Camera system
+	InitCameraSetting();
 
 	m_width = cam_width;
 	m_height = cam_height;
@@ -211,6 +213,27 @@ unsigned char* OvrvisionPro::GetCamImageBGRA(OVR::Cameye eye)
 void OvrvisionPro::GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye)
 {
 	memcpy(pImageBuf, m_pPixels[(int)eye], m_width*m_height*OV_PIXELSIZE_RGB);
+}
+
+//Private method
+void OvrvisionPro::InitCameraSetting()
+{
+	//Read files.
+	OvrvisionSetting ovrset(this);
+	if (ovrset.ReadEEPROM()) {
+		//Read Set
+		//SetCameraExposure(ovrset.m_propExposure);	//まだ使わない
+		//SetCameraGain(ovrset.m_propGain);
+		//SetCameraWhiteBalanceR(ovrset.m_propWhiteBalanceR);
+		//SetCameraWhiteBalanceG(ovrset.m_propWhiteBalanceG);
+		//SetCameraWhiteBalanceB(ovrset.m_propWhiteBalanceB);
+		m_focalpoint = ovrset.m_focalPoint;
+		m_rightgap[0] = (float)-ovrset.m_trans.at<double>(0);	//T:X
+		m_rightgap[1] = (float)ovrset.m_trans.at<double>(1);	//T:Y
+		m_rightgap[2] = (float)ovrset.m_trans.at<double>(2);	//T:Z
+
+		m_pOpenCL->LoadCameraParams(&ovrset);
+	}
 }
 
 bool OvrvisionPro::isOpen(){
@@ -319,7 +342,7 @@ int OvrvisionPro::GetCameraWhiteBalanceR(){
 	m_pODS->GetCameraSetting(OV_CAMSET_WHITEBALANCER, &value, &automode);
 	return value;
 }
-void OvrvisionPro::GetCameraWhiteBalanceR(int value){
+void OvrvisionPro::SetCameraWhiteBalanceR(int value){
 	if (!m_isOpen)
 		return;
 
@@ -330,8 +353,6 @@ void OvrvisionPro::GetCameraWhiteBalanceR(int value){
 		value = 4095;
 
 	//set
-	//m_propExposure = value;
-
 #ifdef WIN32
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCER, value, false);
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCER, value, false);
@@ -352,7 +373,7 @@ int OvrvisionPro::GetCameraWhiteBalanceG(){
 	m_pODS->GetCameraSetting(OV_CAMSET_WHITEBALANCEG, &value, &automode);
 	return value;
 }
-void OvrvisionPro::GetCameraWhiteBalanceG(int value){
+void OvrvisionPro::SetCameraWhiteBalanceG(int value){
 	if (!m_isOpen)
 		return;
 
@@ -363,8 +384,6 @@ void OvrvisionPro::GetCameraWhiteBalanceG(int value){
 		value = 4095;
 
 	//set
-	//m_propExposure = value;
-
 #ifdef WIN32
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEG, value, false);
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEG, value, false);
@@ -385,7 +404,7 @@ int OvrvisionPro::GetCameraWhiteBalanceB(){
 	m_pODS->GetCameraSetting(OV_CAMSET_WHITEBALANCEB, &value, &automode);
 	return value;
 }
-void OvrvisionPro::GetCameraWhiteBalanceB(int value){
+void OvrvisionPro::SetCameraWhiteBalanceB(int value){
 	if (!m_isOpen)
 		return;
 
@@ -396,8 +415,6 @@ void OvrvisionPro::GetCameraWhiteBalanceB(int value){
 		value = 4095;
 
 	//set
-	//m_propExposure = value;
-
 #ifdef WIN32
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEB, value, false);
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEB, value, false);
@@ -409,6 +426,11 @@ void OvrvisionPro::GetCameraWhiteBalanceB(int value){
 #endif
 }
 
+//Save camera parameter
+int OvrvisionPro::SaveCamStatusToEEPROM(){
+	OvrvisionSetting ovrset(this);
+	return ovrset.SaveStatusEEPROM();
+}
 
 /*
 

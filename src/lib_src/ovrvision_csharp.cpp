@@ -293,7 +293,7 @@ CSHARP_EXPORT void ovSetWhiteBalanceR(int value)
 	if(g_ovOvrvision==NULL)
 		return;
 
-	g_ovOvrvision->GetCameraWhiteBalanceR(value);
+	g_ovOvrvision->SetCameraWhiteBalanceR(value);
 }
 
 //Set Saturation ( manual only )
@@ -302,7 +302,7 @@ CSHARP_EXPORT void ovSetWhiteBalanceG(int value)
 	if(g_ovOvrvision==NULL)
 		return;
 
-	g_ovOvrvision->GetCameraWhiteBalanceG(value);
+	g_ovOvrvision->SetCameraWhiteBalanceG(value);
 }
 
 //Set brightness ( manual only )
@@ -311,7 +311,7 @@ CSHARP_EXPORT void ovSetWhiteBalanceB(int value)
 	if(g_ovOvrvision==NULL)
 		return;
 
-	g_ovOvrvision->GetCameraWhiteBalanceB(value);
+	g_ovOvrvision->SetCameraWhiteBalanceB(value);
 }
 
 //Get exposure
@@ -378,31 +378,13 @@ CSHARP_EXPORT float ovGetHMDRightGap(int at)
 }
 
 
-//Set parameter
-CSHARP_EXPORT int ovSetParamXMLfromFile(unsigned char* filename)
-{
-	if(g_ovOvrvision==NULL)
-		return 0;
-
-	return 0;// g_ovOvrvision->SetParamXMLfromFile((char*)filename);
-}
-
 //Save parameter
-CSHARP_EXPORT int ovSaveParamXMLtoFile(unsigned char* savefilename)
-{
-	if(g_ovOvrvision==NULL)
-		return 0;
-
-	return 0;// g_ovOvrvision->SaveParamXMLtoFile((char*)savefilename);
-}
-
-//Save tmp parameter : csharp only
-CSHARP_EXPORT void ovSaveParamXMLtoTempFile(int* config1, float* config2)
+CSHARP_EXPORT void ovSaveCamStatusToEEPROM()
 {
 	if(g_ovOvrvision==NULL)
 		return;
 
-	//g_ovOvrvision->DirectSaveParamXMLtoTempFile(config1, config2);
+	g_ovOvrvision->SaveCamStatusToEEPROM();
 }
 
 ////////////// Ovrvision AR //////////////
@@ -499,6 +481,12 @@ CSHARP_EXPORT void ovCalibInitialize(int pattern_size_w, int pattern_size_h, dou
 		pattern_size_w,pattern_size_h,chessSizeMM);
 }
 
+CSHARP_EXPORT void ovCalibClose()
+{
+	if (g_ovOvrvisionCalib)
+		delete g_ovOvrvisionCalib;
+}
+
 CSHARP_EXPORT int ovCalibFindChess()
 {
 	if(g_ovOvrvisionCalib == NULL)
@@ -513,12 +501,14 @@ CSHARP_EXPORT int ovCalibFindChess()
 
 CSHARP_EXPORT void ovCalibSolveStereoParameter()
 {
+	if (g_ovOvrvision == NULL)
+		return;
 	if(g_ovOvrvisionCalib == NULL)
 		return;
 
 	g_ovOvrvisionCalib->SolveStereoParameter();
-	g_ovOvrvisionCalib->SaveCalibrationParameter(NULL);	//default
-
+	g_ovOvrvisionCalib->SaveCalibrationParameter(g_ovOvrvision);	//default 
+	//g_ovOvrvisionCalib->SaveCalibrationParameterToEEPROM();
 }
 
 CSHARP_EXPORT int ovCalibGetImageCount()

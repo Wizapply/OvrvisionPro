@@ -240,39 +240,10 @@ void OvrvisionCalibration::StereoRectificationMatrix()
 }
 
 //Save
-void OvrvisionCalibration::SaveCalibrationParameter(char* filename)
+void OvrvisionCalibration::SaveCalibrationParameter(OvrvisionPro* system)
 {
-#ifdef WIN32
-	if(filename == NULL) {
-		WCHAR current_path_wcs[MAX_PATH+1] = L"";
-		char current_path[MAX_PATH+1];
-		GetTempPath(MAX_PATH,current_path_wcs);
-		wcstombs(current_path,current_path_wcs,MAX_PATH);
-
-		strcat(current_path,OV_DEFAULT_SETTING_FILEPATH);
-		filename = current_path;
-	}
-#endif
-
-#ifdef MACOSX
-	if(filename == NULL) {
-		/*
-		NSString* path = [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent];
-		NSString* defaultpath = [[NSString alloc] initWithCString:OV_DEFAULT_SETTING_FILEPATH encoding:NSUTF8StringEncoding];
-		path = [path stringByAppendingString:@"/"];
-		path = [path stringByAppendingString:defaultpath];
-		*/
-		NSString* defaultpath = [[NSString alloc] initWithCString:OV_DEFAULT_SETTING_FILEPATH encoding:NSUTF8StringEncoding];
-		NSString* path = [NSTemporaryDirectory() stringByAppendingPathComponent:defaultpath];
-		filename = (char*)[path cStringUsingEncoding:NSUTF8StringEncoding];
-	}
-#endif
-
-#ifdef LINUX
-
-#endif
 	//Read files.
-	OvrvisionSetting ovrset(filename);
+	OvrvisionSetting ovrset(system);
 
 	//Read Set
 
@@ -286,10 +257,12 @@ void OvrvisionCalibration::SaveCalibrationParameter(char* filename)
 	ovrset.m_P1 = m_cameraCalibration[OV_CAMEYE_RIGHT].P;
 	ovrset.m_P2 = m_cameraCalibration[OV_CAMEYE_LEFT].P;
 	ovrset.m_trans = m_relate_rot * m_relate_trans;
+	ovrset.m_focalPoint = 320.0f;
 
 	//Write
-	ovrset.Write(filename);
+	ovrset.WriteEEPROM();
 }
+
 
 };
 

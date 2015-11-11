@@ -14,6 +14,9 @@
 // OpenCL header
 #include <CL/opencl.h>
 
+//ovrvision setting
+#include "ovrvision_setting.h"
+
 using namespace cv;
 
 namespace OVR
@@ -37,6 +40,7 @@ namespace OVR
 
 			// Load camera parameters
 			bool LoadCameraParams(const char *filename);
+			bool LoadCameraParams(OvrvisionSetting* ovrset);
 
 			// Demosaicing
 			void Demosaic(const ushort* src, Mat &left, Mat &right);
