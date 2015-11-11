@@ -29,7 +29,7 @@ namespace ovrvision_app
         {
             if (runbutton.Text == "Open Ovrvision")
             {
-                if (Ovrvision.Open(COvrvision.OV_CAMVR_FULL))
+                if (Ovrvision.Open(COvrvision.OV_CAMHD_FULL))
                 {	//true
                     statelabel.Text = "State : Opened";
                     runbutton.Text = "Close Ovrvision";

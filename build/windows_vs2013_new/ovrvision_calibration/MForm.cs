@@ -32,6 +32,7 @@ namespace ovrvision_calibration
 		{
 			if (runbutton.Text == "Open Ovrvision")
 			{
+                Ovrvision.useProcessingQuality = COvrvision.OV_CAMQT_DMS; 
                 if (Ovrvision.Open(COvrvision.OV_CAMHD_FULL))
 				{	//true
                     statelabel.Text = "State : Opened";

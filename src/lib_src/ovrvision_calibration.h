@@ -37,7 +37,7 @@ namespace OVR {
 #define ovClamp(x)	(((x) > 1.0) ? 1.0 : ((x) < 0.0) ? 0.0 : (x))
 
 //RGB color data pixel byte
-#define OV_RGB_DATASIZE	(3)
+#define OV_RGB_DATASIZE	(4)
 
 //Left or Right camera.
 #ifndef _OV_CAMEYE_ENUM_

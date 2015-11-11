@@ -496,7 +496,7 @@ CSHARP_EXPORT int ovCalibFindChess()
 	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 	unsigned char* pRight = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
-	return g_ovOvrvisionCalib->FindChessBoardCorners(pLeft,pRight);
+	return g_ovOvrvisionCalib->FindChessBoardCorners(pLeft, pRight);
 }
 
 CSHARP_EXPORT void ovCalibSolveStereoParameter()

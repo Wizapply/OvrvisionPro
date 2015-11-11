@@ -62,7 +62,7 @@ void OvrvisionSetting::InitValue()
 	m_trans = (cv::Mat_<double>(1,3)
 		<< -4.9835903233329809e+001, 4.1639373820797368e-002, 1.1584886767486973e+000);
 
-	m_focalPoint = (320.0f);
+	m_focalPoint = 3.2798999023437500e+002;
 }
 
 //Read EEPROM Setting

@@ -100,25 +100,25 @@ bool OvrvisionCalibration::FindChessBoardCorners(const unsigned char* left_img, 
 
 	cv::Mat src_left(m_image_size,CV_MAKETYPE(CV_8U,OV_RGB_DATASIZE));
 	cv::Mat src_right(m_image_size,CV_MAKETYPE(CV_8U,OV_RGB_DATASIZE));
+	cv::Mat src_gray_left;
+	cv::Mat src_gray_right;
 
 	memcpy(src_left.data,left_img,sizeof(unsigned char) * m_image_size.width * m_image_size.height * OV_RGB_DATASIZE);
 	memcpy(src_right.data,right_img,sizeof(unsigned char) * m_image_size.width * m_image_size.height * OV_RGB_DATASIZE);
+
+	cv::cvtColor(src_left, src_gray_left, CV_BGRA2GRAY);
+	cv::cvtColor(src_right, src_gray_right, CV_BGRA2GRAY);
 
 	//Detect
 	std::vector<cv::Point2f> current_corners_left;
 	std::vector<cv::Point2f> current_corners_right;
 
-	m_isFound[OV_CAMEYE_LEFT] = cv::findChessboardCorners(src_left, m_pattern_size, current_corners_left);
-	m_isFound[OV_CAMEYE_RIGHT] = cv::findChessboardCorners(src_right, m_pattern_size, current_corners_right);
+	m_isFound[OV_CAMEYE_LEFT] = cv::findChessboardCorners(src_gray_left, m_pattern_size, current_corners_left);
+	m_isFound[OV_CAMEYE_RIGHT] = cv::findChessboardCorners(src_gray_right, m_pattern_size, current_corners_right);
 
 	if(m_isFound[OV_CAMEYE_LEFT] && m_isFound[OV_CAMEYE_RIGHT])
 	{
-		cv::Mat src_gray_left;
-		cv::Mat src_gray_right;
 		cv::TermCriteria criteria( CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.001 );
-
-		cv::cvtColor(src_left, src_gray_left ,CV_RGB2GRAY);
-		cv::cvtColor(src_right, src_gray_right ,CV_RGB2GRAY);
 
 		//Left image
 		cv::cornerSubPix( src_gray_left, current_corners_left, cv::Size( 11, 11 ), cv::Size( -1, -1 ), criteria );
@@ -257,7 +257,7 @@ void OvrvisionCalibration::SaveCalibrationParameter(OvrvisionPro* system)
 	ovrset.m_P1 = m_cameraCalibration[OV_CAMEYE_RIGHT].P;
 	ovrset.m_P2 = m_cameraCalibration[OV_CAMEYE_LEFT].P;
 	ovrset.m_trans = m_relate_rot * m_relate_trans;
-	ovrset.m_focalPoint = 320.0f;
+	ovrset.m_focalPoint = 3.2799f;
 
 	//Write
 	ovrset.WriteEEPROM();
