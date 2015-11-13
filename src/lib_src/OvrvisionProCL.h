@@ -31,12 +31,20 @@ namespace OVR
 
 	OVRVISIONPRODLL_API int EnumerateGPU(PENUMDEVICE callback = NULL, void *pItem = NULL);
 
+	// OpenCL Sharing mode 
+	enum SHARING_MODE {
+		NONE = 0,
+		CL_KHR_GL_SHARING,
+		CL_KHR_D3D11_SHARING,
+		CL_NV_D3D11_SHARING
+	};
+
 	// OpenCL version
 	//namespace OPENCL
 	//{
 	class OVRVISIONPRODLL_API OvrvisionProOpenCL {
 		public:
-			OvrvisionProOpenCL(int width, int height);
+			OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode = NONE);
 			~OvrvisionProOpenCL();
 
 			// Load camera parameters
@@ -64,6 +72,7 @@ namespace OVR
 			//void createProgram();
 			int _width, _height;
 			Mat *mapX[2], *mapY[2]; // camera parameter
+			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
 
 		protected:
 			// OpenCL variables

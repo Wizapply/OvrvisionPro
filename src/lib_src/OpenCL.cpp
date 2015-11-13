@@ -143,10 +143,11 @@ namespace OVR
 	//namespace OPENCL
 	//{
 		// Constructor
-	OvrvisionProOpenCL::OvrvisionProOpenCL(int width, int height)
+	OvrvisionProOpenCL::OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode)
 		{
 			_width = width;
 			_height = height;
+			_sharing = mode;
 			// TODO: check GPU memory size
 			_format16UC1.image_channel_data_type = CL_UNSIGNED_INT16;
 			_format16UC1.image_channel_order = CL_R;
@@ -513,7 +514,22 @@ namespace OVR
 							{
 								_platformId = platforms[i];
 								_deviceId = id[j];
-								_context = clCreateContext(NULL, 1, &_deviceId, NULL, NULL, &_errorCode);
+								cl_context_properties opengl_props[] = {
+									CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
+									CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
+									CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+									0
+								};
+								switch (_sharing)
+								{
+								case CL_KHR_D3D11_SHARING:
+									_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
+									break;
+
+								default:
+									_context = clCreateContext(NULL, 1, &_deviceId, NULL, NULL, &_errorCode);
+									break;
+								}
 								SAMPLE_CHECK_ERRORS(_errorCode);
 #ifdef _DEBUG
 								clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
