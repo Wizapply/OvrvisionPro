@@ -13,6 +13,7 @@
 #include <opencv2/core/core.hpp>
 // OpenCL header
 #include <CL/opencl.h>
+#include <CL/cl_d3d11_ext.h>	// for OpenCL and Direct3D11 interoperability (NV and KHR are equivalent)
 
 //ovrvision setting
 #include "ovrvision_setting.h"
