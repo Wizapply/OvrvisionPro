@@ -717,7 +717,7 @@ static void UVCHandleProcessingUnitRqts(void)
 				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
 				  break;
 			  case CY_FX_USB_UVC_GET_DEF_REQ: /* Default value */
-				  (*pEp0Buffer16)= (uint16_t)16;
+				  (*pEp0Buffer16)= (uint16_t)12328;
 				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
 				  break;
 			  case CY_FX_USB_UVC_SET_CUR_REQ: /* Update value */
@@ -745,7 +745,7 @@ static void UVCHandleProcessingUnitRqts(void)
 				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
 				  break;
 			  case CY_FX_USB_UVC_GET_MAX_REQ: /* Maximum */
-				  glEp0Buffer[0] = 47;
+				  glEp0Buffer[0] = 0x2F;
 				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
 				  break;
 			  case CY_FX_USB_UVC_GET_RES_REQ: /* Resolution */

@@ -83,7 +83,7 @@ static IPin *OV_GetPin(IBaseFilter *pFilter, PIN_DIRECTION PinDir)
 }
 
 //Buffer max size
-#define OV_MAX_BUFFERNUMBYTE	(5120000)	//5MB
+#define OV_MAX_BUFFERNUMBYTE	(10240000)	//10MB
 
 /////////// CALLBACK CLASS ///////////
 
@@ -666,7 +666,7 @@ int OvrvisionDirectShow::SetCameraSetting(CamSetting proc, int value, bool autom
 
 	//set
 	switch(proc) {
-		case OV_CAMSET_EXPOSURE: m_pAMVideoProcAmp->Set(CameraControl_Exposure, value, autoflag);
+		case OV_CAMSET_EXPOSURE: m_pAMVideoProcAmp->Set(VideoProcAmp_Brightness, value, autoflag);
 			break;
 		case OV_CAMSET_GAIN: m_pAMVideoProcAmp->Set(VideoProcAmp_Gain, value, autoflag);
 			break;

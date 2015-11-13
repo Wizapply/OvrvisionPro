@@ -422,7 +422,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x01,							/* Frame interval(Frame Rate) types: Only one frame interval supported */
 	0x0A, 0x8B, 0x02, 0x00,			/* Shortest Frame Interval */
 
-	/* Class specific Uncompressed VS frame descriptor 960x960@60*/
+	/* Class specific Uncompressed VS frame descriptor 960x950@60*/
 	0x1E,                           /* Descriptor size */
 	0x24,                           /* Descriptor type*/
 	0x05,                           /* Subtype: uncompressed frame I/F */
