@@ -67,7 +67,7 @@ int Initialize()
 	freopen("CONIN$", "r", stdin);
 
 	//Initialize Wizapply library 
-	wzInitCreateWizapply("Ovrvision",RIFTSCREEN_WIDTH,RIFTPSCREEN_HEIGHT,WZ_CM_NOVSYNC);//|WZ_CM_FULLSCREEN|WZ_CM_FS_DEVICE
+	wzInitCreateWizapply("Ovrvision", RIFTSCREEN_WIDTH, RIFTPSCREEN_HEIGHT, WZ_CM_NOVSYNC);//|WZ_CM_FULLSCREEN|WZ_CM_FS_DEVICE
 
 	/*------------------------------------------------------------------*/
 
@@ -82,7 +82,7 @@ int Initialize()
 		printf("Ovrvision Pro Open Error!\nPlease check whether OvrvisionPro is connected.");
 	}
 
-	g_pOvrvision->SetCameraExposure(11960);
+	g_pOvrvision->SetCameraExposure(12960);
 
 	//Create HMD object
 	g_pOculus = new COculusVR();
@@ -151,7 +151,7 @@ void DrawLoop(void)
 		wzSetSpriteScSize(APPSCREEN_WIDTH / 2, APPSCREEN_HEIGHT);
 
 		wzChangeTextureBuffer(&g_screen_texture, 0, 0, g_camWidth, g_camHeight, WZ_FORMATTYPE_C_BGRA, (char*)p, 0);
-		wzSetSpritePosition(half_pos.x, half_pos.y, 0.0f);
+		wzSetSpritePosition(half_pos.x, half_pos.y , 0.0f);
 		wzSetSpriteColor(1.0f, 1.0f, 1.0f, 1.0f);
 		wzSetSpriteTexCoord(0.0f, 0.0f, 1.0f, 1.0f);
 		wzSetSpriteSize((float)g_camWidth, (float)g_camHeight);

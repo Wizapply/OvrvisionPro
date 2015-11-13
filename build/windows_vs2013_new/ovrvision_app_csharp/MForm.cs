@@ -24,18 +24,21 @@ namespace ovrvision_app
 			//Create Ovrvision Class
 			Ovrvision = new COvrvision();
 			comboBox1.SelectedIndex = 0;	//DEMOSAIC & REMAP
+            comboBoxTYPE.SelectedIndex = COvrvision.OV_CAMHD_FULL;
 		}
         private void runbutton_Click(object sender, EventArgs e)
         {
             if (runbutton.Text == "Open Ovrvision")
             {
-                if (Ovrvision.Open(COvrvision.OV_CAMHD_FULL))
+                if (Ovrvision.Open(comboBoxTYPE.SelectedIndex))
                 {	//true
                     statelabel.Text = "State : Opened";
                     runbutton.Text = "Close Ovrvision";
 
                     cameraPicLeft.Image = Ovrvision.imageDataLeft;	//(BGR)
                     cameraPicRight.Image = Ovrvision.imageDataRight;
+
+                    comboBoxTYPE.Enabled = false;
                 }
                 else
                 {	//false
@@ -57,6 +60,8 @@ namespace ovrvision_app
                     runbutton.Text = "Open Ovrvision";
                     cameraPicRight.Image = null;
                     cameraPicLeft.Image = null;
+
+                    comboBoxTYPE.Enabled = true;
                 }
             }
         }
@@ -119,6 +124,6 @@ namespace ovrvision_app
 			{
 				Ovrvision.useProcessingQuality = comboBox1.SelectedIndex;
 			}
-		}
+        }
 	}
 }
