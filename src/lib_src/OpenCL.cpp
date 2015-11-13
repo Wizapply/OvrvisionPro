@@ -522,10 +522,11 @@ namespace OVR
 								};
 								switch (_sharing)
 								{
-								case CL_KHR_D3D11_SHARING:
+								case OPENGL:
 									_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
 									break;
 
+								case D3D11:
 								default:
 									_context = clCreateContext(NULL, 1, &_deviceId, NULL, NULL, &_errorCode);
 									break;

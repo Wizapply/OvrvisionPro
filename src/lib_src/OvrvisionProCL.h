@@ -34,9 +34,9 @@ namespace OVR
 	// OpenCL Sharing mode 
 	enum SHARING_MODE {
 		NONE = 0,
-		CL_KHR_GL_SHARING,
-		CL_KHR_D3D11_SHARING,
-		CL_NV_D3D11_SHARING
+		OPENGL,
+		D3D11,
+		//D3D10
 	};
 
 	// OpenCL version
