@@ -35,6 +35,7 @@
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.comboBoxTYPE = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.cameraPicLeft)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cameraPicRight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -45,7 +46,7 @@
             // 
             // runbutton
             // 
-            this.runbutton.Location = new System.Drawing.Point(12, 12);
+            this.runbutton.Location = new System.Drawing.Point(144, 8);
             this.runbutton.Name = "runbutton";
             this.runbutton.Size = new System.Drawing.Size(132, 29);
             this.runbutton.TabIndex = 0;
@@ -56,7 +57,7 @@
             // statelabel
             // 
             this.statelabel.AutoSize = true;
-            this.statelabel.Location = new System.Drawing.Point(150, 20);
+            this.statelabel.Location = new System.Drawing.Point(282, 17);
             this.statelabel.Name = "statelabel";
             this.statelabel.Size = new System.Drawing.Size(77, 12);
             this.statelabel.TabIndex = 1;
@@ -130,12 +131,30 @@
             this.label1.TabIndex = 6;
             this.label1.Text = "Processing Quality :";
             // 
+            // comboBoxTYPE
+            // 
+            this.comboBoxTYPE.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxTYPE.FormattingEnabled = true;
+            this.comboBoxTYPE.Items.AddRange(new object[] {
+            "2560x1920@15",
+            "1920x1080@30",
+            "1280x960@45",
+            "960x950@60",
+            "1280x800@60",
+            "640x480@90",
+            "320x240@120"});
+            this.comboBoxTYPE.Location = new System.Drawing.Point(12, 12);
+            this.comboBoxTYPE.Name = "comboBoxTYPE";
+            this.comboBoxTYPE.Size = new System.Drawing.Size(126, 20);
+            this.comboBoxTYPE.TabIndex = 7;
+            // 
             // MFrom
             // 
             this.AcceptButton = this.runbutton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1378, 583);
+            this.Controls.Add(this.comboBoxTYPE);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.splitContainer);
@@ -164,6 +183,7 @@
 		private System.Windows.Forms.SplitContainer splitContainer;
 		private System.Windows.Forms.ComboBox comboBox1;
 		private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox comboBoxTYPE;
 	}
 }
 
