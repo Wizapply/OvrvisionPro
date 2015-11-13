@@ -131,17 +131,30 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 	cv::Mat cameramat(3, 3, CV_32FC1);
 	cv::Mat distorsionCoeff(1, 8, CV_32FC1, 0.0);
 	cv::Size size(width, height);
-	cameramat.at<float>(0) = m_focalPoint;	//f=3.1mm
+	cv::Size sizeCalibBase(1280, 960);
+	cameramat.at<float>(0) = m_focalPoint;
 	cameramat.at<float>(1) = 0.0f;
-	cameramat.at<float>(2) = (float)(width / 2);
+	cameramat.at<float>(2) = (float)(size.width / 2);
 	cameramat.at<float>(3) = 0.0f;
 	cameramat.at<float>(4) = m_focalPoint;
-	cameramat.at<float>(5) = (float)(height / 2);
+	cameramat.at<float>(5) = (float)(size.height / 2);
 	cameramat.at<float>(6) = 0.0f;
 	cameramat.at<float>(7) = 0.0f;
 	cameramat.at<float>(8) = 1.0f;
 	cv::Mat camPs = getOptimalNewCameraMatrix(cameramat, distorsionCoeff, size, 0, size, 0);
 
+	//Calc
+	/*
+	m_leftCameraInstric.at<double>(2) *= 0.75;	//Posision
+	m_rightCameraInstric.at<double>(2) *= 0.85;
+	m_leftCameraInstric.at<double>(5) *= 1.0;
+	m_rightCameraInstric.at<double>(5) *= 1.0;
+	
+	m_leftCameraInstric.at<double>(0) *= 1.0;	//Scale
+	m_rightCameraInstric.at<double>(0) *= 1.0;
+	m_leftCameraInstric.at<double>(4) *= 1.0;
+	m_rightCameraInstric.at<double>(4) *= 1.0;
+	*/
 	//Undistort
 	if (eye == OV_CAMEYE_LEFT) {
 		initUndistortRectifyMap(m_leftCameraInstric, m_leftCameraDistortion, m_R1,

@@ -12,7 +12,7 @@
   <cols>3</cols>
   <dt>d</dt>
   <data>
-    6.9393656647972443e+002 0. 6.5530854019912022e+002 0.
+    6.9393656647972443e+002 0. 6.5730854019912022e+002 0.
     6.9409047124436847e+002 5.1652887936019681e+002 0. 0. 1.</data></RightCameraInstric>
 <LeftCameraDistortion type_id="opencv-matrix">
   <rows>1</rows>
@@ -74,5 +74,5 @@
   <data>
     -6.0796545954233977e+001 -3.0278201074508349e-001
     1.3454368850001630e+000</data></T>
-<FocalPoint>667.99000740051270e+000</FocalPoint>
+<FocalPoint>427.99000740051270e+000</FocalPoint>
 </opencv_storage>
