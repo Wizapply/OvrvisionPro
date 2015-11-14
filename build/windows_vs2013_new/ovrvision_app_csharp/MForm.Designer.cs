@@ -38,6 +38,7 @@
             this.comboBoxTYPE = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.comboBoxSize = new System.Windows.Forms.ComboBox();
+            this.buttonSetting = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.cameraPicLeft)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cameraPicRight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -174,12 +175,25 @@
             this.comboBoxSize.TabIndex = 9;
             this.comboBoxSize.SelectedIndexChanged += new System.EventHandler(this.comboBoxSize_SelectedIndexChanged);
             // 
+            // buttonSetting
+            // 
+            this.buttonSetting.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSetting.Enabled = false;
+            this.buttonSetting.Location = new System.Drawing.Point(842, 9);
+            this.buttonSetting.Name = "buttonSetting";
+            this.buttonSetting.Size = new System.Drawing.Size(100, 29);
+            this.buttonSetting.TabIndex = 10;
+            this.buttonSetting.Text = "Camera Setting";
+            this.buttonSetting.UseVisualStyleBackColor = true;
+            this.buttonSetting.Click += new System.EventHandler(this.buttonSetting_Click);
+            // 
             // MFrom
             // 
             this.AcceptButton = this.runbutton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1378, 583);
+            this.Controls.Add(this.buttonSetting);
             this.Controls.Add(this.comboBoxSize);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.comboBoxTYPE);
@@ -214,6 +228,7 @@
         private System.Windows.Forms.ComboBox comboBoxTYPE;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox comboBoxSize;
+        private System.Windows.Forms.Button buttonSetting;
 	}
 }
 

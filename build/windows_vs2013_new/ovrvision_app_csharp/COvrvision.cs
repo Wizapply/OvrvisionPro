@@ -234,6 +234,68 @@ namespace ovrvision_app
             return true;
         }
 
+        //Propatry
+        public void SetExposure(int value)
+        {
+            if (!camStatus)
+                return;
+            ovSetExposure(value);
+        }
+        public void SetGain(int value)
+        {
+            if (!camStatus)
+                return;
+            ovSetGain(value);
+        }
+        public void SetWhiteBalanceR(int value)
+        {
+            if (!camStatus)
+                return;
+            ovSetWhiteBalanceR(value);
+        }
+        public void SetWhiteBalanceG(int value)
+        {
+            if (!camStatus)
+                return;
+            ovSetWhiteBalanceG(value);
+        }
+        public void SetWhiteBalanceB(int value)
+        {
+            if (!camStatus)
+                return;
+            ovSetWhiteBalanceB(value);
+        }
+        public int GetExposure()
+        {
+            if (!camStatus)
+                return 0;
+            return ovGetExposure();
+        }
+        public int GetGain()
+        {
+            if (!camStatus)
+                return 0;
+            return ovGetGain();
+        }
+        public int GetWhiteBalanceR()
+        {
+            if (!camStatus)
+                return 0;
+            return ovGetWhiteBalanceR();
+        }
+        public int GetWhiteBalanceG()
+        {
+            if (!camStatus)
+                return 0;
+            return ovGetWhiteBalanceG();
+        }
+        public int GetWhiteBalanceB()
+        {
+            if (!camStatus)
+                return 0;
+            return ovGetWhiteBalanceB();
+        }
+
         //Calibration
         public void InitializeCalibration(int pattern_size_w, int pattern_size_h, double chessSizeMM)
         {

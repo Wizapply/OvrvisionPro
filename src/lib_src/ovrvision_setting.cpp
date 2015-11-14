@@ -145,14 +145,17 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 
 	//Calc
 	/*
-	m_leftCameraInstric.at<double>(2) *= 0.75;	//Posision
-	m_rightCameraInstric.at<double>(2) *= 0.85;
-	m_leftCameraInstric.at<double>(5) *= 1.0;
-	m_rightCameraInstric.at<double>(5) *= 1.0;
-	
-	m_leftCameraInstric.at<double>(0) *= 1.0;	//Scale
+	double calc1x = ((double)sizeCalibBase.width - (double)size.width) / (double)sizeCalibBase.width;
+	double calc1y = ((double)sizeCalibBase.height - (double)size.height) / (double)sizeCalibBase.height;
+	m_leftCameraInstric.at<double>(2) -= m_leftCameraInstric.at<double>(2) * calc1x;	//Posision
+	m_leftCameraInstric.at<double>(5) -= m_leftCameraInstric.at<double>(5) * calc1y;
+	m_rightCameraInstric.at<double>(2) -= m_rightCameraInstric.at<double>(2) * (calc1x);
+	m_rightCameraInstric.at<double>(5) -= m_rightCameraInstric.at<double>(5) * (calc1y);
+	*/
+	/*
+	m_leftCameraInstric.at<double>(0) *= 0.5;	//Scale
 	m_rightCameraInstric.at<double>(0) *= 1.0;
-	m_leftCameraInstric.at<double>(4) *= 1.0;
+	m_leftCameraInstric.at<double>(4) *= 0.5;
 	m_rightCameraInstric.at<double>(4) *= 1.0;
 	*/
 	//Undistort

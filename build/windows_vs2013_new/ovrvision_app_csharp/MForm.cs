@@ -17,6 +17,9 @@ namespace ovrvision_app
 		Thread UpdateThread = null;
         bool ThreadEnd = false;
 
+        //SettingForm
+        SettingForm settingForm;
+
 		public MFrom()
 		{
 			InitializeComponent();
@@ -26,6 +29,8 @@ namespace ovrvision_app
 			comboBox1.SelectedIndex = 0;	//DEMOSAIC & REMAP
             comboBoxTYPE.SelectedIndex = COvrvision.OV_CAMHD_FULL;
             comboBoxSize.SelectedIndex = 0;
+
+            settingForm = new SettingForm(Ovrvision);
 		}
         private void runbutton_Click(object sender, EventArgs e)
         {
@@ -40,6 +45,7 @@ namespace ovrvision_app
                     cameraPicRight.Image = Ovrvision.imageDataRight;
 
                     comboBoxTYPE.Enabled = false;
+                    buttonSetting.Enabled = true;
                 }
                 else
                 {	//false
@@ -63,6 +69,7 @@ namespace ovrvision_app
                     cameraPicLeft.Image = null;
 
                     comboBoxTYPE.Enabled = true;
+                    buttonSetting.Enabled = false;
 
                     UpdateThread = null;
                 }
@@ -84,6 +91,7 @@ namespace ovrvision_app
                     cameraPicLeft.Image = null;
 
                     comboBoxTYPE.Enabled = true;
+                    buttonSetting.Enabled = false;
 
                     UpdateThread = null;
                 }
@@ -147,6 +155,12 @@ namespace ovrvision_app
                     break;
             }
 
+        }
+
+        private void buttonSetting_Click(object sender, EventArgs e)
+        {
+            settingForm.ApplyItem();
+            settingForm.Show(this);
         }
 	}
 }
