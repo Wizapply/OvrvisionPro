@@ -480,9 +480,9 @@ void OV5653SensorControl(unsigned char frameIdx)
 	WI2C(0x503E,0x02);
 
 	//BLC control
-	WI2C(0x4000,0x21);	//manual
+	WI2C(0x4000,0x09);	//enable
 	WI2C(0x4006,0x00);
-	WI2C(0x4007,0x00);
+	WI2C(0x4007,0x20);
 
 	//Binning / Sub-sampling
 	switch(frameIdx) {

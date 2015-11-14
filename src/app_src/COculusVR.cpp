@@ -36,11 +36,11 @@ COculusVR::COculusVR(bool latency)
     Hmd = ovrHmd_Create(0);
     if (Hmd == NULL)
     {
-       MessageBoxA(NULL, "Oculus Rift not detected.", "", MB_OK);
+       MessageBoxA(NULL, "Oculus Rift DK2 not detected.", "", MB_OK);
        return;
     }
     if (Hmd->ProductName[0] == '\0')
-        MessageBoxA(NULL, "Rift detected, display not enabled.", "", MB_OK);
+        MessageBoxA(NULL, "Oculus Rift DK2 detected, display not enabled.", "", MB_OK);
 
     if (Hmd->HmdCaps & ovrHmdCap_ExtendDesktop)
     {

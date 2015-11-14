@@ -111,18 +111,19 @@ namespace ovrvision_app
         //Macro Define
 
         //camera type select define
-        public const int OV_CAM5MP_FULL = 0;		//2560x1920 @15fps x2
+        public const int OV_CAM5MP_FULL = 0;	//2560x1920 @15fps x2
         public const int OV_CAM5MP_FHD = 1;		//1920x1080 @30fps x2
         public const int OV_CAMHD_FULL = 2;		//1280x960  @45fps x2
-        public const int OV_CAMVR_FULL = 3; 		//960x950   @60fps x2
+        public const int OV_CAMVR_FULL = 3; 	//960x950   @60fps x2
         public const int OV_CAMVR_WIDE = 4;		//1280x800  @60fps x2
-        public const int OV_CAMVR_VGA = 5;			//640x480   @90fps x2
+        public const int OV_CAMVR_VGA = 5;		//640x480   @90fps x2
+        public const int OV_CAMVR_QVGA = 6;		//320x240   @120fps x2
         //camera select define
         public const int OV_CAMEYE_LEFT = 0;
         public const int OV_CAMEYE_RIGHT = 1;
         //renderer quality
-        public const int OV_CAMQT_DMSRMP = 0;		//Demosaic&remap Processing quality
-        public const int OV_CAMQT_DMS = 1;		    //Demosaic Processing quality
+        public const int OV_CAMQT_DMSRMP = 0;	//Demosaic&remap Processing quality
+        public const int OV_CAMQT_DMS = 1;		//Demosaic Processing quality
         public const int OV_CAMQT_NONE = 2;		//None Processing quality
         //Ar Macro define
         private const int MARKERGET_MAXNUM10 = 100; //max marker is 10
@@ -225,6 +226,9 @@ namespace ovrvision_app
             //Close camera
             if (ovClose() != 0)
                 return false;
+
+            imageDataLeft = null;
+            imageDataRight = null;
 
             camStatus = false;
             return true;

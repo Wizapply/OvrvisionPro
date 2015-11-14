@@ -69,7 +69,16 @@ OvrvisionPro::OvrvisionPro()
 OvrvisionPro::~OvrvisionPro()
 {
 	Close();
+
+#ifdef WIN32
 	delete m_pODS;
+#endif
+#ifdef MACOSX
+	[m_pOAV dealloc];
+#endif
+#ifdef LINUX
+
+#endif
 }
 
 //Initialize
@@ -116,6 +125,11 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 		cam_width = 640;
 		cam_height = 480;
 		cam_framerate = 90;
+		break;
+	case OV_CAMVR_QVGA:
+		cam_width = 320;
+		cam_height = 240;
+		cam_framerate = 120;
 		break;
 	case OV_CAM20HD_FULL:
 		cam_width = 1280;

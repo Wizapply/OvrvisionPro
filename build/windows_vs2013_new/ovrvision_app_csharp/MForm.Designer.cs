@@ -36,6 +36,8 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBoxTYPE = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.comboBoxSize = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.cameraPicLeft)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cameraPicRight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -115,9 +117,9 @@
             "DEMOSAIC&REMAP",
             "DEMOSAIC",
             "NONE"});
-            this.comboBox1.Location = new System.Drawing.Point(1192, 17);
+            this.comboBox1.Location = new System.Drawing.Point(1061, 17);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(174, 20);
+            this.comboBox1.Size = new System.Drawing.Size(147, 20);
             this.comboBox1.TabIndex = 5;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -125,7 +127,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(1079, 20);
+            this.label1.Location = new System.Drawing.Point(948, 20);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(107, 12);
             this.label1.TabIndex = 6;
@@ -148,12 +150,38 @@
             this.comboBoxTYPE.Size = new System.Drawing.Size(126, 20);
             this.comboBoxTYPE.TabIndex = 7;
             // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(1214, 20);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(63, 12);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "ViewMode :";
+            // 
+            // comboBoxSize
+            // 
+            this.comboBoxSize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxSize.FormattingEnabled = true;
+            this.comboBoxSize.Items.AddRange(new object[] {
+            "ACTUAL",
+            "FULL"});
+            this.comboBoxSize.Location = new System.Drawing.Point(1283, 17);
+            this.comboBoxSize.Name = "comboBoxSize";
+            this.comboBoxSize.Size = new System.Drawing.Size(83, 20);
+            this.comboBoxSize.TabIndex = 9;
+            this.comboBoxSize.SelectedIndexChanged += new System.EventHandler(this.comboBoxSize_SelectedIndexChanged);
+            // 
             // MFrom
             // 
             this.AcceptButton = this.runbutton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1378, 583);
+            this.Controls.Add(this.comboBoxSize);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.comboBoxTYPE);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox1);
@@ -184,6 +212,8 @@
 		private System.Windows.Forms.ComboBox comboBox1;
 		private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboBoxTYPE;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox comboBoxSize;
 	}
 }
 

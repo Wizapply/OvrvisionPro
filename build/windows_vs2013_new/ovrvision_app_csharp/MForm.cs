@@ -25,6 +25,7 @@ namespace ovrvision_app
 			Ovrvision = new COvrvision();
 			comboBox1.SelectedIndex = 0;	//DEMOSAIC & REMAP
             comboBoxTYPE.SelectedIndex = COvrvision.OV_CAMHD_FULL;
+            comboBoxSize.SelectedIndex = 0;
 		}
         private void runbutton_Click(object sender, EventArgs e)
         {
@@ -62,6 +63,8 @@ namespace ovrvision_app
                     cameraPicLeft.Image = null;
 
                     comboBoxTYPE.Enabled = true;
+
+                    UpdateThread = null;
                 }
             }
         }
@@ -75,10 +78,14 @@ namespace ovrvision_app
                 UpdateThread.Join();
                 if (Ovrvision.Close())
                 {
-                    statelabel.Text = "Closed";
+                    statelabel.Text = "State : Closed";
                     runbutton.Text = "Open Ovrvision";
                     cameraPicRight.Image = null;
                     cameraPicLeft.Image = null;
+
+                    comboBoxTYPE.Enabled = true;
+
+                    UpdateThread = null;
                 }
             }
         }
@@ -99,9 +106,9 @@ namespace ovrvision_app
 				cameraPicLeft.Invalidate();
 				cameraPicRight.Invalidate();
 
-				Thread.Sleep(20);	//50fps
+				//Thread.Sleep(20);	//50fps
                 while (UPDATE_LEFTDATA || UPDATE_RIGHTDATA)
-                    Thread.Sleep(1);
+                    Thread.Sleep(2);    //2ms
 			}
 		}
 
@@ -124,6 +131,22 @@ namespace ovrvision_app
 			{
 				Ovrvision.useProcessingQuality = comboBox1.SelectedIndex;
 			}
+        }
+
+        private void comboBoxSize_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBoxSize.SelectedIndex)
+            {
+                case 0:
+                    cameraPicLeft.SizeMode = PictureBoxSizeMode.CenterImage;
+                    cameraPicRight.SizeMode = PictureBoxSizeMode.CenterImage;
+                    break;
+                case 1:
+                    cameraPicLeft.SizeMode = PictureBoxSizeMode.Zoom;
+                    cameraPicRight.SizeMode = PictureBoxSizeMode.Zoom;
+                    break;
+            }
+
         }
 	}
 }

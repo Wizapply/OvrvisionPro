@@ -97,6 +97,7 @@ typedef enum ov_cameraprop {
 	OV_CAMVR_FULL, 			//960x950   @60fps x2
 	OV_CAMVR_WIDE,			//1280x800  @60fps x2
 	OV_CAMVR_VGA,			//640x480   @90fps x2
+	OV_CAMVR_QVGA,			//320x240   @120fps x2
 
 	OV_CAM20HD_FULL,		//1280x960 @15fps x2
 	OV_CAM20VR_VGA,			//640x480  @30fps x2

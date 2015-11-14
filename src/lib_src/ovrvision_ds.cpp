@@ -25,10 +25,6 @@
 namespace OVR
 {
 
-/////////// GLOBAL VARS ///////////
-
-static int g_ov_comctrl = 0;	//Don't touch.
-
 /////////// VARS AND DEFS ///////////
 
 //Enable Multithread
@@ -98,7 +94,6 @@ public:
 		m_hEvent = CreateEvent(NULL, true, false, NULL);
 
 		m_LatestBufferLength = 0;
-		m_pSampleImageCallback = NULL;
 		m_firstframe = 0;
 
 		m_pPixels = new unsigned char[OV_MAX_BUFFERNUMBYTE];
@@ -148,9 +143,6 @@ public:
   				memcpy(m_pPixels, ptrBuffer, m_LatestBufferLength);
 			LeaveCriticalSection(&m_critSection);
 
-			if(m_pSampleImageCallback)
-				m_pSampleImageCallback(ptrBuffer,m_LatestBufferLength);
-
 			SetEvent(m_hEvent);
 		}
 
@@ -169,9 +161,6 @@ public:
 
 	int	m_firstframe;
 
-	//Callback func
-	void (* m_pSampleImageCallback)(unsigned char* jpegImage, int imageSize);
-
 	//Thread var
 	CRITICAL_SECTION m_critSection;
 	HANDLE m_hEvent;	
@@ -182,17 +171,6 @@ public:
 //OvrvisionDirectShow
 OvrvisionDirectShow::OvrvisionDirectShow()
 {
-	// Initialize the COM library.
-	if(g_ov_comctrl == 0) {
-    	//another thread
-		#ifdef OV_COM_MULTI_THREADED
-			::CoInitializeEx(NULL,COINIT_MULTITHREADED);
-		#else 
-			::CoInitialize(NULL);
-		#endif
-	}
-	++g_ov_comctrl;
-
 	//Var init
 	m_devstatus = OVR::OV_DEVNONE;
 	m_width = 0;
@@ -220,13 +198,6 @@ OvrvisionDirectShow::~OvrvisionDirectShow()
 {
 	//Delete device
 	DeleteDevice();
-
-	// End COM
-	if(g_ov_comctrl > 0)
-		--g_ov_comctrl;
-	if(g_ov_comctrl <= 0){
-		::CoUninitialize();
-	}
 }
 
 // Private method
@@ -614,7 +585,7 @@ int OvrvisionDirectShow::StopTransfer()
 		return RESULT_FAILED;
 	}
 
-	DWORD result = WaitForSingleObject(m_pSGCallback->m_hEvent, 1000);
+	DWORD result = WaitForSingleObject(m_pSGCallback->m_hEvent, 5000);
 	if( result != WAIT_OBJECT_0)
 		return RESULT_FAILED;
 
