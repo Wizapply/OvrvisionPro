@@ -10,10 +10,6 @@
 
 #include "OvrvisionProCL.h"
 
-//static const unsigned char kernelSource[] =
-//#include "./kernel.cl"
-//;
-
 
 using namespace std;
 using namespace cv;
@@ -181,7 +177,7 @@ namespace OVR
 			_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 
-			//createProgram();
+			//CreateProgram(); // TODO: カーネルをヘッダから作成する
 		}
 
 		// Destructor
@@ -378,6 +374,84 @@ namespace OVR
 			DemosaicRemap((const ushort *)ptr, left, right);
 		}
 
+		// Select GPU device
+		cl_device_id OvrvisionProOpenCL::SelectGPU(const char *platform, const char *version)
+		{
+			cl_uint num_of_platforms = 0;
+			// get total number of available platforms:
+			cl_int err = clGetPlatformIDs(0, 0, &num_of_platforms);
+			SAMPLE_CHECK_ERRORS(err);
+
+			vector<cl_platform_id> platforms(num_of_platforms);
+			// get IDs for all platforms:
+			err = clGetPlatformIDs(num_of_platforms, &platforms[0], 0);
+			SAMPLE_CHECK_ERRORS(err);
+
+			vector<cl_device_id> devices;
+			for (cl_uint i = 0; i < num_of_platforms; i++)
+			{
+				cl_uint num_of_devices = 0;
+				if (CL_SUCCESS == clGetDeviceIDs(
+					platforms[i],
+					CL_DEVICE_TYPE_GPU,
+					0,
+					0,
+					&num_of_devices
+					))
+				{
+					cl_device_id *id = new cl_device_id[num_of_devices];
+					err = clGetDeviceIDs(
+						platforms[i],
+						CL_DEVICE_TYPE_GPU,
+						num_of_devices,
+						id,
+						0
+						);
+					SAMPLE_CHECK_ERRORS(err);
+					for (cl_uint j = 0; j < num_of_devices; j++)
+					{
+						devices.push_back(id[j]);
+						size_t length;
+						char buffer[32];
+						if (clGetDeviceInfo(id[j], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, &length) == CL_SUCCESS)
+						{
+							//printf("%s\n", buffer);
+							if (_strcmpi(buffer, version) >= 0)
+							{
+								_platformId = platforms[i];
+								_deviceId = id[j];
+								cl_context_properties opengl_props[] = {
+									CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
+									CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
+									CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+									0
+								};
+								switch (_sharing)
+								{
+								case OPENGL:
+									_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
+									break;
+
+								case D3D11:
+								default:
+									_context = clCreateContext(NULL, 1, &_deviceId, NULL, NULL, &_errorCode);
+									break;
+								}
+								SAMPLE_CHECK_ERRORS(_errorCode);
+#ifdef _DEBUG
+								clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
+								printf("DEVICE: %s\n", buffer);
+#endif
+								break;
+							}
+						}
+					}
+					delete[] id;
+				}
+			}
+			return _deviceId;
+		}
+
 		// Remap with CPU
 		//void OvrvisionPro::Remap(Cameye eye, const Mat src, Mat &dst)
 		//{
@@ -466,84 +540,6 @@ namespace OVR
 			{
 				return 1;
 			}
-		}
-
-		// Select GPU device
-		cl_device_id OvrvisionProOpenCL::SelectGPU(const char *platform, const char *version)
-		{
-			cl_uint num_of_platforms = 0;
-			// get total number of available platforms:
-			cl_int err = clGetPlatformIDs(0, 0, &num_of_platforms);
-			SAMPLE_CHECK_ERRORS(err);
-
-			vector<cl_platform_id> platforms(num_of_platforms);
-			// get IDs for all platforms:
-			err = clGetPlatformIDs(num_of_platforms, &platforms[0], 0);
-			SAMPLE_CHECK_ERRORS(err);
-
-			vector<cl_device_id> devices;
-			for (cl_uint i = 0; i < num_of_platforms; i++)
-			{
-				cl_uint num_of_devices = 0;
-				if (CL_SUCCESS == clGetDeviceIDs(
-					platforms[i],
-					CL_DEVICE_TYPE_GPU,
-					0,
-					0,
-					&num_of_devices
-					))
-				{
-					cl_device_id *id = new cl_device_id[num_of_devices];
-					err = clGetDeviceIDs(
-						platforms[i],
-						CL_DEVICE_TYPE_GPU,
-						num_of_devices,
-						id,
-						0
-						);
-					SAMPLE_CHECK_ERRORS(err);
-					for (cl_uint j = 0; j < num_of_devices; j++)
-					{
-						devices.push_back(id[j]);
-						size_t length;
-						char buffer[32];
-						if (clGetDeviceInfo(id[j], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, &length) == CL_SUCCESS)
-						{
-							//printf("%s\n", buffer);
-							if (_strcmpi(buffer, version) >= 0)
-							{
-								_platformId = platforms[i];
-								_deviceId = id[j];
-								cl_context_properties opengl_props[] = {
-									CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
-									CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
-									CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
-									0
-								};
-								switch (_sharing)
-								{
-								case OPENGL:
-									_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
-									break;
-
-								case D3D11:
-								default:
-									_context = clCreateContext(NULL, 1, &_deviceId, NULL, NULL, &_errorCode);
-									break;
-								}
-								SAMPLE_CHECK_ERRORS(_errorCode);
-#ifdef _DEBUG
-								clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
-								printf("DEVICE: %s\n", buffer);
-#endif
-								break;
-							}
-						}
-					}
-					delete[] id;
-				}
-			}
-			return _deviceId;
 		}
 
 	//}

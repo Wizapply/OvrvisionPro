@@ -59,17 +59,15 @@ namespace OVR
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
-			// Remap with CPU
-			//void Remap(Cameye eye, const Mat src, Mat &dst);
-
 			cl_device_id SelectGPU(const char *platform, const char *version);
 
 			void createProgram(const char *filename, bool binary = false);
 			int saveBinary(const char *filename);
+			//void Remap(Cameye eye, const Mat src, Mat &dst);
 			//bool SaveSettings(const char *filename);
 
 		private:
-			//void createProgram();
+			//void CreateProgram(); // TODO: ヘッダファイルからカーネルを作成
 			int _width, _height;
 			Mat *mapX[2], *mapY[2]; // camera parameter
 			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
