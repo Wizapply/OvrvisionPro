@@ -46,17 +46,16 @@ namespace OVR
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
-			// Remap with CPU
-			//void Remap(Cameye eye, const Mat src, Mat &dst);
-
 			cl_device_id SelectGPU(const char *platform, const char *version);
 
 			void createProgram(const char *filename, bool binary = false);
 			int saveBinary(const char *filename);
 			//bool SaveSettings(const char *filename);
+			//void Remap(Cameye eye, const Mat src, Mat &dst);
+
 
 		private:
-			//void createProgram();
+			cl_int CreateProgram();
 			int _width, _height;
 			Mat *mapX[2], *mapY[2]; // camera parameter
 

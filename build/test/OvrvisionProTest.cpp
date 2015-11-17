@@ -15,7 +15,7 @@ using namespace OVR;
 
 int main(int argc, char* argv[])
 {
-	ushort *image = new ushort[BUFFER_SIZE];
+	ushort *pImage = new ushort[BUFFER_SIZE];
 	Mat *left = new Mat(Size(WIDTH, HEIGHT), CV_8UC4);
 	Mat *right = new Mat(Size(WIDTH, HEIGHT), CV_8UC4);
 
@@ -27,9 +27,52 @@ int main(int argc, char* argv[])
 
 		printf("INPUT: %s\nKERNEL: %s\nCONFIG: %s\n", input_file, kernel_file, config_file);
 
+		FILE *file;
+		errno_t result = fopen_s(&file, input_file, "rb");
+		if (file != NULL)
+		{
+			fread(pImage, 2, BUFFER_SIZE, file);
+			fclose(file);
+			try
+			{
+				OvrvisionPro ovrvision(WIDTH, HEIGHT);
+				//ovrvision.LoadCameraParams(config_file);
+				//if (ovrvision.createProgram(kernel_file))
+				{
+					//ovrvision.DemosaicRemap(pImage, *left, *right);
+					ovrvision.Demosaic(pImage, *left, *right);
+
+					imshow("Left", *left);
+					imshow("Right", *right);
+
+					int key;
+					while ((key = waitKey(100)) != 'q')
+					{
+						if (key == 's')
+						{
+							imwrite("Left.png", *left);
+							imwrite("Right.png", *right);
+						}
+					}
+				}
+				//else{
+				//	printf("ERROR: can't create OpenCL kernel\n%s\n", kernel_file);
+				//}
+			}
+			catch (cv::Exception e)
+			{
+				printf("OpenCV Exception: %s\n", e.msg);
+			}
+			catch (std::runtime_error e)
+			{
+				printf("FATAL ERROR: %s\n", e.what());
+			}
+		}
 	}
+	//left.release();
+	//right.release();
 	delete left;
 	delete right;
-	delete image;
+	delete[] pImage;
 }
 

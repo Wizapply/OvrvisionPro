@@ -11,10 +11,7 @@
 #include "OvrvisionProDLL.h"
 #include "OvrvisionSettings.h"
 
-//static const unsigned char kernelSource[] =
-//#include "./kernel.cl"
-//;
-
+#include "OpenCL_kernel.h" // const char *kernel;
 
 using namespace std;
 using namespace cv;
@@ -181,7 +178,7 @@ namespace OVR
 			_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 
-			//createProgram();
+			CreateProgram();
 		}
 
 		// Destructor
@@ -335,7 +332,7 @@ namespace OVR
 				_errorCode = clEnqueueReadImage(_commandQueue, _R, CL_TRUE, origin, region, right.cols * sizeof(uchar) * 4, 0, right.ptr(0), 1, &executeEvent, NULL);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 #ifdef _DEBUG
-				printf("Remapped\n");
+				std::printf("Remapped\n");
 #endif
 			}
 			else
@@ -370,6 +367,43 @@ namespace OVR
 		//	return _settings.Write(filename);
 		//}
 
+		// CreateProgram
+		cl_int OvrvisionPro::CreateProgram()
+		{
+			size_t size = strlen(kernel);
+			try{
+				_program = clCreateProgramWithSource(_context, 1, (const char **)&kernel, &size, &_errorCode);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
+				if (_errorCode == CL_BUILD_PROGRAM_FAILURE)
+				{
+					// Determine the size of the log
+					size_t log_size;
+					clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
+
+					// Allocate memory for the log
+					char *log = (char *)malloc(log_size);
+
+					// Get the log
+					clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
+
+					// Print the log
+					std::printf("%s\n", log);
+				}
+				else
+				{
+					_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
+					SAMPLE_CHECK_ERRORS(_errorCode);
+					_remap = clCreateKernel(_program, "remap", &_errorCode);
+					SAMPLE_CHECK_ERRORS(_errorCode);
+				}
+			}
+			catch (Exception e)
+			{
+				std::printf("EXCEPTION: %s\n", e.what());
+			}
+			return _errorCode;
+		}
 
 		// CreateProgram from file
 		void OvrvisionPro::createProgram(const char *filename, bool binary)
@@ -413,9 +447,9 @@ namespace OVR
 						clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
 
 						// Print the log
-						printf("%s\n", log);
+						std::printf("%s\n", log);
 					}
-					SAMPLE_CHECK_ERRORS(_errorCode);
+					//SAMPLE_CHECK_ERRORS(_errorCode);
 					delete[] buffer;
 				}
 			}
@@ -497,7 +531,7 @@ namespace OVR
 								SAMPLE_CHECK_ERRORS(_errorCode);
 #ifdef _DEBUG
 								clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
-								printf("DEVICE: %s\n", buffer);
+								std::printf("DEVICE: %s\n", buffer);
 #endif
 								break;
 							}

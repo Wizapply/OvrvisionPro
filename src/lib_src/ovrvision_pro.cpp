@@ -163,7 +163,7 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 
 	//Initialize OpenCL system
 	m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height);
-	m_pOpenCL->createProgram("kernel.cl");	//今はパスを直接入れているが、変更予定
+	//m_pOpenCL->createProgram("kernel.cl");	//今はパスを直接入れているが、変更予定
 
 	//Initialize Camera system
 	InitCameraSetting();

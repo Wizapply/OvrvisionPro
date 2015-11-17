@@ -10,6 +10,7 @@
 
 #include "OvrvisionProCL.h"
 
+#include "OpenCL_kernel.h" // const char *kernel declared here
 
 using namespace std;
 using namespace cv;
@@ -177,7 +178,7 @@ namespace OVR
 			_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 
-			//CreateProgram(); // TODO: カーネルをヘッダから作成する
+			CreateProgram(); // カーネルをヘッダから作成する
 		}
 
 		// Destructor
@@ -466,6 +467,38 @@ namespace OVR
 		//	return _settings.Write(filename);
 		//}
 
+		// ヘッダファイルからカーネルを作成
+		bool OvrvisionProOpenCL::CreateProgram()
+		{
+			size_t size = strlen(kernel);
+			_program = clCreateProgramWithSource(_context, 1, (const char **)&kernel, &size, &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
+			if (_errorCode == CL_BUILD_PROGRAM_FAILURE)
+			{
+				// Determine the size of the log
+				size_t log_size;
+				clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
+
+				// Allocate memory for the log
+				char *log = (char *)malloc(log_size);
+
+				// Get the log
+				clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
+
+				// Print the log
+				printf("%s\n", log);
+				return false;
+			}
+			else
+			{
+				_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_remap = clCreateKernel(_program, "remap", &_errorCode);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				return true;
+			}
+		}
 
 		// CreateProgram from file
 		void OvrvisionProOpenCL::createProgram(const char *filename, bool binary)

@@ -67,7 +67,7 @@ namespace OVR
 			//bool SaveSettings(const char *filename);
 
 		private:
-			//void CreateProgram(); // TODO: ヘッダファイルからカーネルを作成
+			bool CreateProgram(); // ヘッダファイルからカーネルを作成
 			int _width, _height;
 			Mat *mapX[2], *mapY[2]; // camera parameter
 			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
