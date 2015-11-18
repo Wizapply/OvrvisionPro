@@ -52,10 +52,12 @@ namespace OVR
 			bool LoadCameraParams(OvrvisionSetting* ovrset);
 
 			// Demosaicing
+			void Demosaic(const ushort* src, uchar *left, uchar *right); // TODO: –¢ŽÀ‘•
 			void Demosaic(const ushort* src, Mat &left, Mat &right);
 			void Demosaic(const Mat src, Mat &left, Mat &right);
 
 			// Demosaic and Remap
+			void DemosaicRemap(const ushort* src, uchar *left, uchar *right); // TODO: –¢ŽÀ‘•
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
