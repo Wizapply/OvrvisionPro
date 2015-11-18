@@ -129,9 +129,6 @@
     <ClInclude Include="..\..\3rdparty\aruco\subpixelcorner.h">
       <Filter>ソース ファイル\ArUco</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\ovrvision_pro.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\lib_src\OpenCL_kernel.h">
       <Filter>ソース ファイル\OpenCL</Filter>
     </ClInclude>
@@ -139,6 +136,9 @@
       <Filter>ソース ファイル\OpenCL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\lib_src\ovrvision_linux.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ovrvision_pro.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
   </ItemGroup>

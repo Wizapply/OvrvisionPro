@@ -159,9 +159,23 @@ public:
 	void SetCameraWhiteBalanceG(int value);
 	int GetCameraWhiteBalanceB();
 	void SetCameraWhiteBalanceB(int value);
+	int GetCameraBLC();
+	void SetCameraBLC(int value);
 
-	//Parameter save
-	int SaveCamStatusToEEPROM();
+	bool GetCameraWhiteBalanceAuto();
+	void SetCameraWhiteBalanceAuto(bool value);
+
+	//Parameter EEPROM
+	void UserDataAccessUnlock();
+	void UserDataAccessLock();
+	void UserDataAccessSelectAddress(unsigned int addr);
+	unsigned char UserDataAccessGetData();
+	void UserDataAccessSetData(unsigned char value);
+	void UserDataAccessSave();
+	void UserDataAccessCheckSumAddress();
+
+	//Save the present setup to EEPROM. 
+	bool CameraParamSaveEEPROM();
 
 private:
 #ifdef WIN32

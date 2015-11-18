@@ -53,7 +53,7 @@ wzVector3  g_oculusGap;
 
 /* -- Function prototype ------------------------------------------------- */
 
-void UpdateFunc(void);	//!<関数
+void UpdateFunc(void);	//!<Func
 
 /* -- Functions ------------------------------------------------------------- */
 
@@ -190,7 +190,8 @@ void DrawLoop(void)
 	wzFontSize(12);
 
 	wzPrintf(20, 30, "Ovrvision Pro DemoApp");
-	wzPrintf(20, 60, "Draw:%.2f" ,wzGetDrawFPS());
+	//wzPrintf(20, 60, "Draw:%d", g_pOvrvision->SaveCamStatusToEEPROM());
+
 
 	//Error infomation
 	if (!g_pOvrvision->isOpen()) {

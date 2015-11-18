@@ -39,89 +39,274 @@ void OvrvisionSetting::InitValue()
 	isReaded = false;
 
 	//initialize Camera Setting
-	m_propExposure = (-1);		//Exposure
+	m_propExposure = 12960;		//Exposure
 	m_propGain = 8;				//Gain
+	m_propBLC = 32;				//BLC
 	m_propWhiteBalanceR = 1472;	//WhitebalanceR
 	m_propWhiteBalanceG = 1024;	//WhitebalanceG
 	m_propWhiteBalanceB = 1336;	//WhitebalanceB
+	m_propWhiteBalanceAuto = 1; //WhitebalanceAuto
 
 	m_leftCameraInstric = (cv::Mat_<double>(3,3)
-		<< 4.0768711844201607e+002, 0., 3.1599488824979869e+002, 0., 4.0750044944511359e+002, 2.5007314115490510e+002, 0., 0., 1.);
+		<< 6.9936527007017332e+002, 0., 6.5787909981011887e+002, 0., 6.9956938260156028e+002, 5.3847199238543192e+002, 0., 0., 1.);
 	m_rightCameraInstric = (cv::Mat_<double>(3,3)
-		<< 4.0878762064521919e+002, 0., 2.8311681185825847e+002, 0., 4.0825537520787026e+002, 2.4381566435176578e+002, 0., 0., 1.);
+		<< 6.9393656647972443e+002, 0., 6.5530854019912022e+002, 0., 6.9409047124436847e+002, 5.1652887936019681e+002, 0., 0., 1.);
 	m_leftCameraDistortion = (cv::Mat_<double>(1,8)
-		<< -4.2458440662577490e-001, 2.3121567636931981e-001, -1.5829281626491789e-004, 1.6999874238679152e-003, -6.0114888845709327e-002, -3.9034090837567321e-003, 1.9700153740470510e-003, 1.4063166137046505e-002);
+		<< -3.2466981386980487e-001, 1.3017177269032637e-001, -1.5853018773530858e-005, 7.5957976826835499e-004, -2.5877743621233330e-002, 3.9215001580130153e-004, -2.0027132740568131e-004, 1.0402737707754896e-003, 0.);
 	m_rightCameraDistortion = (cv::Mat_<double>(1,8)
-		<< -4.0744820114573010e-001, 2.0171583152642691e-001, -4.4738715469520878e-004, 4.1095581557611528e-004, -4.1763229516509355e-002, 4.5735235536665661e-003, -9.1320982418901485e-003, 2.1334691234753463e-002 );
+		<< -3.2551395719861603e-001, 1.3196823645655870e-001, -2.0890097504471043e-004, -2.7803902758435393e-002, -8.2566502258511076e-005, 4.5735235536665661e-003, 1.8856961316045134e-004, 8.3455386062889218e-004, 0.);
 	m_R1 = (cv::Mat_<double>(3,3)
-		<< 9.9907565324445191e-001, -5.1759301554768307e-003, -4.2673748853334297e-002, 5.2520129651301567e-003, 9.9998481198689648e-001, 1.6709743699574722e-003, 4.2664451877247045e-002, -1.8935528924684318e-003, 9.9908766332262233e-001);
+		<< 9.9996857558646768e-001, 4.2200343497671372e-003, -6.7111213412999722e-003, -4.1838706495675041e-003, 9.9997670207919198e-001, 5.3935633129183098e-003, 6.7337260085745896e-003, -5.3653153597487992e-003, 9.9996293447563944e-001);
 	m_R2 = (cv::Mat_<double>(3,3)
-		<< 9.9932579788971709e-001, -5.3451019623971369e-004, -3.6710543048700750e-002, 4.6905532288108175e-004, 9.9999828509701150e-001, -1.7915887195344561e-003, 3.6711437716118824e-002, 1.7731615510161245e-003, 9.9932433485777250e-001);
-	m_P1= cv::Mat_<double>(3,4);
-	m_P2 = cv::Mat_<double>(3,4);
+		<< 9.9995548163643899e-001, 3.6264510065401861e-003, 8.7111192354668732e-003, -3.5795367051996993e-003, 9.9997903951037470e-001, -5.3951327031361036e-003, -8.7305018305642215e-003, 5.3637107496102426e-003, 9.9994750309442804e-001);
 	m_trans = (cv::Mat_<double>(1,3)
-		<< -4.9835903233329809e+001, 4.1639373820797368e-002, 1.1584886767486973e+000);
-
-	m_focalPoint = 3.2798999023437500e+002;
+		<< -6.0796545954233977e+001, -3.0278201074508349e-001, 1.3454368850001630e+000);
+	m_focalPoint = (cv::Mat_<float>(1, 1)
+		<< 427.99000740051270e+000);
 }
 
 //Read EEPROM Setting
 bool OvrvisionSetting::ReadEEPROM() {
-	//テスト用
-	cv::FileStorage cvfs("ovrvisionpro_dev_conf.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML);
+
+	if (system == NULL)
+		return false;
+
+	cv::FileStorage cvfs("ovrvisionpro_conf.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML);
 
 	if (!cvfs.isOpened())
-		return isReaded;
+	{
+		size_t i;
+		// not find file
+		// used eeprom
 
-	//get data node
-	cv::FileNode data(cvfs.fs, NULL);
+		m_pSystem->UserDataAccessUnlock();
+		m_pSystem->UserDataAccessSelectAddress(0x0000);
 
-	//read undistort param
-	data["LeftCameraInstric"] >> m_leftCameraInstric;
-	data["RightCameraInstric"] >> m_rightCameraInstric;
-	data["LeftCameraDistortion"] >> m_leftCameraDistortion;
-	data["RightCameraDistortion"] >> m_rightCameraDistortion;
-	data["R1"] >> m_R1;
-	data["R2"] >> m_R2;
-	data["P1"] >> m_P1;
-	data["P2"] >> m_P2;
-	data["T"] >> m_trans;
+		unsigned char version = m_pSystem->UserDataAccessGetData();	//Version	//1byte
 
-	m_focalPoint = data["FocalPoint"];
+		if (version != EEPROM_SYSTEM_VERSION)
+			return true;	//default return
 
-	cvfs.release();
+		m_propExposure = (int)m_pSystem->UserDataAccessGetData();			//4byte
+		m_propExposure |= (int)m_pSystem->UserDataAccessGetData() << 8;
+		m_propExposure |= (int)m_pSystem->UserDataAccessGetData() << 16;
+		m_propExposure |= (int)m_pSystem->UserDataAccessGetData() << 24;
+
+		m_propGain = (int)m_pSystem->UserDataAccessGetData();				//4byte
+		m_propGain |= (int)m_pSystem->UserDataAccessGetData() << 8;
+		m_propGain |= (int)m_pSystem->UserDataAccessGetData() << 16;
+		m_propGain |= (int)m_pSystem->UserDataAccessGetData() << 24;
+
+		m_propBLC = (int)m_pSystem->UserDataAccessGetData();				//4byte
+		m_propBLC |= (int)m_pSystem->UserDataAccessGetData() << 8;
+		m_propBLC |= (int)m_pSystem->UserDataAccessGetData() << 16;
+		m_propBLC |= (int)m_pSystem->UserDataAccessGetData() << 24;
+
+		m_propWhiteBalanceR = (int)m_pSystem->UserDataAccessGetData();		//4byte
+		m_propWhiteBalanceR |= (int)m_pSystem->UserDataAccessGetData() << 8;
+		m_propWhiteBalanceR |= (int)m_pSystem->UserDataAccessGetData() << 16;
+		m_propWhiteBalanceR |= (int)m_pSystem->UserDataAccessGetData() << 24;
+
+		m_propWhiteBalanceG = (int)m_pSystem->UserDataAccessGetData();		//4byte
+		m_propWhiteBalanceG |= (int)m_pSystem->UserDataAccessGetData() << 8;
+		m_propWhiteBalanceG |= (int)m_pSystem->UserDataAccessGetData() << 16;
+		m_propWhiteBalanceG |= (int)m_pSystem->UserDataAccessGetData() << 24;
+
+		m_propWhiteBalanceB = (int)m_pSystem->UserDataAccessGetData();		//4byte
+		m_propWhiteBalanceB |= (int)m_pSystem->UserDataAccessGetData() << 8;
+		m_propWhiteBalanceB |= (int)m_pSystem->UserDataAccessGetData() << 16;
+		m_propWhiteBalanceB |= (int)m_pSystem->UserDataAccessGetData() << 24;
+
+		m_propWhiteBalanceAuto = m_pSystem->UserDataAccessGetData();	//1byte
+
+		//----26 byte----
+
+		//Reserved
+
+		//----32 byte----
+
+		m_pSystem->UserDataAccessSelectAddress(0x0020);
+		for (i = 0; i < m_leftCameraInstric.total()*m_leftCameraInstric.elemSize(); i++) {
+			m_leftCameraInstric.data[i] = m_pSystem->UserDataAccessGetData();
+		}
+		for (i = 0; i < m_rightCameraInstric.total()*m_rightCameraInstric.elemSize(); i++) {
+			m_rightCameraInstric.data[i] = m_pSystem->UserDataAccessGetData();
+		}
+		for (i = 0; i < m_leftCameraDistortion.total()*m_leftCameraDistortion.elemSize(); i++) {
+			m_leftCameraDistortion.data[i] = m_pSystem->UserDataAccessGetData();
+		}
+		for (i = 0; i < m_rightCameraDistortion.total()*m_rightCameraDistortion.elemSize(); i++) {
+			m_rightCameraDistortion.data[i] = m_pSystem->UserDataAccessGetData();
+		}
+
+		for (i = 0; i < m_R1.total()*m_R1.elemSize(); i++) {
+			m_R1.data[i] = m_pSystem->UserDataAccessGetData();
+		}
+		for (i = 0; i < m_R2.total()*m_R2.elemSize(); i++) {
+			m_R2.data[i] = m_pSystem->UserDataAccessGetData();
+		}
+		for (i = 0; i < m_trans.total()*m_trans.elemSize(); i++) {
+			m_trans.data[i] = m_pSystem->UserDataAccessGetData();
+		}
+
+		for (i = 0; i < m_focalPoint.total()*m_focalPoint.elemSize(); i++) {
+			m_focalPoint.data[i] = m_pSystem->UserDataAccessGetData();
+		}
+		m_pSystem->UserDataAccessLock();
+
+		/* For Test
+		String filename("ovrvision_test.xml");
+		FileStorage cvfs(filename, CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
+
+		//Write undistort param
+		write(cvfs, "LeftCameraInstric", m_leftCameraInstric);
+		write(cvfs, "RightCameraInstric", m_rightCameraInstric);
+		write(cvfs, "LeftCameraDistortion", m_leftCameraDistortion);
+		write(cvfs, "RightCameraDistortion", m_rightCameraDistortion);
+		write(cvfs, "R1", m_R1);
+		write(cvfs, "R2", m_R2);
+		write(cvfs, "T", m_trans);
+
+		write(cvfs, "FocalPoint", m_focalPoint);
+
+		cvfs.release();
+		*/
+	}
+	else
+	{
+		//get data node
+		cv::FileNode data(cvfs.fs, NULL);
+
+		//read camera setting
+		m_propExposure = data["Exposure"];
+		m_propGain = data["Gain"];
+		m_propBLC = data["BLC"];
+		m_propWhiteBalanceR = data["WhiteBalanceR"];
+		m_propWhiteBalanceG = data["WhiteBalanceG"];
+		m_propWhiteBalanceB = data["WhiteBalanceB"];
+
+		m_propWhiteBalanceAuto = (char)((int)data["WhiteBalanceAuto"] & 0x00000001);
+
+		//read undistort param
+		data["LeftCameraInstric"] >> m_leftCameraInstric;
+		data["RightCameraInstric"] >> m_rightCameraInstric;
+		data["LeftCameraDistortion"] >> m_leftCameraDistortion;
+		data["RightCameraDistortion"] >> m_rightCameraDistortion;
+		data["R1"] >> m_R1;
+		data["R2"] >> m_R2;
+		data["T"] >> m_trans;
+		data["FocalPoint"] >> m_focalPoint;
+
+		cvfs.release();
+
+		//For Test
+		WriteEEPROM(WRITE_EEPROM_FLAG_ALLWR);
+	}
+
 	isReaded = true;
 
 	return isReaded;
 }
 
 //Write EEPROM Setting
-bool OvrvisionSetting::WriteEEPROM() {
-	//OpenCV XML Writer
-	cv::FileStorage cvfs("ovrvisionpro_dev_conf.xml", CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
+bool OvrvisionSetting::WriteEEPROM(unsigned char flag) {
 
-	//Write camera param save
+	if (system == NULL)
+		return false;
 
-	//Write undistort param
-	cv::write(cvfs, "LeftCameraInstric", m_leftCameraInstric);
-	cv::write(cvfs, "RightCameraInstric", m_rightCameraInstric);
-	cv::write(cvfs, "LeftCameraDistortion", m_leftCameraDistortion);
-	cv::write(cvfs, "RightCameraDistortion", m_rightCameraDistortion);
-	cv::write(cvfs, "R1", m_R1);
-	cv::write(cvfs, "R2", m_R2);
-	cv::write(cvfs, "P1", m_P1);
-	cv::write(cvfs, "P2", m_P2);
-	cv::write(cvfs, "T", m_trans);
+	m_pSystem->UserDataAccessUnlock();
+	m_pSystem->UserDataAccessSelectAddress(0x0000);
+	m_pSystem->UserDataAccessSetData(EEPROM_SYSTEM_VERSION);			//Version:1byte
 
-	cv::write(cvfs, "FocalPoint", m_focalPoint);
+	if (flag & WRITE_EEPROM_FLAG_CAMERASETWR)
+	{
+		m_pSystem->UserDataAccessSetData(m_propExposure & 0xFF);			//4byte
+		m_pSystem->UserDataAccessSetData((m_propExposure >> 8) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propExposure >> 16) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propExposure >> 24) & 0xFF);
 
-	cvfs.release();
+		m_pSystem->UserDataAccessSetData(m_propGain & 0xFF);				//4byte
+		m_pSystem->UserDataAccessSetData((m_propGain >> 8) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propGain >> 16) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propGain >> 24) & 0xFF);
+
+		m_pSystem->UserDataAccessSetData(m_propBLC & 0xFF);					//4byte
+		m_pSystem->UserDataAccessSetData((m_propBLC >> 8) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propBLC >> 16) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propBLC >> 24) & 0xFF);
+
+		m_pSystem->UserDataAccessSetData(m_propWhiteBalanceR & 0xFF);		//4byte
+		m_pSystem->UserDataAccessSetData((m_propWhiteBalanceR >> 8) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propWhiteBalanceR >> 16) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propWhiteBalanceR >> 24) & 0xFF);
+
+		m_pSystem->UserDataAccessSetData(m_propWhiteBalanceG & 0xFF);		//4byte
+		m_pSystem->UserDataAccessSetData((m_propWhiteBalanceG >> 8) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propWhiteBalanceG >> 16) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propWhiteBalanceG >> 24) & 0xFF);
+
+		m_pSystem->UserDataAccessSetData(m_propWhiteBalanceB & 0xFF);		//4byte
+		m_pSystem->UserDataAccessSetData((m_propWhiteBalanceB >> 8) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propWhiteBalanceB >> 16) & 0xFF);
+		m_pSystem->UserDataAccessSetData((m_propWhiteBalanceB >> 24) & 0xFF);
+
+		m_pSystem->UserDataAccessSetData(m_propWhiteBalanceAuto);			//1byte
+	}
+
+	//----26 byte----
+
+	//Reserved
+
+	//----32 byte----
+
+	m_pSystem->UserDataAccessSelectAddress(0x0020);
+
+	if (flag & WRITE_EEPROM_FLAG_LENSPARAMWR)
+	{
+		size_t i;
+		for (i = 0; i < m_leftCameraInstric.total()*m_leftCameraInstric.elemSize(); i++) {
+			m_pSystem->UserDataAccessSetData(m_leftCameraInstric.data[i]);
+		}
+		for (i = 0; i < m_rightCameraInstric.total()*m_rightCameraInstric.elemSize(); i++) {
+			m_pSystem->UserDataAccessSetData(m_rightCameraInstric.data[i]);
+		}
+		for (i = 0; i < m_leftCameraDistortion.total()*m_leftCameraDistortion.elemSize(); i++) {
+			m_pSystem->UserDataAccessSetData(m_leftCameraDistortion.data[i]);
+		}
+		for (i = 0; i < m_rightCameraDistortion.total()*m_rightCameraDistortion.elemSize(); i++) {
+			m_pSystem->UserDataAccessSetData(m_rightCameraDistortion.data[i]);
+		}
+
+		for (i = 0; i < m_R1.total()*m_R1.elemSize(); i++) {
+			m_pSystem->UserDataAccessSetData(m_R1.data[i]);
+		}
+		for (i = 0; i < m_R2.total()*m_R2.elemSize(); i++) {
+			m_pSystem->UserDataAccessSetData(m_R2.data[i]);
+		}
+		for (i = 0; i < m_trans.total()*m_trans.elemSize(); i++) {
+			m_pSystem->UserDataAccessSetData(m_trans.data[i]);
+		}
+
+		for (i = 0; i < m_focalPoint.total()*m_focalPoint.elemSize(); i++) {
+			m_pSystem->UserDataAccessSetData(m_focalPoint.data[i]);
+		}
+	}
+
+	//save eeprom
+	m_pSystem->UserDataAccessSave();
+	//checksum
+	m_pSystem->UserDataAccessCheckSumAddress();
+	unsigned char checksum = m_pSystem->UserDataAccessGetData();//1byte
+
+	//開発中です。
+	//for (int i = 0; i < 510; i++)
+	//	chsum = chsum^g_userDataBuffer[i];
+
+	m_pSystem->UserDataAccessLock();
+
+	Sleep(30);	//30ms write wait
 
 	return true;
-}
-
-bool OvrvisionSetting::SaveStatusEEPROM() {
-	return false;
 }
 
 // Calculate Undistortion Matrix
@@ -132,39 +317,55 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 	cv::Mat distorsionCoeff(1, 8, CV_32FC1, 0.0);
 	cv::Size size(width, height);
 	cv::Size sizeCalibBase(1280, 960);
-	cameramat.at<float>(0) = m_focalPoint;
+	double m_focalPointScale = 1.00;
+
+	//Adjustment calc
+	if (size.width > 1280) {
+		m_focalPointScale = 2.0;
+	}
+	else if (size.width <= 640) {
+		if (size.width <= 320)
+			m_focalPointScale = 0.25;
+		else
+			m_focalPointScale = 0.5;
+	}
+
+	cameramat.at<float>(0) = m_focalPoint.at<float>(0) * (float)m_focalPointScale;
 	cameramat.at<float>(1) = 0.0f;
 	cameramat.at<float>(2) = (float)(size.width / 2);
 	cameramat.at<float>(3) = 0.0f;
-	cameramat.at<float>(4) = m_focalPoint;
+	cameramat.at<float>(4) = m_focalPoint.at<float>(0) * (float)m_focalPointScale;
 	cameramat.at<float>(5) = (float)(size.height / 2);
 	cameramat.at<float>(6) = 0.0f;
 	cameramat.at<float>(7) = 0.0f;
 	cameramat.at<float>(8) = 1.0f;
 	cv::Mat camPs = getOptimalNewCameraMatrix(cameramat, distorsionCoeff, size, 0, size, 0);
 
-	//Calc
-	/*
-	double calc1x = ((double)sizeCalibBase.width - (double)size.width) / (double)sizeCalibBase.width;
-	double calc1y = ((double)sizeCalibBase.height - (double)size.height) / (double)sizeCalibBase.height;
-	m_leftCameraInstric.at<double>(2) -= m_leftCameraInstric.at<double>(2) * calc1x;	//Posision
-	m_leftCameraInstric.at<double>(5) -= m_leftCameraInstric.at<double>(5) * calc1y;
-	m_rightCameraInstric.at<double>(2) -= m_rightCameraInstric.at<double>(2) * (calc1x);
-	m_rightCameraInstric.at<double>(5) -= m_rightCameraInstric.at<double>(5) * (calc1y);
-	*/
-	/*
-	m_leftCameraInstric.at<double>(0) *= 0.5;	//Scale
-	m_rightCameraInstric.at<double>(0) *= 1.0;
-	m_leftCameraInstric.at<double>(4) *= 0.5;
-	m_rightCameraInstric.at<double>(4) *= 1.0;
-	*/
+	//Calc clone
+	cv::Mat left_CamIns = m_leftCameraInstric.clone();
+	cv::Mat right_CamIns = m_rightCameraInstric.clone();
+
+	double cals_x = (double)size.width / (double)sizeCalibBase.width;
+	double cals_y = (double)size.height / (double)sizeCalibBase.height;
+
+	//Position
+	left_CamIns.at<double>(2) = m_leftCameraInstric.at<double>(2) * cals_x;
+	right_CamIns.at<double>(2) = m_rightCameraInstric.at<double>(2) * cals_x;
+	left_CamIns.at<double>(5) = m_leftCameraInstric.at<double>(5) * cals_y;
+	right_CamIns.at<double>(5) = m_rightCameraInstric.at<double>(5) * cals_y;
+
+	left_CamIns.at<double>(0) = m_leftCameraInstric.at<double>(0) * m_focalPointScale;
+	right_CamIns.at<double>(0) = m_rightCameraInstric.at<double>(0) * m_focalPointScale;
+	left_CamIns.at<double>(4) = m_leftCameraInstric.at<double>(4) * m_focalPointScale;
+	right_CamIns.at<double>(4) = m_rightCameraInstric.at<double>(4) * m_focalPointScale;
+
 	//Undistort
 	if (eye == OV_CAMEYE_LEFT) {
-		initUndistortRectifyMap(m_leftCameraInstric, m_leftCameraDistortion, m_R1,
+		initUndistortRectifyMap(left_CamIns, m_leftCameraDistortion, m_R1,
 			camPs, size, CV_32FC1, mapX, mapY);
 	}
 	if (eye == OV_CAMEYE_RIGHT) {
-		initUndistortRectifyMap(m_rightCameraInstric, m_rightCameraDistortion, m_R2,
+		initUndistortRectifyMap(right_CamIns, m_rightCameraDistortion, m_R2,
 			camPs, size, CV_32FC1, mapX, mapY);
 	}
 }

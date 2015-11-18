@@ -45,16 +45,21 @@
             this.label5 = new System.Windows.Forms.Label();
             this.tbWBBGain = new System.Windows.Forms.TrackBar();
             this.cbWBAuto = new System.Windows.Forms.CheckBox();
+            this.tboxBLC = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tbBLC = new System.Windows.Forms.TrackBar();
+            this.buttonSave = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.tbExposure)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbGain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbWBRGain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbWBGGain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbWBBGain)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbBLC)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(349, 250);
+            this.buttonOK.Location = new System.Drawing.Point(349, 294);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(94, 30);
             this.buttonOK.TabIndex = 0;
@@ -65,21 +70,21 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(10, 8);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(114, 12);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Exposure (1 - 32767)";
+            this.label1.Text = "Exposure (0 - 32767)";
             // 
             // tbExposure
             // 
             this.tbExposure.AutoSize = false;
-            this.tbExposure.LargeChange = 1;
+            this.tbExposure.LargeChange = 8;
             this.tbExposure.Location = new System.Drawing.Point(14, 23);
             this.tbExposure.Maximum = 32767;
-            this.tbExposure.Minimum = 1;
             this.tbExposure.Name = "tbExposure";
             this.tbExposure.Size = new System.Drawing.Size(331, 21);
+            this.tbExposure.SmallChange = 8;
             this.tbExposure.TabIndex = 2;
             this.tbExposure.TickStyle = System.Windows.Forms.TickStyle.None;
             this.tbExposure.Value = 1;
@@ -130,7 +135,7 @@
             // 
             // tboxWBRGain
             // 
-            this.tboxWBRGain.Location = new System.Drawing.Point(349, 141);
+            this.tboxWBRGain.Location = new System.Drawing.Point(349, 181);
             this.tboxWBRGain.MaxLength = 10;
             this.tboxWBRGain.Name = "tboxWBRGain";
             this.tboxWBRGain.ReadOnly = true;
@@ -141,7 +146,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 126);
+            this.label3.Location = new System.Drawing.Point(12, 166);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(173, 12);
             this.label3.TabIndex = 8;
@@ -151,7 +156,7 @@
             // 
             this.tbWBRGain.AutoSize = false;
             this.tbWBRGain.LargeChange = 1;
-            this.tbWBRGain.Location = new System.Drawing.Point(12, 141);
+            this.tbWBRGain.Location = new System.Drawing.Point(12, 181);
             this.tbWBRGain.Maximum = 4095;
             this.tbWBRGain.Name = "tbWBRGain";
             this.tbWBRGain.Size = new System.Drawing.Size(331, 21);
@@ -161,7 +166,7 @@
             // 
             // tboxWBGGain
             // 
-            this.tboxWBGGain.Location = new System.Drawing.Point(349, 177);
+            this.tboxWBGGain.Location = new System.Drawing.Point(349, 217);
             this.tboxWBGGain.MaxLength = 10;
             this.tboxWBGGain.Name = "tboxWBGGain";
             this.tboxWBGGain.ReadOnly = true;
@@ -172,7 +177,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 162);
+            this.label4.Location = new System.Drawing.Point(12, 202);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(173, 12);
             this.label4.TabIndex = 11;
@@ -182,7 +187,7 @@
             // 
             this.tbWBGGain.AutoSize = false;
             this.tbWBGGain.LargeChange = 1;
-            this.tbWBGGain.Location = new System.Drawing.Point(12, 177);
+            this.tbWBGGain.Location = new System.Drawing.Point(12, 217);
             this.tbWBGGain.Maximum = 4095;
             this.tbWBGGain.Name = "tbWBGGain";
             this.tbWBGGain.Size = new System.Drawing.Size(331, 21);
@@ -192,7 +197,7 @@
             // 
             // tboxWBBGain
             // 
-            this.tboxWBBGain.Location = new System.Drawing.Point(349, 214);
+            this.tboxWBBGain.Location = new System.Drawing.Point(349, 254);
             this.tboxWBBGain.MaxLength = 10;
             this.tboxWBBGain.Name = "tboxWBBGain";
             this.tboxWBBGain.ReadOnly = true;
@@ -203,7 +208,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 199);
+            this.label5.Location = new System.Drawing.Point(12, 239);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(173, 12);
             this.label5.TabIndex = 14;
@@ -213,7 +218,7 @@
             // 
             this.tbWBBGain.AutoSize = false;
             this.tbWBBGain.LargeChange = 1;
-            this.tbWBBGain.Location = new System.Drawing.Point(12, 214);
+            this.tbWBBGain.Location = new System.Drawing.Point(12, 254);
             this.tbWBBGain.Maximum = 4095;
             this.tbWBBGain.Name = "tbWBBGain";
             this.tbWBBGain.Size = new System.Drawing.Size(331, 21);
@@ -224,7 +229,7 @@
             // cbWBAuto
             // 
             this.cbWBAuto.AutoSize = true;
-            this.cbWBAuto.Location = new System.Drawing.Point(14, 102);
+            this.cbWBAuto.Location = new System.Drawing.Point(14, 141);
             this.cbWBAuto.Name = "cbWBAuto";
             this.cbWBAuto.Size = new System.Drawing.Size(152, 16);
             this.cbWBAuto.TabIndex = 17;
@@ -232,11 +237,57 @@
             this.cbWBAuto.UseVisualStyleBackColor = true;
             this.cbWBAuto.CheckedChanged += new System.EventHandler(this.cbWBAuto_CheckedChanged);
             // 
+            // tboxBLC
+            // 
+            this.tboxBLC.Location = new System.Drawing.Point(351, 99);
+            this.tboxBLC.MaxLength = 10;
+            this.tboxBLC.Name = "tboxBLC";
+            this.tboxBLC.ReadOnly = true;
+            this.tboxBLC.Size = new System.Drawing.Size(94, 19);
+            this.tboxBLC.TabIndex = 20;
+            this.tboxBLC.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 84);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(185, 12);
+            this.label6.TabIndex = 19;
+            this.label6.Text = "Backlight Compensation (0 - 1023)";
+            // 
+            // tbBLC
+            // 
+            this.tbBLC.AutoSize = false;
+            this.tbBLC.LargeChange = 1;
+            this.tbBLC.Location = new System.Drawing.Point(14, 99);
+            this.tbBLC.Maximum = 1023;
+            this.tbBLC.Name = "tbBLC";
+            this.tbBLC.Size = new System.Drawing.Size(331, 21);
+            this.tbBLC.TabIndex = 18;
+            this.tbBLC.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.tbBLC.Value = 1;
+            this.tbBLC.ValueChanged += new System.EventHandler(this.tbBLC_ValueChanged);
+            // 
+            // buttonSave
+            // 
+            this.buttonSave.Location = new System.Drawing.Point(14, 294);
+            this.buttonSave.Name = "buttonSave";
+            this.buttonSave.Size = new System.Drawing.Size(110, 30);
+            this.buttonSave.TabIndex = 21;
+            this.buttonSave.Text = "Save EEPROM";
+            this.buttonSave.UseVisualStyleBackColor = true;
+            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
+            // 
             // SettingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(455, 292);
+            this.ClientSize = new System.Drawing.Size(455, 336);
+            this.Controls.Add(this.buttonSave);
+            this.Controls.Add(this.tboxBLC);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.tbBLC);
             this.Controls.Add(this.cbWBAuto);
             this.Controls.Add(this.tboxWBBGain);
             this.Controls.Add(this.label5);
@@ -262,6 +313,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.tbWBRGain)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbWBGGain)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbWBBGain)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbBLC)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -286,5 +338,9 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TrackBar tbWBBGain;
         private System.Windows.Forms.CheckBox cbWBAuto;
+        private System.Windows.Forms.TextBox tboxBLC;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TrackBar tbBLC;
+        private System.Windows.Forms.Button buttonSave;
     }
 }

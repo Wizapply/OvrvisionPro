@@ -76,6 +76,8 @@ typedef enum ov_camseet {
 	OV_CAMSET_WHITEBALANCER,	//Saturation
 	OV_CAMSET_WHITEBALANCEG,	//Brightness
 	OV_CAMSET_WHITEBALANCEB,	//Sharpness
+	OV_CAMSET_BLC,				//Backlight Compensation
+	OV_CAMSET_DATA,				//EEPROM Data Access
 } CamSetting;
 
 /////////// CLASS ///////////

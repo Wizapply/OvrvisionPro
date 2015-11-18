@@ -76,7 +76,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(1003, 47);
+            this.label1.Location = new System.Drawing.Point(955, 47);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(96, 12);
             this.label1.TabIndex = 7;
@@ -88,18 +88,18 @@
             this.textBox1.BackColor = System.Drawing.SystemColors.InfoText;
             this.textBox1.ForeColor = System.Drawing.SystemColors.InactiveBorder;
             this.textBox1.HideSelection = false;
-            this.textBox1.Location = new System.Drawing.Point(892, 374);
+            this.textBox1.Location = new System.Drawing.Point(892, 450);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(305, 275);
+            this.textBox1.Size = new System.Drawing.Size(305, 199);
             this.textBox1.TabIndex = 8;
             // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(892, 359);
+            this.label2.Location = new System.Drawing.Point(890, 435);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(49, 12);
             this.label2.TabIndex = 9;
@@ -123,9 +123,9 @@
             this.cameraPicRight.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cameraPicRight.BackColor = System.Drawing.Color.Black;
             this.cameraPicRight.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.cameraPicRight.Location = new System.Drawing.Point(1005, 212);
+            this.cameraPicRight.Location = new System.Drawing.Point(957, 248);
             this.cameraPicRight.Name = "cameraPicRight";
-            this.cameraPicRight.Size = new System.Drawing.Size(192, 144);
+            this.cameraPicRight.Size = new System.Drawing.Size(240, 180);
             this.cameraPicRight.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.cameraPicRight.TabIndex = 3;
             this.cameraPicRight.TabStop = false;
@@ -136,9 +136,9 @@
             this.cameraPicLeft.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cameraPicLeft.BackColor = System.Drawing.Color.Black;
             this.cameraPicLeft.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.cameraPicLeft.Location = new System.Drawing.Point(1005, 62);
+            this.cameraPicLeft.Location = new System.Drawing.Point(957, 62);
             this.cameraPicLeft.Name = "cameraPicLeft";
-            this.cameraPicLeft.Size = new System.Drawing.Size(192, 144);
+            this.cameraPicLeft.Size = new System.Drawing.Size(240, 180);
             this.cameraPicLeft.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.cameraPicLeft.TabIndex = 2;
             this.cameraPicLeft.TabStop = false;

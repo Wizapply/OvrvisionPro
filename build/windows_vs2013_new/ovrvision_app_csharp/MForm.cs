@@ -159,8 +159,10 @@ namespace ovrvision_app
 
         private void buttonSetting_Click(object sender, EventArgs e)
         {
-            settingForm.ApplyItem();
-            settingForm.Show(this);
+            if (!settingForm.Visible) {
+                settingForm.ApplyItem();
+                settingForm.Show(this);
+            }
         }
 	}
 }

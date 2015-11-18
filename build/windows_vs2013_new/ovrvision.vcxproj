@@ -235,8 +235,8 @@
     <ClInclude Include="..\..\3rdparty\aruco\marker.h" />
     <ClInclude Include="..\..\3rdparty\aruco\markerdetector.h" />
     <ClInclude Include="..\..\3rdparty\aruco\subpixelcorner.h" />
-    <ClInclude Include="..\..\include\ovrvision_pro.h" />
     <ClInclude Include="..\..\include\ovrvision_ar.h" />
+    <ClInclude Include="..\..\include\ovrvision_pro.h" />
     <ClInclude Include="..\..\src\lib_src\OpenCL_kernel.h" />
     <ClInclude Include="..\..\src\lib_src\OvrvisionProCL.h" />
     <ClInclude Include="..\..\src\lib_src\ovrvision_calibration.h" />

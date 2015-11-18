@@ -43,6 +43,14 @@ class OvrvisionPro;
 	} Cameye;
 #endif
 
+//WriteEEPROM flag
+#define WRITE_EEPROM_FLAG_LENSPARAMWR	(0x00000001)
+#define WRITE_EEPROM_FLAG_CAMERASETWR	(0x00000002)
+#define WRITE_EEPROM_FLAG_ALLWR			(0x00000003)
+
+//Version
+#define EEPROM_SYSTEM_VERSION	(0x01)
+
 /////////// CLASS ///////////
 
 class OvrvisionSetting
@@ -55,9 +63,7 @@ public:
 	//Read Setting
 	bool ReadEEPROM();
 	//Write Setting
-	bool WriteEEPROM();
-	//Save status
-	bool SaveStatusEEPROM();
+	bool WriteEEPROM(unsigned char flag);
 
 	// Calculate Undistortion Matrix
 	void GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &mapY, int width, int height);
@@ -72,9 +78,12 @@ public:
 	//Camera Setting
 	int	m_propExposure;			//Exposure
 	int	m_propGain;				//Gain
+	int	m_propBLC;				//BLC
 	int m_propWhiteBalanceR;	//WhiteBaranceR
 	int	m_propWhiteBalanceG;	//WhiteBaranceG
 	int	m_propWhiteBalanceB;	//WhiteBaranceB
+
+	char m_propWhiteBalanceAuto;
 
 	//UndistortSetting : External variable
 	ovMat	m_leftCameraInstric;
@@ -83,10 +92,8 @@ public:
 	ovMat	m_rightCameraDistortion;
 	ovMat	m_R1;
 	ovMat	m_R2;
-	ovMat	m_P1;	//nope
-	ovMat	m_P2;	//nope
 	ovMat	m_trans;
-	float	m_focalPoint;
+	ovMat	m_focalPoint;
 
 	//system
 	OvrvisionPro*	m_pSystem;

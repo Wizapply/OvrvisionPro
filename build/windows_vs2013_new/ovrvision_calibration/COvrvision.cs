@@ -59,22 +59,30 @@ namespace ovrvision_calibration
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern void ovSetGain(int value);
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        static extern void ovSetBLC(int value);
+        [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern void ovSetWhiteBalanceR(int value);
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern void ovSetWhiteBalanceG(int value);
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern void ovSetWhiteBalanceB(int value);
+        [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        static extern void ovSetWhiteBalanceAuto(bool value);
         //Get camera properties
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern int ovGetExposure();
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern int ovGetGain();
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        static extern int ovGetBLC();
+        [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern int ovGetWhiteBalanceR();
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern int ovGetWhiteBalanceG();
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern int ovGetWhiteBalanceB();
+        [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        static extern bool ovGetWhiteBalanceAuto();
 
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern float ovGetFocalPoint();
@@ -232,6 +240,93 @@ namespace ovrvision_calibration
 
             camStatus = false;
             return true;
+        }
+
+        //Propatry
+        public void SetExposure(int value)
+        {
+            if (!camStatus)
+                return;
+            ovSetExposure(value);
+        }
+        public void SetGain(int value)
+        {
+            if (!camStatus)
+                return;
+            ovSetGain(value);
+        }
+        public void SetBLC(int value)
+        {
+            if (!camStatus)
+                return;
+            ovSetBLC(value);
+        }
+        public void SetWhiteBalanceR(int value)
+        {
+            if (!camStatus)
+                return;
+            ovSetWhiteBalanceR(value);
+        }
+        public void SetWhiteBalanceG(int value)
+        {
+            if (!camStatus)
+                return;
+            ovSetWhiteBalanceG(value);
+        }
+        public void SetWhiteBalanceB(int value)
+        {
+            if (!camStatus)
+                return;
+            ovSetWhiteBalanceB(value);
+        }
+        public void SetWhiteBalanceAutoMode(bool value)
+        {
+            if (!camStatus)
+                return;
+            ovSetWhiteBalanceAuto(value);
+        }
+
+        public int GetExposure()
+        {
+            if (!camStatus)
+                return 0;
+            return ovGetExposure();
+        }
+        public int GetGain()
+        {
+            if (!camStatus)
+                return 0;
+            return ovGetGain();
+        }
+        public int GetBLC()
+        {
+            if (!camStatus)
+                return 0;
+            return ovGetBLC();
+        }
+        public int GetWhiteBalanceR()
+        {
+            if (!camStatus)
+                return 0;
+            return ovGetWhiteBalanceR();
+        }
+        public int GetWhiteBalanceG()
+        {
+            if (!camStatus)
+                return 0;
+            return ovGetWhiteBalanceG();
+        }
+        public int GetWhiteBalanceB()
+        {
+            if (!camStatus)
+                return 0;
+            return ovGetWhiteBalanceB();
+        }
+        public bool GetWhiteBalanceAutoMode()
+        {
+            if (!camStatus)
+                return false;
+            return ovGetWhiteBalanceAuto();
         }
 
         //Calibration

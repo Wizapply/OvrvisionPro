@@ -647,6 +647,10 @@ int OvrvisionDirectShow::SetCameraSetting(CamSetting proc, int value, bool autom
 			break;
 		case OV_CAMSET_WHITEBALANCEB: m_pAMVideoProcAmp->Set(VideoProcAmp_WhiteBalance, value, autoflag);
 			break;
+		case OV_CAMSET_BLC: m_pAMVideoProcAmp->Set(VideoProcAmp_BacklightCompensation, value, autoflag);
+			break;
+		case OV_CAMSET_DATA: m_pAMVideoProcAmp->Set(VideoProcAmp_Contrast, value, false);
+			break;
 		default:
 			return RESULT_FAILED;
 			break;
@@ -675,6 +679,10 @@ int OvrvisionDirectShow::GetCameraSetting(CamSetting proc, int* value, bool* aut
 		case OV_CAMSET_WHITEBALANCEG: m_pAMVideoProcAmp->Get(VideoProcAmp_Gamma, (long*)value, &autoflag);
 			break;
 		case OV_CAMSET_WHITEBALANCEB: m_pAMVideoProcAmp->Get(VideoProcAmp_WhiteBalance, (long*)value, &autoflag);
+			break;
+		case OV_CAMSET_BLC: m_pAMVideoProcAmp->Get(VideoProcAmp_BacklightCompensation, (long*)value, &autoflag);
+			break;
+		case OV_CAMSET_DATA: m_pAMVideoProcAmp->Get(VideoProcAmp_Contrast, (long*)value, &autoflag);
 			break;
 		default:
 			return RESULT_FAILED;

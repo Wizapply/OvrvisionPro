@@ -71,7 +71,7 @@ CyU3PReturnStatus_t WriteI2C (uint8_t slaveAddr, uint16_t address, uint8_t data)
 	uint8_t lowAddr = address & 0x00FF;
 
 	/* Validate the I2C slave address. */
-	if ((slaveAddr != I2C_SENSOR_ADDR_WR) && (slaveAddr != I2C_MEMORY_ADDR_WR)) {
+	if (slaveAddr != I2C_SENSOR_ADDR_WR) {
 		return CY_U3P_ERROR_FAILURE;
 	}
 
@@ -97,7 +97,7 @@ CyU3PReturnStatus_t ReadI2C (uint8_t slaveAddr, uint16_t address, uint8_t *data)
 	uint8_t highAddr = address >> 8;
 	uint8_t lowAddr = address & 0x00FF;
 
-	if ((slaveAddr != I2C_SENSOR_ADDR_RD) && (slaveAddr != I2C_MEMORY_ADDR_RD)) {
+	if (slaveAddr != I2C_SENSOR_ADDR_RD) {
 		return CY_U3P_ERROR_FAILURE;
 	}
 
@@ -560,6 +560,10 @@ void OV5653SensorSetExp(uint16_t v) {
 unsigned char OV5653SensorGetGain() {
 	uint8_t buf = 0;
 	ReadI2C(I2C_SENSOR_ADDR_RD, 0x350B, &buf);
+
+	if(buf > 0x1F) {
+		buf &= 0x2F;
+	}
 	return buf;
 }
 void OV5653SensorSetGain(unsigned char v) {
@@ -634,6 +638,25 @@ void OV5653SensorSetWBTAuto(unsigned char v) {
 	v = v & 0x01;
 	v ^= 1;	//Reversal
 	WI2C(0x3405,v);
+}
+
+extern uint16_t OV5653SensorGetBLC(){
+	uint8_t highBuf = 0;
+	uint8_t lowBuf = 0;
+	uint16_t buffer = 0;
+
+	ReadI2C(I2C_SENSOR_ADDR_RD, 0x4006, &highBuf);	//32 no more
+	ReadI2C(I2C_SENSOR_ADDR_RD, 0x4007, &lowBuf);
+
+	buffer |= lowBuf;
+	buffer |= (uint16_t)highBuf << 8;
+	return buffer;
+}
+extern void OV5653SensorSetBLC(uint16_t v){
+	uint8_t highBit = v >> 8;
+	uint8_t lowBit = v & 0x00FF;
+	WI2C(0x4006,highBit);
+	WI2C(0x4007,lowBit);
 }
 
 //Camera Terminal specific UVC control function

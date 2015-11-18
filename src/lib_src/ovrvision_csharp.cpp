@@ -278,7 +278,7 @@ CSHARP_EXPORT void ovSetExposure(int value)
 	g_ovOvrvision->SetCameraExposure(value);
 }
 
-//Set white balance
+//Set gain
 CSHARP_EXPORT void ovSetGain(int value)
 {
 	if(g_ovOvrvision==NULL)
@@ -287,7 +287,7 @@ CSHARP_EXPORT void ovSetGain(int value)
 	g_ovOvrvision->SetCameraGain(value);
 }
 
-//Set contrast ( manual only )
+//Set WhiteBalanceR ( manual only )
 CSHARP_EXPORT void ovSetWhiteBalanceR(int value)
 {
 	if(g_ovOvrvision==NULL)
@@ -296,7 +296,7 @@ CSHARP_EXPORT void ovSetWhiteBalanceR(int value)
 	g_ovOvrvision->SetCameraWhiteBalanceR(value);
 }
 
-//Set Saturation ( manual only )
+//Set WhiteBalanceG ( manual only )
 CSHARP_EXPORT void ovSetWhiteBalanceG(int value)
 {
 	if(g_ovOvrvision==NULL)
@@ -305,13 +305,31 @@ CSHARP_EXPORT void ovSetWhiteBalanceG(int value)
 	g_ovOvrvision->SetCameraWhiteBalanceG(value);
 }
 
-//Set brightness ( manual only )
+//Set WhiteBalanceB ( manual only )
 CSHARP_EXPORT void ovSetWhiteBalanceB(int value)
 {
 	if(g_ovOvrvision==NULL)
 		return;
 
 	g_ovOvrvision->SetCameraWhiteBalanceB(value);
+}
+
+//Set WhiteBalance Auto
+CSHARP_EXPORT void ovSetWhiteBalanceAuto(bool value)
+{
+	if (g_ovOvrvision == NULL)
+		return;
+
+	g_ovOvrvision->SetCameraWhiteBalanceAuto(value);
+}
+
+//Set Backlight Compensation
+CSHARP_EXPORT void ovSetBLC(int value)
+{
+	if (g_ovOvrvision == NULL)
+		return;
+
+	g_ovOvrvision->SetCameraBLC(value);
 }
 
 //Get exposure
@@ -323,7 +341,7 @@ CSHARP_EXPORT int ovGetExposure()
 	return g_ovOvrvision->GetCameraExposure();
 }
 
-//Get white balance
+//Get gain
 CSHARP_EXPORT int ovGetGain()
 {
 	if(g_ovOvrvision==NULL)
@@ -332,7 +350,7 @@ CSHARP_EXPORT int ovGetGain()
 	return g_ovOvrvision->GetCameraGain();
 }
 
-//Get contrast
+//Get whiteBalanceR
 CSHARP_EXPORT int ovGetWhiteBalanceR()
 {
 	if(g_ovOvrvision==NULL)
@@ -341,7 +359,7 @@ CSHARP_EXPORT int ovGetWhiteBalanceR()
 	return g_ovOvrvision->GetCameraWhiteBalanceR();
 }
 
-//Get saturation
+//Get whiteBalanceG
 CSHARP_EXPORT int ovGetWhiteBalanceG()
 {
 	if(g_ovOvrvision==NULL)
@@ -350,13 +368,30 @@ CSHARP_EXPORT int ovGetWhiteBalanceG()
 	return g_ovOvrvision->GetCameraWhiteBalanceG();
 }
 
-//Get brightness
+//Get whiteBalanceB
 CSHARP_EXPORT int ovGetWhiteBalanceB()
 {
 	if(g_ovOvrvision==NULL)
 		return 0;
 
 	return g_ovOvrvision->GetCameraWhiteBalanceB();
+}
+
+CSHARP_EXPORT bool ovGetWhiteBalanceAuto()
+{
+	if (g_ovOvrvision == NULL)
+		return 0;
+
+	return g_ovOvrvision->GetCameraWhiteBalanceAuto();
+}
+
+//Get Backlight Compensation
+CSHARP_EXPORT int ovGetBLC()
+{
+	if (g_ovOvrvision == NULL)
+		return 0;
+
+	return g_ovOvrvision->GetCameraBLC();
 }
 
 //Get focalPoint
@@ -379,12 +414,12 @@ CSHARP_EXPORT float ovGetHMDRightGap(int at)
 
 
 //Save parameter
-CSHARP_EXPORT void ovSaveCamStatusToEEPROM()
+CSHARP_EXPORT bool ovSaveCamStatusToEEPROM()
 {
 	if(g_ovOvrvision==NULL)
-		return;
+		return false;
 
-	g_ovOvrvision->SaveCamStatusToEEPROM();
+	return g_ovOvrvision->CameraParamSaveEEPROM();
 }
 
 ////////////// Ovrvision AR //////////////

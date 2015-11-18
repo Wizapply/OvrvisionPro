@@ -38,10 +38,8 @@
 // Define
 
 /* I2C Slave address for the image sensor. */
-#define I2C_SENSOR_ADDR_WR 0x6C         /* Slave address used to write sensor registers. Default set to EEPROM. */
-#define I2C_SENSOR_ADDR_RD 0x6D         /* Slave address used to read from sensor registers. Default set to EEPROM */
-#define I2C_MEMORY_ADDR_WR 0xA0         /* I2C slave address used to write to an EEPROM. */
-#define I2C_MEMORY_ADDR_RD 0xA1         /* I2C slave address used to read from an EEPROM. */
+#define I2C_SENSOR_ADDR_WR 0x6C         /* Slave address used to write sensor registers.*/
+#define I2C_SENSOR_ADDR_RD 0x6D         /* Slave address used to read from sensor registers. */
 
 #define I2C_SLAVEADDR_MASK 0xFE         /* Mask to get actual I2C slave address value without direction bit. */
 
@@ -86,6 +84,8 @@ extern uint16_t OV5653SensorGetBGainWB();
 extern void OV5653SensorSetBGainWB(uint16_t v);
 extern unsigned char OV5653SensorGetWBTAuto();
 extern void OV5653SensorSetWBTAuto(unsigned char v);
+extern uint16_t OV5653SensorGetBLC();
+extern void OV5653SensorSetBLC(uint16_t v);
 
 //Camera Terminal specific UVC control function
 extern unsigned char OV5653SensorGetCurRoll();

@@ -236,7 +236,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 									 * D21: Region of Interest
 									 * D22&D23: Reserved, set to zero
 									 */
-	0x00,0x20,0x00,                 /* bmControls field of camera terminal: No controls supported */
+	0x00,0x00,0x00,                 /* bmControls field of camera terminal: No controls supported */
 
 	/* Processing Unit Descriptor */
 	0x0C,                           /* Descriptor size */
@@ -248,13 +248,13 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x03,                           /* Size of controls field for this terminal : 3 bytes */
 									/* A bit set to 1 in the bmControls field indicates that
 									 * the mentioned Control is supported for the video stream.
-									 * D0: Brightness
-									 * D1: Contrast
+									 * D0: Brightness -> Exposure
+									 * D1: Contrast -> Data EEPROM
 									 * D2: Hue
 									 * D3: Saturation
-									 * D4: Sharpness
-									 * D5: Gamma
-									 * D6: White Balance Temperature
+									 * D4: Sharpness -> White Balance R Gain
+									 * D5: Gamma -> White Balance G Gain
+									 * D6: White Balance Temperature -> White Balance B Gain
 									 * D7: White Balance Component
 									 * D8: Backlight Compensation
 									 * D9: Gain
@@ -269,7 +269,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 									 * D18: Contrast, Auto
 									 * D19-D23: Reserved. Set to zero.
 									 */
-	0x71,0x12,0x00,                 /* Control supported */
+	0x73,0x13,0x00,                 /* Control supported */
 	0x00,                           /* String desc index : Not used */
 
 	/* Extension Unit Descriptor */
@@ -567,7 +567,7 @@ const uint8_t CyFxUSBHSConfigDscr[] =
 									 * D21: Region of Interest
 									 * D22-D23: Reserved, set to zero
 									 */
-	0x00,0x20,0x00,                 /* bmControls field of camera terminal: No controls supported */
+	0x00,0x00,0x00,                 /* bmControls field of camera terminal: No controls supported */
 
 	/* Processing Unit Descriptor */
 	0x0C,                           /* Descriptor size */
@@ -579,13 +579,13 @@ const uint8_t CyFxUSBHSConfigDscr[] =
 	0x03,                           /* Size of controls field for this terminal : 3 bytes */
 									/* A bit set to 1 in the bmControls field indicates that
 									 * the mentioned Control is supported for the video stream.
-									 * D0: Brightness
-									 * D1: Contrast
+									 * D0: Brightness -> Exposure
+									 * D1: Contrast -> Data EEPROM
 									 * D2: Hue
 									 * D3: Saturation
-									 * D4: Sharpness
-									 * D5: Gamma
-									 * D6: White Balance Temperature
+									 * D4: Sharpness -> White Balance R Gain
+									 * D5: Gamma -> White Balance G Gain
+									 * D6: White Balance Temperature -> White Balance B Gain
 									 * D7: White Balance Component
 									 * D8: Backlight Compensation
 									 * D9: Gain
@@ -598,9 +598,9 @@ const uint8_t CyFxUSBHSConfigDscr[] =
 									 * D16: Analog Video Standard
 									 * D17: Analog Video Lock Status
 									 * D18: Contrast, Auto
-									 * D19-23: Reserved. Set to zero.
+									 * D19-D23: Reserved. Set to zero.
 									 */
-	0x71,0x12,0x00,                 /* Controls supported */
+	0x73,0x13,0x00,                 /* Control supported */
 	0x00,                           /* String desc index : Not used */
 
 	/* Extension Unit Descriptor */

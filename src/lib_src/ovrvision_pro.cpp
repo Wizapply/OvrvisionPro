@@ -154,6 +154,8 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 		Sleep(150);	//150ms wait
 	}
 
+	Sleep(50);	//50ms wait
+
 	m_pPixels[0] = new byte[cam_width*cam_height*OV_PIXELSIZE_RGB];
 	m_pPixels[1] = new byte[cam_width*cam_height*OV_PIXELSIZE_RGB];
 
@@ -165,14 +167,15 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 	m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height);
 	m_pOpenCL->createProgram("kernel.cl");	//¡‚ÍƒpƒX‚ð’¼Ú“ü‚ê‚Ä‚¢‚é‚ªA•ÏX—\’è
 
+	//Opened
+	m_isOpen = true;
+
 	//Initialize Camera system
 	InitCameraSetting();
 
 	m_width = cam_width;
 	m_height = cam_height;
 	m_framerate = cam_framerate;
-
-	m_isOpen = true;
 
 	return objs;
 }
@@ -202,21 +205,18 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 	if (!m_isOpen)
 		return;
 
-	cv::Mat raw8_double(cv::Size(m_width, m_height), CV_16UC1);
-	cv::Mat raw8_left(cv::Size(m_width, m_height), CV_8UC4);
-	cv::Mat raw8_right(cv::Size(m_width, m_height), CV_8UC4);
+	if (qt == OVR::Camqt::OV_CAMQT_NONE)
+		return;
 
-	cv::Mat rgb24(cv::Size(m_width, m_height), CV_8UC3);
+	cv::Mat raw8_double(cv::Size(m_width, m_height), CV_16UC1);
+	cv::Mat raw8_left(cv::Size(m_width, m_height), CV_8UC4, m_pPixels[0]);
+	cv::Mat raw8_right(cv::Size(m_width, m_height), CV_8UC4, m_pPixels[1]);
 
 	m_pODS->GetBayer16Image(raw8_double.data, false);
 	if (qt == OVR::Camqt::OV_CAMQT_DMSRMP)
 		m_pOpenCL->DemosaicRemap(raw8_double, raw8_left, raw8_right);	//OpenCL
 	else if (qt == OVR::Camqt::OV_CAMQT_DMS)
-		m_pOpenCL->Demosaic(raw8_double, raw8_left, raw8_right);	//OpenCL
-	//else
-
-	memcpy(m_pPixels[0], raw8_left.data, m_width*m_height*OV_PIXELSIZE_RGB);	//‰ü‘P—\’è
-	memcpy(m_pPixels[1], raw8_right.data, m_width*m_height*OV_PIXELSIZE_RGB);
+		m_pOpenCL->Demosaic(raw8_double, raw8_left, raw8_right);		//OpenCL
 }
 
 unsigned char* OvrvisionPro::GetCamImageBGRA(OVR::Cameye eye)
@@ -236,18 +236,19 @@ void OvrvisionPro::InitCameraSetting()
 	OvrvisionSetting ovrset(this);
 	if (ovrset.ReadEEPROM()) {
 		//Read Set
-		//SetCameraExposure(ovrset.m_propExposure);	//‚Ü‚¾Žg‚í‚È‚¢
-		//SetCameraGain(ovrset.m_propGain);
-		//SetCameraWhiteBalanceR(ovrset.m_propWhiteBalanceR);
-		//SetCameraWhiteBalanceG(ovrset.m_propWhiteBalanceG);
-		//SetCameraWhiteBalanceB(ovrset.m_propWhiteBalanceB);
-		m_focalpoint = ovrset.m_focalPoint;
+		SetCameraExposure(ovrset.m_propExposure);
+		SetCameraGain(ovrset.m_propGain);
+		SetCameraBLC(ovrset.m_propBLC);
+		SetCameraWhiteBalanceR(ovrset.m_propWhiteBalanceR);
+		SetCameraWhiteBalanceG(ovrset.m_propWhiteBalanceG);
+		SetCameraWhiteBalanceB(ovrset.m_propWhiteBalanceB);
+		SetCameraWhiteBalanceAuto((bool)ovrset.m_propWhiteBalanceAuto);
+		m_focalpoint = ovrset.m_focalPoint.at<float>(0);
 		m_rightgap[0] = (float)-ovrset.m_trans.at<double>(0);	//T:X
 		m_rightgap[1] = (float)ovrset.m_trans.at<double>(1);	//T:Y
 		m_rightgap[2] = (float)ovrset.m_trans.at<double>(2);	//T:Z
-
-		m_pOpenCL->LoadCameraParams(&ovrset);
 	}
+	m_pOpenCL->LoadCameraParams(&ovrset);
 }
 
 bool OvrvisionPro::isOpen(){
@@ -298,14 +299,9 @@ void OvrvisionPro::SetCameraExposure(int value){
 	if (value > 32767)	//high
 		value = 32767;
 
-	//set
-	//m_propExposure = value;
-
 #ifdef WIN32
 	m_pODS->SetCameraSetting(OV_CAMSET_EXPOSURE, value, false);
-	m_pODS->SetCameraSetting(OV_CAMSET_EXPOSURE, value, false);
 #elif MACOSX
-	[m_pOAV setCameraSetting:OV_CAMSET_EXPOSURE value : value automode : false];
 	[m_pOAV setCameraSetting:OV_CAMSET_EXPOSURE value : value automode : false];
 #elif LINUX
 	//NONE
@@ -333,13 +329,9 @@ void OvrvisionPro::SetCameraGain(int value){
 		value = 47;
 
 	//set
-	//m_propExposure = value;
-
 #ifdef WIN32
 	m_pODS->SetCameraSetting(OV_CAMSET_GAIN, value, false);
-	m_pODS->SetCameraSetting(OV_CAMSET_GAIN, value, false);
 #elif MACOSX
-	[m_pOAV setCameraSetting : OV_CAMSET_GAIN value : value automode : false];
 	[m_pOAV setCameraSetting : OV_CAMSET_GAIN value : value automode : false];
 #elif LINUX
 	//NONE
@@ -369,9 +361,7 @@ void OvrvisionPro::SetCameraWhiteBalanceR(int value){
 	//set
 #ifdef WIN32
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCER, value, false);
-	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCER, value, false);
 #elif MACOSX
-	[m_pOAV setCameraSetting : OV_CAMSET_WHITEBALANCER value : value automode : false];
 	[m_pOAV setCameraSetting : OV_CAMSET_WHITEBALANCER value : value automode : false];
 #elif LINUX
 	//NONE
@@ -400,9 +390,7 @@ void OvrvisionPro::SetCameraWhiteBalanceG(int value){
 	//set
 #ifdef WIN32
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEG, value, false);
-	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEG, value, false);
 #elif MACOSX
-	[m_pOAV setCameraSetting : OV_CAMSET_WHITEBALANCEG value : value automode : false];
 	[m_pOAV setCameraSetting : OV_CAMSET_WHITEBALANCEG value : value automode : false];
 #elif LINUX
 	//NONE
@@ -431,19 +419,188 @@ void OvrvisionPro::SetCameraWhiteBalanceB(int value){
 	//set
 #ifdef WIN32
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEB, value, false);
-	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEB, value, false);
 #elif MACOSX
-	[m_pOAV setCameraSetting : OV_CAMSET_WHITEBALANCEB value : value automode : false];
 	[m_pOAV setCameraSetting : OV_CAMSET_WHITEBALANCEB value : value automode : false];
 #elif LINUX
 	//NONE
 #endif
 }
 
-//Save camera parameter
-int OvrvisionPro::SaveCamStatusToEEPROM(){
+int OvrvisionPro::GetCameraBLC(){
+	int value = 0;
+	bool automode = false;
+
+	if (!m_isOpen)
+		return (-1);
+
+	m_pODS->GetCameraSetting(OV_CAMSET_BLC, &value, &automode);
+	return value;
+}
+void OvrvisionPro::SetCameraBLC(int value){
+	if (!m_isOpen)
+		return;
+
+	//The range specification
+	if (value < 0)	//low
+		value = 0;
+	if (value > 1023)	//high
+		value = 1023;
+
+	//set
+#ifdef WIN32
+	m_pODS->SetCameraSetting(OV_CAMSET_BLC, value, false);
+#elif MACOSX
+	[m_pOAV setCameraSetting : OV_CAMSET_BLC value : value automode : false];
+#elif LINUX
+	//NONE
+#endif
+}
+
+bool OvrvisionPro::GetCameraWhiteBalanceAuto(){
+	int value = 0;
+	bool automode = false;
+
+	if (!m_isOpen)
+		return false;
+
+	m_pODS->GetCameraSetting(OV_CAMSET_WHITEBALANCEB, &value, &automode);
+	return automode;
+}
+
+void OvrvisionPro::SetCameraWhiteBalanceAuto(bool value){
+	if (!m_isOpen)
+		return;
+
+	int curval = GetCameraWhiteBalanceB();
+
+	//set
+#ifdef WIN32
+	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEB, curval, value);
+#elif MACOSX
+	[m_pOAV setCameraSetting : OV_CAMSET_WHITEBALANCEB curval : value automode : value];
+#elif LINUX
+	//NONE
+#endif
+}
+
+//EEPROM
+void OvrvisionPro::UserDataAccessUnlock(){
+	if (!m_isOpen)
+		return;
+
+#ifdef WIN32
+	//UNLOCK Signal
+	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00007000, false);
+	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00006000, false);
+	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00007000, false);
+#elif MACOSX
+	
+#elif LINUX
+	//NONE
+#endif
+}
+
+void OvrvisionPro::UserDataAccessLock() {
+	if (!m_isOpen)
+		return;
+
+#ifdef WIN32
+	//LOCK Signal
+	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00000000, false);
+#elif MACOSX
+
+#elif LINUX
+	//NONE
+#endif
+}
+void OvrvisionPro::UserDataAccessSelectAddress(unsigned int addr) {
+	if (!m_isOpen)
+		return;
+
+	addr &= 0x000001FF;
+	addr |= 0x00001000;	//cmd
+
+#ifdef WIN32
+	m_pODS->SetCameraSetting(OV_CAMSET_DATA, addr, false);
+#elif MACOSX
+
+#elif LINUX
+	//NONE
+#endif
+
+}
+unsigned char OvrvisionPro::UserDataAccessGetData(){
+
+	int value = 0;
+	bool automode_none = false;
+
+	if (!m_isOpen)
+		return 0x00;
+
+#ifdef WIN32
+	m_pODS->GetCameraSetting(OV_CAMSET_DATA, &value, &automode_none);
+#elif MACOSX
+
+#elif LINUX
+	//NONE
+#endif
+	return (unsigned char)value;
+}
+void OvrvisionPro::UserDataAccessSetData(unsigned char value){
+	if (!m_isOpen)
+		return;
+
+	int value_int = (int)value;
+	value_int |= 0x00002000;	//cmd
+
+#ifdef WIN32
+	m_pODS->SetCameraSetting(OV_CAMSET_DATA, value_int, false);
+#elif MACOSX
+
+#elif LINUX
+	//NONE
+#endif
+
+}
+void OvrvisionPro::UserDataAccessSave(){
+	if (!m_isOpen)
+		return;
+
+#ifdef WIN32
+	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00003000, false);
+#elif MACOSX
+
+#elif LINUX
+	//NONE
+#endif
+}
+
+void OvrvisionPro::UserDataAccessCheckSumAddress(){
+	if (!m_isOpen)
+		return;
+
+#ifdef WIN32
+	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00005000, false);
+#elif MACOSX
+
+#elif LINUX
+	//NONE
+#endif
+}
+
+bool OvrvisionPro::CameraParamSaveEEPROM(){
 	OvrvisionSetting ovrset(this);
-	return ovrset.SaveStatusEEPROM();
+	
+	//Distort param is readed.
+	ovrset.m_propExposure = GetCameraExposure();
+	ovrset.m_propGain = GetCameraGain();
+	ovrset.m_propBLC = GetCameraBLC();
+	ovrset.m_propWhiteBalanceR = GetCameraWhiteBalanceR();
+	ovrset.m_propWhiteBalanceG = GetCameraWhiteBalanceG();
+	ovrset.m_propWhiteBalanceB = GetCameraWhiteBalanceB();
+	ovrset.m_propWhiteBalanceAuto = (char)GetCameraWhiteBalanceAuto();
+
+	return ovrset.WriteEEPROM(WRITE_EEPROM_FLAG_CAMERASETWR);
 }
 
 /*

@@ -254,13 +254,13 @@ void OvrvisionCalibration::SaveCalibrationParameter(OvrvisionPro* system)
 	ovrset.m_rightCameraDistortion = m_cameraCalibration[OV_CAMEYE_LEFT].distortion;
 	ovrset.m_R1 = m_cameraCalibration[OV_CAMEYE_RIGHT].R;
 	ovrset.m_R2 = m_cameraCalibration[OV_CAMEYE_LEFT].R;
-	ovrset.m_P1 = m_cameraCalibration[OV_CAMEYE_RIGHT].P;
-	ovrset.m_P2 = m_cameraCalibration[OV_CAMEYE_LEFT].P;
+	//ovrset.m_P1 = m_cameraCalibration[OV_CAMEYE_RIGHT].P; //none
+	//ovrset.m_P2 = m_cameraCalibration[OV_CAMEYE_LEFT].P; //none
 	ovrset.m_trans = m_relate_rot * m_relate_trans;
-	ovrset.m_focalPoint = 3.2799f;
+	ovrset.m_focalPoint.at<float>(0) = 4.2799f;
 
 	//Write
-	ovrset.WriteEEPROM();
+	ovrset.WriteEEPROM(WRITE_EEPROM_FLAG_ALLWR);	//WRITE_EEPROM_FLAG_LENSPARAMWR
 }
 
 

@@ -22,11 +22,12 @@ namespace ovrvision_app
         public void ApplyItem()
         {
             tbExposure.Value = ovrSys.GetExposure();
-            //tbGain.Value = ovrSys.GetGain();  //ちょっと不具合を調査中
+            tbGain.Value = ovrSys.GetGain();
+            tbBLC.Value = ovrSys.GetBLC();
             tbWBRGain.Value = ovrSys.GetWhiteBalanceR();
             tbWBGGain.Value = ovrSys.GetWhiteBalanceG();
             tbWBBGain.Value = ovrSys.GetWhiteBalanceB();
-            cbWBAuto.Checked = true;
+            cbWBAuto.Checked = ovrSys.GetWhiteBalanceAutoMode();
         }
 
         private void buttonOK_Click(object sender, EventArgs e)
@@ -43,7 +44,13 @@ namespace ovrvision_app
         private void tbGain_ValueChanged(object sender, EventArgs e)
         {
             tboxGain.Text = tbGain.Value.ToString();
-            //ovrSys.SetGain(tbGain.Value);
+            ovrSys.SetGain(tbGain.Value);
+        }
+
+        private void tbBLC_ValueChanged(object sender, EventArgs e)
+        {
+            tboxBLC.Text = tbBLC.Value.ToString();
+            ovrSys.SetBLC(tbBLC.Value);
         }
 
         private void tbWBRGain_ValueChanged(object sender, EventArgs e)
@@ -66,7 +73,25 @@ namespace ovrvision_app
 
         private void cbWBAuto_CheckedChanged(object sender, EventArgs e)
         {
+            if (cbWBAuto.Checked)
+            {
+                tbWBRGain.Enabled = false;
+                tbWBGGain.Enabled = false;
+                tbWBBGain.Enabled = false;
+            }
+            else
+            {
+                tbWBRGain.Enabled = true;
+                tbWBGGain.Enabled = true;
+                tbWBBGain.Enabled = true;
+            }
 
+            ovrSys.SetWhiteBalanceAutoMode(cbWBAuto.Checked);
+        }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            ovrSys.SaveCamStatusToEEPROM();
         }
     }
 }

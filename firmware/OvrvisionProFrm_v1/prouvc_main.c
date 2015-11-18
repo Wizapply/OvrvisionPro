@@ -44,6 +44,7 @@
 
 #include "prouvc_main.h"
 #include "ov5653_sensor.h"		// OV5653 sensor
+#include "eeprom_data.h"		// EEPROM User data
 #include "cyfxgpif2config.h"	// GPIF program design
 
 ////////////////////// Global Variables //////////////////////
@@ -455,6 +456,9 @@ static void UVCApplnInit (void)
     /* Image sensor initialization. Reset and then initialize with appropriate configuration. */
     OV5653SensorInit();
 
+    /* EEPROM Load and initialization */
+    LoadInitUserData_EEPROMtoRAM();
+
     /* USB initialization. */
     apiRetStatus = CyU3PUsbStart ();
     if (apiRetStatus != CY_U3P_SUCCESS)
@@ -692,7 +696,7 @@ static void UVCHandleProcessingUnitRqts(void)
          case OVRPRO_UVC_PU_BRIGHTNESS_CONTROL:	//Brightness
 			switch (bRequest)
 			{
-			  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 1 byte. */
+			  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 2 byte. */
 				  glEp0Buffer[0] = 2;
 				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
 				  break;
@@ -732,47 +736,47 @@ static void UVCHandleProcessingUnitRqts(void)
 		 case OVRPRO_UVC_PU_GAIN_CONTROL:	//Gain
 			switch (bRequest)
 			{
-			  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 1 byte. */
-				  glEp0Buffer[0] = 1;
+			  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 2 byte. */
+				  glEp0Buffer[0] = 2;
 				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
 				  break;
 			  case CY_FX_USB_UVC_GET_CUR_REQ: /* Current value. */
-				  glEp0Buffer[0] = OV5653SensorGetGain();
-				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
+				  (*pEp0Buffer16)= (uint16_t)OV5653SensorGetGain();
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
 				  break;
-			  case CY_FX_USB_UVC_GET_MIN_REQ: /* Minimum  */
-				  glEp0Buffer[0] = 1;
-				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
+			  case CY_FX_USB_UVC_GET_MIN_REQ: /* Minimum */
+				  (*pEp0Buffer16)= (uint16_t)0;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
 				  break;
 			  case CY_FX_USB_UVC_GET_MAX_REQ: /* Maximum */
-				  glEp0Buffer[0] = 0x2F;
-				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
+				  (*pEp0Buffer16)= (uint16_t)0x2F;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
 				  break;
 			  case CY_FX_USB_UVC_GET_RES_REQ: /* Resolution */
-				  glEp0Buffer[0] = 1;
-				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
+				  (*pEp0Buffer16)= (uint16_t)1;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
 				  break;
-			  case CY_FX_USB_UVC_GET_INFO_REQ: /* Both GET and SET requests are supported, auto modes not supported */
-				  glEp0Buffer[0] = 3;
-				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
+			  case CY_FX_USB_UVC_GET_INFO_REQ: /* Both GET and SET requests are supported, auto modes supported */
+				  (*pEp0Buffer16)= (uint16_t)3;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
 				  break;
 			  case CY_FX_USB_UVC_GET_DEF_REQ: /* Default value */
-				  glEp0Buffer[0] = 8;
-				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
+				  (*pEp0Buffer16)= (uint16_t)8;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
 				  break;
-			  case CY_FX_USB_UVC_SET_CUR_REQ: /* Update value. */
+			  case CY_FX_USB_UVC_SET_CUR_REQ: /* Update value */
 				  apiRetStatus = CyU3PUsbGetEP0Data (CY_FX_UVC_MAX_PROBE_SETTING_ALIGNED, glEp0Buffer, &readCount);
 				  if (apiRetStatus == CY_U3P_SUCCESS)
 					  OV5653SensorSetGain(glEp0Buffer[0]);
 				  break;
 			  default: CyU3PUsbStall (0, CyTrue, CyFalse);
 				  break;
-			}
-			break;
+			 }
+			 break;
 		 case OVRPRO_UVC_PU_SHARPNESS_CONTROL:	//Sharpness
 				switch (bRequest)
 				{
-				  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 1 byte. */
+				  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 2 byte. */
 					  glEp0Buffer[0] = 2;
 					  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
 					  break;
@@ -812,7 +816,7 @@ static void UVCHandleProcessingUnitRqts(void)
 		 case OVRPRO_UVC_PU_GAMMA_CONTROL:	//Gamma
 			switch (bRequest)
 			{
-			  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 1 byte. */
+			  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 2 byte. */
 				  glEp0Buffer[0] = 2;
 				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
 				  break;
@@ -852,7 +856,7 @@ static void UVCHandleProcessingUnitRqts(void)
 		 case OVRPRO_UVC_PU_WHITE_BALANCE_TEMPERATURE_CONTROL:	//WBT
 			switch (bRequest)
 			{
-			  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 1 byte. */
+			  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 2 byte. */
 				  glEp0Buffer[0] = 2;
 				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
 				  break;
@@ -929,6 +933,86 @@ static void UVCHandleProcessingUnitRqts(void)
 				  break;
 			}
 			break;
+		case OVRPRO_UVC_PU_BACKLIGHT_COMPENSATION_CONTROL:	//BLC
+			switch (bRequest)
+			{
+			  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 2 byte. */
+				  glEp0Buffer[0] = 2;
+				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_CUR_REQ: /* Current value. */
+				  (*pEp0Buffer16)= OV5653SensorGetBLC();
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_MIN_REQ: /* Minimum */
+				  (*pEp0Buffer16)= (uint16_t)0;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_MAX_REQ: /* Maximum */
+				  (*pEp0Buffer16)= (uint16_t)1023;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_RES_REQ: /* Resolution */
+				  (*pEp0Buffer16)= (uint16_t)1;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_INFO_REQ: /* Both GET and SET requests are supported, auto modes supported */
+				  (*pEp0Buffer16)= (uint16_t)3;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_DEF_REQ: /* Default value */
+				  (*pEp0Buffer16)= (uint16_t)32;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_SET_CUR_REQ: /* Update value */
+				  apiRetStatus = CyU3PUsbGetEP0Data (CY_FX_UVC_MAX_PROBE_SETTING_ALIGNED, glEp0Buffer, &readCount);
+				  if (apiRetStatus == CY_U3P_SUCCESS)
+					  OV5653SensorSetBLC((*pEp0Buffer16));
+				  break;
+			  default: CyU3PUsbStall (0, CyTrue, CyFalse);
+				  break;
+			}
+			break;
+		case OVRPRO_UVC_PU_CONTRAST_CONTROL:	//Data EEPROM
+			switch (bRequest)
+			{
+			  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 2 byte. */
+				  glEp0Buffer[0] = 2;
+				  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_CUR_REQ: /* Current value. */
+				  (*pEp0Buffer16)= (uint16_t)GetUserData();
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_MIN_REQ: /* Minimum */
+				  (*pEp0Buffer16)= (uint16_t)0;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_MAX_REQ: /* Maximum */
+				  (*pEp0Buffer16)= (uint16_t)0x7FFF;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_RES_REQ: /* Resolution */
+				  (*pEp0Buffer16)= (uint16_t)1;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_INFO_REQ: /* Both GET and SET requests are supported, auto modes supported */
+				  (*pEp0Buffer16)= (uint16_t)3;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_GET_DEF_REQ: /* Default value */
+				  (*pEp0Buffer16)= (uint16_t)0;
+				  CyU3PUsbSendEP0Data (2, (uint8_t *)glEp0Buffer);
+				  break;
+			  case CY_FX_USB_UVC_SET_CUR_REQ: /* Update value */
+				  apiRetStatus = CyU3PUsbGetEP0Data (CY_FX_UVC_MAX_PROBE_SETTING_ALIGNED, glEp0Buffer, &readCount);
+				  if (apiRetStatus == CY_U3P_SUCCESS)
+					  UserDataProcessor((*pEp0Buffer16));
+				  break;
+			  default: CyU3PUsbStall (0, CyTrue, CyFalse);
+				  break;
+			}
+			break;
 		default:
 			CyU3PUsbStall (0, CyTrue, CyFalse);
 			break;
@@ -946,10 +1030,10 @@ static void UVCHandleCameraTerminalRqts(void)
 		case OVRPRO_UVC_CT_ROLL_ABSOLUTE_CONTROL:	//Roll
 			switch (bRequest)
 			{
-		  	  	  case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 1 byte. */
-		  	  		  glEp0Buffer[0] = 1;
-		  	  		  CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
-		  	  		  break;
+		  	  	case CY_FX_USB_UVC_GET_LEN_REQ: /* Length of data = 1 byte. */
+		  	  		glEp0Buffer[0] = 1;
+		  	  		CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
+		  	  		break;
 				case CY_FX_USB_UVC_GET_INFO_REQ: /* Support GET/SET queries. */
 					glEp0Buffer[0] = 3;
 					CyU3PUsbSendEP0Data (1, (uint8_t *)glEp0Buffer);
