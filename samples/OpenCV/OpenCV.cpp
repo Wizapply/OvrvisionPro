@@ -27,6 +27,8 @@ int main(int argc, char* argv[])
 			ovrvision.GetCamImageBGRA(left.data, Cameye::OV_CAMEYE_LEFT);
 			ovrvision.GetCamImageBGRA(right.data, Cameye::OV_CAMEYE_RIGHT);
 
+			// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
+
 			// Show frame data
 			imshow("Left", left);
 			//imshow("Right", right);

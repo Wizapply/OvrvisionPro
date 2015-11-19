@@ -58,8 +58,17 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\bin\x86;..\..\3rdparty\opencv\build\x86\vc12\staticlib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\bin\x86;..\..\3rdparty\opencv\build\x86\vc12\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_videoio300d.lib;ovrvisiond.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>if not exist $(SolutionDir)..\..\bin\x86\opencv_core300d.dll copy ..\..\3rdparty\opencv\build\x86\vc12\bin\opencv_core300d.dll $(SolutionDir)..\..\bin\x86
+if not exist $(SolutionDir)..\..\bin\x86\opencv_highgui300d.dll copy ..\..\3rdparty\opencv\build\x86\vc12\bin\opencv_highgui300d.dll $(SolutionDir)..\..\bin\x86
+if not exist $(SolutionDir)..\..\bin\x86\opencv_imgcodecs300d.dll copy ..\..\3rdparty\opencv\build\x86\vc12\bin\opencv_imgcodecs300d.dll $(SolutionDir)..\..\bin\x86
+if not exist $(SolutionDir)..\..\bin\x86\opencv_imgproc300d.dll copy ..\..\3rdparty\opencv\build\x86\vc12\bin\opencv_imgproc300d.dll $(SolutionDir)..\..\bin\x86
+if not exist $(SolutionDir)..\..\bin\x86\opencv_videoio300d.dll copy ..\..\3rdparty\opencv\build\x86\vc12\bin\opencv_videoio300d.dll $(SolutionDir)..\..\bin\x86
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -81,6 +90,14 @@
       <AdditionalLibraryDirectories>..\..\bin\x86;..\..\3rdparty\opencv\build\x86\vc12\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>opencv_core300.lib;opencv_highgui300.lib;opencv_imgcodecs300.lib;opencv_imgproc300.lib;opencv_videoio300.lib;ovrvision.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>if not exist $(SolutionDir)..\..\bin\x86\opencv_core300.dll copy ..\..\3rdparty\opencv\build\x86\vc12\bin\opencv_core300.dll $(SolutionDir)..\..\bin\x86
+if not exist $(SolutionDir)..\..\bin\x86\opencv_highgui300.dll copy ..\..\3rdparty\opencv\build\x86\vc12\bin\opencv_highgui300.dll $(SolutionDir)..\..\bin\x86
+if not exist $(SolutionDir)..\..\bin\x86\opencv_imgcodecs300.dll copy ..\..\3rdparty\opencv\build\x86\vc12\bin\opencv_imgcodecs300.dll $(SolutionDir)..\..\bin\x86
+if not exist $(SolutionDir)..\..\bin\x86\opencv_imgproc300.dll copy ..\..\3rdparty\opencv\build\x86\vc12\bin\opencv_imgproc300.dll $(SolutionDir)..\..\bin\x86
+if not exist $(SolutionDir)..\..\bin\x86\opencv_videoio300.dll copy ..\..\3rdparty\opencv\build\x86\vc12\bin\opencv_videoio300.dll $(SolutionDir)..\..\bin\x86
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\samples\OpenCV\OpenCV.cpp" />
