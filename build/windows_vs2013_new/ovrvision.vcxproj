@@ -216,6 +216,7 @@
     <ClCompile Include="..\..\src\lib_src\ovrvision_ar_metaio.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_calibration.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_csharp.cpp" />
+    <ClCompile Include="..\..\src\lib_src\ovrvision_csharp_unity.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_ds.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_linux.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_pro.cpp" />

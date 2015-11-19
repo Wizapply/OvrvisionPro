@@ -76,6 +76,9 @@
     <ClCompile Include="..\..\src\lib_src\ovrvision_setting.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_csharp_unity.cpp">
+      <Filter>ソース ファイル\C#</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ovrvision_ar.h">

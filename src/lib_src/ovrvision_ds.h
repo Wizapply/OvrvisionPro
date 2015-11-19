@@ -129,6 +129,8 @@ private:
 	int				m_rate;
 	int				m_latestPixelDataSize;
 	int				m_maxPixelDataSize;
+
+	int				m_isUpdate;
 	
 	//Windows DirectShow
 	IGraphBuilder*	m_pGraph;

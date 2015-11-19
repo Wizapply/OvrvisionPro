@@ -91,7 +91,9 @@ namespace ovrvision_app
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            ovrSys.SaveCamStatusToEEPROM();
+            if (ovrSys.SaveCamStatusToEEPROM()) {
+                System.Windows.Forms.MessageBox.Show(this, "The camera setting was saved successfully.", "OvrvisionPro");
+            }
         }
     }
 }

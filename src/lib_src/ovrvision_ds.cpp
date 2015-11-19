@@ -139,7 +139,6 @@ public:
 
 			//Deta copy
 			EnterCriticalSection(&m_critSection);
-				m_pPixels[0] = 0x00;
   				memcpy(m_pPixels, ptrBuffer, m_LatestBufferLength);
 			LeaveCriticalSection(&m_critSection);
 
@@ -612,16 +611,18 @@ int OvrvisionDirectShow::GetBayer16Image(unsigned char* pImage, bool nonblocking
 	if( result != WAIT_OBJECT_0)
 		return RESULT_FAILED;
 
-	if (pImage && m_pSGCallback->m_pPixels[0] != 0x00) {
+	result = RESULT_FAILED;
+	if (pImage) {
 		m_latestPixelDataSize = m_pSGCallback->m_LatestBufferLength;
 		EnterCriticalSection(&m_pSGCallback->m_critSection);
 			memcpy(pImage, m_pSGCallback->m_pPixels, m_pSGCallback->m_LatestBufferLength);	//Data copy
+			result = RESULT_OK;
 		LeaveCriticalSection(&m_pSGCallback->m_critSection);
 	}
 
 	ResetEvent(m_pSGCallback->m_hEvent);
 
-	return RESULT_OK;
+	return result;
 }
 
 //Set camera setting

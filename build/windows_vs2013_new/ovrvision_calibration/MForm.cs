@@ -166,9 +166,9 @@ namespace ovrvision_calibration
 			{
                 textBox1.AppendText(String.Format("Setup in the data..... "));
 				Ovrvision.CalibSolveStereoParameter();
-				textBox1.AppendText(String.Format("Success.\r\n"));
+				textBox1.AppendText(String.Format("OK!\r\n"));
                 Thread.Sleep(1000); //1s wait
-                textBox1.AppendText(String.Format("Calibration params has been eeprom saved.\r\n"));
+                textBox1.AppendText(String.Format("The calibration params was saved successfully.\r\n"));
 
                 //Close
                 ThreadEnd = true;

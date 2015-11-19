@@ -28,6 +28,30 @@
 #include "ovrvision_ar.h"
 #endif
 
+#if WIN32
+#define SUPPORT_D3D9 1
+#define SUPPORT_D3D11 1 // comment this out if you don't have D3D11 header/library files
+#define SUPPORT_OPENGL 1
+#endif
+
+#if MACOSX
+#define SUPPORT_OPENGL 1
+#endif
+
+#if SUPPORT_D3D9
+#include <d3d9.h>
+#endif
+#if SUPPORT_D3D11
+#include <d3d11.h>
+#endif
+#if SUPPORT_OPENGL
+#if WIN32
+#include <gl/GL.h>
+#else
+#include <OpenGL/gl.h>
+#endif
+#endif
+
 /////////// VARS AND DEFS ///////////
 
 //Exporter
@@ -39,6 +63,9 @@
 
 //AR deta size
 #define FLOATDATA_DATA_OFFSET	(10)
+
+//Size
+#define BGR_DATASIZE	(3)
 
 //Main Ovrvision Object
 static OVR::OvrvisionPro* g_ovOvrvision = NULL;	// Always open
@@ -129,7 +156,7 @@ CSHARP_EXPORT void ovGetCamImageRGB(unsigned char* pImage, int eye, int useAR)
 	//Get image
 	unsigned char* pData = g_ovOvrvision->GetCamImageBGRA((OVR::Cameye)eye);
 
-	int length = g_ovOvrvision->GetCamWidth() * g_ovOvrvision->GetCamHeight() * 3;
+	int length = g_ovOvrvision->GetCamWidth() * g_ovOvrvision->GetCamHeight() * BGR_DATASIZE;
 	int offsetlen = g_ovOvrvision->GetCamPixelsize();
 
 	//Image copy
@@ -159,7 +186,7 @@ CSHARP_EXPORT void ovGetCamImageBGR(unsigned char* pImage, int eye, int useAR)
 	//Get image
 	unsigned char* pData = g_ovOvrvision->GetCamImageBGRA((OVR::Cameye)eye);
 
-	int length = g_ovOvrvision->GetCamWidth() * g_ovOvrvision->GetCamHeight() * 3;
+	int length = g_ovOvrvision->GetCamWidth() * g_ovOvrvision->GetCamHeight() * BGR_DATASIZE;
 	int offsetlen = g_ovOvrvision->GetCamPixelsize();
 
 	//Image copy
@@ -192,7 +219,7 @@ CSHARP_EXPORT void ovGetCamImageForUnity(unsigned char* pImagePtr_Left,
 	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 	unsigned char* pRight = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
-	int length = g_ovOvrvision->GetCamWidth() * g_ovOvrvision->GetCamHeight() * 3;
+	int length = g_ovOvrvision->GetCamWidth() * g_ovOvrvision->GetCamHeight() * g_ovOvrvision->GetCamPixelsize();
 	int offsetlen = g_ovOvrvision->GetCamPixelsize();
 
 	//Image copy
@@ -210,6 +237,75 @@ CSHARP_EXPORT void ovGetCamImageForUnity(unsigned char* pImagePtr_Left,
 		pImagePtr_Right[i + 1] = pRight[i + 1];
 		pImagePtr_Right[i + 2] = pRight[i + 0];
 		pImagePtr_Right[i + 3] = pRight[i + 3];
+	}
+
+	//AR System
+	if (useAR) {
+		if (g_ovOvrvisionAR != NULL) g_ovOvrvisionAR->SetImageBGRA(pLeft);
+	}
+}
+
+//for Unity extern
+extern float g_Time;
+extern int g_DeviceType;
+extern ID3D11Device* g_D3D11Device;
+extern IDirect3DDevice9* g_D3D9Device;
+
+// void ovGetCamImageForUnity(unsigned char* pImagePtr_Left, unsigned char* pImagePtr_Right, int qt)
+CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr_Right, int qt, int useAR)
+{
+	if (g_ovOvrvision == NULL)
+		return;
+
+	//Get image
+	g_ovOvrvision->PreStoreCamData((OVR::Camqt)qt);	//Renderer
+	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
+	unsigned char* pRight = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
+
+	int length = g_ovOvrvision->GetCamWidth() * g_ovOvrvision->GetCamHeight() * g_ovOvrvision->GetCamPixelsize();
+	int offsetlen = g_ovOvrvision->GetCamPixelsize();
+
+	if (g_DeviceType == 2) {	//Direct11
+		ID3D11DeviceContext* ctx = NULL;
+		ID3D11Device* device = (ID3D11Device*)g_D3D11Device;
+		device->GetImmediateContext(&ctx);
+
+		D3D11_TEXTURE2D_DESC desc_left, desc_right;
+		ID3D11Texture2D* d3dtex_left = (ID3D11Texture2D*)pTexPtr_Left;
+		ID3D11Texture2D* d3dtex_right = (ID3D11Texture2D*)pTexPtr_Right;
+
+		d3dtex_left->GetDesc(&desc_left);
+		d3dtex_right->GetDesc(&desc_right);
+
+		ctx->UpdateSubresource(d3dtex_left, 0, NULL, pLeft, g_ovOvrvision->GetCamWidth() * offsetlen, 0);
+		ctx->UpdateSubresource(d3dtex_right, 0, NULL, pRight, g_ovOvrvision->GetCamWidth() * offsetlen, 0);
+
+		ctx->Release();
+	}
+	else if (g_DeviceType == 1) {	//DirectX9
+		IDirect3DTexture9* d3dtex_left = (IDirect3DTexture9*)pTexPtr_Left;
+		IDirect3DTexture9* d3dtex_right = (IDirect3DTexture9*)pTexPtr_Right;
+		D3DSURFACE_DESC desc_left, desc_right;
+		d3dtex_left->GetLevelDesc(0, &desc_left);
+		d3dtex_left->GetLevelDesc(0, &desc_right);
+
+		D3DLOCKED_RECT lr;
+		d3dtex_left->LockRect(0, &lr, NULL, 0);
+		memcpy((unsigned char*)lr.pBits, pLeft, length);
+		d3dtex_left->UnlockRect(0);
+
+		d3dtex_right->LockRect(0, &lr, NULL, 0);
+		memcpy((unsigned char*)lr.pBits, pRight, length);
+		d3dtex_right->UnlockRect(0);
+	}
+	else if (g_DeviceType == 0) {	//OpenGL
+		GLuint gltex_left = (GLuint)(pTexPtr_Left);
+		GLuint gltex_right = (GLuint)(pTexPtr_Right);
+
+		glBindTexture(GL_TEXTURE_2D, gltex_left);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_RGBA, GL_UNSIGNED_BYTE, pLeft);
+		glBindTexture(GL_TEXTURE_2D, gltex_right);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_RGBA, GL_UNSIGNED_BYTE, pRight);
 	}
 
 	//AR System

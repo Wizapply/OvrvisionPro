@@ -165,6 +165,9 @@ public:
 	bool GetCameraWhiteBalanceAuto();
 	void SetCameraWhiteBalanceAuto(bool value);
 
+	//Thread sync
+	void SetCameraSyncMode(bool value);
+
 	//Parameter EEPROM
 	void UserDataAccessUnlock();
 	void UserDataAccessLock();
@@ -201,6 +204,7 @@ private:
 	float			m_rightgap[3];	//vector
 
 	bool			m_isOpen;
+	bool			m_isCameraSync;
 
 	//initialize setting
 	void InitCameraSetting();

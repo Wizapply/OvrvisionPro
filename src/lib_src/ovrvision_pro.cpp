@@ -64,6 +64,7 @@ OvrvisionPro::OvrvisionPro()
 	m_rightgap[0] = m_rightgap[1] = m_rightgap[2] = 0.0f;
 
 	m_isOpen = false;
+	m_isCameraSync = false;
 }
 
 OvrvisionPro::~OvrvisionPro()
@@ -165,7 +166,6 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 
 	//Initialize OpenCL system
 	m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height);
-	//m_pOpenCL->createProgram("kernel.cl");	//今はパスを直接入れているが、変更予定
 
 	//Opened
 	m_isOpen = true;
@@ -212,11 +212,12 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 	cv::Mat raw8_left(cv::Size(m_width, m_height), CV_8UC4, m_pPixels[0]);
 	cv::Mat raw8_right(cv::Size(m_width, m_height), CV_8UC4, m_pPixels[1]);
 
-	m_pODS->GetBayer16Image(raw8_double.data, false);
-	if (qt == OVR::Camqt::OV_CAMQT_DMSRMP)
-		m_pOpenCL->DemosaicRemap(raw8_double, raw8_left, raw8_right);	//OpenCL
-	else if (qt == OVR::Camqt::OV_CAMQT_DMS)
-		m_pOpenCL->Demosaic(raw8_double, raw8_left, raw8_right);		//OpenCL
+	if (m_pODS->GetBayer16Image(raw8_double.data, !m_isCameraSync) == RESULT_OK) {
+		if (qt == OVR::Camqt::OV_CAMQT_DMSRMP)
+			m_pOpenCL->DemosaicRemap(raw8_double, raw8_left, raw8_right);	//OpenCL
+		else if (qt == OVR::Camqt::OV_CAMQT_DMS)
+			m_pOpenCL->Demosaic(raw8_double, raw8_left, raw8_right);		//OpenCL
+	}
 }
 
 unsigned char* OvrvisionPro::GetCamImageBGRA(OVR::Cameye eye)
@@ -276,6 +277,11 @@ float OvrvisionPro::GetCamFocalPoint(){
 }
 float OvrvisionPro::GetHMDRightGap(int at){
 	return m_rightgap[at];
+}
+
+//Thread sync
+void OvrvisionPro::SetCameraSyncMode(bool value){
+	m_isCameraSync = value;
 }
 
 //Camera Propaty

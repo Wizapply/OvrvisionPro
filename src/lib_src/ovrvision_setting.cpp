@@ -211,6 +211,8 @@ bool OvrvisionSetting::ReadEEPROM() {
 //Write EEPROM Setting
 bool OvrvisionSetting::WriteEEPROM(unsigned char flag) {
 
+	unsigned char chsum = 0;	//for checksum
+
 	if (system == NULL)
 		return false;
 
@@ -255,6 +257,9 @@ bool OvrvisionSetting::WriteEEPROM(unsigned char flag) {
 
 	//----26 byte----
 
+	for (int i = 0; i < 6; i++)
+		chsum = chsum^0x00;
+
 	//Reserved
 
 	//----32 byte----
@@ -294,13 +299,9 @@ bool OvrvisionSetting::WriteEEPROM(unsigned char flag) {
 
 	//save eeprom
 	m_pSystem->UserDataAccessSave();
-	//checksum
-	m_pSystem->UserDataAccessCheckSumAddress();
-	unsigned char checksum = m_pSystem->UserDataAccessGetData();//1byte
-
-	//äJî≠íÜÇ≈Ç∑ÅB
-	//for (int i = 0; i < 510; i++)
-	//	chsum = chsum^g_userDataBuffer[i];
+	//checksum developing
+	//m_pSystem->UserDataAccessCheckSumAddress();
+	//unsigned char checksum = m_pSystem->UserDataAccessGetData();//1byte
 
 	m_pSystem->UserDataAccessLock();
 
