@@ -1,9 +1,6 @@
 // OpenCV.cpp : コンソール アプリケーションのエントリ ポイントを定義します。
 //
 
-#include "stdafx.h"
-
-
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include "ovrvision_pro.h"
