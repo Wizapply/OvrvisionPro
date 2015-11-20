@@ -229,9 +229,7 @@ CSHARP_EXPORT void ovGetCamImageForUnity(unsigned char* pImagePtr_Left,
 		pImagePtr_Left[i + 1] = pLeft[i + 1];	//G
 		pImagePtr_Left[i + 2] = pLeft[i + 0];	//B
 		pImagePtr_Left[i + 3] = pLeft[i + 3];	//A
-	}
 
-	for (i = 0; i < length; i+=offsetlen) {
 		//Right Eye
 		pImagePtr_Right[i + 0] = pRight[i + 2];
 		pImagePtr_Right[i + 1] = pRight[i + 1];

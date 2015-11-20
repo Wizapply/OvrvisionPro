@@ -30,6 +30,14 @@ limitations under the License.
 // Include the Oculus SDK
 #include "OVR_CAPI_D3D.h"
 
+// OvrvisionPro
+#include <ovrvision_pro.h>
+
+extern int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext, int w, int h, float zsize);
+extern int RendererCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext);
+extern int SetCamImage(ID3D11DeviceContext* DeviceContext, unsigned char* camImage, unsigned int imagesize);
+extern int CleanCamPlane();
+
 //------------------------------------------------------------
 // ovrSwapTextureSet wrapper class that also maintains the render target views
 // needed for D3D11 rendering.
@@ -110,6 +118,9 @@ static bool MainLoop(bool retryCreate)
     Camera         * mainCam = nullptr;
 	D3D11_TEXTURE2D_DESC td = {};
 
+	OVR::OvrvisionPro ovrvision;
+	int width = 0, height = 0, pixelsize=4;
+
 	ovrHmd HMD;
 	ovrGraphicsLuid luid;
 	ovrResult result = ovr_Create(&HMD, &luid);
@@ -130,20 +141,20 @@ static bool MainLoop(bool retryCreate)
 	{
 		ovrSizei idealSize = ovr_GetFovTextureSize(HMD, (ovrEyeType)eye, hmdDesc.DefaultEyeFov[eye], 1.0f);
 		pEyeRenderTexture[eye] = new OculusTexture();
-        if (!pEyeRenderTexture[eye]->Init(HMD, idealSize.w, idealSize.h))
-        {
-            if (retryCreate) goto Done;
-	        VALIDATE(OVR_SUCCESS(result), "Failed to create eye texture.");
-        }
+		if (!pEyeRenderTexture[eye]->Init(HMD, idealSize.w, idealSize.h))
+		{
+			if (retryCreate) goto Done;
+			VALIDATE(OVR_SUCCESS(result), "Failed to create eye texture.");
+		}
 		pEyeDepthBuffer[eye] = new DepthBuffer(DIRECTX.Device, idealSize.w, idealSize.h);
 		eyeRenderViewport[eye].Pos.x = 0;
 		eyeRenderViewport[eye].Pos.y = 0;
 		eyeRenderViewport[eye].Size = idealSize;
-        if (!pEyeRenderTexture[eye]->TextureSet)
-        {
-            if (retryCreate) goto Done;
-            VALIDATE(false, "Failed to create texture.");
-        }
+		if (!pEyeRenderTexture[eye]->TextureSet)
+		{
+			if (retryCreate) goto Done;
+			VALIDATE(false, "Failed to create texture.");
+		}
 	}
 
 	// Create a mirror to see on the monitor.
@@ -171,6 +182,14 @@ static bool MainLoop(bool retryCreate)
 
     bool isVisible = true;
 
+	if (ovrvision.Open(0, OVR::Camprop::OV_CAMVR_FULL)) {
+		width = ovrvision.GetCamWidth();
+		height = ovrvision.GetCamHeight();
+		pixelsize = ovrvision.GetCamPixelsize();
+
+		InitializeCamPlane(DIRECTX.Device, DIRECTX.Context, width, height, 0.95f);
+	}
+
 	// Main loop
 	while (DIRECTX.HandleMessages())
 	{
@@ -193,6 +212,8 @@ static bool MainLoop(bool retryCreate)
         double           sensorSampleTime = ovr_GetTimeInSeconds();
 		ovrTrackingState hmdState = ovr_GetTrackingState(HMD, frameTime, ovrTrue);
 		ovr_CalcEyePoses(hmdState.HeadPose.ThePose, HmdToEyeViewOffset, EyeRenderPose);
+		
+		ovrvision.PreStoreCamData(OVR::Camqt::OV_CAMQT_DMSRMP);
 
 		// Render Scene to Eye Buffers
         if (isVisible)
@@ -225,7 +246,12 @@ static bool MainLoop(bool retryCreate)
 			    XMMATRIX prod = XMMatrixMultiply(view, proj);
 
 				//Camera View
-
+				if (eye == 0)
+					SetCamImage(DIRECTX.Context, ovrvision.GetCamImageBGRA(OVR::Cameye::OV_CAMEYE_LEFT), width*pixelsize);
+				else
+					SetCamImage(DIRECTX.Context, ovrvision.GetCamImageBGRA(OVR::Cameye::OV_CAMEYE_RIGHT), width*pixelsize);
+				
+				RendererCamPlane(DIRECTX.Device, DIRECTX.Context);
 		    }
         }
 
@@ -268,6 +294,8 @@ Done:
     }
 	DIRECTX.ReleaseDevice();
 	ovr_Destroy(HMD);
+
+	ovrvision.Close();
 
     // Retry on ovrError_DisplayLost
     return retryCreate || OVR_SUCCESS(result) || (result == ovrError_DisplayLost);

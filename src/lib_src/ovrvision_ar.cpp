@@ -52,7 +52,7 @@ OvrvisionAR::OvrvisionAR(float markersize_meter, int w, int h, float focalPoint)
 
 	//Default camera matrix
 	cv::Mat cameramat(3,3,CV_32FC1);
-	cameramat.at<float>(0) = focalPoint;	//f=3.1mm
+	cameramat.at<float>(0) = focalPoint;	//f
 	cameramat.at<float>(1) = 0.0f;
 	cameramat.at<float>(2) = (float)(m_width / 2);
 	cameramat.at<float>(3) = 0.0f;
@@ -179,9 +179,9 @@ void OvrvisionAR::Render()
 		dt->centerPtOfImage.x = markers[i].getCenter().x;
 		dt->centerPtOfImage.y = markers[i].getCenter().y;
 
-		dt->translate.x = markers[i].Tvec.at<float>(0,0) * 10.0f;	//X *10
-		dt->translate.y = -markers[i].Tvec.at<float>(1,0) * 10.0f;	//Y *10
-		dt->translate.z = markers[i].Tvec.at<float>(2,0) * 10.0f;	//Z *10
+		dt->translate.x = markers[i].Tvec.at<float>(0,0);	//X
+		dt->translate.y = -markers[i].Tvec.at<float>(1,0);	//Y
+		dt->translate.z = markers[i].Tvec.at<float>(2,0);	//Z
 
 		cv::Mat Rot(3,3,CV_32FC1);
 		markers[i].Rvec.at<float>(0,0) = -markers[i].Rvec.at<float>(0,0);

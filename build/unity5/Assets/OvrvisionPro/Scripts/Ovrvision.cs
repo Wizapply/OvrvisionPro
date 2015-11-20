@@ -97,7 +97,7 @@ public class Ovrvision : MonoBehaviour
 		CameraRightGap = OvrPro.HMDCameraRightGap();
 
 		CameraPlaneLeft.transform.localPosition = new Vector3(0.0f, 0.0f, OvrPro.GetFloatPoint());
-		CameraPlaneRight.transform.localPosition = new Vector3(CameraRightGap.x, CameraRightGap.y, OvrPro.GetFloatPoint());
+		CameraPlaneRight.transform.localPosition = new Vector3(0.1f - CameraRightGap.x, CameraRightGap.y, OvrPro.GetFloatPoint() - CameraRightGap.z);
 	}
 
 	// Update is called once per frame

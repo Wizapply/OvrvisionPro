@@ -15,14 +15,16 @@ public class OvrvisionTracker : MonoBehaviour {
 
 	private float hideTime;
 	public float stopTime = 1.0f;
+
+	public float dasda = 5.0f;
 	
 	// ------ Function ------
 
 	// Tracker initialization
 	public void Start()
 	{
-		if (GameObject.Find("LeftCamera"))
-			OvrvisionProCameraObj = GameObject.Find("LeftCamera");
+		if (GameObject.Find("OvrvisionProCamera"))
+			OvrvisionProCameraObj = GameObject.Find("OvrvisionProCamera");
 
 		if (!MovieOVRCameraRig)
 		{
@@ -39,7 +41,7 @@ public class OvrvisionTracker : MonoBehaviour {
 		int i = elementNo * MARKERGET_ARG10;
 		if (!MovieOVRCameraRig)
 		{
-			this.transform.localPosition = new Vector3(markerGet[i + 1], markerGet[i + 2], markerGet[i + 3]);
+			this.transform.localPosition = new Vector3(markerGet[i + 1] * dasda, markerGet[i + 2] * dasda, markerGet[i + 3] * dasda);
 			this.transform.localRotation = new Quaternion(markerGet[i + 4], markerGet[i + 5], markerGet[i + 6], markerGet[i + 7]) * Quaternion.Euler(180, 0, 0);
 		}
 		else
