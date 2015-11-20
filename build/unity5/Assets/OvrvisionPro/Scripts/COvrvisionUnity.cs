@@ -185,9 +185,9 @@ public class COvrvisionUnity
             return;
 
 		if (useOvrvisionAR)
-			ovGetCamImageForUnityNative(leftPtr, rightPtr, useProcessingQuality, 0);
-		else
 			ovGetCamImageForUnityNative(leftPtr, rightPtr, useProcessingQuality, 1);
+		else
+			ovGetCamImageForUnityNative(leftPtr, rightPtr, useProcessingQuality, 0);
     }
 
     //Close the Ovrvision
@@ -302,9 +302,17 @@ public class COvrvisionUnity
 
 	public Vector3 HMDCameraRightGap()
 	{
-		return new Vector3( ovGetHMDRightGap(0) * 0.01f,
-							ovGetHMDRightGap(1) * 0.01f,
-							ovGetHMDRightGap(2) * 0.01f);	// 1/100
+		return new Vector3( ovGetHMDRightGap(0) * 0.001f,
+							ovGetHMDRightGap(1) * 0.001f,
+							ovGetHMDRightGap(2) * 0.001f);	//1/1000
+	}
+
+	public float GetFloatPoint()
+	{
+		if (!camStatus)
+			return 0.0f;
+
+		return ovGetFocalPoint() * 0.001f;	//1/1000
 	}
 
 	//AR
@@ -312,7 +320,7 @@ public class COvrvisionUnity
 	{
 		ovARRender();
 	}
-	public int OvrvisionARRender(System.IntPtr mdata, int datasize)
+	public int OvrvisionGetAR(System.IntPtr mdata, int datasize)
 	{
 		return ovARGetData(mdata, datasize);
 	}

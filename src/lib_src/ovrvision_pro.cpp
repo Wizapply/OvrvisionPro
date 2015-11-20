@@ -208,9 +208,9 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 	if (qt == OVR::Camqt::OV_CAMQT_NONE)
 		return;
 
-	cv::Mat raw8_double(cv::Size(m_width, m_height), CV_16UC1);
-	cv::Mat raw8_left(cv::Size(m_width, m_height), CV_8UC4, m_pPixels[0]);
-	cv::Mat raw8_right(cv::Size(m_width, m_height), CV_8UC4, m_pPixels[1]);
+	cv::Mat raw8_double(cv::Size(m_height, m_width), CV_16UC1);
+	cv::Mat raw8_left(cv::Size(m_height, m_width), CV_8UC4, m_pPixels[0]);
+	cv::Mat raw8_right(cv::Size(m_height, m_width), CV_8UC4, m_pPixels[1]);
 
 	if (m_pODS->GetBayer16Image(raw8_double.data, !m_isCameraSync) == RESULT_OK) {
 		if (qt == OVR::Camqt::OV_CAMQT_DMSRMP)

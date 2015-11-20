@@ -5,9 +5,6 @@
       <UniqueIdentifier>{0a16f353-1878-476d-9dcc-5a34e1eccf07}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\OculusVR">
-      <UniqueIdentifier>{b4c78bc0-c20f-4412-a3bf-d63b67edca8f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\3DCubeModel">
       <UniqueIdentifier>{30d7d0e3-47d1-44c5-b5a2-d99a26a2a677}</UniqueIdentifier>
     </Filter>
@@ -20,20 +17,11 @@
     <ClCompile Include="..\..\src\app_src\main_pro.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\app_src\COculusVR.cpp">
-      <Filter>ソース ファイル\OculusVR</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\app_src\C3DCubeModel.cpp">
       <Filter>ソース ファイル\3DCubeModel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\app_src\COculusVR.h">
-      <Filter>ソース ファイル\OculusVR</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\app_src\OculusLensShader.h">
-      <Filter>ソース ファイル\OculusVR</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\app_src\C3DCubeModel.h">
       <Filter>ソース ファイル\3DCubeModel</Filter>
     </ClInclude>

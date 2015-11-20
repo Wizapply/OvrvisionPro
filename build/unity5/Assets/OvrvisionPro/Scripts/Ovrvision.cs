@@ -95,6 +95,9 @@ public class Ovrvision : MonoBehaviour
 		CameraPlaneRight.GetComponent<Renderer>().material.SetTexture("_MainTex", CameraTexRight);
 
 		CameraRightGap = OvrPro.HMDCameraRightGap();
+
+		CameraPlaneLeft.transform.localPosition = new Vector3(0.0f, 0.0f, OvrPro.GetFloatPoint());
+		CameraPlaneRight.transform.localPosition = new Vector3(CameraRightGap.x, CameraRightGap.y, OvrPro.GetFloatPoint());
 	}
 
 	// Update is called once per frame
@@ -108,8 +111,7 @@ public class Ovrvision : MonoBehaviour
 		OvrPro.useOvrvisionAR = useOvrvisionAR;
 		OvrPro.UpdateImage(CameraTexLeft.GetNativeTexturePtr(), CameraTexRight.GetNativeTexturePtr());
 
-		if (useOvrvisionAR)
-			OvrvisionARRender();
+		if (useOvrvisionAR) OvrvisionARRender();
 	}
 
 	//Ovrvision AR Render to OversitionTracker Objects.
@@ -121,7 +123,7 @@ public class Ovrvision : MonoBehaviour
 		GCHandle marker = GCHandle.Alloc(markerGet, GCHandleType.Pinned);
 
 		//Get marker data
-		int ri = OvrPro.OvrvisionARRender(marker.AddrOfPinnedObject(), MARKERGET_MAXNUM10);
+		int ri = OvrPro.OvrvisionGetAR(marker.AddrOfPinnedObject(), MARKERGET_MAXNUM10);
 
 		OvrvisionTracker[] otobjs = GameObject.FindObjectsOfType(typeof(OvrvisionTracker)) as OvrvisionTracker[];
 		foreach (OvrvisionTracker otobj in otobjs)

@@ -170,6 +170,10 @@ public:
 //OvrvisionDirectShow
 OvrvisionDirectShow::OvrvisionDirectShow()
 {
+	HRESULT hr = ::CoInitialize(NULL);
+	if (hr == S_OK) m_comInit = true;
+	else m_comInit = false;
+
 	//Var init
 	m_devstatus = OVR::OV_DEVNONE;
 	m_width = 0;
@@ -197,6 +201,9 @@ OvrvisionDirectShow::~OvrvisionDirectShow()
 {
 	//Delete device
 	DeleteDevice();
+
+	if (m_comInit)
+		::CoUninitialize();
 }
 
 // Private method

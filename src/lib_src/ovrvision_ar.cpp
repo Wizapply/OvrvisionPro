@@ -152,11 +152,9 @@ void OvrvisionAR::Render()
 		return;
 
 	//create image
-	pGrayImg = cv::Mat(cv::Size(m_width,m_height),CV_MAKETYPE(CV_8U,1));
+	pGrayImg = cv::Mat(cv::Size(m_width, m_height), CV_MAKETYPE(CV_8U, 1));
 	if(m_pImageSrc != NULL) {
-		pCamBGRAImg = cv::Mat(cv::Size(m_width,m_height),CV_MAKETYPE(CV_8U,OV_RGB_DATASIZE));
-		//dataset
-		memcpy(pCamBGRAImg.data, m_pImageSrc, sizeof(unsigned char) * m_width * m_height * OV_RGB_DATASIZE);
+		pCamBGRAImg = cv::Mat(cv::Size(m_width, m_height), CV_MAKETYPE(CV_8U, OV_RGB_DATASIZE), m_pImageSrc);
 		//convert color
 		cv::cvtColor(pCamBGRAImg, pGrayImg, CV_BGRA2GRAY);
 	} else {
@@ -181,13 +179,13 @@ void OvrvisionAR::Render()
 		dt->centerPtOfImage.x = markers[i].getCenter().x;
 		dt->centerPtOfImage.y = markers[i].getCenter().y;
 
-		dt->translate.x = -markers[i].Tvec.at<float>(0,0) * 10.0f;	//X *10
-		dt->translate.y = markers[i].Tvec.at<float>(1,0) * 10.0f;	//Y *10
+		dt->translate.x = markers[i].Tvec.at<float>(0,0) * 10.0f;	//X *10
+		dt->translate.y = -markers[i].Tvec.at<float>(1,0) * 10.0f;	//Y *10
 		dt->translate.z = markers[i].Tvec.at<float>(2,0) * 10.0f;	//Z *10
 
 		cv::Mat Rot(3,3,CV_32FC1);
-		markers[i].Rvec.at<float>(0,0) = markers[i].Rvec.at<float>(0,0);
-		markers[i].Rvec.at<float>(1,0) = -markers[i].Rvec.at<float>(1,0);
+		markers[i].Rvec.at<float>(0,0) = -markers[i].Rvec.at<float>(0,0);
+		markers[i].Rvec.at<float>(1,0) = markers[i].Rvec.at<float>(1,0);
 		markers[i].Rvec.at<float>(2,0) = -markers[i].Rvec.at<float>(2,0);
 		cv::Rodrigues(markers[i].Rvec, Rot);
 

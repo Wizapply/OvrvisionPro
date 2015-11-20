@@ -130,7 +130,7 @@ private:
 	int				m_latestPixelDataSize;
 	int				m_maxPixelDataSize;
 
-	int				m_isUpdate;
+	bool			m_comInit;
 	
 	//Windows DirectShow
 	IGraphBuilder*	m_pGraph;

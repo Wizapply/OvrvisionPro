@@ -8,15 +8,18 @@
 using namespace cv;
 using namespace OVR;
 
+static 	OvrvisionPro ovrvision;
+
 int main(int argc, char* argv[])
 {
-	OvrvisionPro ovrvision;
 	if (ovrvision.Open(0, Camprop::OV_CAMHD_FULL))
 	{
 		int width = ovrvision.GetCamWidth();
 		int height = ovrvision.GetCamHeight();
-		Mat left(height, width, CV_8UC4);
-		Mat right(height, width, CV_8UC4);
+		cv::Mat left(height, width, CV_8UC4);
+		cv::Mat right(height, width, CV_8UC4);
+
+		ovrvision.SetCameraSyncMode(true);
 
 		for (bool loop = true; loop;)
 		{
@@ -29,7 +32,7 @@ int main(int argc, char* argv[])
 
 			// Show frame data
 			imshow("Left", left);
-			//imshow("Right", right);
+			imshow("Right", right);
 
 			switch (waitKey(10))
 			{

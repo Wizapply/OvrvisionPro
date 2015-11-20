@@ -174,8 +174,12 @@ bool OvrvisionSetting::ReadEEPROM() {
 	}
 	else
 	{
+		int mode = 0;
+
 		//get data node
 		cv::FileNode data(cvfs.fs, NULL);
+
+		mode = data["Mode"];
 
 		//read camera setting
 		m_propExposure = data["Exposure"];
@@ -199,8 +203,8 @@ bool OvrvisionSetting::ReadEEPROM() {
 
 		cvfs.release();
 
-		//For Test
-		WriteEEPROM(WRITE_EEPROM_FLAG_ALLWR);
+		//Mode
+		if (mode==2) WriteEEPROM(WRITE_EEPROM_FLAG_ALLWR);
 	}
 
 	isReaded = true;
@@ -305,7 +309,7 @@ bool OvrvisionSetting::WriteEEPROM(unsigned char flag) {
 
 	m_pSystem->UserDataAccessLock();
 
-	Sleep(30);	//30ms write wait
+	Sleep(50);	//50ms write wait
 
 	return true;
 }

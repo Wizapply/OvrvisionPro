@@ -99,9 +99,9 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>wizapply_win32d.lib;ovrvisiond.lib;libovrd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wizapply_win32d.lib;ovrvisiond.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName)_debug.exe</OutputFile>
-      <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x86;.\..\..\3rdparty\LibOVR\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -127,9 +127,9 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>wizapply_win64d.lib;ovrvision64d.lib;libovr64d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wizapply_win64d.lib;ovrvision64d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName)_debug.exe</OutputFile>
-      <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x64;.\..\..\3rdparty\LibOVR\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
@@ -152,8 +152,8 @@
       <DebugInformationFormat />
     </ClCompile>
     <Link>
-      <AdditionalDependencies>wizapply_win32.lib;ovrvision.lib;libovr.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x86;.\..\..\3rdparty\LibOVR\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>wizapply_win32.lib;ovrvision.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -179,8 +179,8 @@
       <DebugInformationFormat />
     </ClCompile>
     <Link>
-      <AdditionalDependencies>wizapply_win64.lib;ovrvision64.lib;libovr64.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x64;.\..\..\3rdparty\LibOVR\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>wizapply_win64.lib;ovrvision64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
@@ -192,13 +192,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\app_src\C3DCubeModel.cpp" />
-    <ClCompile Include="..\..\src\app_src\COculusVR.cpp" />
     <ClCompile Include="..\..\src\app_src\main_pro.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\app_src\C3DCubeModel.h" />
-    <ClInclude Include="..\..\src\app_src\COculusVR.h" />
-    <ClInclude Include="..\..\src\app_src\OculusLensShader.h" />
     <ClInclude Include="..\..\src\app_src\resource.h" />
   </ItemGroup>
   <ItemGroup>

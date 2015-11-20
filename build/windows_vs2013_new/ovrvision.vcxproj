@@ -85,7 +85,7 @@
     <OutDir>.\..\..\bin\x64\</OutDir>
     <IntDir>$(ProjectName)\$(Configuration)_$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -166,7 +166,7 @@
       <ImportLibrary>$(OutDir)ovrvision.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command />
+      <Command>If Exist $(TargetDir)\ovrvision.dll copy $(TargetDir)\ovrvision.dll $(SolutionDir)..\unity5\Assets\Plugins\x86\ovrvision.dll /Y /B</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -196,7 +196,7 @@
       <ImportLibrary>$(OutDir)ovrvision64.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetDir)ovrvision.dll $(SolutionDir)..\unity_package\Assets\Plugins\x86_64\ovrvision.dll /Y /B</Command>
+      <Command>If Exist $(TargetDir)\ovrvision.dll copy $(TargetDir)\ovrvision.dll $(SolutionDir)..\unity5\Assets\Plugins\x86_64\ovrvision.dll /Y /B</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

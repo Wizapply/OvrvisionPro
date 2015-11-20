@@ -40,14 +40,14 @@ public class OvrvisionTracker : MonoBehaviour {
 		if (!MovieOVRCameraRig)
 		{
 			this.transform.localPosition = new Vector3(markerGet[i + 1], markerGet[i + 2], markerGet[i + 3]);
-			this.transform.localRotation = new Quaternion(markerGet[i + 4], markerGet[i + 5], markerGet[i + 6], markerGet[i + 7]) * Quaternion.Euler(270, 0, 0);
+			this.transform.localRotation = new Quaternion(markerGet[i + 4], markerGet[i + 5], markerGet[i + 6], markerGet[i + 7]) * Quaternion.Euler(180, 0, 0);
 		}
 		else
 		{
 			if (OvrvisionProCameraObj != null)
 			{
 				Vector3 pos = new Vector3(markerGet[i + 1], markerGet[i + 2], markerGet[i + 3]);
-				Quaternion qat = new Quaternion(markerGet[i + 4], markerGet[i + 5], markerGet[i + 6], markerGet[i + 7]) * Quaternion.Euler(270, 0, 0);
+				Quaternion qat = new Quaternion(markerGet[i + 4], markerGet[i + 5], markerGet[i + 6], markerGet[i + 7]);
 				setCameraTrackerPosition(pos, qat, OvrvisionProCameraObj);
 			}
 		}
