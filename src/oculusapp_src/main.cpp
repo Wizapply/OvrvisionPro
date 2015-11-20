@@ -30,7 +30,6 @@ limitations under the License.
 // Include the Oculus SDK
 #include "OVR_CAPI_D3D.h"
 
-
 //------------------------------------------------------------
 // ovrSwapTextureSet wrapper class that also maintains the render target views
 // needed for D3D11 rendering.
@@ -108,7 +107,6 @@ static bool MainLoop(bool retryCreate)
 	ovrTexture     * mirrorTexture = nullptr;
 	OculusTexture  * pEyeRenderTexture[2] = { nullptr, nullptr };
 	DepthBuffer    * pEyeDepthBuffer[2] = { nullptr, nullptr };
-    Scene          * roomScene = nullptr; 
     Camera         * mainCam = nullptr;
 	D3D11_TEXTURE2D_DESC td = {};
 
@@ -163,9 +161,6 @@ static bool MainLoop(bool retryCreate)
         VALIDATE(false, "Failed to create mirror texture.");
     }
 
-	// Create the room model
-    roomScene = new Scene(false);
-
 	// Create camera
     mainCam = new Camera(&XMVectorSet(0.0f, 1.6f, 5.0f, 0), &XMQuaternionIdentity());
 
@@ -188,10 +183,6 @@ static bool MainLoop(bool retryCreate)
 		static float Yaw = 0;
 		if (DIRECTX.Key[VK_LEFT])  mainCam->Rot = XMQuaternionRotationRollPitchYaw(0, Yaw += 0.02f, 0);
 		if (DIRECTX.Key[VK_RIGHT]) mainCam->Rot = XMQuaternionRotationRollPitchYaw(0, Yaw -= 0.02f, 0);
-
-		// Animate the cube
-		static float cubeClock = 0;
-		roomScene->Models[0]->Pos = XMFLOAT3(9 * sin(cubeClock), 3, 9 * cos(cubeClock += 0.015f));
 
 		// Get both eye poses simultaneously, with IPD offset already included. 
 		ovrPosef         EyeRenderPose[2];
@@ -269,7 +260,6 @@ static bool MainLoop(bool retryCreate)
 	// Release resources
 Done:
     delete mainCam;
-    delete roomScene;
 	if (mirrorTexture) ovr_DestroyMirrorTexture(HMD, mirrorTexture);
     for (int eye = 0; eye < 2; ++eye)
     {
