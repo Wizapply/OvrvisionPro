@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
 		cv::Mat left(height, width, CV_8UC4);
 		cv::Mat right(height, width, CV_8UC4);
 
+		//Sync
 		ovrvision.SetCameraSyncMode(true);
 
 		for (bool loop = true; loop;)
@@ -29,6 +30,8 @@ int main(int argc, char* argv[])
 			// Retrieve frame data
 			ovrvision.GetCamImageBGRA(left.data, Cameye::OV_CAMEYE_LEFT);
 			ovrvision.GetCamImageBGRA(right.data, Cameye::OV_CAMEYE_RIGHT);
+
+			// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
 
 			// Show frame data
 			imshow("Left", left);
