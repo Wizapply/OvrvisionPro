@@ -7,6 +7,9 @@
 
 #include "ovrvision_pro.h"
 
+using namespace cv;
+using namespace OVR;
+
 #ifdef _WIN32
 #include <windows.h> 
 #include <GL/gl.h> 
@@ -32,6 +35,10 @@ BOOL bSetupPixelFormat(HDC);
 /* OpenGL globals, defines, and prototypes */ 
 GLfloat latitude, longitude, latinc, longinc; 
 GLdouble radius; 
+GLuint texture;
+
+//static OvrvisionPro camera;	// OvrvisionPro camera
+VideoCapture camera; // dummy camera
 
 #define GLOBE    1 
 #define CYLINDER 2 
@@ -84,6 +91,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	UpdateWindow (ghWnd); 
 
+	camera.open(0);
+
 	/* animation loop */ 
 	while (1) { 
 		/* 
@@ -100,8 +109,10 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 				return TRUE; 
 			}
 		}
-		drawScene();
+		drawScene(); // Draw OpenGL
 	}
+
+	camera.release();
 }
 
 /* main window procedure */
@@ -332,9 +343,6 @@ GLvoid drawScene(GLvoid)
 #else
 #include <GL/freeglut.h>
 
-
-using namespace cv;
-using namespace OVR;
 
 const int width = 640;
 const int height = 480;

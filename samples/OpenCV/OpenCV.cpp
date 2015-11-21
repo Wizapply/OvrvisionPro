@@ -22,25 +22,40 @@ int main(int argc, char* argv[])
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
 
+		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
+
 		for (bool loop = true; loop;)
 		{
-			// Capture frame
-			ovrvision.PreStoreCamData(Camqt::OV_CAMQT_DMSRMP);
+			DWORD begin = GetTickCount();
+			for (int count = 10; 0 < count; count--)
+			{
+				// Capture frame
+				ovrvision.PreStoreCamData(mode);
 
-			// Retrieve frame data
-			ovrvision.GetCamImageBGRA(left.data, Cameye::OV_CAMEYE_LEFT);
-			ovrvision.GetCamImageBGRA(right.data, Cameye::OV_CAMEYE_RIGHT);
+				// Retrieve frame data
+				ovrvision.GetCamImageBGRA(left.data, Cameye::OV_CAMEYE_LEFT);
+				ovrvision.GetCamImageBGRA(right.data, Cameye::OV_CAMEYE_RIGHT);
 
-			// ‚±‚±‚ÅOpenCV‚Å‚Ì‰ÁH‚È‚Ç
+				// ‚±‚±‚ÅOpenCV‚Å‚Ì‰ÁH‚È‚Ç
 
-			// Show frame data
-			imshow("Left", left);
-			imshow("Right", right);
-
+				// Show frame data
+				imshow("Left", left);
+				imshow("Right", right);
+			}
+			DWORD end = GetTickCount();
+			printf("%f fps %d ms/frame\n", 10000.0f / (end - begin), (end - begin) / 10);
 			switch (waitKey(10))
 			{
 			case 'q':
 				loop = false;
+				break;
+
+			case 'r':
+				mode = Camqt::OV_CAMQT_DMSRMP;
+				break;
+
+			case 'd':
+				mode = Camqt::OV_CAMQT_DMS;
 				break;
 			}
 		}
