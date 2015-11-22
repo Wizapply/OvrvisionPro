@@ -23,11 +23,12 @@ int main(int argc, char* argv[])
 		ovrvision.SetCameraSyncMode(true);
 
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
+		bool show = true;
 
 		for (bool loop = true; loop;)
 		{
-			DWORD begin = GetTickCount();
-			for (int count = 10; 0 < count; count--)
+			//DWORD begin = GetTickCount();
+			if (show)
 			{
 				// Capture frame
 				ovrvision.PreStoreCamData(mode);
@@ -42,9 +43,15 @@ int main(int argc, char* argv[])
 				imshow("Left", left);
 				imshow("Right", right);
 			}
-			DWORD end = GetTickCount();
-			printf("%f fps %d ms/frame\n", 10000.0f / (end - begin), (end - begin) / 10);
-			switch (waitKey(10))
+			else
+			{
+				ovrvision.Capture(mode);
+			}
+
+			//DWORD end = GetTickCount();
+			//printf("%f fps %d ms/frame\n", 1000.0f / (end - begin), (end - begin));
+
+			switch (waitKey(1))
 			{
 			case 'q':
 				loop = false;
@@ -56,6 +63,14 @@ int main(int argc, char* argv[])
 
 			case 'd':
 				mode = Camqt::OV_CAMQT_DMS;
+				break;
+
+			case 's':
+				show = true;
+				break;
+
+			case 'n':
+				show = false;
 				break;
 			}
 		}

@@ -131,6 +131,7 @@ public:
 	void Close();
 
 	void PreStoreCamData(OVR::Camqt qt);
+	void Capture(OVR::Camqt qt);
 	unsigned char* GetCamImageBGRA(OVR::Cameye eye);
 	void GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye);
 
@@ -192,6 +193,9 @@ private:
 
 	//OpenCL Ovrvision System
 	OvrvisionProOpenCL* m_pOpenCL;
+
+	//Frame buffer
+	unsigned short*			m_pFrame;
 
 	//Pixels
 	byte*			m_pPixels[OV_CAMNUM];

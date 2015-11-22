@@ -39,6 +39,13 @@ namespace OVR
 		//D3D10
 	};
 
+	// Scaling
+	enum SCALING {
+		HALF,	// 1/2
+		FOURTH,	// 1/4
+		EIGHTH	// 1/8
+	};
+
 	// OpenCL version
 	//namespace OPENCL
 	//{
@@ -52,14 +59,19 @@ namespace OVR
 			bool LoadCameraParams(OvrvisionSetting* ovrset);
 
 			// Demosaicing
-			void Demosaic(const ushort* src, uchar *left, uchar *right); // TODO: 未実装
+			void Demosaic(const ushort* src, cl_event *execute = NULL);	// OpenGL/D3D連携で、CPUへの転送を行わない
+			void Demosaic(const ushort* src, uchar *left, uchar *right);
 			void Demosaic(const ushort* src, Mat &left, Mat &right);
 			void Demosaic(const Mat src, Mat &left, Mat &right);
 
 			// Demosaic and Remap
-			void DemosaicRemap(const ushort* src, uchar *left, uchar *right); // TODO: 未実装
+			void DemosaicRemap(const ushort* src, cl_event *execute = NULL);	// OpenGL/D3D連携で、CPUへの転送を行わない
+			void DemosaicRemap(const ushort* src, uchar *left, uchar *right);
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
+
+			// Get Grayscale image
+			void Grayscale(uchar *left, uchar *right, enum SCALING scale);	// TODO: 縮小したグレースケール画像を取得
 
 			cl_device_id SelectGPU(const char *platform, const char *version);
 
@@ -89,6 +101,7 @@ namespace OVR
 			cl_int			_errorCode;
 
 		private:
+			cl_event _execute;
 			cl_mem	_src;
 			cl_mem	_l, _r, _L, _R;
 			cl_mem	_mx[2], _my[2]; // map for remap in GPU
