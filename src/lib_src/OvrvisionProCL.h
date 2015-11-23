@@ -10,10 +10,21 @@
 #define OVRVISIONPRODLL_API __declspec(dllimport)
 #endif
 
+
 #include <opencv2/core/core.hpp>
+
 // OpenCL header
 #include <CL/opencl.h>
+#include <CL/cl_ext.h>			// OpenCL extension
+#include <CL/cl_gl_ext.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <dxgi.h>
+#include <d3d11.h>
+#include <GL/gl.h> 
 #include <CL/cl_d3d11_ext.h>	// for OpenCL and Direct3D11 interoperability (NV and KHR are equivalent)
+#endif
 
 //ovrvision setting
 #include "ovrvision_setting.h"
@@ -60,20 +71,25 @@ namespace OVR
 
 			// Demosaicing
 			void Demosaic(const ushort* src, cl_event *execute = NULL);	// OpenGL/D3D連携で、CPUへの転送を行わない
+			void Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *execute = NULL);
 			void Demosaic(const ushort* src, uchar *left, uchar *right);
 			void Demosaic(const ushort* src, Mat &left, Mat &right);
 			void Demosaic(const Mat src, Mat &left, Mat &right);
 
 			// Demosaic and Remap
 			void DemosaicRemap(const ushort* src, cl_event *execute = NULL);	// OpenGL/D3D連携で、CPUへの転送を行わない
+			void DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *execute = NULL);
 			void DemosaicRemap(const ushort* src, uchar *left, uchar *right);
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
+			cl_device_id SelectGPU(const char *platform, const char *version);
+
 			// Get Grayscale image
 			void Grayscale(uchar *left, uchar *right, enum SCALING scale);	// TODO: 縮小したグレースケール画像を取得
 
-			cl_device_id SelectGPU(const char *platform, const char *version);
+			cl_mem CreateGLTexture2D(GLuint texture, int width, int height, GLenum pixelFormat = GL_RGBA, GLenum dataType = GL_UNSIGNED_BYTE);	// TODO: OpenGL連携用のテクスチャーを生成
+			cl_mem CreateD3DTexture2D(int width, int height);	// TODO: Direct3D連携用のテクスチャーを生成
 
 			void createProgram(const char *filename, bool binary = false);
 			int saveBinary(const char *filename);

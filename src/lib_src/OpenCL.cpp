@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <opencv2/opencv.hpp>
-#include <opencv2/core/ocl.hpp>
+//#include <opencv2/core/ocl.hpp>
 
 #include "OvrvisionProCL.h"
 
@@ -102,6 +102,7 @@ string opencl_error_to_str(cl_int error)
 
 namespace OVR
 {
+	/*
 	int EnumerateGPU(PENUMDEVICE callback, void *pItem)
 	{
 		if (!ocl::haveOpenCL())
@@ -137,6 +138,7 @@ namespace OVR
 		}
 		return context.ndevices();
 	}
+	*/
 
 	//namespace OPENCL
 	//{
@@ -212,6 +214,20 @@ namespace OVR
 			}
 		}
 
+	// OpenGL連携テクスチャー
+	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint textureId, int width, int height, GLenum pixelFormat, GLenum dataType)
+	{
+		glBindTexture(GL_TEXTURE_2D, textureId);
+		glTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, width, height, 0, pixelFormat, dataType, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glEnable(GL_TEXTURE_2D);
+		return clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, textureId, &_errorCode);
+	}
 
 		// Load camera parameters 
 		bool OvrvisionProOpenCL::LoadCameraParams(const char *filename)
@@ -266,7 +282,7 @@ namespace OVR
 		}
 
 		// Demosaicing
-		void OvrvisionProOpenCL::Demosaic(const ushort* src, cl_event *execute)
+		void OvrvisionProOpenCL::Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *execute)
 		{
 			size_t origin[3] = { 0, 0, 0 };
 			size_t region[3] = { _width, _height, 1 };
@@ -283,10 +299,15 @@ namespace OVR
 			//SAMPLE_CHECK_ERRORS(_errorCode);
 
 			clSetKernelArg(_demosaic, 0, sizeof(cl_mem), &_src);
-			clSetKernelArg(_demosaic, 1, sizeof(cl_mem), &_l);
-			clSetKernelArg(_demosaic, 2, sizeof(cl_mem), &_r);
+			clSetKernelArg(_demosaic, 1, sizeof(cl_mem), &left);
+			clSetKernelArg(_demosaic, 2, sizeof(cl_mem), &right);
 			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _demosaic, 2, NULL, demosaicSize, 0, 1, &writeEvent, execute);
 			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+
+		void OvrvisionProOpenCL::Demosaic(const ushort* src, cl_event *execute)
+		{
+			Demosaic(src, _l, _r, execute);
 		}
 
 		void OvrvisionProOpenCL::Demosaic(const ushort* src, uchar *left, uchar *right)
@@ -294,25 +315,6 @@ namespace OVR
 			size_t origin[3] = { 0, 0, 0 };
 			size_t region[3] = { _width, _height, 1 };
 			cl_event execute;
-			/*
-			size_t demosaicSize[] = { _width / 2, _height / 2 };
-			cl_event writeEvent, executeEvent;
-			_errorCode = clEnqueueWriteImage(_commandQueue, _src, CL_TRUE, origin, region, _width * sizeof(ushort), 0, src, 0, NULL, &writeEvent);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-
-			//__kernel void demosaic(
-			//	__read_only image2d_t src,	// CL_UNSIGNED_INT16
-			//	__write_only image2d_t left,	// CL_UNSIGNED_INT8 x 3
-			//	__write_only image2d_t right)	// CL_UNSIGNED_INT8 x 3
-			//cl_kernel _demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
-			//SAMPLE_CHECK_ERRORS(_errorCode);
-
-			clSetKernelArg(_demosaic, 0, sizeof(cl_mem), &_src);
-			clSetKernelArg(_demosaic, 1, sizeof(cl_mem), &_l);
-			clSetKernelArg(_demosaic, 2, sizeof(cl_mem), &_r);
-			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _demosaic, 2, NULL, demosaicSize, 0, 1, &writeEvent, &executeEvent);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			*/
 
 			Demosaic(src, &execute);
 
@@ -326,25 +328,6 @@ namespace OVR
 			size_t origin[3] = { 0, 0, 0 };
 			size_t region[3] = { _width, _height, 1 };
 			cl_event execute;
-			/*
-			size_t demosaicSize[] = { _width / 2, _height / 2 };
-			cl_event writeEvent, executeEvent;
-			_errorCode = clEnqueueWriteImage(_commandQueue, _src, CL_TRUE, origin, region, _width * sizeof(ushort), 0, src, 0, NULL, &writeEvent);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-
-			//__kernel void demosaic(
-			//	__read_only image2d_t src,	// CL_UNSIGNED_INT16
-			//	__write_only image2d_t left,	// CL_UNSIGNED_INT8 x 3
-			//	__write_only image2d_t right)	// CL_UNSIGNED_INT8 x 3
-			//cl_kernel _demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
-			//SAMPLE_CHECK_ERRORS(_errorCode);
-
-			clSetKernelArg(_demosaic, 0, sizeof(cl_mem), &_src);
-			clSetKernelArg(_demosaic, 1, sizeof(cl_mem), &_l);
-			clSetKernelArg(_demosaic, 2, sizeof(cl_mem), &_r);
-			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _demosaic, 2, NULL, demosaicSize, 0, 1, &writeEvent, &executeEvent);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			*/
 
 			Demosaic(src, &execute);
 
@@ -363,7 +346,7 @@ namespace OVR
 		}
 
 		// Demosaic and Remap
-		void OvrvisionProOpenCL::DemosaicRemap(const ushort* src, cl_event *execute)
+		void OvrvisionProOpenCL::DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *execute)
 		{
 			size_t origin[3] = { 0, 0, 0 };
 			size_t region[3] = { _width, _height, 1 };
@@ -400,16 +383,21 @@ namespace OVR
 				clSetKernelArg(_remap, 0, sizeof(cl_mem), &_L);
 				clSetKernelArg(_remap, 1, sizeof(cl_mem), &_mx[0]);
 				clSetKernelArg(_remap, 2, sizeof(cl_mem), &_my[0]);
-				clSetKernelArg(_remap, 3, sizeof(cl_mem), &_l);
+				clSetKernelArg(_remap, 3, sizeof(cl_mem), &left);
 				_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, &writeEvent, execute);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 				clSetKernelArg(_remap, 0, sizeof(cl_mem), &_R);
 				clSetKernelArg(_remap, 1, sizeof(cl_mem), &_mx[1]);
 				clSetKernelArg(_remap, 2, sizeof(cl_mem), &_my[1]);
-				clSetKernelArg(_remap, 3, sizeof(cl_mem), &_r);
+				clSetKernelArg(_remap, 3, sizeof(cl_mem), &right);
 				_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, &writeEvent, execute);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 			}
+		}
+
+		void OvrvisionProOpenCL::DemosaicRemap(const ushort* src, cl_event *execute)
+		{
+			DemosaicRemap(src, _l, _r, execute);
 		}
 
 		void OvrvisionProOpenCL::DemosaicRemap(const ushort* src, uchar *left, uchar *right)
@@ -417,63 +405,6 @@ namespace OVR
 			size_t origin[3] = { 0, 0, 0 };
 			size_t region[3] = { _width, _height, 1 };
 			cl_event execute;
-			/*
-			size_t demosaicSize[] = { _width / 2, _height / 2 };
-			cl_event writeEvent, executeEvent;
-			_errorCode = clEnqueueWriteImage(_commandQueue, _src, CL_TRUE, origin, region, _width * sizeof(ushort), 0, src, 0, NULL, &writeEvent);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-
-			//__kernel void demosaic(
-			//	__read_only image2d_t src,	// CL_UNSIGNED_INT16
-			//	__write_only image2d_t left,	// CL_UNSIGNED_INT8 x 3
-			//	__write_only image2d_t right)	// CL_UNSIGNED_INT8 x 3
-			//cl_kernel _demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
-			//SAMPLE_CHECK_ERRORS(_errorCode);
-
-			clSetKernelArg(_demosaic, 0, sizeof(cl_mem), &_src);
-			clSetKernelArg(_demosaic, 1, sizeof(cl_mem), &_l);
-			clSetKernelArg(_demosaic, 2, sizeof(cl_mem), &_r);
-			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _demosaic, 2, NULL, demosaicSize, 0, 1, &writeEvent, &executeEvent);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-
-			if (_remapAvailable)
-			{
-				size_t remapSize[] = { _width, _height };
-
-				//__kernel void remap(
-				//	__read_only image2d_t src,		// CL_UNSIGNED_INT8 x 4
-				//	__read_only image2d_t mapX,		// CL_FLOAT
-				//	__read_only image2d_t mapY,		// CL_FLOAT
-				//	__write_only image2d_t	dst)	// CL_UNSIGNED_INT8 x 4
-				//cl_kernel _remap = clCreateKernel(_program, "remap", &_errorCode);
-				//SAMPLE_CHECK_ERRORS(_errorCode);
-
-				clSetKernelArg(_remap, 0, sizeof(cl_mem), &_l);
-				clSetKernelArg(_remap, 1, sizeof(cl_mem), &_mx[0]);
-				clSetKernelArg(_remap, 2, sizeof(cl_mem), &_my[0]);
-				clSetKernelArg(_remap, 3, sizeof(cl_mem), &_L);
-				_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, &writeEvent, &executeEvent);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-				clSetKernelArg(_remap, 0, sizeof(cl_mem), &_r);
-				clSetKernelArg(_remap, 1, sizeof(cl_mem), &_mx[1]);
-				clSetKernelArg(_remap, 2, sizeof(cl_mem), &_my[1]);
-				clSetKernelArg(_remap, 3, sizeof(cl_mem), &_R);
-				_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, &writeEvent, &executeEvent);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-
-				// Read result
-				_errorCode = clEnqueueReadImage(_commandQueue, _L, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left, 1, &executeEvent, NULL);
-				_errorCode = clEnqueueReadImage(_commandQueue, _R, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right, 1, &executeEvent, NULL);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-			}
-			else
-			{
-				// Read result
-				_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left, 1, &executeEvent, NULL);
-				_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right, 1, &executeEvent, NULL);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-			}
-			*/
 
 			DemosaicRemap(src, &execute);
 			// Read result
@@ -488,66 +419,6 @@ namespace OVR
 			size_t origin[3] = { 0, 0, 0 };
 			size_t region[3] = { _width, _height, 1 };
 			cl_event execute;
-			/*
-			size_t demosaicSize[] = { _width / 2, _height / 2 };
-			cl_event writeEvent, executeEvent;
-			_errorCode = clEnqueueWriteImage(_commandQueue, _src, CL_TRUE, origin, region, _width * sizeof(ushort), 0, src, 0, NULL, &writeEvent);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-
-			//__kernel void demosaic(
-			//	__read_only image2d_t src,	// CL_UNSIGNED_INT16
-			//	__write_only image2d_t left,	// CL_UNSIGNED_INT8 x 3
-			//	__write_only image2d_t right)	// CL_UNSIGNED_INT8 x 3
-			//cl_kernel _demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
-			//SAMPLE_CHECK_ERRORS(_errorCode);
-
-			clSetKernelArg(_demosaic, 0, sizeof(cl_mem), &_src);
-			clSetKernelArg(_demosaic, 1, sizeof(cl_mem), &_l);
-			clSetKernelArg(_demosaic, 2, sizeof(cl_mem), &_r);
-			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _demosaic, 2, NULL, demosaicSize, 0, 1, &writeEvent, &executeEvent);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-
-			if (_remapAvailable)
-			{
-				size_t remapSize[] = { _width, _height };
-
-				//__kernel void remap(
-				//	__read_only image2d_t src,		// CL_UNSIGNED_INT8 x 4
-				//	__read_only image2d_t mapX,		// CL_FLOAT
-				//	__read_only image2d_t mapY,		// CL_FLOAT
-				//	__write_only image2d_t	dst)	// CL_UNSIGNED_INT8 x 4
-				//cl_kernel _remap = clCreateKernel(_program, "remap", &_errorCode);
-				//SAMPLE_CHECK_ERRORS(_errorCode);
-
-				clSetKernelArg(_remap, 0, sizeof(cl_mem), &_l);
-				clSetKernelArg(_remap, 1, sizeof(cl_mem), &_mx[0]);
-				clSetKernelArg(_remap, 2, sizeof(cl_mem), &_my[0]);
-				clSetKernelArg(_remap, 3, sizeof(cl_mem), &_L);
-				_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, &writeEvent, &executeEvent);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-				clSetKernelArg(_remap, 0, sizeof(cl_mem), &_r);
-				clSetKernelArg(_remap, 1, sizeof(cl_mem), &_mx[1]);
-				clSetKernelArg(_remap, 2, sizeof(cl_mem), &_my[1]);
-				clSetKernelArg(_remap, 3, sizeof(cl_mem), &_R);
-				_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, &writeEvent, &executeEvent);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-
-				// Read result
-				_errorCode = clEnqueueReadImage(_commandQueue, _L, CL_TRUE, origin, region, left.cols * sizeof(uchar) * 4, 0, left.ptr(0), 1, &executeEvent, NULL);
-				_errorCode = clEnqueueReadImage(_commandQueue, _R, CL_TRUE, origin, region, right.cols * sizeof(uchar) * 4, 0, right.ptr(0), 1, &executeEvent, NULL);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-#ifdef _DEBUG
-				printf("Remapped\n");
-#endif
-			}
-			else
-			{
-				// Read result
-				_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, left.cols * sizeof(uchar) * 4, 0, left.ptr(0), 1, &executeEvent, NULL);
-				_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, right.cols * sizeof(uchar) * 4, 0, right.ptr(0), 1, &executeEvent, NULL);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-			}
-			*/
 
 			DemosaicRemap(src, &execute);
 			// Read result
@@ -719,19 +590,33 @@ namespace OVR
 							{
 								_platformId = platforms[i];
 								_deviceId = id[j];
+#ifdef _WIN32
 								cl_context_properties opengl_props[] = {
 									CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
 									CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
 									CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
 									0
 								};
+
+								cl_context_properties d3d11_props[] =
+								{
+									//CL_CONTEXT_D3D11_DEVICE_KHR, (cl_context_properties)g_pD3DDevice,
+									CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+									0
+								};
+#endif
+								// ここで連携するOpenGL/D3Dのプロパティを設定してコンテキストを取得する
 								switch (_sharing)
 								{
+#ifdef _WIN32
 								case OPENGL:
 									_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
 									break;
 
 								case D3D11:
+									_context = clCreateContext(d3d11_props, 1, &_deviceId, NULL, NULL, &_errorCode);
+									break;
+#endif
 								default:
 									_context = clCreateContext(NULL, 1, &_deviceId, NULL, NULL, &_errorCode);
 									break;

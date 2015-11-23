@@ -1,234 +1,66 @@
 //
 //
 
-
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-
 #include "ovrvision_pro.h"
 
-using namespace cv;
-using namespace OVR;
-
-#ifdef _WIN32
-#include <windows.h> 
 #include <GL/gl.h> 
 #include <GL/glu.h> 
 
-/* Windows globals, defines, and prototypes */ 
-TCHAR szAppName[]=L"Win OpenGL"; 
-HWND  ghWnd; 
-HDC   ghDC; 
-HGLRC ghRC; 
+void SWAPBUFFERS();	// platform depend function
 
-#define SWAPBUFFERS SwapBuffers(ghDC) 
 #define BLACK_INDEX     0 
 #define RED_INDEX       13 
 #define GREEN_INDEX     14 
 #define BLUE_INDEX      16 
-#define WIDTH           300 
-#define HEIGHT          200 
 
-LONG WINAPI MainWndProc (HWND, UINT, WPARAM, LPARAM); 
-BOOL bSetupPixelFormat(HDC); 
 
 /* OpenGL globals, defines, and prototypes */ 
 GLfloat latitude, longitude, latinc, longinc; 
 GLdouble radius; 
 GLuint texture;
 
-//static OvrvisionPro camera;	// OvrvisionPro camera
-VideoCapture camera; // dummy camera
+OVR::OvrvisionPro camera;	// OvrvisionPro camera
+//VideoCapture camera; // dummy camera
 
 #define GLOBE    1 
 #define CYLINDER 2 
 #define CONE     3 
 
-GLvoid resize(GLsizei, GLsizei); 
-GLvoid initializeGL(GLsizei, GLsizei); 
-GLvoid drawScene(GLvoid); 
+
 void polarView( GLdouble, GLdouble, GLdouble, GLdouble); 
-
-int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) 
-{ 
-	MSG        msg; 
-	WNDCLASS   wndclass; 
-
-	/* Register the frame class */ 
-	wndclass.style         = 0; 
-	wndclass.lpfnWndProc   = (WNDPROC)MainWndProc; 
-	wndclass.cbClsExtra    = 0; 
-	wndclass.cbWndExtra    = 0; 
-	wndclass.hInstance     = hInstance; 
-	wndclass.hIcon         = LoadIcon (hInstance, szAppName); 
-	wndclass.hCursor       = LoadCursor (NULL,IDC_ARROW); 
-	wndclass.hbrBackground = (HBRUSH)(COLOR_WINDOW+1); 
-	wndclass.lpszMenuName  = szAppName; 
-	wndclass.lpszClassName = szAppName; 
-
-	if (!RegisterClass (&wndclass) ) 
-		return FALSE; 
-
-	/* Create the frame */ 
-	ghWnd = CreateWindow (szAppName, 
-		L"Generic OpenGL Sample", 
-		WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 
-		CW_USEDEFAULT, 
-		CW_USEDEFAULT, 
-		WIDTH, 
-		HEIGHT, 
-		NULL, 
-		NULL, 
-		hInstance, 
-		NULL); 
-
-	/* make sure window was created */ 
-	if (!ghWnd) 
-		return FALSE; 
-
-	/* show and update main window */ 
-	ShowWindow (ghWnd, nCmdShow); 
-
-	UpdateWindow (ghWnd); 
-
-	camera.open(0);
-
-	/* animation loop */ 
-	while (1) { 
-		/* 
-		*  Process all pending messages 
-		*/ 
-
-		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) == TRUE) 
-		{ 
-			if (GetMessage(&msg, NULL, 0, 0) ) 
-			{ 
-				TranslateMessage(&msg); 
-				DispatchMessage(&msg); 
-			} else { 
-				return TRUE; 
-			}
-		}
-		drawScene(); // Draw OpenGL
-	}
-
-	camera.release();
-}
-
-/* main window procedure */
-LONG WINAPI MainWndProc(
-	HWND    hWnd,
-	UINT    uMsg,
-	WPARAM  wParam,
-	LPARAM  lParam)
-{
-	LONG    lRet = 1;
-	PAINTSTRUCT    ps;
-	RECT rect;
-
-	switch (uMsg) {
-
-	case WM_CREATE:
-		ghDC = GetDC(hWnd);
-		if (!bSetupPixelFormat(ghDC))
-			PostQuitMessage(0);
-
-		ghRC = wglCreateContext(ghDC);
-		wglMakeCurrent(ghDC, ghRC);
-		GetClientRect(hWnd, &rect);
-		initializeGL(rect.right, rect.bottom);
-		break;
-
-	case WM_PAINT:
-		BeginPaint(hWnd, &ps);
-		EndPaint(hWnd, &ps);
-		break;
-
-	case WM_SIZE:
-		GetClientRect(hWnd, &rect);
-		resize(rect.right, rect.bottom);
-		break;
-
-	case WM_CLOSE:
-		if (ghRC)
-			wglDeleteContext(ghRC);
-		if (ghDC)
-			ReleaseDC(hWnd, ghDC);
-		ghRC = 0;
-		ghDC = 0;
-
-		DestroyWindow(hWnd);
-		break;
-
-	case WM_DESTROY:
-		if (ghRC)
-			wglDeleteContext(ghRC);
-		if (ghDC)
-			ReleaseDC(hWnd, ghDC);
-
-		PostQuitMessage(0);
-		break;
-
-	case WM_KEYDOWN:
-		switch (wParam) {
-		case VK_LEFT:
-			longinc += 0.5F;
-			break;
-		case VK_RIGHT:
-			longinc -= 0.5F;
-			break;
-		case VK_UP:
-			latinc += 0.5F;
-			break;
-		case VK_DOWN:
-			latinc -= 0.5F;
-			break;
-		}
-
-	default:
-		lRet = DefWindowProc(hWnd, uMsg, wParam, lParam);
-		break;
-	}
-
-	return lRet;
-}
-
-BOOL bSetupPixelFormat(HDC hdc)
-{
-	PIXELFORMATDESCRIPTOR pfd, *ppfd;
-	int pixelformat;
-
-	ppfd = &pfd;
-
-	ppfd->nSize = sizeof(PIXELFORMATDESCRIPTOR);
-	ppfd->nVersion = 1;
-	ppfd->dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL |
-		PFD_DOUBLEBUFFER;
-	ppfd->dwLayerMask = PFD_MAIN_PLANE;
-	ppfd->iPixelType = PFD_TYPE_COLORINDEX;
-	ppfd->cColorBits = 8;
-	ppfd->cDepthBits = 16;
-	ppfd->cAccumBits = 0;
-	ppfd->cStencilBits = 0;
-
-	pixelformat = ChoosePixelFormat(hdc, ppfd);
-
-	if ((pixelformat = ChoosePixelFormat(hdc, ppfd)) == 0)
-	{
-		MessageBox(NULL, L"ChoosePixelFormat failed", L"Error", MB_OK);
-		return FALSE;
-	}
-
-	if (SetPixelFormat(hdc, pixelformat, ppfd) == FALSE)
-	{
-		MessageBox(NULL, L"SetPixelFormat failed", L"Error", MB_OK);
-		return FALSE;
-	}
-
-	return TRUE;
-}
+GLvoid createObjects();
 
 /* OpenGL code */
+GLvoid initializeGL(GLsizei width, GLsizei height)
+{
+	GLfloat     maxObjectSize, aspect;
+	GLdouble    near_plane, far_plane;
+
+	glClearIndex((GLfloat)BLACK_INDEX);
+	glClearDepth(1.0);
+
+	glEnable(GL_DEPTH_TEST);
+
+	glMatrixMode(GL_PROJECTION);
+	aspect = (GLfloat)width / height;
+	gluPerspective(45.0, aspect, 3.0, 7.0);
+	glMatrixMode(GL_MODELVIEW);
+
+	near_plane = 3.0;
+	far_plane = 7.0;
+	maxObjectSize = 3.0F;
+	radius = near_plane + maxObjectSize / 2.0;
+
+	latitude = 0.0F;
+	longitude = 0.0F;
+	latinc = 6.0F;
+	longinc = 2.5F;
+
+	if (camera.Open(0, OVR::Camprop::OV_CAMHD_FULL) == 0)
+		puts("Can't open OvrvisionPro");
+
+	createObjects();
+}
 
 GLvoid resize(GLsizei width, GLsizei height)
 {
@@ -273,33 +105,6 @@ GLvoid createObjects()
 	glEndList();
 }
 
-GLvoid initializeGL(GLsizei width, GLsizei height)
-{
-	GLfloat     maxObjectSize, aspect;
-	GLdouble    near_plane, far_plane;
-
-	glClearIndex((GLfloat)BLACK_INDEX);
-	glClearDepth(1.0);
-
-	glEnable(GL_DEPTH_TEST);
-
-	glMatrixMode(GL_PROJECTION);
-	aspect = (GLfloat)width / height;
-	gluPerspective(45.0, aspect, 3.0, 7.0);
-	glMatrixMode(GL_MODELVIEW);
-
-	near_plane = 3.0;
-	far_plane = 7.0;
-	maxObjectSize = 3.0F;
-	radius = near_plane + maxObjectSize / 2.0;
-
-	latitude = 0.0F;
-	longitude = 0.0F;
-	latinc = 6.0F;
-	longinc = 2.5F;
-
-	createObjects();
-}
 
 void polarView(GLdouble radius, GLdouble twist, GLdouble latitude,
 	GLdouble longitude)
@@ -337,94 +142,5 @@ GLvoid drawScene(GLvoid)
 
 	glPopMatrix();
 
-	SWAPBUFFERS;
+	SWAPBUFFERS();
 }
-
-#else
-#include <GL/freeglut.h>
-
-
-const int width = 640;
-const int height = 480;
-VideoCapture camera; 
-GLuint g_texID;
-
-extern "C" {
-	void onDisplay()
-	{
-		static const GLfloat vtx[] = {
-			200, 120,
-			440, 120,
-			440, 360,
-			200, 360,
-		};
-		glVertexPointer(2, GL_FLOAT, 0, vtx);
-
-		// Step5. テクスチャの領域指定
-		static const GLfloat texuv[] = {
-			0.0f, 1.0f,
-			1.0f, 1.0f,
-			1.0f, 0.0f,
-			0.0f, 0.0f,
-		};
-		glTexCoordPointer(2, GL_FLOAT, 0, texuv);
-
-		// Step6. テクスチャの画像指定
-		glBindTexture(GL_TEXTURE_2D, g_texID);
-
-		// Step7. テクスチャの描画
-		glEnable(GL_TEXTURE_2D);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDrawArrays(GL_QUADS, 0, 4);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisable(GL_TEXTURE_2D);
-	}
-
-	void onKeyboard(unsigned char key, int x, int y)
-	{
-		switch (toupper(key))
-		{
-		case 'Q':
-			exit(1);
-			break;
-		}
-	}
-}
-
-
-int main(int argc, char *argv[])
-{
-	if (camera.open(0))
-	{
-		Mat frame;
-		camera >> frame;
-		glGenTextures(1, &g_texID);
-		glBindTexture(GL_TEXTURE_2D, g_texID);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, frame.data);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	}
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
-
-	// Execute
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGBA | GL_DOUBLE);
-	glutInitWindowSize(width, height);
-	glutCreateWindow("OvrvisionPro OpenGL sharing");
-	glutDisplayFunc(onDisplay);
-	//glutReshapeFunc(onResize);
-	glutKeyboardFunc(onKeyboard);
-
-	glClearColor(0.0, 0.0, 1.0, 1.0);
-	glutMainLoop();
-
-	return 0;
-}
-#endif
