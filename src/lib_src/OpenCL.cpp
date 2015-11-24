@@ -100,46 +100,12 @@ string opencl_error_to_str(cl_int error)
 #define SAMPLE_CHECK_ERRORS(ERR) if (ERR != CL_SUCCESS) throw runtime_error(opencl_error_to_str(ERR));
 #endif
 
+#define INITPFN(x) \
+    x = (x ## _fn)clGetExtensionFunctionAddress(#x);
+//if(!x) { shrLog("failed getting " #x); Cleanup(EXIT_FAILURE); }
+
 namespace OVR
 {
-	/*
-	int EnumerateGPU(PENUMDEVICE callback, void *pItem)
-	{
-		if (!ocl::haveOpenCL())
-		{
-			//cout << "OpenCL is not avaiable..." << endl;
-			return 0;
-		}
-		ocl::Context context;
-		if (!context.create(ocl::Device::TYPE_GPU))
-		{
-			//cout << "Failed creating the context..." << endl;
-			return 0;
-		}
-
-		// In OpenCV 3.0.0 beta, only a single device is detected.
-		//cout << context.ndevices() << " GPU devices are detected." << endl;
-		for (size_t i = 0; i < context.ndevices(); i++)
-		{
-			cv::ocl::Device device = context.device(i);
-			string name, version, capability;
-			if (device.available() && device.imageSupport())
-			{
-				//printf("%s:\t%s\n", device.name(), device.OpenCLVersion());
-				name = device.name();
-				version = device.OpenCL_C_Version();
-				capability = device.OpenCLVersion();
-				version = device.version();
-				if (callback != NULL)
-				{
-					callback(pItem, name.c_str(), version.c_str(), device.extensions().c_str(), device.deviceVersionMajor(), device.deviceVersionMinor());
-				}
-			}
-		}
-		return context.ndevices();
-	}
-	*/
-
 	//namespace OPENCL
 	//{
 		// Constructor
@@ -181,8 +147,10 @@ namespace OVR
 			_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 
+			_deviceExtensions = NULL;
 			CreateProgram();
-		}
+			Prepare4Sharing();
+	}
 
 		// Destructor
 	OvrvisionProOpenCL::~OvrvisionProOpenCL()
@@ -212,7 +180,67 @@ namespace OVR
 				clReleaseMemObject(_mx[1]);
 				clReleaseMemObject(_my[1]);
 			}
+			if (_deviceExtensions != NULL)
+			{
+				delete[] _deviceExtensions;
+			}
 		}
+
+	// Enumerate OpenCL extensions
+	int OvrvisionProOpenCL::EnumExtensions(EXTENSION_CALLBACK callback, void *item)
+	{
+		size_t size;
+		clGetDeviceInfo(_deviceId, CL_DEVICE_EXTENSIONS, 0, NULL, &size); // get entension size
+		if (_deviceExtensions == NULL)
+		{
+			_deviceExtensions = new char[size];
+		}
+		clGetDeviceInfo(_deviceId, CL_DEVICE_EXTENSIONS, size, _deviceExtensions, NULL);
+		if (callback != NULL)
+		{
+			callback(item, _deviceExtensions);
+		}
+		else
+		{
+			//puts(_deviceExtensions);
+		}
+		return (int)size;
+	}
+
+	// OpenGL/D3D連携準備
+	bool OvrvisionProOpenCL::Prepare4Sharing()
+	{
+		EnumExtensions();
+#ifdef _WIN32
+		if (strstr(_deviceExtensions, "cl_nv_d3d11_sharing"))
+		{
+			_vendorD3D11 = NVIDIA;
+			INITPFN(clGetDeviceIDsFromD3D11NV);
+			INITPFN(clCreateFromD3D11BufferNV);
+			INITPFN(clCreateFromD3D11Texture2DNV);
+			INITPFN(clCreateFromD3D11Texture3DNV);
+			INITPFN(clEnqueueAcquireD3D11ObjectsNV);
+			INITPFN(clEnqueueReleaseD3D11ObjectsNV);
+			if (clCreateFromD3D11Texture2DNV != NULL)
+				return true;
+		}
+		else if (strstr(_deviceExtensions, "cl_khr_d3d11_sharing"))
+		{
+			_vendorD3D11 = KHRONOS;
+			INITPFN(clGetDeviceIDsFromD3D11KHR);
+			INITPFN(clCreateFromD3D11BufferKHR);
+			INITPFN(clCreateFromD3D11Texture2DKHR);
+			INITPFN(clCreateFromD3D11Texture3DKHR);
+			INITPFN(clEnqueueAcquireD3D11ObjectsKHR);
+			INITPFN(clEnqueueReleaseD3D11ObjectsKHR);
+			if (clCreateFromD3D11Texture2DKHR != NULL)
+				return true;
+		}
+		return false;
+#else
+		return true;
+#endif
+	}
 
 	// OpenGL連携テクスチャー
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint textureId, int width, int height, GLenum pixelFormat, GLenum dataType)
@@ -636,5 +664,43 @@ namespace OVR
 			return _deviceId;
 		}
 
-	//}
+		/*
+		int EnumerateGPU(PENUMDEVICE callback, void *pItem)
+		{
+		if (!ocl::haveOpenCL())
+		{
+		//cout << "OpenCL is not avaiable..." << endl;
+		return 0;
+		}
+		ocl::Context context;
+		if (!context.create(ocl::Device::TYPE_GPU))
+		{
+		//cout << "Failed creating the context..." << endl;
+		return 0;
+		}
+
+		// In OpenCV 3.0.0 beta, only a single device is detected.
+		//cout << context.ndevices() << " GPU devices are detected." << endl;
+		for (size_t i = 0; i < context.ndevices(); i++)
+		{
+		cv::ocl::Device device = context.device(i);
+		string name, version, capability;
+		if (device.available() && device.imageSupport())
+		{
+		//printf("%s:\t%s\n", device.name(), device.OpenCLVersion());
+		name = device.name();
+		version = device.OpenCL_C_Version();
+		capability = device.OpenCLVersion();
+		version = device.version();
+		if (callback != NULL)
+		{
+		callback(pItem, name.c_str(), version.c_str(), device.extensions().c_str(), device.deviceVersionMajor(), device.deviceVersionMinor());
+		}
+		}
+		}
+		return context.ndevices();
+		}
+		*/
+		
+		//}
 }
