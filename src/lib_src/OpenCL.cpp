@@ -119,6 +119,8 @@ namespace OVR
 			_format16UC1.image_channel_order = CL_R;
 			_format8UC4.image_channel_data_type = CL_UNSIGNED_INT8;
 			_format8UC4.image_channel_order = CL_RGBA;
+			_format8UC1.image_channel_data_type = CL_UNSIGNED_INT8;
+			_format8UC1.image_channel_order = CL_R;
 			_formatMap.image_channel_data_type = CL_FLOAT;
 			_formatMap.image_channel_order = CL_R;
 
@@ -142,6 +144,8 @@ namespace OVR
 			_r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
 			_L = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
 			_R = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
+			_grayL = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, _width, _height, 0, 0, &_errorCode);
+			_grayR = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, _width, _height, 0, 0, &_errorCode);
 			_mx[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_my[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
@@ -167,12 +171,16 @@ namespace OVR
 			delete mapY[1];
 			clReleaseKernel(_demosaic);
 			clReleaseKernel(_remap);
+			clReleaseKernel(_grayscale);
+			clReleaseKernel(_skincolor);
 			clReleaseProgram(_program);
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
 			clReleaseMemObject(_r);
 			clReleaseMemObject(_L);
 			clReleaseMemObject(_R);
+			clReleaseMemObject(_grayL);
+			clReleaseMemObject(_grayR);
 			if (_remapAvailable)
 			{
 				clReleaseMemObject(_mx[0]);
@@ -255,6 +263,64 @@ namespace OVR
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glEnable(GL_TEXTURE_2D);
 		return clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, textureId, &_errorCode);
+	}
+
+#ifdef _WIN32
+	// TODO: Direct3D連携用のテクスチャーを生成
+	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(int width, int height, ID3D11Texture2D *texture)
+	{
+		if (_vendorD3D11 == NVIDIA)
+		{
+			return clCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+		}
+		else
+		{
+			return clCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+		}
+	}
+#endif
+
+	// TODO:　縮小グレースケール画像を取得
+	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling)
+	{
+		// _l, _rから縮小グレースケール画像を生成して返す
+		int scale = 2;
+		switch (scaling)
+		{
+		case HALF:
+			scale = 2;
+			break;
+
+		case FOURTH:
+			scale = 4;
+			break;
+
+		case EIGHTH:
+			scale = 8;
+			break;
+
+		default:
+			return;
+		}
+		size_t reSize[] = { _width / scale, _height / scale };
+		size_t region[3] = { _width / scale, _height / scale, 1 };
+		size_t origin[3] = { 0, 0, 0 };
+		cl_event writeEvent, execute;
+
+		clSetKernelArg(_remap, 0, sizeof(cl_mem), &_l);
+		clSetKernelArg(_remap, 1, sizeof(cl_mem), &_grayL);
+		clSetKernelArg(_remap, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _grayscale, 2, NULL, reSize, 0, 1, &writeEvent, &execute);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_remap, 0, sizeof(cl_mem), &_r);
+		clSetKernelArg(_remap, 1, sizeof(cl_mem), &_grayR);
+		clSetKernelArg(_remap, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _grayscale, 2, NULL, reSize, 0, 1, &writeEvent, &execute);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		// Read result
+		_errorCode = clEnqueueReadImage(_commandQueue, _grayL, CL_TRUE, origin, region, _width * sizeof(uchar), 0, left, 1, &execute, NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, _grayR, CL_TRUE, origin, region, _width * sizeof(uchar), 0, right, 1, &execute, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
 		// Load camera parameters 
@@ -492,6 +558,10 @@ namespace OVR
 				_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 				_remap = clCreateKernel(_program, "remap", &_errorCode);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_grayscale = clCreateKernel(_program, "grayscale", &_errorCode);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_skincolor = clCreateKernel(_program, "skincolor", &_errorCode);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 				return true;
 			}

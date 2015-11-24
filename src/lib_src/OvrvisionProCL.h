@@ -82,12 +82,15 @@ namespace OVR
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
 			cl_device_id SelectGPU(const char *platform, const char *version);
-
-			// Get Grayscale image
-			void Grayscale(uchar *left, uchar *right, enum SCALING scale);	// TODO: 縮小したグレースケール画像を取得
-
-			cl_mem CreateGLTexture2D(GLuint texture, int width, int height, GLenum pixelFormat = GL_RGBA, GLenum dataType = GL_UNSIGNED_BYTE);	// TODO: OpenGL連携用のテクスチャーを生成
-			cl_mem CreateD3DTexture2D(int width, int height);	// TODO: Direct3D連携用のテクスチャーを生成
+			
+			// TODO: OpenGL連携用のテクスチャーを生成
+			cl_mem CreateGLTexture2D(GLuint texture, int width, int height, GLenum pixelFormat = GL_RGBA, GLenum dataType = GL_UNSIGNED_BYTE);
+#ifdef _WIN32
+			// TODO: Direct3D連携用のテクスチャーを生成
+			cl_mem CreateD3DTexture2D(int width, int height, ID3D11Texture2D *texture);
+#endif
+			// TODO: 縮小したグレースケール画像を取得
+			void Grayscale(uchar *left, uchar *right, enum SCALING scale);	
 
 			// Enumerate OpenCL extensions
 			int EnumExtensions(EXTENSION_CALLBACK callback = NULL, void *item = NULL);
@@ -133,9 +136,12 @@ namespace OVR
 			cl_program		_program;
 			cl_kernel		_demosaic;
 			cl_kernel		_remap;
+			cl_kernel		_grayscale;
+			cl_kernel		_skincolor;
 			cl_command_queue _commandQueue;
 			cl_image_format	_format16UC1;
 			cl_image_format	_format8UC4;
+			cl_image_format _format8UC1;
 			cl_image_format _formatMap;
 			cl_int			_errorCode;
 
@@ -143,6 +149,7 @@ namespace OVR
 			cl_event _execute;
 			cl_mem	_src;
 			cl_mem	_l, _r, _L, _R;
+			cl_mem	_grayL, _grayR;
 			cl_mem	_mx[2], _my[2]; // map for remap in GPU
 			bool	_remapAvailable;
 		};

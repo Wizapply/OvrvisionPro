@@ -138,9 +138,10 @@ public:
 
 	//Processor
 	void PreStoreCamData(OVR::Camqt qt);
-	void Capture(OVR::Camqt qt);
 	unsigned char* GetCamImageBGRA(OVR::Cameye eye);
 	void GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye);
+	// Capture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc.)
+	void Capture(OVR::Camqt qt);
 
 	bool isOpen();
 
