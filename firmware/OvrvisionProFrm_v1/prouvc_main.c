@@ -12,7 +12,7 @@
  *  This Copyright notice may not be removed or modified without prior
  *  written consent of Wizapply.
  *
- *  Wizpply reserves the right to modify this software without notice.
+ *  Wizapply reserves the right to modify this software without notice.
  *
  *  Wizapply                                info@wizapply.com
  *  5F, KS Building,                        http://wizapply.com

@@ -92,6 +92,9 @@ public class COvrvisionUnity
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern float ovGetHMDRightGap(int at);
 
+    [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+    static extern float ovSetCamSyncMode(bool at);
+
     ////////////// Ovrvision AR System //////////////
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern void ovARSetImageBGRA(System.IntPtr img);
@@ -146,6 +149,7 @@ public class COvrvisionUnity
     public int useProcessingQuality = OV_CAMQT_DMSRMP;
 
     public int imageSizeW, imageSizeH;
+	public float aspectW, aspectH;
 
     ////////////// COvrvision ////////////////////////////////////////////
 
@@ -154,6 +158,7 @@ public class COvrvisionUnity
     {
         //Awake
         imageSizeW = imageSizeH = 0;
+		aspectW = aspectH = 1.0f;
     }
 
     //Open Ovrvision
@@ -167,6 +172,10 @@ public class COvrvisionUnity
         {
             imageSizeW = ovGetImageWidth();
             imageSizeH = ovGetImageHeight();
+
+			aspectW = (float)imageSizeW / (float)imageSizeH;
+			aspectH = (float)imageSizeH / (float)imageSizeW;
+			ovSetCamSyncMode(false);
 
             camStatus = true;
         }

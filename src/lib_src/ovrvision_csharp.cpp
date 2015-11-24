@@ -426,6 +426,15 @@ CSHARP_EXPORT void ovSetBLC(int value)
 	g_ovOvrvision->SetCameraBLC(value);
 }
 
+//Set Camera SyncMode
+CSHARP_EXPORT void ovSetCamSyncMode(bool value)
+{
+	if (g_ovOvrvision == NULL)
+		return;
+
+	g_ovOvrvision->SetCameraSyncMode(value);
+}
+
 //Get exposure
 CSHARP_EXPORT int ovGetExposure()
 {

@@ -91,7 +91,7 @@ namespace OVR {
 #endif	/*LINUX*/
 
 
-//Vector2D structure
+/*! @brief Vector2D structure for ov_st_marker_data */
 typedef struct OVRPORT ov_st_vector2d {
 	union {
 		float v[2];
@@ -102,7 +102,7 @@ typedef struct OVRPORT ov_st_vector2d {
 	};
 } OvVector2D;
 
-//Vector3D structure
+/*! @brief Vector3D structure for ov_st_marker_data */
 typedef struct OVRPORT ov_st_vector3d {
 	union {
 		float v[3];
@@ -114,7 +114,7 @@ typedef struct OVRPORT ov_st_vector3d {
 	};
 } OvVector3D;
 
-//Vector4D structure
+/*! @brief Vector4D structure for ov_st_marker_data */
 typedef struct OVRPORT ov_st_vector4d {
 	union {
 		float v[4];
@@ -127,30 +127,32 @@ typedef struct OVRPORT ov_st_vector4d {
 	};
 } OvVector4D;
 
-//Marker Data
+/*! @brief Ovrvision AR Marker data structure */
 typedef struct OVRPORT ov_st_marker_data {
-	int				id;					//MarkerID
-	OvVector3D		translate;			//Position data
-	OvVector4D		quaternion;			//Rotation data
-	OvVector2D		centerPtOfImage;	//Center Position of image
+	int				id;					//!MarkerID
+	OvVector3D		translate;			//!Position data
+	OvVector4D		quaternion;			//!Rotation data
+	OvVector2D		centerPtOfImage;	//!Center Position of image
 } OvMarkerData;
 
 //unsigned char to byte
 typedef unsigned char byte;
 
 //Result define
-#define OV_RESULT_OK		(0)
-#define OV_RESULT_FAILED	(1)
+#define OV_RESULT_OK		(0)	//!Result define
+#define OV_RESULT_FAILED	(1)	//!Result define
 
 /////////// CLASS ///////////
 
-//Ovrvision
+//! OvrvisionPro AR class
 class OVRPORT OvrvisionAR
 {
 public:
 	//Constructor/Destructor
 	//markersize_meter : 15cm = 0.15f, 1m = 1.0f
+	//!Constructor
 	OvrvisionAR(float markersize_meter, int w, int h, float focalPoint);
+	//!Destructor
 	~OvrvisionAR();
 
 	//Methods

@@ -96,8 +96,13 @@ public class Ovrvision : MonoBehaviour
 
 		CameraRightGap = OvrPro.HMDCameraRightGap();
 
-		CameraPlaneLeft.transform.localPosition = new Vector3(0.0f, 0.0f, OvrPro.GetFloatPoint());
-		CameraPlaneRight.transform.localPosition = new Vector3(0.1f - CameraRightGap.x, CameraRightGap.y, OvrPro.GetFloatPoint() - CameraRightGap.z);
+		//Plane reset
+		CameraPlaneLeft.transform.localScale = new Vector3(OvrPro.aspectW, -1.0f, 1.0f);
+		CameraPlaneRight.transform.localScale = new Vector3(OvrPro.aspectW, -1.0f, 1.0f);
+		CameraPlaneLeft.transform.localPosition = new Vector3(0.00f, 0.0f, OvrPro.GetFloatPoint());
+		CameraPlaneRight.transform.localPosition = new Vector3(CameraRightGap.x, CameraRightGap.y, OvrPro.GetFloatPoint());
+		
+		UnityEngine.VR.InputTracking.Recenter();
 	}
 
 	// Update is called once per frame
@@ -112,6 +117,11 @@ public class Ovrvision : MonoBehaviour
 		OvrPro.UpdateImage(CameraTexLeft.GetNativeTexturePtr(), CameraTexRight.GetNativeTexturePtr());
 
 		if (useOvrvisionAR) OvrvisionARRender();
+	}
+
+	void LateUpdate()
+	{
+	
 	}
 
 	//Ovrvision AR Render to OversitionTracker Objects.

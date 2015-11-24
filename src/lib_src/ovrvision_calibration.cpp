@@ -248,21 +248,20 @@ void OvrvisionCalibration::SaveCalibrationParameter(OvrvisionPro* system)
 	//Read Set
 
 	//Save Calib Data
-	ovrset.m_leftCameraInstric = m_cameraCalibration[OV_CAMEYE_RIGHT].intrinsic;
-	ovrset.m_rightCameraInstric = m_cameraCalibration[OV_CAMEYE_LEFT].intrinsic;
-	ovrset.m_leftCameraDistortion = m_cameraCalibration[OV_CAMEYE_RIGHT].distortion;
-	ovrset.m_rightCameraDistortion = m_cameraCalibration[OV_CAMEYE_LEFT].distortion;
-	ovrset.m_R1 = m_cameraCalibration[OV_CAMEYE_RIGHT].R;
-	ovrset.m_R2 = m_cameraCalibration[OV_CAMEYE_LEFT].R;
-	//ovrset.m_P1 = m_cameraCalibration[OV_CAMEYE_RIGHT].P; //none
-	//ovrset.m_P2 = m_cameraCalibration[OV_CAMEYE_LEFT].P; //none
+	ovrset.m_leftCameraInstric = m_cameraCalibration[OV_CAMEYE_LEFT].intrinsic;
+	ovrset.m_rightCameraInstric = m_cameraCalibration[OV_CAMEYE_RIGHT].intrinsic;
+	ovrset.m_leftCameraDistortion = m_cameraCalibration[OV_CAMEYE_LEFT].distortion;
+	ovrset.m_rightCameraDistortion = m_cameraCalibration[OV_CAMEYE_RIGHT].distortion;
+	ovrset.m_R1 = m_cameraCalibration[OV_CAMEYE_LEFT].R;
+	ovrset.m_R2 = m_cameraCalibration[OV_CAMEYE_RIGHT].R;
+	//ovrset.m_P1 = m_cameraCalibration[OV_CAMEYE_LEFT].P; //none
+	//ovrset.m_P2 = m_cameraCalibration[OV_CAMEYE_RIGHT].P; //none
 	ovrset.m_trans = m_relate_rot * m_relate_trans;
-	ovrset.m_focalPoint.at<float>(0) = 4.2799f;
+	ovrset.m_focalPoint.at<float>(0) = 427.99f;
 
 	//Write
 	ovrset.WriteEEPROM(WRITE_EEPROM_FLAG_ALLWR);	//WRITE_EEPROM_FLAG_LENSPARAMWR
 }
-
 
 };
 

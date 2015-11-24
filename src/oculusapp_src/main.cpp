@@ -187,6 +187,8 @@ static bool MainLoop(bool retryCreate)
 		height = ovrvision.GetCamHeight();
 		pixelsize = ovrvision.GetCamPixelsize();
 
+		ovrvision.SetCameraSyncMode(false);
+
 		InitializeCamPlane(DIRECTX.Device, DIRECTX.Context, width, height, 0.95f);
 	}
 

@@ -50,13 +50,25 @@ OvrvisionAR::OvrvisionAR(float markersize_meter, int w, int h, float focalPoint)
 	m_pImageSrc = NULL;
 	m_pImageOpenCVMat = NULL;
 
+	float focalPointScale = 1.0f;
+	//Adjustment calc
+	if (w > 1280) {
+		focalPointScale = 2.0f;
+	}
+	else if (w <= 640) {
+		if (w <= 320)
+			focalPointScale = 0.25f;
+		else
+			focalPointScale = 0.5f;
+	}
+
 	//Default camera matrix
 	cv::Mat cameramat(3,3,CV_32FC1);
-	cameramat.at<float>(0) = focalPoint;	//f
+	cameramat.at<float>(0) = focalPoint * focalPointScale;	//f
 	cameramat.at<float>(1) = 0.0f;
 	cameramat.at<float>(2) = (float)(m_width / 2);
 	cameramat.at<float>(3) = 0.0f;
-	cameramat.at<float>(4) = focalPoint;
+	cameramat.at<float>(4) = focalPoint * focalPointScale;
 	cameramat.at<float>(5) = (float)(m_height / 2);
 	cameramat.at<float>(6) = 0.0f;
 	cameramat.at<float>(7) = 0.0f;

@@ -89,6 +89,9 @@ namespace ovrvision_app
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern float ovGetHMDRightGap(int at);
 
+        [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        static extern float ovSetCamSyncMode(bool at);
+
         ////////////// Ovrvision AR System //////////////
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern void ovARSetImageBGRA(System.IntPtr img);

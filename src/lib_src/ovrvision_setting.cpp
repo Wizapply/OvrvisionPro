@@ -126,6 +126,7 @@ bool OvrvisionSetting::ReadEEPROM() {
 		//----32 byte----
 
 		m_pSystem->UserDataAccessSelectAddress(0x0020);
+
 		for (i = 0; i < m_leftCameraInstric.total()*m_leftCameraInstric.elemSize(); i++) {
 			m_leftCameraInstric.data[i] = m_pSystem->UserDataAccessGetData();
 		}
@@ -154,8 +155,9 @@ bool OvrvisionSetting::ReadEEPROM() {
 		}
 		m_pSystem->UserDataAccessLock();
 
-		/* For Test
-		String filename("ovrvision_test.xml");
+		// For Test
+		/*
+		String filename("ovrvision_eepromtest.xml");
 		FileStorage cvfs(filename, CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
 
 		//Write undistort param
@@ -204,7 +206,10 @@ bool OvrvisionSetting::ReadEEPROM() {
 		cvfs.release();
 
 		//Mode
-		if (mode==2) WriteEEPROM(WRITE_EEPROM_FLAG_ALLWR);
+		if (mode == 2) {
+			WriteEEPROM(WRITE_EEPROM_FLAG_ALLWR);
+			return false;
+		}
 	}
 
 	isReaded = true;
@@ -279,10 +284,15 @@ bool OvrvisionSetting::WriteEEPROM(unsigned char flag) {
 		for (i = 0; i < m_rightCameraInstric.total()*m_rightCameraInstric.elemSize(); i++) {
 			m_pSystem->UserDataAccessSetData(m_rightCameraInstric.data[i]);
 		}
-		for (i = 0; i < m_leftCameraDistortion.total()*m_leftCameraDistortion.elemSize(); i++) {
+		int writesafect = m_leftCameraDistortion.total();
+		if (writesafect > 8) writesafect = 8;	//for calib
+		for (i = 0; i < writesafect*m_leftCameraDistortion.elemSize(); i++) {
 			m_pSystem->UserDataAccessSetData(m_leftCameraDistortion.data[i]);
 		}
-		for (i = 0; i < m_rightCameraDistortion.total()*m_rightCameraDistortion.elemSize(); i++) {
+		
+		writesafect = m_rightCameraDistortion.total();
+		if (writesafect > 8) writesafect = 8;	 //for calib
+		for (i = 0; i < writesafect*m_rightCameraDistortion.elemSize(); i++) {
 			m_pSystem->UserDataAccessSetData(m_rightCameraDistortion.data[i]);
 		}
 
@@ -306,6 +316,25 @@ bool OvrvisionSetting::WriteEEPROM(unsigned char flag) {
 	//checksum developing
 	//m_pSystem->UserDataAccessCheckSumAddress();
 	//unsigned char checksum = m_pSystem->UserDataAccessGetData();//1byte
+
+	// For Test
+	/*
+	String filename("ovrvision_writetest.xml");
+	FileStorage cvfs(filename, CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
+
+	//Write undistort param
+	write(cvfs, "LeftCameraInstric", m_leftCameraInstric);
+	write(cvfs, "RightCameraInstric", m_rightCameraInstric);
+	write(cvfs, "LeftCameraDistortion", m_leftCameraDistortion);
+	write(cvfs, "RightCameraDistortion", m_rightCameraDistortion);
+	write(cvfs, "R1", m_R1);
+	write(cvfs, "R2", m_R2);
+	write(cvfs, "T", m_trans);
+
+	write(cvfs, "FocalPoint", m_focalPoint);
+
+	cvfs.release();
+	*/
 
 	m_pSystem->UserDataAccessLock();
 
