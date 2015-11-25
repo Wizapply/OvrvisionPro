@@ -82,6 +82,11 @@ int main(int argc, char* argv[])
 				show = false;
 				break;
 
+			case ' ':
+				imwrite("left.png", left);
+				imwrite("right.png", right);
+				break;
+
 			case 'e':
 				if (callback != NULL)
 				{
