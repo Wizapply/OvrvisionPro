@@ -189,6 +189,9 @@ public:
 	//Save the present setup to EEPROM. 
 	bool CameraParamSaveEEPROM();
 
+	//Get OpenCL extensions of GPU
+	int OpenCLExtensions(int(*callback)(void *, const char *), void *item);
+
 private:
 #ifdef WIN32
 	//DirectShow

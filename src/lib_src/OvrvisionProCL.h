@@ -87,13 +87,13 @@ namespace OVR
 			cl_mem CreateGLTexture2D(GLuint texture, int width, int height, GLenum pixelFormat = GL_RGBA, GLenum dataType = GL_UNSIGNED_BYTE);
 #ifdef _WIN32
 			// TODO: Direct3D連携用のテクスチャーを生成
-			cl_mem CreateD3DTexture2D(int width, int height, ID3D11Texture2D *texture);
+			cl_mem CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height);
 #endif
 			// TODO: 縮小したグレースケール画像を取得
 			void Grayscale(uchar *left, uchar *right, enum SCALING scale);	
 
 			// Enumerate OpenCL extensions
-			int EnumExtensions(EXTENSION_CALLBACK callback = NULL, void *item = NULL);
+			int DeviceExtensions(EXTENSION_CALLBACK callback = NULL, void *item = NULL);
 
 			void createProgram(const char *filename, bool binary = false);
 			int saveBinary(const char *filename);

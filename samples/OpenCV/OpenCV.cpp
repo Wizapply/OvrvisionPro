@@ -10,6 +10,15 @@ using namespace OVR;
 
 static 	OvrvisionPro ovrvision;
 
+int callback(void *pItem, const char *extensions)
+{
+	if (extensions != NULL)
+	{
+		puts(extensions);
+	}
+	return 0;
+}
+
 int main(int argc, char* argv[])
 {
 	if (ovrvision.Open(0, Camprop::OV_CAMHD_FULL))
@@ -71,6 +80,14 @@ int main(int argc, char* argv[])
 
 			case 'n':
 				show = false;
+				break;
+
+			case 'e':
+				if (callback != NULL)
+				{
+					callback(NULL, "Device Extensions");
+				}
+				ovrvision.OpenCLExtensions(callback, NULL);
 				break;
 			}
 		}

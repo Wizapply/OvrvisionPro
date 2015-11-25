@@ -195,7 +195,7 @@ namespace OVR
 		}
 
 	// Enumerate OpenCL extensions
-	int OvrvisionProOpenCL::EnumExtensions(EXTENSION_CALLBACK callback, void *item)
+	int OvrvisionProOpenCL::DeviceExtensions(EXTENSION_CALLBACK callback, void *item)
 	{
 		size_t size;
 		clGetDeviceInfo(_deviceId, CL_DEVICE_EXTENSIONS, 0, NULL, &size); // get entension size
@@ -218,7 +218,7 @@ namespace OVR
 	// OpenGL/D3D連携準備
 	bool OvrvisionProOpenCL::Prepare4Sharing()
 	{
-		EnumExtensions();
+		DeviceExtensions();
 #ifdef _WIN32
 		if (strstr(_deviceExtensions, "cl_nv_d3d11_sharing"))
 		{
@@ -267,7 +267,7 @@ namespace OVR
 
 #ifdef _WIN32
 	// TODO: Direct3D連携用のテクスチャーを生成
-	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(int width, int height, ID3D11Texture2D *texture)
+	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height)
 	{
 		if (_vendorD3D11 == NVIDIA)
 		{

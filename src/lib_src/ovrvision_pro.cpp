@@ -200,6 +200,12 @@ void OvrvisionPro::Close()
 	m_isOpen = false;
 }
 
+//Get OpenCL extensions of GPU
+int OvrvisionPro::OpenCLExtensions(EXTENSION_CALLBACK callback, void *item)
+{
+	return m_pOpenCL->DeviceExtensions(callback, item);
+}
+
 // Capture frame
 void OvrvisionPro::Capture(OVR::Camqt qt)
 {
