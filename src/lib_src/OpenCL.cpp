@@ -251,8 +251,9 @@ namespace OVR
 	}
 
 	// OpenGL連携テクスチャー
-	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint textureId, int width, int height, GLenum pixelFormat, GLenum dataType)
+	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint textureId, int width, int height)
 	{
+		/*
 		glBindTexture(GL_TEXTURE_2D, textureId);
 		glTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, width, height, 0, pixelFormat, dataType, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -262,6 +263,7 @@ namespace OVR
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glEnable(GL_TEXTURE_2D);
+		*/
 		return clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, textureId, &_errorCode);
 	}
 

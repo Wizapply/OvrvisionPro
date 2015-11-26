@@ -48,10 +48,10 @@ namespace OVR
 
 	// Extension vendor 
 	enum VENDOR {
-		KHRONOS,	// Khronos準拠の機能拡張
-		INTEL,		// Intelの機能拡張
-		AMD,		// AMDの機能拡張
-		NVIDIA		// NVIDIAの機能拡張
+		KHRONOS,	// Khronos specific extension
+		INTEL,		// Intel specific extension
+		AMD,		// AMD specific extension
+		NVIDIA		// NVIDIA specific extension
 	};
 
 	// OpenCLの機能拡張情報を返すコールバック関数
@@ -83,10 +83,12 @@ namespace OVR
 
 			cl_device_id SelectGPU(const char *platform, const char *version);
 			
-			// TODO: OpenGL連携用のテクスチャーを生成
-			cl_mem CreateGLTexture2D(GLuint texture, int width, int height, GLenum pixelFormat = GL_RGBA, GLenum dataType = GL_UNSIGNED_BYTE);
+			// OpenGL連携用のテクスチャーを生成
+			// pixelFormat must be GL_RGBA
+			// dataType must be GL_UNSIGNED_BYTE
+			cl_mem CreateGLTexture2D(GLuint texture, int width, int height);
 #ifdef _WIN32
-			// TODO: Direct3D連携用のテクスチャーを生成
+			// Direct3D連携用のテクスチャーを生成
 			cl_mem CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height);
 #endif
 			// TODO: 縮小したグレースケール画像を取得

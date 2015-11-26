@@ -192,6 +192,21 @@ public:
 	//Get OpenCL extensions of GPU
 	int OpenCLExtensions(int(*callback)(void *, const char *), void *item);
 
+	// Grayscaled images
+	void GrayscaleHalf(unsigned char *left, unsigned char *right);		// 1/2 scaled
+	void GrayscaleFourth(unsigned char *left, unsigned char *right);	// 1/4 scaled
+	void GrayscaleEighth(unsigned char *left, unsigned char *right);	// 1/8 scaled
+
+#ifdef _WIN32
+	// Create D3D11 texture
+	void* CreateD3DTexture2D(void *texture, int width, int height);
+#endif
+
+	// Create OpenGL Texture
+	void* CreateGLTexture2D(unsigned int texture, int width, int height);
+
+
+
 private:
 #ifdef WIN32
 	//DirectShow

@@ -206,6 +206,38 @@ int OvrvisionPro::OpenCLExtensions(EXTENSION_CALLBACK callback, void *item)
 	return m_pOpenCL->DeviceExtensions(callback, item);
 }
 
+#ifdef _WIN32
+// Create D3D11 texture
+void* OvrvisionPro::CreateD3DTexture2D(void *texture, int width, int height)
+{
+	return m_pOpenCL->CreateD3DTexture2D((ID3D11Texture2D*)texture, width, height);
+}
+#endif
+
+// Create OpenGL Texture
+void* OvrvisionPro::CreateGLTexture2D(unsigned int texture, int width, int height)
+{
+	return m_pOpenCL->CreateGLTexture2D(texture, width, height);
+}
+
+// Grayscaled images 1/2 scaled
+void OvrvisionPro::GrayscaleHalf(unsigned char *left, unsigned char *right)
+{
+	return m_pOpenCL->Grayscale(left, right, SCALING::HALF);
+}
+
+// 1/4 scaled
+void OvrvisionPro::GrayscaleFourth(unsigned char *left, unsigned char *right)
+{
+	return m_pOpenCL->Grayscale(left, right, SCALING::FOURTH);
+}
+
+// 1/8 scaled
+void OvrvisionPro::GrayscaleEighth(unsigned char *left, unsigned char *right)
+{
+	return m_pOpenCL->Grayscale(left, right, SCALING::EIGHTH);
+}
+
 // Capture frame
 void OvrvisionPro::Capture(OVR::Camqt qt)
 {
