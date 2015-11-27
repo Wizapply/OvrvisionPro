@@ -7,6 +7,9 @@
 
 #include "ovrvision_pro.h"
 
+#define CROP_W 800
+#define CROP_H 600
+
 using namespace cv;
 using namespace OVR;
 
@@ -28,12 +31,15 @@ int main(int argc, char* argv[])
 		int ksize = 5;
 		int width = ovrvision.GetCamWidth();
 		int height = ovrvision.GetCamHeight();
-		Mat left(height, width, CV_8UC4);
-		Mat right(height, width, CV_8UC4);
-		Mat lBlur(height, width, CV_8UC4);	// work
-		Mat rBlur(height, width, CV_8UC4);
-		Mat YCrCb(height, width, CV_8UC3);
+		ROI roi = {(width - CROP_W) / 2, (height - CROP_H) / 2, CROP_W, CROP_H};
+		Mat left(roi.height, roi.width, CV_8UC4);
+		Mat right(roi.height, roi.width, CV_8UC4);
+		Mat lBlur(roi.height, roi.width, CV_8UC4);	// work
+		Mat rBlur(roi.height, roi.width, CV_8UC4);
+		Mat hsv(roi.height, roi.width, CV_8UC3);
+		Mat YCrCb(roi.height, roi.width, CV_8UC3);
 		Mat YRB[3];
+		Mat HSV[3];
 
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
@@ -47,11 +53,12 @@ int main(int argc, char* argv[])
 			if (show)
 			{
 				// Capture frame
-				ovrvision.PreStoreCamData(mode);
+				ovrvision.Capture(mode);
 
 				// Retrieve frame data
-				ovrvision.GetCamImageBGRA(left.data, Cameye::OV_CAMEYE_LEFT);
-				ovrvision.GetCamImageBGRA(right.data, Cameye::OV_CAMEYE_RIGHT);
+				//ovrvision.GetCamImageBGRA(left.data, Cameye::OV_CAMEYE_LEFT);
+				//ovrvision.GetCamImageBGRA(right.data, Cameye::OV_CAMEYE_RIGHT);
+				ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
 
 				// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
 				if (0 < ksize)
@@ -59,13 +66,17 @@ int main(int argc, char* argv[])
 					//medianBlur(left, lBlur, ksize);
 					medianBlur(right, rBlur, ksize);
 					cvtColor(rBlur, YCrCb, CV_BGR2YCrCb);
+					cvtColor(rBlur, hsv, CV_BGR2HSV_FULL);
+					split(hsv, HSV);
 					split(YCrCb, YRB);
 
 					// Show frame data
 					//imshow("Left", lBlur);
 					imshow("Right", rBlur);
-					imshow("Cr", YRB[1]);
-					imshow("Cb", YRB[2]);
+					imshow("HSV", hsv);
+					imshow("Hue", HSV[0]);
+					//imshow("Cr", YRB[1]);
+					//imshow("Cb", YRB[2]);
 				}
 				else
 				{
