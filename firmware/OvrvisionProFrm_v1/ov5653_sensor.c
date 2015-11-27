@@ -637,7 +637,7 @@ unsigned char OV5653SensorGetWBTAuto() {
 void OV5653SensorSetWBTAuto(unsigned char v) {
 	v = v & 0x01;
 	v ^= 1;	//Reversal
-	WI2C(0x3405,v);
+	WI2C(0x3406,v);
 }
 
 extern uint16_t OV5653SensorGetBLC(){

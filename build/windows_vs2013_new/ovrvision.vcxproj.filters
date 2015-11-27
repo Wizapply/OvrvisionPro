@@ -79,6 +79,9 @@
     <ClCompile Include="..\..\src\lib_src\ovrvision_csharp_unity.cpp">
       <Filter>ソース ファイル\C#</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_tracking.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\ovrvision_ar.h">
@@ -142,6 +145,9 @@
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\ovrvision_pro.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ovrvision_tracking.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
   </ItemGroup>

@@ -226,10 +226,6 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 	if (qt == OVR::Camqt::OV_CAMQT_NONE)
 		return;
 
-	//cv::Mat raw8_double(cv::Size(m_width, m_height), CV_16UC1);
-	//cv::Mat raw8_left(cv::Size(m_width, m_height), CV_8UC4, m_pPixels[0]);
-	//cv::Mat raw8_right(cv::Size(m_width, m_height), CV_8UC4, m_pPixels[1]);
-
 	if (m_pODS->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK) {
 		if (qt == OVR::Camqt::OV_CAMQT_DMSRMP)
 			m_pOpenCL->DemosaicRemap(m_pFrame, m_pPixels[0], m_pPixels[1]);	//OpenCL
@@ -258,10 +254,12 @@ void OvrvisionPro::InitCameraSetting()
 		SetCameraExposure(ovrset.m_propExposure);
 		SetCameraGain(ovrset.m_propGain);
 		SetCameraBLC(ovrset.m_propBLC);
-		SetCameraWhiteBalanceR(ovrset.m_propWhiteBalanceR);
-		SetCameraWhiteBalanceG(ovrset.m_propWhiteBalanceG);
-		SetCameraWhiteBalanceB(ovrset.m_propWhiteBalanceB);
 		SetCameraWhiteBalanceAuto((bool)ovrset.m_propWhiteBalanceAuto);
+		if (ovrset.m_propWhiteBalanceAuto != 0) {
+			SetCameraWhiteBalanceR(ovrset.m_propWhiteBalanceR);
+			SetCameraWhiteBalanceG(ovrset.m_propWhiteBalanceG);
+			SetCameraWhiteBalanceB(ovrset.m_propWhiteBalanceB);
+		}
 		m_focalpoint = ovrset.m_focalPoint.at<float>(0);
 		m_rightgap[0] = (float)-ovrset.m_trans.at<double>(0);	//T:X
 		m_rightgap[1] = (float)ovrset.m_trans.at<double>(1);	//T:Y

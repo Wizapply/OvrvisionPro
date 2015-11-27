@@ -137,6 +137,17 @@ void OvrvisionAR::RotMatToQuaternion( OvVector4D* outQuat, const float* inMat )
 	}
 }
 
+//Multiply Quaternion
+OvVector4D OvrvisionAR::MultiplyQuaternion(OvVector4D* a, OvVector4D* b)
+{
+	OvVector4D ans;
+	ans.w = a->w * b->w - a->x * b->x - a->y * b->y - a->z * b->z;
+	ans.x = a->w * b->x + b->w * a->x + a->y * b->z - b->y * a->z;
+	ans.y = a->w * b->y + b->w * a->y + a->z * b->x - b->z * a->x;
+	ans.z = a->w * b->z + b->w * a->z + a->x * b->y - b->x * a->y;
+	return ans;
+}
+
 //Methods
 
 //image set
@@ -184,6 +195,7 @@ void OvrvisionAR::Render()
 
 	//insert
 	for(int i=0; i < m_markerDataSize; i++) {
+		OvVector4D aj = { 1.0f, 0.0f, 0.0f, 0.0f };
 		OvMarkerData* dt = &m_pMarkerData[i];
 		float rotation_matrix[16];
 
@@ -220,6 +232,7 @@ void OvrvisionAR::Render()
 
 		RotMatToQuaternion(&dt->quaternion, rotation_matrix);
 		dt->quaternion.w = -dt->quaternion.w;
+		dt->quaternion = MultiplyQuaternion(&dt->quaternion, &aj);
 	}
 }
 

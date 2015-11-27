@@ -161,7 +161,7 @@ namespace ovrvision_app
         {
             if (!settingForm.Visible) {
                 settingForm.ApplyItem();
-                settingForm.Show(this);
+                settingForm.Show();
             }
         }
 	}

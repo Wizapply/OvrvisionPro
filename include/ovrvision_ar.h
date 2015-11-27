@@ -161,7 +161,7 @@ public:
 	void SetImageBGRA(unsigned char* pImage);
 	void SetImageOpenCVImage(ovMat* pImageMat);
 	//Detect marker
-	void Render();				//RGB 24bit
+	void Render();	
 	//Get marker data
 	int				   GetMarkerDataSize();
 	OVR::OvMarkerData* GetMarkerData();
@@ -194,6 +194,8 @@ private:
 	//Private Methods
 	//Rotation Matrix to Quaternion
 	void RotMatToQuaternion(OvVector4D* outQuat, const float* inMat);
+	//Multiply Quaternion
+	OvVector4D MultiplyQuaternion(OvVector4D* a, OvVector4D* b);
 };
 
 };

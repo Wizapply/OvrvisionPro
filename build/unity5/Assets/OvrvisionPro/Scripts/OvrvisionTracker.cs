@@ -15,6 +15,8 @@ public class OvrvisionTracker : MonoBehaviour {
 
 	private float hideTime;
 	public float stopTime = 1.0f;
+
+	private Vector3 offsetPos = new Vector3(-0.032f,0.0f,0.0f);
 	
 	// ------ Function ------
 
@@ -39,15 +41,15 @@ public class OvrvisionTracker : MonoBehaviour {
 		int i = elementNo * MARKERGET_ARG10;
 		if (!MovieOVRCameraRig)
 		{
-			this.transform.localPosition = new Vector3(markerGet[i + 1], markerGet[i + 2], markerGet[i + 3]);
-			this.transform.localRotation = new Quaternion(markerGet[i + 4], markerGet[i + 5], markerGet[i + 6], markerGet[i + 7]) * Quaternion.Euler(180, 0, 0);
+			this.transform.localPosition = new Vector3(markerGet[i + 1] + offsetPos.x, markerGet[i + 2] + offsetPos.y, markerGet[i + 3] + offsetPos.z);
+			this.transform.localRotation = new Quaternion(markerGet[i + 4], markerGet[i + 5], markerGet[i + 6], markerGet[i + 7]);
 		}
 		else
 		{
 			if (OvrvisionProCameraObj != null)
 			{
 				Vector3 pos = new Vector3(markerGet[i + 1], markerGet[i + 2], markerGet[i + 3]);
-				Quaternion qat = new Quaternion(markerGet[i + 4], markerGet[i + 5], markerGet[i + 6], markerGet[i + 7]) * Quaternion.Euler(180, 0, 0);
+				Quaternion qat = new Quaternion(markerGet[i + 4], markerGet[i + 5], markerGet[i + 6], markerGet[i + 7]);
 				setCameraTrackerPosition(pos, qat, OvrvisionProCameraObj);
 			}
 		}

@@ -100,6 +100,9 @@
 #define OVRPRO_GPIO2_PIN	(37)
 #define OVRPRO_GPIO3_PIN	(38)
 
+#define OVRPRO_OVRESET_PIN	(25)
+
+
 /* Processing Unit specific UVC control selector codes defined in the USB Video Class specification. */
 #define OVRPRO_UVC_PU_BACKLIGHT_COMPENSATION_CONTROL         (uint16_t)(0x0100)
 #define OVRPRO_UVC_PU_BRIGHTNESS_CONTROL                     (uint16_t)(0x0200)

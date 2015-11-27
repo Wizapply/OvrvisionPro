@@ -170,7 +170,7 @@ public:
 //OvrvisionDirectShow
 OvrvisionDirectShow::OvrvisionDirectShow()
 {
-	HRESULT hr = ::CoInitialize(NULL);
+	HRESULT hr = ::CoInitializeEx(NULL, COINIT_MULTITHREADED | COINIT_APARTMENTTHREADED);
 	if (hr == S_OK) m_comInit = true;
 	else m_comInit = false;
 
@@ -631,6 +631,18 @@ int OvrvisionDirectShow::GetBayer16Image(unsigned char* pImage, bool nonblocking
 
 	return result;
 }
+
+/*
+EnterCriticalSection(&m_pSGCallback->m_critSection);
+register int i;
+for (i = 0; i < m_pSGCallback->m_LatestBufferLength - 2; i += 2) {
+	pImage[i] = m_pSGCallback->m_pPixels[i];
+	pImage[i + 1] = m_pSGCallback->m_pPixels[i + 3];
+}
+//memcpy(pImage, m_pSGCallback->m_pPixels, m_pSGCallback->m_LatestBufferLength);	//Data copy
+result = RESULT_OK;
+LeaveCriticalSection(&m_pSGCallback->m_critSection);
+*/
 
 //Set camera setting
 int OvrvisionDirectShow::SetCameraSetting(CamSetting proc, int value, bool automode)

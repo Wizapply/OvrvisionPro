@@ -9,7 +9,7 @@ Shader "Ovrvision/ovChromaticMask" {
 		_Color_minv ("Min Brightness",Range (0.0,1.0)) = 0.0
 	}
 	SubShader {
-		Tags { "Queue" = "Background+1" "RenderType"="Background" }
+		Tags { "Queue" = "Overlay+1" "RenderType"="Overlay" }
 		LOD 0
 		
 		Pass {

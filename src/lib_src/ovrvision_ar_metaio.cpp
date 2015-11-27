@@ -72,13 +72,25 @@ OvrvisionAR::OvrvisionAR(float markersize, int w, int h, float focalPoint)
 	m_pImageSrc = NULL;
 	m_pImageOpenCVMat = NULL;
 
+	float focalPointScale = 1.0f;
+	//Adjustment calc
+	if (w > 1280) {
+		focalPointScale = 2.0f;
+	}
+	else if (w <= 640) {
+		if (w <= 320)
+			focalPointScale = 0.25f;
+		else
+			focalPointScale = 0.5f;
+	}
+
 	//Default camera matrix
 	cv::Mat cameramat(3,3,CV_32FC1);
-	cameramat.at<float>(0) = focalPoint;	//f=3.1mm
+	cameramat.at<float>(0) = focalPoint * focalPointScale;	//f=3.1mm
 	cameramat.at<float>(1) = 0.0f;
 	cameramat.at<float>(2) = (float)(m_width / 2);
 	cameramat.at<float>(3) = 0.0f;
-	cameramat.at<float>(4) = focalPoint;
+	cameramat.at<float>(4) = focalPoint * focalPointScale;
 	cameramat.at<float>(5) = (float)(m_height / 2);
 	cameramat.at<float>(6) = 0.0f;
 	cameramat.at<float>(7) = 0.0f;
@@ -89,17 +101,20 @@ OvrvisionAR::OvrvisionAR(float markersize, int w, int h, float focalPoint)
 
 	{
 		char buf[512];
+		char parambuf[128];
 		GetCurrentDirectoryA(512,buf);
 		strcat(buf, "\\arcl\\metaioar_cl.exe");
-		ShellExecuteA(NULL,"open",buf,NULL,NULL,SW_SHOWMINNOACTIVE);
+
+		sprintf(parambuf, "%d %d %.3f", w, h, focalPoint*focalPointScale);
+		ShellExecuteA(NULL, "open", buf, parambuf, "", SW_SHOWMINNOACTIVE);
 
 		g_hMapping = NULL;
 		int count = 0;
 		while(1) {
-			g_hMapping = OpenFileMappingA(
-				FILE_MAP_WRITE,
+			g_hMapping = OpenFileMapping(
+				FILE_MAP_ALL_ACCESS,
 				FALSE,
-				"OvrvisionARShareMem"
+				L"OvrvisionARShareMem"
 			);
 			if(g_hMapping != NULL) {
 				break;
@@ -110,7 +125,7 @@ OvrvisionAR::OvrvisionAR(float markersize, int w, int h, float focalPoint)
 			}
 			Sleep(1000);
 		}
-		g_pMappingView = (byte*)::MapViewOfFile( g_hMapping, FILE_MAP_WRITE, 0, 0, 0);
+		g_pMappingView = (byte*)::MapViewOfFile(g_hMapping, FILE_MAP_ALL_ACCESS, 0, 0, 0);
 		if(g_pMappingView == NULL) {
 			return;
 		}
@@ -183,10 +198,21 @@ void OvrvisionAR::RotMatToQuaternion( OvVector4D* outQuat, const float* inMat )
 	}
 }
 
+//Multiply Quaternion
+OvVector4D OvrvisionAR::MultiplyQuaternion(OvVector4D* a, OvVector4D* b)
+{
+	OvVector4D ans;
+	ans.w = a->w * b->w - a->x * b->x - a->y * b->y - a->z * b->z;
+	ans.x = a->w * b->x + b->w * a->x + a->y * b->z - b->y * a->z;
+	ans.y = a->w * b->y + b->w * a->y + a->z * b->x - b->z * a->x;
+	ans.z = a->w * b->z + b->w * a->z + a->x * b->y - b->x * a->y;
+	return ans;
+}
+
 //Methods
 
 //image set
-void OvrvisionAR::SetImageRGB(unsigned char* pImage)
+void OvrvisionAR::SetImageBGRA(unsigned char* pImage)
 {
 	m_pImageSrc = pImage;
 	m_pImageOpenCVMat = NULL;
@@ -202,28 +228,18 @@ void OvrvisionAR::SetImageOpenCVImage(ovMat* pImageMat)
 void OvrvisionAR::Render()
 {
 	//opencv var
-	cv::Mat	pCamRGBImg;
-	cv::Mat	pGrayImg;
+	cv::Mat	pCamBGRAImg;
 	std::vector<aruco::Marker> markers;
 
 	if(m_pImageSrc == NULL && m_pImageOpenCVMat == NULL)
 		return;
 
 	//create image
-	pGrayImg = cv::Mat(cv::Size(m_width,m_height),CV_MAKETYPE(CV_8U,OV_RGBA_DATASIZE));
-	if(m_pImageSrc != NULL) {
-		pCamRGBImg = cv::Mat(cv::Size(m_width,m_height),CV_MAKETYPE(CV_8U,OV_RGB_DATASIZE));
-		//dataset
-		memcpy(pCamRGBImg.data, m_pImageSrc, sizeof(unsigned char) * m_width * m_height * OV_RGB_DATASIZE);
-		//convert color
-		cv::cvtColor(pCamRGBImg, pGrayImg, CV_RGB2RGBA);
-	} else {
-		cv::cvtColor((*m_pImageOpenCVMat), pGrayImg, CV_RGB2RGBA);
-	}
+	pCamBGRAImg = cv::Mat(cv::Size(m_width, m_height), CV_MAKETYPE(CV_8U, OV_RGB_DATASIZE), m_pImageSrc);
 	
 	//detect
-	memcpy((void*)&g_pMappingView[1],pGrayImg.data,
-		pGrayImg.rows * pGrayImg.cols * OV_RGBA_DATASIZE);
+	memcpy((void*)&g_pMappingView[1], pCamBGRAImg.data,
+		pCamBGRAImg.rows * pCamBGRAImg.cols * OV_RGBA_DATASIZE);
 
 	g_pMappingView[0] = CT_PSSTART;
 	while(g_pMappingView[0] == CT_PSSTART);	//wait
@@ -245,6 +261,7 @@ void OvrvisionAR::Render()
 
 	//insert
 	for(int i=0; i < m_markerDataSize; i++) {
+		OvVector4D aj = {0.7f, 0.0f, 0.0f, -0.7f};
 		float* offiv = &vmatrix[i*8];
 		OvMarkerData* dt = &m_pMarkerData[i];
 
@@ -252,14 +269,15 @@ void OvrvisionAR::Render()
 		dt->centerPtOfImage.x = 0.0f;
 		dt->centerPtOfImage.y = 0.0f;
 
-		dt->translate.x = offiv[0] * 0.01f;	//X
-		dt->translate.y = offiv[1] * 0.01f;	//Y
+		dt->translate.x = offiv[0] * 0.01f;		//X
+		dt->translate.y = offiv[1] * 0.01f;		//Y
 		dt->translate.z = -offiv[2] * 0.01f;	//Z
 		
 		dt->quaternion.x = offiv[3];
 		dt->quaternion.y = offiv[4];
 		dt->quaternion.z = -offiv[5];
 		dt->quaternion.w = -offiv[6];
+		dt->quaternion = MultiplyQuaternion(&dt->quaternion, &aj);
 	}
 }
 

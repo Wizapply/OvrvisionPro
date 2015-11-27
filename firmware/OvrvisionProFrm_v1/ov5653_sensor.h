@@ -43,9 +43,6 @@
 
 #define I2C_SLAVEADDR_MASK 0xFE         /* Mask to get actual I2C slave address value without direction bit. */
 
-/* GPIO 25 on FX3 is used to frex the Image sensor. */
-#define OV5653_SENSOR_FREX_GPIO_PIN 25
-
 // I2C functions
 extern CyU3PReturnStatus_t WriteI2C (uint8_t slaveAddr, uint16_t address, uint8_t data);
 extern CyU3PReturnStatus_t ReadI2C (uint8_t slaveAddr, uint16_t address, uint8_t *data);

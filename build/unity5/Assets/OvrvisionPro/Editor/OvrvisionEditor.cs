@@ -56,10 +56,22 @@ public class OvrvisionEditor : Editor {
 
 		EditorGUILayout.Space();
 
-		string[] planeshader = { "No Overlay", "Normal Shader", "Chroma-key Shader", "Hand Mask Shader" };
-		obj.camViewShader = EditorGUILayout.Popup("Camera Overlay(未実装)", obj.camViewShader, planeshader);
+		string[] planeshader = { "Normal Shader", "Chroma-key Shader", "Hand Mask Shader" };
+		obj.camViewShader = EditorGUILayout.Popup("Camera Overlay", obj.camViewShader, planeshader);
 
-		
+		if (obj.camViewShader == 1)
+		{	//Chroma-Key
+			obj.chroma_hue.x = EditorGUILayout.Slider("Max Hue", obj.chroma_hue.x, 0.0f, 1.0f);
+			obj.chroma_hue.y = EditorGUILayout.Slider("Min Hue", obj.chroma_hue.y, 0.0f, 1.0f);
+			obj.chroma_saturation.x = EditorGUILayout.Slider("Max Saturation", obj.chroma_saturation.x, 0.0f, 1.0f);
+			obj.chroma_saturation.y = EditorGUILayout.Slider("Min Saturation", obj.chroma_saturation.y, 0.0f, 1.0f);
+			obj.chroma_brightness.x = EditorGUILayout.Slider("Max Brightness", obj.chroma_brightness.x, 0.0f, 1.0f);
+			obj.chroma_brightness.y = EditorGUILayout.Slider("Min Brightness ", obj.chroma_brightness.y, 0.0f, 1.0f);
+		} else if (obj.camViewShader == 2)
+		{	//Hand Mask
+
+		}
+
 		//changed param
 		if (GUI.changed) {
 			obj.UpdateOvrvisionSetting();
