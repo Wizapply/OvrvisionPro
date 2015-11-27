@@ -112,6 +112,11 @@ typedef enum ov_cameraquality {
 	OV_CAMQT_NONE,			//!None
 } Camqt;
 
+typedef struct {
+	int offsetX, offsetY;
+	unsigned int width, height;
+} ROI;
+
 //unsigned char to byte
 typedef unsigned char byte;
 typedef unsigned char* pbyte;
@@ -140,8 +145,11 @@ public:
 	void PreStoreCamData(OVR::Camqt qt);
 	unsigned char* GetCamImageBGRA(OVR::Cameye eye);
 	void GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye);
+
 	// Capture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc.)
 	void Capture(OVR::Camqt qt);
+	//Get camera image region of interest
+	void GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRight, ROI roi);
 
 	bool isOpen();
 

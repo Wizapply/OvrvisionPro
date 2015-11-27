@@ -63,6 +63,9 @@ namespace OVR
 			OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode = NONE);
 			~OvrvisionProOpenCL();
 
+			// Select GPU device
+			cl_device_id SelectGPU(const char *platform, const char *version);
+
 			// Load camera parameters
 			bool LoadCameraParams(const char *filename);
 			bool LoadCameraParams(OvrvisionSetting* ovrset);
@@ -81,7 +84,11 @@ namespace OVR
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
-			cl_device_id SelectGPU(const char *platform, const char *version);
+			// Read images region of interest
+			void Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height);
+
+			// Remap
+			void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);
 			
 			// OpenGL連携用のテクスチャーを生成
 			// pixelFormat must be GL_RGBA
@@ -100,7 +107,6 @@ namespace OVR
 			void createProgram(const char *filename, bool binary = false);
 			int saveBinary(const char *filename);
 			//bool SaveSettings(const char *filename);
-			//void Remap(Cameye eye, const Mat src, Mat &dst);
 
 		private:
 			bool CreateProgram();

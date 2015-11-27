@@ -406,6 +406,23 @@ namespace OVR
 			Demosaic(src, _l, _r, execute);
 		}
 
+		// Read images region of interest
+		void OvrvisionProOpenCL::Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height)
+		{
+			size_t origin[3] = { offsetX, offsetY, 0 };
+			size_t region[3] = { width, height, 1 };
+			cl_event execute;
+			if (left != NULL)
+			{
+				_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
+			}
+			if (right != NULL)
+			{
+				_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
+			}
+		}
+
+
 		void OvrvisionProOpenCL::Demosaic(const ushort* src, uchar *left, uchar *right)
 		{
 			size_t origin[3] = { 0, 0, 0 };
@@ -439,6 +456,27 @@ namespace OVR
 		{
 			const uchar *ptr = src.ptr(0);
 			Demosaic((const ushort *)ptr, left, right);
+		}
+
+		// Remap
+		void OvrvisionProOpenCL::Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute)
+		{
+			size_t remapSize[] = { width, height };
+
+			//__kernel void remap(
+			//	__read_only image2d_t src,		// CL_UNSIGNED_INT8 x 4
+			//	__read_only image2d_t mapX,		// CL_FLOAT
+			//	__read_only image2d_t mapY,		// CL_FLOAT
+			//	__write_only image2d_t	dst)	// CL_UNSIGNED_INT8 x 4
+			//cl_kernel _remap = clCreateKernel(_program, "remap", &_errorCode);
+			//SAMPLE_CHECK_ERRORS(_errorCode);
+
+			clSetKernelArg(_remap, 0, sizeof(cl_mem), &src);
+			clSetKernelArg(_remap, 1, sizeof(cl_mem), &mapX);
+			clSetKernelArg(_remap, 2, sizeof(cl_mem), &mapY);
+			clSetKernelArg(_remap, 3, sizeof(cl_mem), &dst);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, execute, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
 
 		// Demosaic and Remap
