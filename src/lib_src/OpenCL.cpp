@@ -100,46 +100,12 @@ string opencl_error_to_str(cl_int error)
 #define SAMPLE_CHECK_ERRORS(ERR) if (ERR != CL_SUCCESS) throw runtime_error(opencl_error_to_str(ERR));
 #endif
 
+#define INITPFN(x) \
+    x = (x ## _fn)clGetExtensionFunctionAddress(#x);
+//if(!x) { shrLog("failed getting " #x); Cleanup(EXIT_FAILURE); }
+
 namespace OVR
 {
-	/*
-	int EnumerateGPU(PENUMDEVICE callback, void *pItem)
-	{
-		if (!ocl::haveOpenCL())
-		{
-			//cout << "OpenCL is not avaiable..." << endl;
-			return 0;
-		}
-		ocl::Context context;
-		if (!context.create(ocl::Device::TYPE_GPU))
-		{
-			//cout << "Failed creating the context..." << endl;
-			return 0;
-		}
-
-		// In OpenCV 3.0.0 beta, only a single device is detected.
-		//cout << context.ndevices() << " GPU devices are detected." << endl;
-		for (size_t i = 0; i < context.ndevices(); i++)
-		{
-			cv::ocl::Device device = context.device(i);
-			string name, version, capability;
-			if (device.available() && device.imageSupport())
-			{
-				//printf("%s:\t%s\n", device.name(), device.OpenCLVersion());
-				name = device.name();
-				version = device.OpenCL_C_Version();
-				capability = device.OpenCLVersion();
-				version = device.version();
-				if (callback != NULL)
-				{
-					callback(pItem, name.c_str(), version.c_str(), device.extensions().c_str(), device.deviceVersionMajor(), device.deviceVersionMinor());
-				}
-			}
-		}
-		return context.ndevices();
-	}
-	*/
-
 	//namespace OPENCL
 	//{
 		// Constructor
@@ -153,6 +119,8 @@ namespace OVR
 			_format16UC1.image_channel_order = CL_R;
 			_format8UC4.image_channel_data_type = CL_UNSIGNED_INT8;
 			_format8UC4.image_channel_order = CL_RGBA;
+			_format8UC1.image_channel_data_type = CL_UNSIGNED_INT8;
+			_format8UC1.image_channel_order = CL_R;
 			_formatMap.image_channel_data_type = CL_FLOAT;
 			_formatMap.image_channel_order = CL_R;
 
@@ -176,13 +144,17 @@ namespace OVR
 			_r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
 			_L = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
 			_R = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
+			_grayL = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, _width, _height, 0, 0, &_errorCode);
+			_grayR = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, _width, _height, 0, 0, &_errorCode);
 			_mx[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_my[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 
+			_deviceExtensions = NULL;
 			CreateProgram();
-		}
+			Prepare4Sharing();
+	}
 
 		// Destructor
 	OvrvisionProOpenCL::~OvrvisionProOpenCL()
@@ -199,12 +171,16 @@ namespace OVR
 			delete mapY[1];
 			clReleaseKernel(_demosaic);
 			clReleaseKernel(_remap);
+			clReleaseKernel(_grayscale);
+			clReleaseKernel(_skincolor);
 			clReleaseProgram(_program);
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
 			clReleaseMemObject(_r);
 			clReleaseMemObject(_L);
 			clReleaseMemObject(_R);
+			clReleaseMemObject(_grayL);
+			clReleaseMemObject(_grayR);
 			if (_remapAvailable)
 			{
 				clReleaseMemObject(_mx[0]);
@@ -212,11 +188,72 @@ namespace OVR
 				clReleaseMemObject(_mx[1]);
 				clReleaseMemObject(_my[1]);
 			}
+			if (_deviceExtensions != NULL)
+			{
+				delete[] _deviceExtensions;
+			}
 		}
 
-	// OpenGL連携テクスチャー
-	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint textureId, int width, int height, GLenum pixelFormat, GLenum dataType)
+	// Enumerate OpenCL extensions
+	int OvrvisionProOpenCL::DeviceExtensions(EXTENSION_CALLBACK callback, void *item)
 	{
+		size_t size;
+		clGetDeviceInfo(_deviceId, CL_DEVICE_EXTENSIONS, 0, NULL, &size); // get entension size
+		if (_deviceExtensions == NULL)
+		{
+			_deviceExtensions = new char[size];
+		}
+		clGetDeviceInfo(_deviceId, CL_DEVICE_EXTENSIONS, size, _deviceExtensions, NULL);
+		if (callback != NULL)
+		{
+			callback(item, _deviceExtensions);
+		}
+		else
+		{
+			//puts(_deviceExtensions);
+		}
+		return (int)size;
+	}
+
+	// OpenGL/D3D連携準備
+	bool OvrvisionProOpenCL::Prepare4Sharing()
+	{
+		DeviceExtensions();
+#ifdef _WIN32
+		if (strstr(_deviceExtensions, "cl_nv_d3d11_sharing"))
+		{
+			_vendorD3D11 = NVIDIA;
+			INITPFN(clGetDeviceIDsFromD3D11NV);
+			INITPFN(clCreateFromD3D11BufferNV);
+			INITPFN(clCreateFromD3D11Texture2DNV);
+			INITPFN(clCreateFromD3D11Texture3DNV);
+			INITPFN(clEnqueueAcquireD3D11ObjectsNV);
+			INITPFN(clEnqueueReleaseD3D11ObjectsNV);
+			if (clCreateFromD3D11Texture2DNV != NULL)
+				return true;
+		}
+		else if (strstr(_deviceExtensions, "cl_khr_d3d11_sharing"))
+		{
+			_vendorD3D11 = KHRONOS;
+			INITPFN(clGetDeviceIDsFromD3D11KHR);
+			INITPFN(clCreateFromD3D11BufferKHR);
+			INITPFN(clCreateFromD3D11Texture2DKHR);
+			INITPFN(clCreateFromD3D11Texture3DKHR);
+			INITPFN(clEnqueueAcquireD3D11ObjectsKHR);
+			INITPFN(clEnqueueReleaseD3D11ObjectsKHR);
+			if (clCreateFromD3D11Texture2DKHR != NULL)
+				return true;
+		}
+		return false;
+#else
+		return true;
+#endif
+	}
+
+	// OpenGL連携テクスチャー
+	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint textureId, int width, int height)
+	{
+		/*
 		glBindTexture(GL_TEXTURE_2D, textureId);
 		glTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, width, height, 0, pixelFormat, dataType, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -226,7 +263,66 @@ namespace OVR
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glEnable(GL_TEXTURE_2D);
+		*/
 		return clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, textureId, &_errorCode);
+	}
+
+#ifdef _WIN32
+	// TODO: Direct3D連携用のテクスチャーを生成
+	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height)
+	{
+		if (_vendorD3D11 == NVIDIA)
+		{
+			return clCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+		}
+		else
+		{
+			return clCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+		}
+	}
+#endif
+
+	// TODO:　縮小グレースケール画像を取得
+	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling)
+	{
+		// _l, _rから縮小グレースケール画像を生成して返す
+		int scale = 2;
+		switch (scaling)
+		{
+		case HALF:
+			scale = 2;
+			break;
+
+		case FOURTH:
+			scale = 4;
+			break;
+
+		case EIGHTH:
+			scale = 8;
+			break;
+
+		default:
+			return;
+		}
+		size_t reSize[] = { _width / scale, _height / scale };
+		size_t region[3] = { _width / scale, _height / scale, 1 };
+		size_t origin[3] = { 0, 0, 0 };
+		cl_event writeEvent, execute;
+
+		clSetKernelArg(_remap, 0, sizeof(cl_mem), &_l);
+		clSetKernelArg(_remap, 1, sizeof(cl_mem), &_grayL);
+		clSetKernelArg(_remap, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _grayscale, 2, NULL, reSize, 0, 1, &writeEvent, &execute);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_remap, 0, sizeof(cl_mem), &_r);
+		clSetKernelArg(_remap, 1, sizeof(cl_mem), &_grayR);
+		clSetKernelArg(_remap, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _grayscale, 2, NULL, reSize, 0, 1, &writeEvent, &execute);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		// Read result
+		_errorCode = clEnqueueReadImage(_commandQueue, _grayL, CL_TRUE, origin, region, _width * sizeof(uchar), 0, left, 1, &execute, NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, _grayR, CL_TRUE, origin, region, _width * sizeof(uchar), 0, right, 1, &execute, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
 		// Load camera parameters 
@@ -465,6 +561,10 @@ namespace OVR
 				SAMPLE_CHECK_ERRORS(_errorCode);
 				_remap = clCreateKernel(_program, "remap", &_errorCode);
 				SAMPLE_CHECK_ERRORS(_errorCode);
+				_grayscale = clCreateKernel(_program, "grayscale", &_errorCode);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_skincolor = clCreateKernel(_program, "skincolor", &_errorCode);
+				SAMPLE_CHECK_ERRORS(_errorCode);
 				return true;
 			}
 		}
@@ -636,5 +736,43 @@ namespace OVR
 			return _deviceId;
 		}
 
-	//}
+		/*
+		int EnumerateGPU(PENUMDEVICE callback, void *pItem)
+		{
+		if (!ocl::haveOpenCL())
+		{
+		//cout << "OpenCL is not avaiable..." << endl;
+		return 0;
+		}
+		ocl::Context context;
+		if (!context.create(ocl::Device::TYPE_GPU))
+		{
+		//cout << "Failed creating the context..." << endl;
+		return 0;
+		}
+
+		// In OpenCV 3.0.0 beta, only a single device is detected.
+		//cout << context.ndevices() << " GPU devices are detected." << endl;
+		for (size_t i = 0; i < context.ndevices(); i++)
+		{
+		cv::ocl::Device device = context.device(i);
+		string name, version, capability;
+		if (device.available() && device.imageSupport())
+		{
+		//printf("%s:\t%s\n", device.name(), device.OpenCLVersion());
+		name = device.name();
+		version = device.OpenCL_C_Version();
+		capability = device.OpenCLVersion();
+		version = device.version();
+		if (callback != NULL)
+		{
+		callback(pItem, name.c_str(), version.c_str(), device.extensions().c_str(), device.deviceVersionMajor(), device.deviceVersionMinor());
+		}
+		}
+		}
+		return context.ndevices();
+		}
+		*/
+		
+		//}
 }

@@ -3,6 +3,8 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+
 #include "ovrvision_pro.h"
 
 using namespace cv;
@@ -10,14 +12,28 @@ using namespace OVR;
 
 static 	OvrvisionPro ovrvision;
 
+int callback(void *pItem, const char *extensions)
+{
+	if (extensions != NULL)
+	{
+		puts(extensions);
+	}
+	return 0;
+}
+
 int main(int argc, char* argv[])
 {
 	if (ovrvision.Open(0, Camprop::OV_CAMHD_FULL))
 	{
+		int ksize = 5;
 		int width = ovrvision.GetCamWidth();
 		int height = ovrvision.GetCamHeight();
-		cv::Mat left(height, width, CV_8UC4);
-		cv::Mat right(height, width, CV_8UC4);
+		Mat left(height, width, CV_8UC4);
+		Mat right(height, width, CV_8UC4);
+		Mat lBlur(height, width, CV_8UC4);	// work
+		Mat rBlur(height, width, CV_8UC4);
+		Mat YCrCb(height, width, CV_8UC3);
+		Mat YRB[3];
 
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
@@ -38,10 +54,26 @@ int main(int argc, char* argv[])
 				ovrvision.GetCamImageBGRA(right.data, Cameye::OV_CAMEYE_RIGHT);
 
 				// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
+				if (0 < ksize)
+				{
+					//medianBlur(left, lBlur, ksize);
+					medianBlur(right, rBlur, ksize);
+					cvtColor(rBlur, YCrCb, CV_BGR2YCrCb);
+					split(YCrCb, YRB);
 
-				// Show frame data
-				imshow("Left", left);
-				imshow("Right", right);
+					// Show frame data
+					//imshow("Left", lBlur);
+					imshow("Right", rBlur);
+					imshow("Cr", YRB[1]);
+					imshow("Cb", YRB[2]);
+				}
+				else
+				{
+					// Show frame data
+					imshow("Left", left);
+					imshow("Right", right);
+				}
+
 			}
 			else
 			{
@@ -71,6 +103,40 @@ int main(int argc, char* argv[])
 
 			case 'n':
 				show = false;
+				break;
+
+			case '0':
+			case '1':
+				ksize = 0;
+				break;
+
+			case '3':
+				ksize = 3;
+				break;
+
+			case '5':
+				ksize = 5;
+				break;
+
+			case '7':
+				ksize = 7;
+				break;
+
+			case '9':
+				ksize = 9;
+				break;
+
+			case ' ':
+				imwrite("left.png", left);
+				imwrite("right.png", right);
+				break;
+
+			case 'e':
+				if (callback != NULL)
+				{
+					callback(NULL, "Device Extensions");
+				}
+				ovrvision.OpenCLExtensions(callback, NULL);
 				break;
 			}
 		}
