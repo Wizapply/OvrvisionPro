@@ -1,0 +1,32 @@
+<TrackingData>
+	<Sensors>
+		<Sensor type="MarkerBasedSensorSource">
+			<SensorID>Ovrvision</SensorID>
+			<Parameters>
+				<MarkerTrackingParameters>
+					<TrackingQuality>robust</TrackingQuality>
+					<ThresholdOffset>120</ThresholdOffset>
+					<NumberOfSearchIterations>4</NumberOfSearchIterations>
+				</MarkerTrackingParameters>
+			</Parameters>
+			<SensorCOS>
+				<SensorCosID>Marker1</SensorCosID>
+				<Parameters>
+					<MarkerParameters>
+						<Size>80</Size>
+						<MatrixID>1</MatrixID>
+					</MarkerParameters>
+				</Parameters>
+			</SensorCOS>
+			<SensorCOS>
+				<SensorCosID>Marker2</SensorCosID>
+				<Parameters>
+					<MarkerParameters>
+						<Size>80</Size>
+						<MatrixID>2</MatrixID>
+					</MarkerParameters>
+				</Parameters>
+			</SensorCOS>
+		</Sensor>
+	</Sensors>
+</TrackingData>

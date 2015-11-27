@@ -1,0 +1,13 @@
+<TrackingData>
+	<Sensors>
+		<Sensor Type="FeatureBasedSensorSource" Subtype="Fast">
+			<SensorCOS>
+				<SensorCosID>ARContent</SensorCosID>
+				<Parameters>
+					<ReferenceImage WidthMM="280" HeightMM="280">ovrvision_ar.jpg</ReferenceImage>
+					<SimilarityThreshold>0.5</SimilarityThreshold>
+				</Parameters>
+			</SensorCOS>
+		</Sensor>
+	</Sensors>
+</TrackingData>

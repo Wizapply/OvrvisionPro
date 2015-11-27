@@ -55,14 +55,19 @@ public class Ovrvision : MonoBehaviour
 		//Open camera
 		if (OvrPro.Open(COvrvisionUnity.OV_CAMVR_FULL, ARsize))
 		{
-			if (overlaySettings) {
+			if (overlaySettings)
+			{
 				OvrPro.SetExposure(conf_exposure);
 				OvrPro.SetGain(conf_gain);
 				OvrPro.SetBLC(conf_blc);
-				OvrPro.SetWhiteBalanceR(conf_wb_r);
-				OvrPro.SetWhiteBalanceG(conf_wb_g);
-				OvrPro.SetWhiteBalanceB(conf_wb_b);
 				OvrPro.SetWhiteBalanceAutoMode(conf_wb_auto);
+				if (!conf_wb_auto)
+				{
+					OvrPro.SetWhiteBalanceR(conf_wb_r);
+					OvrPro.SetWhiteBalanceG(conf_wb_g);
+					OvrPro.SetWhiteBalanceB(conf_wb_b);
+				}
+				Thread.Sleep(100);
 			}
 		} else {
 			Debug.LogError ("Ovrvision open error!!");
