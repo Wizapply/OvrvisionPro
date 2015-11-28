@@ -24,11 +24,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenCV", "OpenCV.vcxproj", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_oculus_app", "ovrvision_oculus_app.vcxproj", "{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenGL_windows", "OpenGL_windows.vcxproj", "{794E418A-877E-4646-8A97-BD1ABE083D8C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{93964603-90DE-4EA0-9BBB-816E91AA6D4E} = {93964603-90DE-4EA0-9BBB-816E91AA6D4E}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -95,14 +90,6 @@ Global
 		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}.Release|Win32.Build.0 = Release|Win32
 		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}.Release|x64.ActiveCfg = Release|x64
 		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}.Release|x64.Build.0 = Release|x64
-		{794E418A-877E-4646-8A97-BD1ABE083D8C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{794E418A-877E-4646-8A97-BD1ABE083D8C}.Debug|Win32.Build.0 = Debug|Win32
-		{794E418A-877E-4646-8A97-BD1ABE083D8C}.Debug|x64.ActiveCfg = Debug|Win32
-		{794E418A-877E-4646-8A97-BD1ABE083D8C}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|Win32
-		{794E418A-877E-4646-8A97-BD1ABE083D8C}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|Win32
-		{794E418A-877E-4646-8A97-BD1ABE083D8C}.Release|Win32.ActiveCfg = Release|Win32
-		{794E418A-877E-4646-8A97-BD1ABE083D8C}.Release|Win32.Build.0 = Release|Win32
-		{794E418A-877E-4646-8A97-BD1ABE083D8C}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
