@@ -38,8 +38,10 @@ int main(int argc, char* argv[])
 		Mat rBlur(roi.height, roi.width, CV_8UC4);
 		Mat hsv(roi.height, roi.width, CV_8UC3);
 		Mat YCrCb(roi.height, roi.width, CV_8UC3);
+		Mat result(roi.height, roi.width, CV_8UC3);
 		Mat YRB[3];
 		Mat HSV[3];
+		Mat histgram(256, 256, CV_16UC1);
 
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
@@ -64,17 +66,43 @@ int main(int argc, char* argv[])
 				if (0 < ksize)
 				{
 					//medianBlur(left, lBlur, ksize);
-					medianBlur(right, rBlur, ksize);
-					cvtColor(rBlur, YCrCb, CV_BGR2YCrCb);
-					cvtColor(rBlur, hsv, CV_BGR2HSV_FULL);
+					//medianBlur(right, rBlur, ksize);
+					cvtColor(right, YCrCb, CV_BGR2YCrCb);
+					cvtColor(left, hsv, CV_BGR2HSV_FULL);
 					split(hsv, HSV);
-					split(YCrCb, YRB);
+					//split(YCrCb, YRB);
+
+					histgram.setTo(Scalar::all(0));
+					result.setTo(Scalar::all(0));
+					for (uint y = 0; y < roi.height; y++)
+					{
+						Point3_<uchar> *row = hsv.ptr<Point3_<uchar>>(y);
+						//Vec4b *pixel = right.ptr<Vec4b>(y);
+						Vec3b *pixel = result.ptr<Vec3b>(y);
+						for (uint x = 0; x < roi.width; x++)
+						{
+							uchar h = row[x].x;
+							uchar s = row[x].y;
+							if (20 <= h && h <= 40 && 75 < s && s < 200)
+							{
+								pixel[x] = YCrCb.at<Vec3b>(y, x);
+								pixel[x][0] = h;
+								//pixel[x][3] = s;
+							}
+							ushort *hs = histgram.ptr<ushort>(s, h);
+							hs[0]++;
+						}
+					}
 
 					// Show frame data
-					//imshow("Left", lBlur);
-					imshow("Right", rBlur);
+					imshow("Left", left);
+					imshow("Right", right);
 					imshow("HSV", hsv);
 					imshow("Hue", HSV[0]);
+					imshow("Sat", HSV[1]);
+					//imshow("YCrCb", YCrCb);
+					imshow("Result", result);
+					//imshow("Histgram", histgram);
 					//imshow("Cr", YRB[1]);
 					//imshow("Cb", YRB[2]);
 				}
@@ -138,6 +166,12 @@ int main(int argc, char* argv[])
 				break;
 
 			case ' ':
+				//imwrite("histgram.png", histgram);
+				imwrite("Hue.png", HSV[0]);
+				imwrite("Sat.png", HSV[1]);
+				imwrite("hsv.png", hsv);
+				imwrite("HCrCb.png", result);
+				imwrite("YCrCb.png", YCrCb);
 				imwrite("left.png", left);
 				imwrite("right.png", right);
 				break;
