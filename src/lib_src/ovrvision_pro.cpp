@@ -299,7 +299,7 @@ void OvrvisionPro::InitCameraSetting()
 		SetCameraGain(ovrset.m_propGain);
 		SetCameraBLC(ovrset.m_propBLC);
 		SetCameraWhiteBalanceAuto((bool)ovrset.m_propWhiteBalanceAuto);
-		if (ovrset.m_propWhiteBalanceAuto != 0) {
+		if (ovrset.m_propWhiteBalanceAuto == 0) {
 			SetCameraWhiteBalanceR(ovrset.m_propWhiteBalanceR);
 			SetCameraWhiteBalanceG(ovrset.m_propWhiteBalanceG);
 			SetCameraWhiteBalanceB(ovrset.m_propWhiteBalanceB);

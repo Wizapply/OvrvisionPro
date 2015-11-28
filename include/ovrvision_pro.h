@@ -142,15 +142,28 @@ public:
 	void Close();
 
 	//Processor
+	/*!	@brief This function gets data from OvrvisionPro inside. 
+		@param qt Image processingÅ@qality */
 	void PreStoreCamData(OVR::Camqt qt);
+	/*!	@brief Gets the image data of 32 bits of BGRA form. 
+		@param eye OV_CAMEYE_LEFT or OV_CAMEYE_RIGHT  */
 	unsigned char* GetCamImageBGRA(OVR::Cameye eye);
+	/*!	@brief This function gets data from OvrvisionPro inside.
+		@param pImageBuf Image buffer pointer
+		@param eye OV_CAMEYE_LEFT or OV_CAMEYE_RIGHT */
 	void GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye);
 
-	// Capture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc.)
+	/*!	@brief Capture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc.)
+		@param qt Image processingÅ@qality */
 	void Capture(OVR::Camqt qt);
-	//Get camera image region of interest
+	/*!	@brief Get camera image region of interest
+		@param pLeft Image buffer pointer for left eye
+		@param pRight Image buffer pointer for right eye
+		@param roi ROI */
 	void GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRight, ROI roi);
 
+	/*!	@brief Check whether OvrvisionPro is open. 
+		@return If open, It is true */
 	bool isOpen();
 
 	//Propaty
@@ -212,8 +225,6 @@ public:
 
 	// Create OpenGL Texture
 	void* CreateGLTexture2D(unsigned int texture, int width, int height);
-
-
 
 private:
 #ifdef WIN32

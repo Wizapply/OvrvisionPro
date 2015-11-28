@@ -139,6 +139,13 @@ void OvrvisionTracking::Render() {
 			if ((tr >= m_hue_min && tr <= m_hue_max) && (sr >= 10 && sr <= 240) && (vr >= 10 && vr <= 240)) {
 				thPointerR[(i*pCamBGR_R.cols + j)] = 255;					//A(FULL)
 			}
+
+			if ((t >= 20 && t <= 30) && (s >= 10 && s <= 240) && (v >= 10 && v <= 240)) {
+			//	thPointerL[(i*pCamBGR_L.cols + j)] = 128;					//A(FULL)
+			}
+			if ((tr >= 20 && tr <= 30) && (sr >= 10 && sr <= 240) && (vr >= 10 && vr <= 240)) {
+				//thPointerR[(i*pCamBGR_R.cols + j)] = 128;					//A(FULL)
+			}
 		}
 	}
 
