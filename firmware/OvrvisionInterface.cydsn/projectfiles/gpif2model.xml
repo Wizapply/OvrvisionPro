@@ -174,7 +174,7 @@
     </State>
     <Transition ElementId="TRANSITION0" SourceState="STARTSTATE0" DestinationState="STATE0" Equation="LOGIC_ONE" />
     <Transition ElementId="TRANSITION1" SourceState="STATE0" DestinationState="STATE1" Equation="!FV1&amp;!LV1" />
-    <Transition ElementId="TRANSITION2" SourceState="STATE1" DestinationState="STATE2" Equation="LV1" />
+    <Transition ElementId="TRANSITION2" SourceState="STATE1" DestinationState="STATE2" Equation="LV1&amp;LV2" />
     <Transition ElementId="TRANSITION3" SourceState="STATE2" DestinationState="STATE3" Equation="LV1&amp;DATA_CNT_HIT" />
     <Transition ElementId="TRANSITION4" SourceState="STATE3" DestinationState="STATE2" Equation="LV1&amp;ADDR_CNT_HIT" />
     <Transition ElementId="TRANSITION5" SourceState="STATE2" DestinationState="STATE4" Equation="!LV1" />

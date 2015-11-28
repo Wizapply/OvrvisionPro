@@ -83,7 +83,7 @@ int Initialize()
 	//Create texture
 	wzCreateTextureBuffer(&g_screen_texture, g_camWidth, g_camHeight, WZ_FORMATTYPE_BGRA_RGBA);
 
-	g_pOvrTrack = new OVR::OvrvisionTracking(g_camWidth, g_camHeight);
+	g_pOvrTrack = new OVR::OvrvisionTracking(g_camWidth, g_camHeight, g_pOvrvision->GetCamFocalPoint());
 
 	/*------------------------------------------------------------------*/
 

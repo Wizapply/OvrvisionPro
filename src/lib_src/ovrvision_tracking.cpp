@@ -49,7 +49,7 @@ namespace OVR {
 	cv::Point2i dasdasa(cv::Mat &image);
 
 //Constructor/Destructor
-OvrvisionTracking::OvrvisionTracking(int w, int h)
+OvrvisionTracking::OvrvisionTracking(int w, int h, float focalpoint)
 {
 	m_pImageSrc[OV_CAMEYE_LEFT] = NULL;
 	m_pImageSrc[OV_CAMEYE_RIGHT] = NULL;
@@ -155,8 +155,8 @@ void OvrvisionTracking::Render() {
 	if (m_set) {
 		cv::Vec3b colorhls_l = pCamBGR_L.at<cv::Vec3b>(pCamBGR_L.size().width / 2, pCamBGR_L.size().height / 2);
 		//cv::Vec3b colorhls_r = pCamBGR_R.at<cv::Vec3b>(rpos.x, rpos.y);
-		m_hue_min = colorhls_l[0] - 20;
-		m_hue_max = colorhls_l[0] + 20;
+		m_hue_min = colorhls_l[0] - 5;
+		m_hue_max = colorhls_l[0] + 5;
 		m_set = false;
 	}
 
@@ -166,9 +166,9 @@ void OvrvisionTracking::Render() {
 	cv::circle(pCamBGRAImg_R, cv::Point(lpos.x*4.0f, lpos.y*4.0f), 20, cv::Scalar(0, 0, 255), -1, 0);
 	cv::circle(pCamBGRAImg_R, cv::Point(rpos.x*4.0f, rpos.y*4.0f), 30, cv::Scalar(0, 255, 255), -1, 0);
 
-	cv::circle(pCamBGRAImg_R, cv::Point(pCamBGRAImg_R.size().width / 2, pCamBGRAImg_R.size().height / 2), 10, cv::Scalar(255, 0, 0), 1, 0);
-	cv::imshow("dOvrasda32", pCamBGRAImg_R);
-	cv::imshow("dOvrasda2", pCamExtractionImg_R);
+	cv::circle(pCamBGRAImg_L, cv::Point(pCamBGRAImg_L.size().width / 2, pCamBGRAImg_L.size().height / 2), 10, cv::Scalar(255, 0, 0), 1, 0);
+	cv::imshow("dOvrasda32", pCamBGRAImg_L);
+	cv::imshow("dOvrasda2", pCamExtractionImg_L);
 
 }
 

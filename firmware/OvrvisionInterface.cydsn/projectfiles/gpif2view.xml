@@ -346,7 +346,7 @@
     </CyTransition>
     <CyTransition>
       <Name>TRANSITION2</Name>
-      <TransitionEquation>LV1</TransitionEquation>
+      <TransitionEquation>LV1&amp;LV2</TransitionEquation>
       <SourceName>STATE1</SourceName>
       <SinkName>STATE2</SinkName>
       <SourceConnectorName>Connector</SourceConnectorName>

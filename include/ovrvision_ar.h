@@ -149,28 +149,44 @@ class OVRPORT OvrvisionAR
 {
 public:
 	//Constructor/Destructor
-	//markersize_meter : 15cm = 0.15f, 1m = 1.0f
-	//!Constructor
+	/*! @brief Constructor
+		@param markersize_meter Actual marker size. meter 1.0f = 100cm
+		@param w Image width.
+		@param h Image height.
+		@param focalPoint Image focal point. */
 	OvrvisionAR(float markersize_meter, int w, int h, float focalPoint);
 	//!Destructor
 	~OvrvisionAR();
 
 	//Methods
 
-	//image set
+	/*!	@brief Set the pointer of image data. 
+		@param pImage Image buffer pointer. */
 	void SetImageBGRA(unsigned char* pImage);
+	/*!	@brief Set the pointer of OpenCV Mat data.
+		@param pImageMat OpenCV Mat pointer. */
 	void SetImageOpenCVImage(ovMat* pImageMat);
-	//Detect marker
+	/*!	@brief Run marker detection processing. */
 	void Render();	
-	//Get marker data
+	/*!	@brief Get the data size of AR markers.
+		@return size */
 	int				   GetMarkerDataSize();
+	/*!	@brief Get the data of AR markers.
+		@return OvMarkerData pointer */
 	OVR::OvMarkerData* GetMarkerData();
+	/*!	@brief Get the data of AR marker. Specify an index.
+		@param idx Data index
+		@return OvMarkerData pointer */
 	OVR::OvMarkerData* GetMarkerData(int idx);
 
-	//Set marker size
+	/*!	@brief Setup the actual size of AR marker. 
+		@param value Meter size 1.0f = 100cm */
 	void SetMarkerSizeMeter(float value) { m_markerSize_Meter = value; };
+	/*!	@brief Get the actual size of AR marker.
+		@return Meter size 1.0f = 100cm */
 	float GetMarkerSizeMeter(){ return m_markerSize_Meter; };
 
+	//Reserved method.
 	void SetInstantTraking(bool value);
 
 private:

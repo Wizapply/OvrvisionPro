@@ -143,7 +143,7 @@ public:
 
 	//Processor
 	/*!	@brief This function gets data from OvrvisionPro inside. 
-		@param qt Image processingÅ@qality */
+		@param qt Set an image processing method. */
 	void PreStoreCamData(OVR::Camqt qt);
 	/*!	@brief Gets the image data of 32 bits of BGRA form. 
 		@param eye OV_CAMEYE_LEFT or OV_CAMEYE_RIGHT  */
@@ -154,7 +154,7 @@ public:
 	void GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye);
 
 	/*!	@brief Capture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc.)
-		@param qt Image processingÅ@qality */
+		@param qt Set an image processing method. */
 	void Capture(OVR::Camqt qt);
 	/*!	@brief Get camera image region of interest
 		@param pLeft Image buffer pointer for left eye
@@ -167,38 +167,89 @@ public:
 	bool isOpen();
 
 	//Propaty
+	/*!	@brief Get the width of the Ovrvision image. 
+		@return pixel size. */
 	int GetCamWidth();
+	/*!	@brief Get the height of the Ovrvision image.
+		@return pixel size. */
 	int GetCamHeight();
+	/*!	@brief Get the framerate of the Ovrvision.
+		@return fps */
 	int GetCamFramerate();
+	/*!	@brief Get the focal point of the Ovrvision image.
+		@return focal point */
 	float GetCamFocalPoint();
+	/*!	@brief Get the gap between images for HMD. 
+		@return value */
 	float GetHMDRightGap(int at);
 
+	/*!	@brief Get the buffer size of the Ovrvision image.
+		@return size */
 	int GetCamBuffersize();
+	/*!	@brief Get the pixel data size. default is BGRA 4 byte
+		@return size */
 	int GetCamPixelsize();
 
 	//Camera Propaty
+	/*!	@brief Get exposure value of the Ovrvision.
+		@return Exposure time. */
 	int GetCameraExposure();
+	/*!	@brief Set exposure of the Ovrvision.
+		@param value Exposure time. Range of 0 - 32767 */
 	void SetCameraExposure(int value);
-
+	/*!	@brief Get gain value of the Ovrvision.
+		@return gain value. */
 	int GetCameraGain();
+	/*!	@brief Set gain of the Ovrvision.
+		@param value gain. Range of 0 - 47 */
 	void SetCameraGain(int value);
-
+	/*!	@brief Get white balance R gain value of the Ovrvision.
+		@return R gain value. */
 	int GetCameraWhiteBalanceR();
+	/*!	@brief Set white balance R gain of the Ovrvision.
+		@param value R gain. Range of 0 - 4095 */
 	void SetCameraWhiteBalanceR(int value);
+	/*!	@brief Get white balance G gain value of the Ovrvision.
+		@return G gain value. */
 	int GetCameraWhiteBalanceG();
+	/*!	@brief Set white balance G gain of the Ovrvision.
+		@param value G gain. Range of 0 - 4095 */
 	void SetCameraWhiteBalanceG(int value);
+	/*!	@brief Get white balance B gain value of the Ovrvision.
+		@return B gain value. */
 	int GetCameraWhiteBalanceB();
+	/*!	@brief Set white balance B gain of the Ovrvision.
+		@param value B gain. Range of 0 - 4095 */
 	void SetCameraWhiteBalanceB(int value);
+	/*!	@brief Set backlight compensation(BLC) value of the Ovrvision.
+		@return blc value. */
 	int GetCameraBLC();
+	/*!	@brief Set backlight compensation(BLC) of the Ovrvision.
+		@param value BLC. Range of 0 - 255 */
 	void SetCameraBLC(int value);
 
+	/*!	@brief Get automatic mode of the Ovrvision White Balance.
+		@return It is true or false. */
 	bool GetCameraWhiteBalanceAuto();
+	/*!	@brief Set automatic mode of the Ovrvision White Balance.
+		@param value Mode.*/
 	void SetCameraWhiteBalanceAuto(bool value);
 
-	//Thread sync
+	/*!	@brief Set sync mode for the Ovrvision.
+		@param value True is sync mode. */
 	void SetCameraSyncMode(bool value);
 
-	//Parameter EEPROM
+	/*!	@brief Get OpenCL extensions of GPU */
+	int OpenCLExtensions(int(*callback)(void *, const char *), void *item);
+
+	/*!	@brief Grayscaled image of 1/2 scaled */
+	void GrayscaleHalf(unsigned char *left, unsigned char *right);		// 1/2 scaled
+	/*!	@brief Grayscaled image of 1/4 scaled */
+	void GrayscaleFourth(unsigned char *left, unsigned char *right);	// 1/4 scaled
+	/*!	@brief Grayscaled image of 1/8 scaled */
+	void GrayscaleEighth(unsigned char *left, unsigned char *right);	// 1/8 scaled
+
+	//Parameter EEPROM (Don't touch)
 	void UserDataAccessUnlock();
 	void UserDataAccessLock();
 	void UserDataAccessSelectAddress(unsigned int addr);
@@ -206,17 +257,8 @@ public:
 	void UserDataAccessSetData(unsigned char value);
 	void UserDataAccessSave();
 	void UserDataAccessCheckSumAddress();
-
-	//Save the present setup to EEPROM. 
+	//Save the present setup to EEPROM. (Don't touch)
 	bool CameraParamSaveEEPROM();
-
-	//Get OpenCL extensions of GPU
-	int OpenCLExtensions(int(*callback)(void *, const char *), void *item);
-
-	// Grayscaled images
-	void GrayscaleHalf(unsigned char *left, unsigned char *right);		// 1/2 scaled
-	void GrayscaleFourth(unsigned char *left, unsigned char *right);	// 1/4 scaled
-	void GrayscaleEighth(unsigned char *left, unsigned char *right);	// 1/8 scaled
 
 #ifdef _WIN32
 	// Create D3D11 texture

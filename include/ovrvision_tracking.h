@@ -94,9 +94,11 @@ class OVRPORT OvrvisionTracking
 {
 public:
 	//Constructor/Destructor
-	//markersize_meter : 15cm = 0.15f, 1m = 1.0f
-	//!Constructor
-	OvrvisionTracking(int w, int h);
+	/*! @brief Constructor
+		@param w Image width.
+		@param h Image height.
+		@param focalPoint Image focal point. */
+	OvrvisionTracking(int w, int h, float focalpoint);
 	//!Destructor
 	~OvrvisionTracking();
 
@@ -122,6 +124,8 @@ private:
 
 	unsigned char m_hue_min;
 	unsigned char m_hue_max;
+	unsigned char m_hue_min_finger;
+	unsigned char m_hue_max_finger;
 
 	bool		m_set;
 };

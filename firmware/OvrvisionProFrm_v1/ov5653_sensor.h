@@ -50,9 +50,9 @@ extern CyU3PReturnStatus_t ReadI2C (uint8_t slaveAddr, uint16_t address, uint8_t
 #define WI2C(x,y) WriteI2C(I2C_SENSOR_ADDR_WR,x,y)
 
 // Sensor system control function
-extern void OV5653SensorInit(void);			// Initialize sensor
-extern void OV5653SensorReset(void);		// Reset sensor
-extern uint8_t OV5653SensorBusTest(void);	// Test sensor
+extern CyU3PReturnStatus_t OV5653SensorInit(void);			// Initialize sensor
+extern void OV5653SensorReset(void);						// Reset sensor
+extern CyU3PReturnStatus_t OV5653SensorBusTest(void);		// Test sensor
 
 // Sensor setup
 

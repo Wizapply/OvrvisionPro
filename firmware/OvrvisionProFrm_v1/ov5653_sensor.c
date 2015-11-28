@@ -118,12 +118,15 @@ CyU3PReturnStatus_t ReadI2C (uint8_t slaveAddr, uint16_t address, uint8_t *data)
 // Sensor control function
 
 // Initialize sensor
-void OV5653SensorInit(void)
+CyU3PReturnStatus_t OV5653SensorInit(void)
 {
 	if (OV5653SensorBusTest() != CY_U3P_SUCCESS) /* Verify that the sensor is connected. */
-		return;
+		return CY_U3P_ERROR_FAILURE;
+
 	//Reset
 	OV5653SensorReset();
+
+	return CY_U3P_SUCCESS;
 }
 
 // Reset sensor
@@ -144,7 +147,7 @@ void OV5653SensorReset(void)
 }
 
 // Test sensor
-uint8_t OV5653SensorBusTest(void)
+CyU3PReturnStatus_t OV5653SensorBusTest(void)
 {
 	/* The sensor ID register can be read here to verify sensor connectivity. */
 	uint8_t chipid = 0;
