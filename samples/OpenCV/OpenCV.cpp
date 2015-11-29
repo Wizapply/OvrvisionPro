@@ -10,6 +10,7 @@
 #define CROP_W 800
 #define CROP_H 600
 
+using namespace std;
 using namespace cv;
 using namespace OVR;
 
@@ -34,14 +35,15 @@ int main(int argc, char* argv[])
 		ROI roi = {(width - CROP_W) / 2, (height - CROP_H) / 2, CROP_W, CROP_H};
 		Mat left(roi.height, roi.width, CV_8UC4);
 		Mat right(roi.height, roi.width, CV_8UC4);
-		Mat lBlur(roi.height, roi.width, CV_8UC4);	// work
-		Mat rBlur(roi.height, roi.width, CV_8UC4);
-		Mat hsv(roi.height, roi.width, CV_8UC3);
-		Mat YCrCb(roi.height, roi.width, CV_8UC3);
-		Mat result(roi.height, roi.width, CV_8UC3);
-		Mat YRB[3];
-		Mat HSV[3];
 		Mat histgram(256, 256, CV_16UC1);
+
+		Mat fourth(roi.height / 2, roi.width / 2, CV_8UC4);
+		Mat hsv(roi.height / 2, roi.width / 2, CV_8UC3);
+		Mat result(roi.height / 2, roi.width / 2, CV_8UC4);
+		Mat bilevel(roi.height / 2, roi.width / 2, CV_8UC1);
+		Mat HSV[3];
+
+		vector<vector<Point>> contours;
 
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
@@ -51,60 +53,54 @@ int main(int argc, char* argv[])
 
 		for (bool loop = true; loop;)
 		{
-			//DWORD begin = GetTickCount();
 			if (show)
 			{
 				// Capture frame
 				ovrvision.Capture(mode);
 
 				// Retrieve frame data
-				//ovrvision.GetCamImageBGRA(left.data, Cameye::OV_CAMEYE_LEFT);
-				//ovrvision.GetCamImageBGRA(right.data, Cameye::OV_CAMEYE_RIGHT);
 				ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
 
 				// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
 				if (0 < ksize)
 				{
-					//medianBlur(left, lBlur, ksize);
-					//medianBlur(right, rBlur, ksize);
-					cvtColor(right, YCrCb, CV_BGR2YCrCb);
-					cvtColor(left, hsv, CV_BGR2HSV_FULL);
+					resize(left, fourth, fourth.size());
+					cvtColor(fourth, hsv, CV_BGR2HSV_FULL);
 					split(hsv, HSV);
-					//split(YCrCb, YRB);
 
 					histgram.setTo(Scalar::all(0));
 					result.setTo(Scalar::all(0));
-					for (uint y = 0; y < roi.height; y++)
+					for (uint y = 0; y < roi.height / 2; y++)
 					{
 						Point3_<uchar> *row = hsv.ptr<Point3_<uchar>>(y);
-						//Vec4b *pixel = right.ptr<Vec4b>(y);
-						Vec3b *pixel = result.ptr<Vec3b>(y);
-						for (uint x = 0; x < roi.width; x++)
+						//Vec4b *pixel = left.ptr<Vec4b>(y);
+						Vec4b *pixel = result.ptr<Vec4b>(y);
+						for (uint x = 0; x < roi.width / 2; x++)
 						{
 							uchar h = row[x].x;
 							uchar s = row[x].y;
-							if (20 <= h && h <= 40 && 75 < s && s < 200)
+							if (15 <= h && h <= 29 && 55 < s && s < 150)
 							{
-								pixel[x] = YCrCb.at<Vec3b>(y, x);
-								pixel[x][0] = h;
-								//pixel[x][3] = s;
+								pixel[x] = fourth.at<Vec4b>(y, x);
+								//pixel[x][0] = h;
+								//pixel[x][1] = s;
 							}
 							ushort *hs = histgram.ptr<ushort>(s, h);
 							hs[0]++;
 						}
 					}
 
+					//threshold(fourth, bilevel, 30, 255, THRESH_BINARY_INV);
+					//Canny(fourth, bilevel, 50, 150);
 					// Show frame data
 					imshow("Left", left);
 					imshow("Right", right);
 					imshow("HSV", hsv);
-					imshow("Hue", HSV[0]);
-					imshow("Sat", HSV[1]);
-					//imshow("YCrCb", YCrCb);
+					imshow("Hue", fourth);
+					//imshow("Bilevel", bilevel);
+
 					imshow("Result", result);
 					//imshow("Histgram", histgram);
-					//imshow("Cr", YRB[1]);
-					//imshow("Cb", YRB[2]);
 				}
 				else
 				{
@@ -112,15 +108,11 @@ int main(int argc, char* argv[])
 					imshow("Left", left);
 					imshow("Right", right);
 				}
-
 			}
 			else
 			{
 				ovrvision.Capture(mode);
 			}
-
-			//DWORD end = GetTickCount();
-			//printf("%f fps %d ms/frame\n", 1000.0f / (end - begin), (end - begin));
 
 			switch (waitKey(1))
 			{
@@ -167,13 +159,14 @@ int main(int argc, char* argv[])
 
 			case ' ':
 				//imwrite("histgram.png", histgram);
-				imwrite("Hue.png", HSV[0]);
+				imwrite("Hue.png", fourth);
 				imwrite("Sat.png", HSV[1]);
 				imwrite("hsv.png", hsv);
 				imwrite("HCrCb.png", result);
-				imwrite("YCrCb.png", YCrCb);
+				//imwrite("YCrCb.png", YCrCb);
 				imwrite("left.png", left);
 				imwrite("right.png", right);
+				imwrite("result.tiff", result);
 				break;
 
 			case 'e':
