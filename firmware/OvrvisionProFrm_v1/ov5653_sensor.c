@@ -161,6 +161,10 @@ CyU3PReturnStatus_t OV5653SensorBusTest(void)
 	return CY_U3P_ERROR_FAILURE;
 }
 
+extern void OV5653ClockReset(void)
+{
+}
+
 // Sensor setup
 void OV5653SensorControl(unsigned char frameIdx)
 {

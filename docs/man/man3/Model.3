@@ -1,0 +1,111 @@
+.TH "Model" 3 "Sun Nov 22 2015" "Version 1.0" "OvrvisionSDK" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Model \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBVertex\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBInit\fP (\fBTriangleSet\fP *t)"
+.br
+.ti -1c
+.RI "\fBModel\fP (\fBTriangleSet\fP *t, XMFLOAT3 argPos, XMFLOAT4 argRot, \fBMaterial\fP *argFill)"
+.br
+.ti -1c
+.RI "\fBModel\fP (\fBMaterial\fP *mat, float minx, float miny, float maxx, float maxy, float zDepth=0)"
+.br
+.ti -1c
+.RI "void \fBRender\fP (XMMATRIX *projView, float R, float G, float B, float A, bool standardUniforms)"
+.br
+.ti -1c
+.RI "\fBModel\fP (Vector3f pos, \fBShaderFill\fP *fill)"
+.br
+.ti -1c
+.RI "Matrix4f & \fBGetMatrix\fP ()"
+.br
+.ti -1c
+.RI "void \fBAddVertex\fP (const \fBVertex\fP &v)"
+.br
+.ti -1c
+.RI "void \fBAddIndex\fP (GLushort a)"
+.br
+.ti -1c
+.RI "void \fBAllocateBuffers\fP ()"
+.br
+.ti -1c
+.RI "void \fBFreeBuffers\fP ()"
+.br
+.ti -1c
+.RI "void \fBAddSolidColorBox\fP (float x1, float y1, float z1, float x2, float y2, float z2, DWORD c)"
+.br
+.ti -1c
+.RI "void \fBRender\fP (Matrix4f view, Matrix4f proj)"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "XMFLOAT3 \fBPos\fP"
+.br
+.ti -1c
+.RI "XMFLOAT4 \fBRot\fP"
+.br
+.ti -1c
+.RI "\fBMaterial\fP * \fBFill\fP"
+.br
+.ti -1c
+.RI "\fBDataBuffer\fP * \fBVertexBuffer\fP"
+.br
+.ti -1c
+.RI "\fBDataBuffer\fP * \fBIndexBuffer\fP"
+.br
+.ti -1c
+.RI "int \fBNumIndices\fP"
+.br
+.ti -1c
+.RI "Vector3f \fBPos\fP"
+.br
+.ti -1c
+.RI "Quatf \fBRot\fP"
+.br
+.ti -1c
+.RI "Matrix4f \fBMat\fP"
+.br
+.ti -1c
+.RI "int \fBnumVertices\fP"
+.br
+.ti -1c
+.RI "int \fBnumIndices\fP"
+.br
+.ti -1c
+.RI "\fBVertex\fP \fBVertices\fP [2000]"
+.br
+.ti -1c
+.RI "GLushort \fBIndices\fP [2000]"
+.br
+.ti -1c
+.RI "\fBShaderFill\fP * \fBFill\fP"
+.br
+.ti -1c
+.RI "\fBVertexBuffer\fP * \fBvertexBuffer\fP"
+.br
+.ti -1c
+.RI "\fBIndexBuffer\fP * \fBindexBuffer\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OvrvisionSDK from the source code\&.

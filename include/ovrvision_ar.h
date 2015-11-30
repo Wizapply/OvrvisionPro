@@ -59,12 +59,13 @@ typedef cv::Mat ovMat;
 #define ovMat void
 #endif
 
-//Left or Right camera.
 #ifndef _OV_CAMEYE_ENUM_
 #define _OV_CAMEYE_ENUM_
+//! @enum ov_cameraeye
+//! Eye selection the Left or Right.
 typedef enum ov_cameraeye {
-	OV_CAMEYE_LEFT = 0,		//Left camera
-	OV_CAMEYE_RIGHT,		//Right camera
+	OV_CAMEYE_LEFT = 0,		//!Left camera
+	OV_CAMEYE_RIGHT,		//!Right camera
 	OV_CAMNUM,
 } Cameye;
 #endif

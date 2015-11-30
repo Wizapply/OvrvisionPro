@@ -112,9 +112,12 @@ typedef enum ov_cameraquality {
 	OV_CAMQT_NONE,			//!None
 } Camqt;
 
+//! ROI
 typedef struct {
-	int offsetX, offsetY;
-	unsigned int width, height;
+	int offsetX;			//!OffsetX
+	int offsetY;			//!OffsetY
+	unsigned int width;		//!Width
+	unsigned int height;	//!Height
 } ROI;
 
 //unsigned char to byte

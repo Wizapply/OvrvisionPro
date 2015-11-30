@@ -155,6 +155,17 @@
       <IsGroup>False</IsGroup>
       <ParentID>00000000-0000-0000-0000-000000000000</ParentID>
     </CyNormalState>
+    <CyNormalState>
+      <Left>691</Left>
+      <Top>40.5</Top>
+      <Width>83</Width>
+      <Height>70</Height>
+      <Name>STATE14</Name>
+      <DisplayName>ERROR_CLOCK</DisplayName>
+      <zIndex>1</zIndex>
+      <IsGroup>False</IsGroup>
+      <ParentID>00000000-0000-0000-0000-000000000000</ParentID>
+    </CyNormalState>
     <CyStartState>
       <Left>29</Left>
       <Top>18.4466666666667</Top>
@@ -168,6 +179,28 @@
     </CyStartState>
   </CyStates>
   <CyTransitions>
+    <CyTransition>
+      <Name>TRANSITION20</Name>
+      <TransitionEquation>LV2&amp;!LV1</TransitionEquation>
+      <SourceName>STATE1</SourceName>
+      <SinkName>STATE14</SinkName>
+      <SourceConnectorName>Connector</SourceConnectorName>
+      <SinkConnectorName>Connector</SinkConnectorName>
+      <SourceArrowSymbol>None</SourceArrowSymbol>
+      <SinkArrowSymbol>Arrow</SinkArrowSymbol>
+      <zIndex>0</zIndex>
+    </CyTransition>
+    <CyTransition>
+      <Name>TRANSITION19</Name>
+      <TransitionEquation>LV1&amp;!LV2</TransitionEquation>
+      <SourceName>STATE1</SourceName>
+      <SinkName>STATE14</SinkName>
+      <SourceConnectorName>Connector</SourceConnectorName>
+      <SinkConnectorName>Connector</SinkConnectorName>
+      <SourceArrowSymbol>None</SourceArrowSymbol>
+      <SinkArrowSymbol>Arrow</SinkArrowSymbol>
+      <zIndex>0</zIndex>
+    </CyTransition>
     <CyTransition>
       <Name>TRANSITION18</Name>
       <TransitionEquation>!FV1</TransitionEquation>

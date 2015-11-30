@@ -83,8 +83,6 @@ int Initialize()
 	//Create texture
 	wzCreateTextureBuffer(&g_screen_texture, g_camWidth, g_camHeight, WZ_FORMATTYPE_BGRA_RGBA);
 
-	g_pOvrTrack = new OVR::OvrvisionTracking(g_camWidth, g_camHeight, g_pOvrvision->GetCamFocalPoint());
-
 	/*------------------------------------------------------------------*/
 
 	return 0;
@@ -117,11 +115,6 @@ void DrawLoop(void)
 	wzSetDepthTest(TRUE);		//Depth off
 	wzSetCullFace(WZ_CLF_NONE);	//Culling off
 	wzVector2 half_pos = { APPSCREEN_WIDTH / 2 / 2, APPSCREEN_HEIGHT / 2 };
-
-	if (wzGetKeyStateTrigger(WZ_KEY_SPACE)) {
-		g_pOvrTrack->SetHue();
-	}
-
 
 	if (g_pOvrvision->isOpen())
 	{
@@ -156,8 +149,6 @@ void DrawLoop(void)
 		wzSetSpriteTexture(&g_screen_texture);
 		wzSpriteDraw();	//Draw
 
-		g_pOvrTrack->SetImageBGRA(p,p2);
-		g_pOvrTrack->Render();
 	} else 
 		wzClear();
 

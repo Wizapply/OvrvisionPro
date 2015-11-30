@@ -54,6 +54,8 @@ extern CyU3PReturnStatus_t OV5653SensorInit(void);			// Initialize sensor
 extern void OV5653SensorReset(void);						// Reset sensor
 extern CyU3PReturnStatus_t OV5653SensorBusTest(void);		// Test sensor
 
+extern void OV5653ClockReset(void);							// Reset sensor
+
 // Sensor setup
 
 //Frame Index : frameIdx

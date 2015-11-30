@@ -1,0 +1,86 @@
+.TH "OVR::OvrvisionSetting" 3 "Tue Nov 24 2015" "Version 1.0" "OvrvisionSDK" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+OVR::OvrvisionSetting \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBOvrvisionSetting\fP (\fBOvrvisionPro\fP *system)"
+.br
+.ti -1c
+.RI "bool \fBReadEEPROM\fP ()"
+.br
+.ti -1c
+.RI "bool \fBWriteEEPROM\fP (unsigned char flag)"
+.br
+.ti -1c
+.RI "void \fBGetUndistortionMatrix\fP (Cameye eye, ovMat &mapX, ovMat &mapY, int width, int height)"
+.br
+.ti -1c
+.RI "void \fBInitValue\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "bool \fBisReaded\fP"
+.br
+.ti -1c
+.RI "int \fBm_propExposure\fP"
+.br
+.ti -1c
+.RI "int \fBm_propGain\fP"
+.br
+.ti -1c
+.RI "int \fBm_propBLC\fP"
+.br
+.ti -1c
+.RI "int \fBm_propWhiteBalanceR\fP"
+.br
+.ti -1c
+.RI "int \fBm_propWhiteBalanceG\fP"
+.br
+.ti -1c
+.RI "int \fBm_propWhiteBalanceB\fP"
+.br
+.ti -1c
+.RI "char \fBm_propWhiteBalanceAuto\fP"
+.br
+.ti -1c
+.RI "ovMat \fBm_leftCameraInstric\fP"
+.br
+.ti -1c
+.RI "ovMat \fBm_rightCameraInstric\fP"
+.br
+.ti -1c
+.RI "ovMat \fBm_leftCameraDistortion\fP"
+.br
+.ti -1c
+.RI "ovMat \fBm_rightCameraDistortion\fP"
+.br
+.ti -1c
+.RI "ovMat \fBm_R1\fP"
+.br
+.ti -1c
+.RI "ovMat \fBm_R2\fP"
+.br
+.ti -1c
+.RI "ovMat \fBm_trans\fP"
+.br
+.ti -1c
+.RI "ovMat \fBm_focalPoint\fP"
+.br
+.ti -1c
+.RI "\fBOvrvisionPro\fP * \fBm_pSystem\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OvrvisionSDK from the source code\&.

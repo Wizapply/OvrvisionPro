@@ -1,0 +1,168 @@
+.TH "OVR::OvrvisionAR" 3 "Mon Nov 30 2015" "Version 1.0" "OvrvisionSDK" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+OVR::OvrvisionAR \- \fBOvrvisionPro\fP AR class\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <ovrvision_ar\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBOvrvisionAR\fP (float markersize_meter, int w, int h, float focalPoint)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fB~OvrvisionAR\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "void \fBSetImageBGRA\fP (unsigned char *pImage)"
+.br
+.RI "\fISet the pointer of image data\&. \fP"
+.ti -1c
+.RI "void \fBSetImageOpenCVImage\fP (ovMat *pImageMat)"
+.br
+.RI "\fISet the pointer of OpenCV Mat data\&. \fP"
+.ti -1c
+.RI "void \fBRender\fP ()"
+.br
+.RI "\fIRun marker detection processing\&. \fP"
+.ti -1c
+.RI "int \fBGetMarkerDataSize\fP ()"
+.br
+.RI "\fIGet the data size of AR markers\&. \fP"
+.ti -1c
+.RI "\fBOVR::OvMarkerData\fP * \fBGetMarkerData\fP ()"
+.br
+.RI "\fIGet the data of AR markers\&. \fP"
+.ti -1c
+.RI "\fBOVR::OvMarkerData\fP * \fBGetMarkerData\fP (int idx)"
+.br
+.RI "\fIGet the data of AR marker\&. Specify an index\&. \fP"
+.ti -1c
+.RI "void \fBSetMarkerSizeMeter\fP (float value)"
+.br
+.RI "\fISetup the actual size of AR marker\&. \fP"
+.ti -1c
+.RI "float \fBGetMarkerSizeMeter\fP ()"
+.br
+.RI "\fIGet the actual size of AR marker\&. \fP"
+.ti -1c
+.RI "void \fBSetInstantTraking\fP (bool value)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+\fBOvrvisionPro\fP AR class\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "OVR::OvrvisionAR::OvrvisionAR (float markersize_meter, int w, int h, float focalPoint)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fImarkersize_meter\fP Actual marker size\&. meter 1\&.0f = 100cm 
+.br
+\fIw\fP Image width\&. 
+.br
+\fIh\fP Image height\&. 
+.br
+\fIfocalPoint\fP Image focal point\&. 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBOVR::OvMarkerData\fP* OVR::OvrvisionAR::GetMarkerData ()"
+
+.PP
+Get the data of AR markers\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+OvMarkerData pointer 
+.RE
+.PP
+
+.SS "\fBOVR::OvMarkerData\fP* OVR::OvrvisionAR::GetMarkerData (int idx)"
+
+.PP
+Get the data of AR marker\&. Specify an index\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIidx\fP Data index 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+OvMarkerData pointer 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionAR::GetMarkerDataSize ()"
+
+.PP
+Get the data size of AR markers\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+size 
+.RE
+.PP
+
+.SS "float OVR::OvrvisionAR::GetMarkerSizeMeter ()\fC [inline]\fP"
+
+.PP
+Get the actual size of AR marker\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+Meter size 1\&.0f = 100cm 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionAR::SetImageBGRA (unsigned char * pImage)"
+
+.PP
+Set the pointer of image data\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpImage\fP Image buffer pointer\&. 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionAR::SetImageOpenCVImage (ovMat * pImageMat)"
+
+.PP
+Set the pointer of OpenCV Mat data\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpImageMat\fP OpenCV Mat pointer\&. 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionAR::SetMarkerSizeMeter (float value)\fC [inline]\fP"
+
+.PP
+Setup the actual size of AR marker\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP Meter size 1\&.0f = 100cm 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OvrvisionSDK from the source code\&.

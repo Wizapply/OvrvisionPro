@@ -1,0 +1,50 @@
+.TH "TriangleSet" 3 "Sun Nov 22 2015" "Version 1.0" "OvrvisionSDK" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TriangleSet \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBTriangleSet\fP (int maxTriangles=2000)"
+.br
+.ti -1c
+.RI "void \fBAddQuad\fP (\fBVertex\fP v0, \fBVertex\fP v1, \fBVertex\fP v2, \fBVertex\fP v3)"
+.br
+.ti -1c
+.RI "void \fBAddTriangle\fP (\fBVertex\fP v0, \fBVertex\fP v1, \fBVertex\fP v2)"
+.br
+.ti -1c
+.RI "DWORD \fBModifyColor\fP (DWORD c, XMFLOAT3 pos)"
+.br
+.ti -1c
+.RI "void \fBAddSolidColorBox\fP (float x1, float y1, float z1, float x2, float y2, float z2, DWORD c)"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBnumVertices\fP"
+.br
+.ti -1c
+.RI "int \fBnumIndices\fP"
+.br
+.ti -1c
+.RI "int \fBmaxBuffer\fP"
+.br
+.ti -1c
+.RI "\fBVertex\fP * \fBVertices\fP"
+.br
+.ti -1c
+.RI "short * \fBIndices\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OvrvisionSDK from the source code\&.

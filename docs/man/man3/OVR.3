@@ -1,0 +1,152 @@
+.TH "OVR" 3 "Mon Nov 30 2015" "Version 1.0" "OvrvisionSDK" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+OVR \- OvrvisionSDK Group\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBov_st_marker_data\fP"
+.br
+.RI "\fIOvrvision AR Marker data structure\&. \fP"
+.ti -1c
+.RI "struct \fBov_st_vector2d\fP"
+.br
+.RI "\fIVector2D structure for \fBov_st_marker_data\fP\&. \fP"
+.ti -1c
+.RI "struct \fBov_st_vector3d\fP"
+.br
+.RI "\fIVector3D structure for \fBov_st_marker_data\fP\&. \fP"
+.ti -1c
+.RI "struct \fBov_st_vector4d\fP"
+.br
+.RI "\fIVector4D structure for \fBov_st_marker_data\fP\&. \fP"
+.ti -1c
+.RI "class \fBOvrvisionAR\fP"
+.br
+.RI "\fI\fBOvrvisionPro\fP AR class\&. \fP"
+.ti -1c
+.RI "class \fBOvrvisionPro\fP"
+.br
+.RI "\fI\fBOvrvisionPro\fP class\&. \fP"
+.ti -1c
+.RI "class \fBOvrvisionTracking\fP"
+.br
+.RI "\fI\fBOvrvisionPro\fP Hand tracking class\&. \fP"
+.ti -1c
+.RI "struct \fBROI\fP"
+.br
+.RI "\fI\fBROI\fP\&. \fP"
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct OVRPORT \fBOVR::ov_st_vector2d\fP \fBOvVector2D\fP"
+.br
+.RI "\fIVector2D structure for \fBov_st_marker_data\fP\&. \fP"
+.ti -1c
+.RI "typedef struct OVRPORT \fBOVR::ov_st_vector3d\fP \fBOvVector3D\fP"
+.br
+.RI "\fIVector3D structure for \fBov_st_marker_data\fP\&. \fP"
+.ti -1c
+.RI "typedef struct OVRPORT \fBOVR::ov_st_vector4d\fP \fBOvVector4D\fP"
+.br
+.RI "\fIVector4D structure for \fBov_st_marker_data\fP\&. \fP"
+.ti -1c
+.RI "typedef struct OVRPORT \fBOVR::ov_st_marker_data\fP \fBOvMarkerData\fP"
+.br
+.RI "\fIOvrvision AR Marker data structure\&. \fP"
+.ti -1c
+.RI "typedef unsigned char \fBbyte\fP"
+.br
+.ti -1c
+.RI "typedef enum \fBOVR::ov_cameraeye\fP \fBCameye\fP"
+.br
+.ti -1c
+.RI "typedef enum \fBOVR::ov_cameraprop\fP \fBCamprop\fP"
+.br
+.ti -1c
+.RI "typedef enum \fBOVR::ov_cameraquality\fP \fBCamqt\fP"
+.br
+.ti -1c
+.RI "typedef unsigned char * \fBpbyte\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBov_cameraeye\fP { \fBOV_CAMEYE_LEFT\fP = 0, \fBOV_CAMEYE_RIGHT\fP, \fBOV_CAMNUM\fP }"
+.br
+.ti -1c
+.RI "enum \fBov_cameraprop\fP { \fBOV_CAM5MP_FULL\fP = 0, \fBOV_CAM5MP_FHD\fP, \fBOV_CAMHD_FULL\fP, \fBOV_CAMVR_FULL\fP, \fBOV_CAMVR_WIDE\fP, \fBOV_CAMVR_VGA\fP, \fBOV_CAMVR_QVGA\fP, \fBOV_CAM20HD_FULL\fP, \fBOV_CAM20VR_VGA\fP }"
+.br
+.ti -1c
+.RI "enum \fBov_cameraquality\fP { \fBOV_CAMQT_DMSRMP\fP = 0, \fBOV_CAMQT_DMS\fP, \fBOV_CAMQT_NONE\fP }"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+OvrvisionSDK Group\&. 
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBOVR::ov_cameraeye\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIOV_CAMEYE_RIGHT \fP\fP
+Left camera\&. 
+.TP
+\fB\fIOV_CAMNUM \fP\fP
+Right camera\&. 
+.SS "enum \fBOVR::ov_cameraprop\fP"
+Camera open types 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIOV_CAM5MP_FHD \fP\fP
+2560x1920 @15fps x2 
+.TP
+\fB\fIOV_CAMHD_FULL \fP\fP
+1920x1080 @30fps x2 
+.TP
+\fB\fIOV_CAMVR_FULL \fP\fP
+1280x960 @45fps x2 
+.TP
+\fB\fIOV_CAMVR_WIDE \fP\fP
+960x950 @60fps x2 
+.TP
+\fB\fIOV_CAMVR_VGA \fP\fP
+1280x800 @60fps x2 
+.TP
+\fB\fIOV_CAMVR_QVGA \fP\fP
+640x480 @90fps x2 
+.TP
+\fB\fIOV_CAM20HD_FULL \fP\fP
+320x240 @120fps x2 
+.TP
+\fB\fIOV_CAM20VR_VGA \fP\fP
+1280x960 @15fps x2 Only USB2\&.0 connection 
+.SS "enum \fBOVR::ov_cameraquality\fP"
+The image-processing method 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIOV_CAMQT_DMS \fP\fP
+Demosaic & Remap\&. 
+.TP
+\fB\fIOV_CAMQT_NONE \fP\fP
+Demosaic\&. 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OvrvisionSDK from the source code\&.

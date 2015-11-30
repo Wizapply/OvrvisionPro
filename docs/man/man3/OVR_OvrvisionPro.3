@@ -1,0 +1,527 @@
+.TH "OVR::OvrvisionPro" 3 "Mon Nov 30 2015" "Version 1.0" "OvrvisionSDK" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+OVR::OvrvisionPro \- \fBOvrvisionPro\fP class\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <ovrvision_pro\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBOvrvisionPro\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fB~OvrvisionPro\fP ()"
+.br
+.RI "\fIDestructor\&. \fP"
+.ti -1c
+.RI "int \fBOpen\fP (int locationID, OVR::Camprop prop)"
+.br
+.RI "\fIOpen the Ovrvision Pro\&. \fP"
+.ti -1c
+.RI "void \fBClose\fP ()"
+.br
+.RI "\fIClose the Ovrvision Pro\&. \fP"
+.ti -1c
+.RI "void \fBPreStoreCamData\fP (OVR::Camqt qt)"
+.br
+.RI "\fIThis function gets data from \fBOvrvisionPro\fP inside\&. \fP"
+.ti -1c
+.RI "unsigned char * \fBGetCamImageBGRA\fP (OVR::Cameye eye)"
+.br
+.RI "\fIGets the image data of 32 bits of BGRA form\&. \fP"
+.ti -1c
+.RI "void \fBGetCamImageBGRA\fP (unsigned char *pImageBuf, OVR::Cameye eye)"
+.br
+.RI "\fIThis function gets data from \fBOvrvisionPro\fP inside\&. \fP"
+.ti -1c
+.RI "void \fBCapture\fP (OVR::Camqt qt)"
+.br
+.RI "\fICapture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc\&.) \fP"
+.ti -1c
+.RI "void \fBGetStereoImageBGRA\fP (unsigned char *pLeft, unsigned char *pRight, \fBROI\fP roi)"
+.br
+.RI "\fIGet camera image region of interest\&. \fP"
+.ti -1c
+.RI "bool \fBisOpen\fP ()"
+.br
+.RI "\fICheck whether \fBOvrvisionPro\fP is open\&. \fP"
+.ti -1c
+.RI "int \fBGetCamWidth\fP ()"
+.br
+.RI "\fIGet the width of the Ovrvision image\&. \fP"
+.ti -1c
+.RI "int \fBGetCamHeight\fP ()"
+.br
+.RI "\fIGet the height of the Ovrvision image\&. \fP"
+.ti -1c
+.RI "int \fBGetCamFramerate\fP ()"
+.br
+.RI "\fIGet the framerate of the Ovrvision\&. \fP"
+.ti -1c
+.RI "float \fBGetCamFocalPoint\fP ()"
+.br
+.RI "\fIGet the focal point of the Ovrvision image\&. \fP"
+.ti -1c
+.RI "float \fBGetHMDRightGap\fP (int at)"
+.br
+.RI "\fIGet the gap between images for HMD\&. \fP"
+.ti -1c
+.RI "int \fBGetCamBuffersize\fP ()"
+.br
+.RI "\fIGet the buffer size of the Ovrvision image\&. \fP"
+.ti -1c
+.RI "int \fBGetCamPixelsize\fP ()"
+.br
+.RI "\fIGet the pixel data size\&. default is BGRA 4 byte\&. \fP"
+.ti -1c
+.RI "int \fBGetCameraExposure\fP ()"
+.br
+.RI "\fIGet exposure value of the Ovrvision\&. \fP"
+.ti -1c
+.RI "void \fBSetCameraExposure\fP (int value)"
+.br
+.RI "\fISet exposure of the Ovrvision\&. \fP"
+.ti -1c
+.RI "int \fBGetCameraGain\fP ()"
+.br
+.RI "\fIGet gain value of the Ovrvision\&. \fP"
+.ti -1c
+.RI "void \fBSetCameraGain\fP (int value)"
+.br
+.RI "\fISet gain of the Ovrvision\&. \fP"
+.ti -1c
+.RI "int \fBGetCameraWhiteBalanceR\fP ()"
+.br
+.RI "\fIGet white balance R gain value of the Ovrvision\&. \fP"
+.ti -1c
+.RI "void \fBSetCameraWhiteBalanceR\fP (int value)"
+.br
+.RI "\fISet white balance R gain of the Ovrvision\&. \fP"
+.ti -1c
+.RI "int \fBGetCameraWhiteBalanceG\fP ()"
+.br
+.RI "\fIGet white balance G gain value of the Ovrvision\&. \fP"
+.ti -1c
+.RI "void \fBSetCameraWhiteBalanceG\fP (int value)"
+.br
+.RI "\fISet white balance G gain of the Ovrvision\&. \fP"
+.ti -1c
+.RI "int \fBGetCameraWhiteBalanceB\fP ()"
+.br
+.RI "\fIGet white balance B gain value of the Ovrvision\&. \fP"
+.ti -1c
+.RI "void \fBSetCameraWhiteBalanceB\fP (int value)"
+.br
+.RI "\fISet white balance B gain of the Ovrvision\&. \fP"
+.ti -1c
+.RI "int \fBGetCameraBLC\fP ()"
+.br
+.RI "\fISet backlight compensation(BLC) value of the Ovrvision\&. \fP"
+.ti -1c
+.RI "void \fBSetCameraBLC\fP (int value)"
+.br
+.RI "\fISet backlight compensation(BLC) of the Ovrvision\&. \fP"
+.ti -1c
+.RI "bool \fBGetCameraWhiteBalanceAuto\fP ()"
+.br
+.RI "\fIGet automatic mode of the Ovrvision White Balance\&. \fP"
+.ti -1c
+.RI "void \fBSetCameraWhiteBalanceAuto\fP (bool value)"
+.br
+.RI "\fISet automatic mode of the Ovrvision White Balance\&. \fP"
+.ti -1c
+.RI "void \fBSetCameraSyncMode\fP (bool value)"
+.br
+.RI "\fISet sync mode for the Ovrvision\&. \fP"
+.ti -1c
+.RI "int \fBOpenCLExtensions\fP (int(*callback)(void *, const char *), void *item)"
+.br
+.RI "\fIGet OpenCL extensions of GPU\&. \fP"
+.ti -1c
+.RI "void \fBGrayscaleHalf\fP (unsigned char *left, unsigned char *right)"
+.br
+.RI "\fIGrayscaled image of 1/2 scaled\&. \fP"
+.ti -1c
+.RI "void \fBGrayscaleFourth\fP (unsigned char *left, unsigned char *right)"
+.br
+.RI "\fIGrayscaled image of 1/4 scaled\&. \fP"
+.ti -1c
+.RI "void \fBGrayscaleEighth\fP (unsigned char *left, unsigned char *right)"
+.br
+.RI "\fIGrayscaled image of 1/8 scaled\&. \fP"
+.ti -1c
+.RI "void \fBUserDataAccessUnlock\fP ()"
+.br
+.ti -1c
+.RI "void \fBUserDataAccessLock\fP ()"
+.br
+.ti -1c
+.RI "void \fBUserDataAccessSelectAddress\fP (unsigned int addr)"
+.br
+.ti -1c
+.RI "unsigned char \fBUserDataAccessGetData\fP ()"
+.br
+.ti -1c
+.RI "void \fBUserDataAccessSetData\fP (unsigned char value)"
+.br
+.ti -1c
+.RI "void \fBUserDataAccessSave\fP ()"
+.br
+.ti -1c
+.RI "void \fBUserDataAccessCheckSumAddress\fP ()"
+.br
+.ti -1c
+.RI "bool \fBCameraParamSaveEEPROM\fP ()"
+.br
+.ti -1c
+.RI "void * \fBCreateGLTexture2D\fP (unsigned int texture, int width, int height)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+\fBOvrvisionPro\fP class\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "void OVR::OvrvisionPro::Capture (OVR::Camqt qt)"
+
+.PP
+Capture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc\&.) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIqt\fP Set an image processing method\&. 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::GetCamBuffersize ()"
+
+.PP
+Get the buffer size of the Ovrvision image\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+size 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::GetCameraBLC ()"
+
+.PP
+Set backlight compensation(BLC) value of the Ovrvision\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+blc value\&. 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::GetCameraExposure ()"
+
+.PP
+Get exposure value of the Ovrvision\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+Exposure time\&. 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::GetCameraGain ()"
+
+.PP
+Get gain value of the Ovrvision\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+gain value\&. 
+.RE
+.PP
+
+.SS "bool OVR::OvrvisionPro::GetCameraWhiteBalanceAuto ()"
+
+.PP
+Get automatic mode of the Ovrvision White Balance\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+It is true or false\&. 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::GetCameraWhiteBalanceB ()"
+
+.PP
+Get white balance B gain value of the Ovrvision\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+B gain value\&. 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::GetCameraWhiteBalanceG ()"
+
+.PP
+Get white balance G gain value of the Ovrvision\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+G gain value\&. 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::GetCameraWhiteBalanceR ()"
+
+.PP
+Get white balance R gain value of the Ovrvision\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+R gain value\&. 
+.RE
+.PP
+
+.SS "float OVR::OvrvisionPro::GetCamFocalPoint ()"
+
+.PP
+Get the focal point of the Ovrvision image\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+focal point 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::GetCamFramerate ()"
+
+.PP
+Get the framerate of the Ovrvision\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+fps 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::GetCamHeight ()"
+
+.PP
+Get the height of the Ovrvision image\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+pixel size\&. 
+.RE
+.PP
+
+.SS "unsigned char* OVR::OvrvisionPro::GetCamImageBGRA (OVR::Cameye eye)"
+
+.PP
+Gets the image data of 32 bits of BGRA form\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIeye\fP OV_CAMEYE_LEFT or OV_CAMEYE_RIGHT 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::GetCamImageBGRA (unsigned char * pImageBuf, OVR::Cameye eye)"
+
+.PP
+This function gets data from \fBOvrvisionPro\fP inside\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpImageBuf\fP Image buffer pointer 
+.br
+\fIeye\fP OV_CAMEYE_LEFT or OV_CAMEYE_RIGHT 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::GetCamPixelsize ()"
+
+.PP
+Get the pixel data size\&. default is BGRA 4 byte\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+size 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::GetCamWidth ()"
+
+.PP
+Get the width of the Ovrvision image\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+pixel size\&. 
+.RE
+.PP
+
+.SS "float OVR::OvrvisionPro::GetHMDRightGap (int at)"
+
+.PP
+Get the gap between images for HMD\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+value 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::GetStereoImageBGRA (unsigned char * pLeft, unsigned char * pRight, \fBROI\fP roi)"
+
+.PP
+Get camera image region of interest\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpLeft\fP Image buffer pointer for left eye 
+.br
+\fIpRight\fP Image buffer pointer for right eye 
+.br
+\fIroi\fP \fBROI\fP 
+.RE
+.PP
+
+.SS "bool OVR::OvrvisionPro::isOpen ()"
+
+.PP
+Check whether \fBOvrvisionPro\fP is open\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+If open, It is true 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::Open (int locationID, OVR::Camprop prop)"
+
+.PP
+Open the Ovrvision Pro\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlocationID\fP Connection number 
+.br
+\fIprop\fP Camera property 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+If successful, the return value is 0< 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::PreStoreCamData (OVR::Camqt qt)"
+
+.PP
+This function gets data from \fBOvrvisionPro\fP inside\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIqt\fP Set an image processing method\&. 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::SetCameraBLC (int value)"
+
+.PP
+Set backlight compensation(BLC) of the Ovrvision\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP BLC\&. Range of 0 - 255 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::SetCameraExposure (int value)"
+
+.PP
+Set exposure of the Ovrvision\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP Exposure time\&. Range of 0 - 32767 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::SetCameraGain (int value)"
+
+.PP
+Set gain of the Ovrvision\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP gain\&. Range of 0 - 47 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::SetCameraSyncMode (bool value)"
+
+.PP
+Set sync mode for the Ovrvision\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP True is sync mode\&. 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::SetCameraWhiteBalanceAuto (bool value)"
+
+.PP
+Set automatic mode of the Ovrvision White Balance\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP Mode\&. 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::SetCameraWhiteBalanceB (int value)"
+
+.PP
+Set white balance B gain of the Ovrvision\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP B gain\&. Range of 0 - 4095 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::SetCameraWhiteBalanceG (int value)"
+
+.PP
+Set white balance G gain of the Ovrvision\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP G gain\&. Range of 0 - 4095 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::SetCameraWhiteBalanceR (int value)"
+
+.PP
+Set white balance R gain of the Ovrvision\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvalue\fP R gain\&. Range of 0 - 4095 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OvrvisionSDK from the source code\&.

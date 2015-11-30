@@ -49,12 +49,13 @@ typedef cv::Mat ovMat;
 #define ovMat void
 #endif
 
-//Left or Right camera.
 #ifndef _OV_CAMEYE_ENUM_
 #define _OV_CAMEYE_ENUM_
+//! @enum ov_cameraeye
+//! Eye selection the Left or Right.
 typedef enum ov_cameraeye {
-	OV_CAMEYE_LEFT = 0,		//Left camera
-	OV_CAMEYE_RIGHT,		//Right camera
+	OV_CAMEYE_LEFT = 0,		//!Left camera
+	OV_CAMEYE_RIGHT,		//!Right camera
 	OV_CAMNUM,
 } Cameye;
 #endif
@@ -83,13 +84,13 @@ namespace OVR {
 //unsigned char to byte
 typedef unsigned char byte;
 
-//Result define
-#define OV_RESULT_OK		(0)	//!Result define
-#define OV_RESULT_FAILED	(1)	//!Result define
+//!Result define
+#define OV_RESULT_OK		(0)	
+#define OV_RESULT_FAILED	(1)
 
 /////////// CLASS ///////////
 
-//! OvrvisionPro AR class
+//! OvrvisionPro Hand tracking class
 class OVRPORT OvrvisionTracking
 {
 public:
@@ -97,17 +98,22 @@ public:
 	/*! @brief Constructor
 		@param w Image width.
 		@param h Image height.
-		@param focalPoint Image focal point. */
+		@param focalpoint Image focal point. */
 	OvrvisionTracking(int w, int h, float focalpoint);
 	//!Destructor
 	~OvrvisionTracking();
 
 	//Methods
 
-	//image set
+	/*!	@brief Set the pointer of image data.
+		@param pLeftImage LeftImage buffer pointer.
+		@param pRightImage RightImage buffer pointer. */
 	void SetImageBGRA(unsigned char* pLeftImage, unsigned char* pRightImage);
+	/*!	@brief Set the pointer of OpenCV Mat data.
+		@param pLeftImageMat Left OpenCV Mat pointer.
+		@param pRightImageMat Right OpenCV Mat pointer. */
 	void SetImageOpenCVImage(ovMat* pLeftImageMat, ovMat* pRightImageMat);
-	//Detect marker
+	/*!	@brief Run hand detection processing. */
 	void Render();
 	//Get tracking data
 
