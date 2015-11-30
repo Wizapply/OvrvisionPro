@@ -37,11 +37,13 @@ int main(int argc, char* argv[])
 		Mat right(roi.height, roi.width, CV_8UC4);
 		Mat histgram(256, 256, CV_16UC1);
 
-		Mat fourth(roi.height / 2, roi.width / 2, CV_8UC4);
-		Mat hsv(roi.height / 2, roi.width / 2, CV_8UC3);
-		Mat result(roi.height / 2, roi.width / 2, CV_8UC4);
-		Mat bilevel(roi.height / 2, roi.width / 2, CV_8UC1);
-		Mat HSV[3];
+		Mat LEFT(roi.height / 2, roi.width / 2, CV_8UC4);
+		Mat RIGHT(roi.height / 2, roi.width / 2, CV_8UC4);
+		Mat Lhsv(roi.height / 2, roi.width / 2, CV_8UC3);
+		Mat Rhsv(roi.height / 2, roi.width / 2, CV_8UC3);
+		Mat Lresult(roi.height / 2, roi.width / 2, CV_8UC4);
+		Mat Rresult(roi.height / 2, roi.width / 2, CV_8UC4);
+		Mat blur(roi.height / 2, roi.width / 2, CV_8UC4);
 
 		vector<vector<Point>> contours;
 
@@ -64,43 +66,50 @@ int main(int argc, char* argv[])
 				// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
 				if (0 < ksize)
 				{
-					resize(left, fourth, fourth.size());
-					cvtColor(fourth, hsv, CV_BGR2HSV_FULL);
-					split(hsv, HSV);
+					resize(left, LEFT, LEFT.size());
+					cvtColor(LEFT, Lhsv, CV_BGR2HSV_FULL);
+					resize(right, RIGHT, RIGHT.size());
+					cvtColor(RIGHT, Rhsv, CV_BGR2HSV_FULL);
 
 					histgram.setTo(Scalar::all(0));
-					result.setTo(Scalar::all(0));
+					Lresult.setTo(Scalar::all(0));
+					Rresult.setTo(Scalar::all(0));
 					for (uint y = 0; y < roi.height / 2; y++)
 					{
-						Point3_<uchar> *row = hsv.ptr<Point3_<uchar>>(y);
-						//Vec4b *pixel = left.ptr<Vec4b>(y);
-						Vec4b *pixel = result.ptr<Vec4b>(y);
+						Vec3b *l = Lhsv.ptr<Vec3b>(y);
+						Vec3b *r = Rhsv.ptr<Vec3b>(y);
+						Vec4b *Lpixel = Lresult.ptr<Vec4b>(y);
+						Vec4b *Rpixel = Rresult.ptr<Vec4b>(y);
 						for (uint x = 0; x < roi.width / 2; x++)
 						{
-							uchar h = row[x].x;
-							uchar s = row[x].y;
+							uchar h = l[x][0];
+							uchar s = l[x][1];
 							if (15 <= h && h <= 29 && 55 < s && s < 150)
 							{
-								pixel[x] = fourth.at<Vec4b>(y, x);
-								//pixel[x][0] = h;
-								//pixel[x][1] = s;
+								Lpixel[x] = LEFT.at<Vec4b>(y, x);
 							}
 							ushort *hs = histgram.ptr<ushort>(s, h);
 							hs[0]++;
+							h = r[x][0];
+							s = r[x][1];
+							if (15 <= h && h <= 29 && 55 < s && s < 150)
+							{
+								Rpixel[x] = RIGHT.at<Vec4b>(y, x);
+							}
+							hs = histgram.ptr<ushort>(s, h);
+							hs[0]++;
 						}
 					}
-
-					//threshold(fourth, bilevel, 30, 255, THRESH_BINARY_INV);
-					//Canny(fourth, bilevel, 50, 150);
+					medianBlur(Lresult, blur, ksize);
+					//threshold(LEFT, bilevel, 30, 255, THRESH_BINARY_INV);
+					//Canny(LEFT, bilevel, 50, 150);
 					// Show frame data
-					imshow("Left", left);
-					imshow("Right", right);
-					imshow("HSV", hsv);
-					imshow("Hue", fourth);
-					//imshow("Bilevel", bilevel);
-
-					imshow("Result", result);
-					//imshow("Histgram", histgram);
+					imshow("Left", LEFT);
+					imshow("Right", RIGHT);
+					imshow("L", Lresult);
+					imshow("R", Rresult);
+					imshow("Blur", blur);
+					imshow("Lhsv", Lhsv);
 				}
 				else
 				{
@@ -159,14 +168,15 @@ int main(int argc, char* argv[])
 
 			case ' ':
 				//imwrite("histgram.png", histgram);
-				imwrite("Hue.png", fourth);
-				imwrite("Sat.png", HSV[1]);
-				imwrite("hsv.png", hsv);
-				imwrite("HCrCb.png", result);
+				imwrite("Hue.png", LEFT);
+				//imwrite("Sat.png", Lhsv[1]);
+				imwrite("Lhsv.png", Lhsv);
+				//imwrite("HCrCb.png", Lresult);
 				//imwrite("YCrCb.png", YCrCb);
 				imwrite("left.png", left);
 				imwrite("right.png", right);
-				imwrite("result.tiff", result);
+				imwrite("Lresult.tiff", Lresult);
+				imwrite("blur.png", blur);
 				break;
 
 			case 'e':
