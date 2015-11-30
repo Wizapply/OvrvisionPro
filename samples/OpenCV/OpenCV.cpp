@@ -106,7 +106,7 @@ void estimateSkincolor(Mat &histgram, OvrvisionPro &camera, ROI roi)
 	Mat difference(256, 256, CV_32FC1);
 	difference.setTo(Scalar::all(0));
 	float maxVal = 0;
-	for (int h = 0; h < 256; h++)
+	for (int h = 3; h < 256; h++)
 	{
 		float *b = background.ptr<float>(h);
 		float *f = foreground.ptr<float>(h);
@@ -122,11 +122,13 @@ void estimateSkincolor(Mat &histgram, OvrvisionPro &camera, ROI roi)
 			}
 		}
 	}
-	normalize(background, histgram, 0, 255, NORM_MINMAX, histgram.type());
-	imshow("background", histgram);
-	normalize(foreground, histgram, 0, 255, NORM_MINMAX, histgram.type());
-	imshow("foreground", histgram);
-	normalize(difference, histgram, 0, 255, NORM_MINMAX, histgram.type());
+	Mat diff(256, 256, CV_32FC1);
+	GaussianBlur(difference, diff, Size(3, 3), 8, 6);
+	//normalize(background, histgram, 0, 255, NORM_MINMAX, histgram.type());
+	//imshow("background", histgram);
+	//normalize(foreground, histgram, 0, 255, NORM_MINMAX, histgram.type());
+	//imshow("foreground", histgram);
+	normalize(diff, histgram, 0, 255, NORM_MINMAX, histgram.type());
 	imshow("histgram", histgram);
 }
 
@@ -178,7 +180,6 @@ int main(int argc, char* argv[])
 					resize(right, RIGHT, RIGHT.size());
 					cvtColor(RIGHT, Rhsv, CV_BGR2HSV_FULL);
 
-					//histgram.setTo(Scalar::all(0));
 					Lresult.setTo(Scalar::all(0));
 					Rresult.setTo(Scalar::all(0));
 					for (uint y = 0; y < roi.height / 2; y++)
@@ -191,25 +192,19 @@ int main(int argc, char* argv[])
 						{
 							uchar h = l[x][0];
 							uchar s = l[x][1];
-							if (15 <= h && h <= 29 && 55 < s && s < 150)
+							if (15 <= h && h <= 29 && 55 < s && s < 160)
 							{
 								Lpixel[x] = LEFT.at<Vec4b>(y, x);
 							}
-							//ushort *hs = histgram.ptr<ushort>(s, h);
-							//hs[0]++;
 							h = r[x][0];
 							s = r[x][1];
-							if (15 <= h && h <= 29 && 55 < s && s < 150)
+							if (15 <= h && h <= 29 && 55 < s && s < 160)
 							{
 								Rpixel[x] = RIGHT.at<Vec4b>(y, x);
 							}
-							//hs = histgram.ptr<ushort>(s, h);
-							//hs[0]++;
 						}
 					}
 					medianBlur(Lresult, blur, ksize);
-					//threshold(LEFT, bilevel, 30, 255, THRESH_BINARY_INV);
-					//Canny(LEFT, bilevel, 50, 150);
 					// Show frame data
 					imshow("Left", LEFT);
 					imshow("Right", RIGHT);
