@@ -10,7 +10,7 @@
 #define CROP_W 800
 #define CROP_H 600
 
-using namespace std;
+//using namespace std;
 using namespace cv;
 using namespace OVR;
 
@@ -25,6 +25,111 @@ int callback(void *pItem, const char *extensions)
 	return 0;
 }
 
+// Estimate skin color 
+void estimateSkincolor(Mat &histgram, OvrvisionPro &camera, ROI roi)
+{
+	Mat left(roi.height, roi.width, CV_8UC4);
+	Mat right(roi.height, roi.width, CV_8UC4);
+	Mat images[2];
+	images[0].create(roi.height, roi.width, CV_8UC4);
+	images[1].create(roi.height, roi.width, CV_8UC4);
+
+	int channels[] = { 0, 1 }; // H, S
+	int histSize[] = { 256, 256 };
+	float hranges[] = { 0, 256 };
+	float sranges[] = { 0, 256 };
+	const float* ranges[] = { hranges, sranges };
+
+	while (waitKey(10) != 'a')
+	{
+		// Capture frame
+		ovrvision.Capture(Camqt::OV_CAMQT_DMSRMP);
+
+		// Retrieve frame data
+		ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
+		imshow("Left", left);
+		imshow("Right", right);
+	}
+
+	// back ground
+	Mat background(256, 256, CV_32FC1);
+	background.setTo(Scalar::all(0));
+	for (int i = 0; i < 50; i++)
+	{
+		// Capture frame
+		ovrvision.Capture(Camqt::OV_CAMQT_DMSRMP);
+
+		// Retrieve frame data
+		ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
+		cvtColor(left, images[0], CV_BGR2HSV_FULL);
+		cvtColor(right, images[1], CV_BGR2HSV_FULL);
+		calcHist(images, 2, channels, Mat(), background, 2, histSize, ranges, true, true);
+
+		imshow("Left", left);
+		imshow("Right", right);
+	}
+	while (waitKey(10) != 'a')
+	{
+		// Capture frame
+		ovrvision.Capture(Camqt::OV_CAMQT_DMSRMP);
+
+		// Retrieve frame data
+		ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
+
+		putText(left, "Waiting...", Point(0, 50), cv::FONT_HERSHEY_PLAIN, 3, Scalar(0, 255, 255), 2);
+		putText(right, "Waiting...", Point(0, 50), cv::FONT_HERSHEY_PLAIN, 3.0, Scalar(0, 255, 255), 2);
+		imshow("Left", left);
+		imshow("Right", right);
+	}
+
+	// weave hands
+	Mat foreground(256, 256, CV_32FC1);
+	foreground.setTo(Scalar::all(0));
+	for (int i = 0; i < 50; i++)
+	{
+		// Capture frame
+		ovrvision.Capture(Camqt::OV_CAMQT_DMSRMP);
+
+		// Retrieve frame data
+		ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
+		cvtColor(left, images[0], CV_BGR2HSV_FULL);
+		cvtColor(right, images[1], CV_BGR2HSV_FULL);
+		calcHist(images, 2, channels, Mat(), foreground, 2, histSize, ranges, true, true);
+
+		putText(left, "Initiating...", Point(0, 50), cv::FONT_HERSHEY_PLAIN, 3, Scalar(0, 255, 255), 2);
+		putText(right, "Initiating...", Point(0, 50), cv::FONT_HERSHEY_PLAIN, 3.0, Scalar(0, 255, 255), 2);
+		imshow("Left", left);
+		imshow("Right", right);
+	}
+	
+	// Compare histgram
+	Mat difference(256, 256, CV_32FC1);
+	difference.setTo(Scalar::all(0));
+	float maxVal = 0;
+	for (int h = 0; h < 256; h++)
+	{
+		float *b = background.ptr<float>(h);
+		float *f = foreground.ptr<float>(h);
+		float *d = difference.ptr<float>(h);
+		for (int s = 0; s < 256; s++)
+		{
+			float diff = f[s] - b[s];
+			if (0 < diff)
+			{
+				d[s] = diff;
+				if (maxVal < diff)
+					maxVal = diff;
+			}
+		}
+	}
+	normalize(background, histgram, 0, 255, NORM_MINMAX, histgram.type());
+	imshow("background", histgram);
+	normalize(foreground, histgram, 0, 255, NORM_MINMAX, histgram.type());
+	imshow("foreground", histgram);
+	normalize(difference, histgram, 0, 255, NORM_MINMAX, histgram.type());
+	imshow("histgram", histgram);
+}
+
 int main(int argc, char* argv[])
 {
 	if (ovrvision.Open(0, Camprop::OV_CAMHD_FULL))
@@ -35,7 +140,7 @@ int main(int argc, char* argv[])
 		ROI roi = {(width - CROP_W) / 2, (height - CROP_H) / 2, CROP_W, CROP_H};
 		Mat left(roi.height, roi.width, CV_8UC4);
 		Mat right(roi.height, roi.width, CV_8UC4);
-		Mat histgram(256, 256, CV_16UC1);
+		Mat histgram(256, 256, CV_8UC1);
 
 		Mat LEFT(roi.height / 2, roi.width / 2, CV_8UC4);
 		Mat RIGHT(roi.height / 2, roi.width / 2, CV_8UC4);
@@ -45,13 +150,15 @@ int main(int argc, char* argv[])
 		Mat Rresult(roi.height / 2, roi.width / 2, CV_8UC4);
 		Mat blur(roi.height / 2, roi.width / 2, CV_8UC4);
 
-		vector<vector<Point>> contours;
+		std::vector<std::vector<Point>> contours;
 
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
 
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
 		bool show = true;
+
+		estimateSkincolor(histgram, ovrvision, roi);
 
 		for (bool loop = true; loop;)
 		{
@@ -71,7 +178,7 @@ int main(int argc, char* argv[])
 					resize(right, RIGHT, RIGHT.size());
 					cvtColor(RIGHT, Rhsv, CV_BGR2HSV_FULL);
 
-					histgram.setTo(Scalar::all(0));
+					//histgram.setTo(Scalar::all(0));
 					Lresult.setTo(Scalar::all(0));
 					Rresult.setTo(Scalar::all(0));
 					for (uint y = 0; y < roi.height / 2; y++)
@@ -88,16 +195,16 @@ int main(int argc, char* argv[])
 							{
 								Lpixel[x] = LEFT.at<Vec4b>(y, x);
 							}
-							ushort *hs = histgram.ptr<ushort>(s, h);
-							hs[0]++;
+							//ushort *hs = histgram.ptr<ushort>(s, h);
+							//hs[0]++;
 							h = r[x][0];
 							s = r[x][1];
 							if (15 <= h && h <= 29 && 55 < s && s < 150)
 							{
 								Rpixel[x] = RIGHT.at<Vec4b>(y, x);
 							}
-							hs = histgram.ptr<ushort>(s, h);
-							hs[0]++;
+							//hs = histgram.ptr<ushort>(s, h);
+							//hs[0]++;
 						}
 					}
 					medianBlur(Lresult, blur, ksize);
@@ -167,16 +274,12 @@ int main(int argc, char* argv[])
 				break;
 
 			case ' ':
-				//imwrite("histgram.png", histgram);
-				imwrite("Hue.png", LEFT);
-				//imwrite("Sat.png", Lhsv[1]);
-				imwrite("Lhsv.png", Lhsv);
-				//imwrite("HCrCb.png", Lresult);
-				//imwrite("YCrCb.png", YCrCb);
 				imwrite("left.png", left);
 				imwrite("right.png", right);
-				imwrite("Lresult.tiff", Lresult);
-				imwrite("blur.png", blur);
+				imwrite("histgram.png", histgram);
+				imwrite("hsv_l.png", Lhsv);
+				imwrite("result_l.png", Lresult);
+				imwrite("blur_l.png", blur);
 				break;
 
 			case 'e':
