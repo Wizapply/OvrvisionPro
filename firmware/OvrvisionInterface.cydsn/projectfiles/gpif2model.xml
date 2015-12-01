@@ -191,13 +191,5 @@
     <Transition ElementId="TRANSITION16" SourceState="STATE8" DestinationState="STATE12" Equation="!FV1" />
     <Transition ElementId="TRANSITION17" SourceState="STATE9" DestinationState="STATE13" Equation="!FV1" />
     <Transition ElementId="TRANSITION18" SourceState="STATE7" DestinationState="STATE11" Equation="!FV1" />
-    <State ElementId="STATE14" StateType="NormalState">
-      <DisplayName>ERROR_CLOCK</DisplayName>
-      <RepeatUntillNextTransition>True</RepeatUntillNextTransition>
-      <RepeatCount>0</RepeatCount>
-      <Action ElementId="INTR_CPU0" ActionType="INTR_CPU" />
-    </State>
-    <Transition ElementId="TRANSITION19" SourceState="STATE1" DestinationState="STATE14" Equation="LV1&amp;!LV2" />
-    <Transition ElementId="TRANSITION20" SourceState="STATE1" DestinationState="STATE14" Equation="LV2&amp;!LV1" />
   </StateMachine>
 </GPIFIIModel>

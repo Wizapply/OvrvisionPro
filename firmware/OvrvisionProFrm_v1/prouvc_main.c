@@ -198,8 +198,9 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
             case PARTIAL_BUF_IN_SCK1:
                 socket = 1;
                 break;
-            case ERROR_CLOCK:
-                break;
+            //case ERROR_CLOCK:
+            //	OV5653ClockReset();
+            //    break;
             default:
                 break;
         }
