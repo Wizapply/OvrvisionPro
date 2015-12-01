@@ -194,6 +194,106 @@ namespace OVR
 			}
 		}
 
+	// Select GPU device
+	cl_device_id OvrvisionProOpenCL::SelectGPU(const char *platform, const char *version)
+	{
+		cl_uint num_of_platforms = 0;
+		// get total number of available platforms:
+		cl_int err = clGetPlatformIDs(0, 0, &num_of_platforms);
+		SAMPLE_CHECK_ERRORS(err);
+
+		vector<cl_platform_id> platforms(num_of_platforms);
+		// get IDs for all platforms:
+		err = clGetPlatformIDs(num_of_platforms, &platforms[0], 0);
+		SAMPLE_CHECK_ERRORS(err);
+
+		cl_uint maxFreq = 0;
+		cl_uint maxUnits = 0;
+		vector<cl_device_id> devices;
+		for (cl_uint i = 0; i < num_of_platforms; i++)
+		{
+			cl_uint num_of_devices = 0;
+			if (CL_SUCCESS == clGetDeviceIDs(
+				platforms[i],
+				CL_DEVICE_TYPE_GPU,
+				0,
+				0,
+				&num_of_devices
+				))
+			{
+				cl_device_id *id = new cl_device_id[num_of_devices];
+				err = clGetDeviceIDs(
+					platforms[i],
+					CL_DEVICE_TYPE_GPU,
+					num_of_devices,
+					id,
+					0
+					);
+				SAMPLE_CHECK_ERRORS(err);
+				for (cl_uint j = 0; j < num_of_devices; j++)
+				{
+					devices.push_back(id[j]);
+					size_t length;
+					char buffer[32];
+					if (clGetDeviceInfo(id[j], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, &length) == CL_SUCCESS)
+					{
+						cl_uint freq, units;
+						clGetDeviceInfo(id[j], CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(cl_uint), &freq, &length);
+						clGetDeviceInfo(id[j], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint), &units, &length);
+						if (_strcmpi(buffer, version) >= 0)
+						{
+							if ((maxFreq * maxUnits) < (freq * units))
+							{
+								_platformId = platforms[i];
+								_deviceId = id[j];
+								maxFreq = freq;
+								maxUnits = units;
+							}
+						}
+					}
+				}
+				delete[] id;
+			}
+		}
+#ifdef _WIN32
+		cl_context_properties opengl_props[] = {
+			CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
+			CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
+			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+			0
+		};
+
+		cl_context_properties d3d11_props[] =
+		{
+			//CL_CONTEXT_D3D11_DEVICE_KHR, (cl_context_properties)g_pD3DDevice,
+			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+			0
+		};
+#endif
+		// ここで連携するOpenGL/D3Dのプロパティを設定してコンテキストを取得する
+		switch (_sharing)
+		{
+#ifdef _WIN32
+		case OPENGL:
+			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
+			break;
+
+		case D3D11:
+			_context = clCreateContext(d3d11_props, 1, &_deviceId, NULL, NULL, &_errorCode);
+			break;
+#endif
+		default:
+			_context = clCreateContext(NULL, 1, &_deviceId, NULL, NULL, &_errorCode);
+			break;
+		}
+		SAMPLE_CHECK_ERRORS(_errorCode);
+#ifdef _DEBUG
+		clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
+		printf("DEVICE: %s\n", buffer);
+#endif
+		return _deviceId;
+	}
+
 	// Enumerate OpenCL extensions
 	int OvrvisionProOpenCL::DeviceExtensions(EXTENSION_CALLBACK callback, void *item)
 	{
@@ -681,136 +781,4 @@ namespace OVR
 				return 1;
 			}
 		}
-
-		// Select GPU device
-		cl_device_id OvrvisionProOpenCL::SelectGPU(const char *platform, const char *version)
-		{
-			cl_uint num_of_platforms = 0;
-			// get total number of available platforms:
-			cl_int err = clGetPlatformIDs(0, 0, &num_of_platforms);
-			SAMPLE_CHECK_ERRORS(err);
-
-			vector<cl_platform_id> platforms(num_of_platforms);
-			// get IDs for all platforms:
-			err = clGetPlatformIDs(num_of_platforms, &platforms[0], 0);
-			SAMPLE_CHECK_ERRORS(err);
-
-			vector<cl_device_id> devices;
-			for (cl_uint i = 0; i < num_of_platforms; i++)
-			{
-				cl_uint num_of_devices = 0;
-				if (CL_SUCCESS == clGetDeviceIDs(
-					platforms[i],
-					CL_DEVICE_TYPE_GPU,
-					0,
-					0,
-					&num_of_devices
-					))
-				{
-					cl_device_id *id = new cl_device_id[num_of_devices];
-					err = clGetDeviceIDs(
-						platforms[i],
-						CL_DEVICE_TYPE_GPU,
-						num_of_devices,
-						id,
-						0
-						);
-					SAMPLE_CHECK_ERRORS(err);
-					for (cl_uint j = 0; j < num_of_devices; j++)
-					{
-						devices.push_back(id[j]);
-						size_t length;
-						char buffer[32];
-						if (clGetDeviceInfo(id[j], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, &length) == CL_SUCCESS)
-						{
-							//printf("%s\n", buffer);
-							if (_strcmpi(buffer, version) >= 0)
-							{
-								_platformId = platforms[i];
-								_deviceId = id[j];
-#ifdef _WIN32
-								cl_context_properties opengl_props[] = {
-									CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
-									CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
-									CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
-									0
-								};
-
-								cl_context_properties d3d11_props[] =
-								{
-									//CL_CONTEXT_D3D11_DEVICE_KHR, (cl_context_properties)g_pD3DDevice,
-									CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
-									0
-								};
-#endif
-								// ここで連携するOpenGL/D3Dのプロパティを設定してコンテキストを取得する
-								switch (_sharing)
-								{
-#ifdef _WIN32
-								case OPENGL:
-									_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
-									break;
-
-								case D3D11:
-									_context = clCreateContext(d3d11_props, 1, &_deviceId, NULL, NULL, &_errorCode);
-									break;
-#endif
-								default:
-									_context = clCreateContext(NULL, 1, &_deviceId, NULL, NULL, &_errorCode);
-									break;
-								}
-								SAMPLE_CHECK_ERRORS(_errorCode);
-#ifdef _DEBUG
-								clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
-								printf("DEVICE: %s\n", buffer);
-#endif
-								break;
-							}
-						}
-					}
-					delete[] id;
-				}
-			}
-			return _deviceId;
-		}
-
-		/*
-		int EnumerateGPU(PENUMDEVICE callback, void *pItem)
-		{
-		if (!ocl::haveOpenCL())
-		{
-		//cout << "OpenCL is not avaiable..." << endl;
-		return 0;
-		}
-		ocl::Context context;
-		if (!context.create(ocl::Device::TYPE_GPU))
-		{
-		//cout << "Failed creating the context..." << endl;
-		return 0;
-		}
-
-		// In OpenCV 3.0.0 beta, only a single device is detected.
-		//cout << context.ndevices() << " GPU devices are detected." << endl;
-		for (size_t i = 0; i < context.ndevices(); i++)
-		{
-		cv::ocl::Device device = context.device(i);
-		string name, version, capability;
-		if (device.available() && device.imageSupport())
-		{
-		//printf("%s:\t%s\n", device.name(), device.OpenCLVersion());
-		name = device.name();
-		version = device.OpenCL_C_Version();
-		capability = device.OpenCLVersion();
-		version = device.version();
-		if (callback != NULL)
-		{
-		callback(pItem, name.c_str(), version.c_str(), device.extensions().c_str(), device.deviceVersionMajor(), device.deviceVersionMinor());
-		}
-		}
-		}
-		return context.ndevices();
-		}
-		*/
-		
-		//}
 }
