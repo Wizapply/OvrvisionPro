@@ -126,6 +126,12 @@ CyU3PReturnStatus_t OV5653SensorInit(void)
 	//Reset
 	OV5653SensorReset();
 
+	//PLL Reset
+	WI2C(0x3102,0x01);
+	CyU3PBusyWait (1000);
+	WI2C(0x3102,0x00);
+	CyU3PBusyWait (1000);
+
 	return CY_U3P_SUCCESS;
 }
 
@@ -163,6 +169,8 @@ CyU3PReturnStatus_t OV5653SensorBusTest(void)
 
 extern void OV5653ClockReset(void)
 {
+	WI2C(0x3012,0x05);
+	//CyU3PBusyWait (2000);	//1ms wait
 }
 
 // Sensor setup
@@ -195,7 +203,7 @@ void OV5653SensorControl(unsigned char frameIdx)
 	//System control
 	WI2C(0x3000,0x03);	//Timing & Array Reset
 	WI2C(0x3001,0x00);
-	WI2C(0x3002,0x00);
+	WI2C(0x3002,0x08);
 	WI2C(0x3003,0x00);
 	WI2C(0x3004,0xff);
 	WI2C(0x3005,0xff);
@@ -203,7 +211,7 @@ void OV5653SensorControl(unsigned char frameIdx)
 	WI2C(0x3007,0x27);
 
 	//PLL control (do not use)
-	WI2C(0x3815,0x82);
+	WI2C(0x3815,0x80);
 
 	WI2C(0x3600, 0x50);
 	WI2C(0x3601, 0x0d);
@@ -542,6 +550,7 @@ void OV5653SensorControl(unsigned char frameIdx)
 
 	CyU3PBusyWait (2000);	//2ms wait
 	WI2C(0x3000,0x00);		//Start
+	WI2C(0x3002,0x00);
 	CyU3PBusyWait (1000);
 }
 

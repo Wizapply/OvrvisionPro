@@ -95,13 +95,13 @@ OvrvisionProを接続する前に、パソコンの環境を設定する。
 Run Ovrvision Pro. 
 -# Connect the OvrvisionPro to USB3.0 port. 
 -# Standard UVC driver is installed. 
--# Start OvrvisionViewer.exe in bin folder. 
+-# Start "ovrvision_app_csharp.exe" in bin folder, and the camera open. 
 -# It will complete, if the Ovrvision Pro works satisfactorily. 
 
 Ovrvision Proを動かしてみる
 -# OvrvisionProをUSB3.0ポートに接続する
 -# 標準のUVCドライバがインストール
--# binフォルダ内のOvrvisionViewer.exeを起動しオープン。
+-# binフォルダ内の「ovrvision_app_csharp.exe」を起動しオープン。
 -# カメラ画像が問題なく動作すれば完了。
 
 @subsection gstep3 Step 3: Ovrvision Pro calibration.
