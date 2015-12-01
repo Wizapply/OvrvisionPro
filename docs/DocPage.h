@@ -18,7 +18,7 @@ More : http://ovrvision.com/
 
 @subsection gscamdata About Camera Data
 
-The camera option supported is shown below. 
+The camera option supported is shown below. <br />
 対応しているカメラオプションは下記に示します。
 
 @image html camparam_table.jpg

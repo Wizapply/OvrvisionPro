@@ -119,7 +119,7 @@ void DrawLoop(void)
 	if (g_pOvrvision->isOpen())
 	{
 		//Full Draw
-		g_pOvrvision->PreStoreCamData(OVR::Camqt::OV_CAMQT_DMSRMP);
+		g_pOvrvision->PreStoreCamData(OVR::Camqt::OV_CAMQT_DMS);
 		unsigned char* p = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 		unsigned char* p2 = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
