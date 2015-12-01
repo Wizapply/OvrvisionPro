@@ -189,7 +189,7 @@ static bool MainLoop(bool retryCreate)
 
 		ovrvision.SetCameraSyncMode(false);
 
-		InitializeCamPlane(DIRECTX.Device, DIRECTX.Context, width, height, 0.95f);
+		InitializeCamPlane(DIRECTX.Device, DIRECTX.Context, width, height, 1.0f);
 	}
 
 	// Main loop

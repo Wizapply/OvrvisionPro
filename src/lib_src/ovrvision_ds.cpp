@@ -676,6 +676,8 @@ int OvrvisionDirectShow::SetCameraSetting(CamSetting proc, int value, bool autom
 			break;
 	};
 
+	Sleep(1);	//wait
+
 	return RESULT_OK;
 }
 
@@ -712,6 +714,8 @@ int OvrvisionDirectShow::GetCameraSetting(CamSetting proc, int* value, bool* aut
 	//Auto
 	if(autoflag == CameraControl_Flags_Auto)
 		(*automode) = true;
+
+	Sleep(1);	//wait
 
 	return RESULT_OK;
 }
