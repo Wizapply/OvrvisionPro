@@ -149,9 +149,12 @@ int main(int argc, char* argv[])
 		Mat RIGHT(roi.height / 2, roi.width / 2, CV_8UC4);
 		Mat Lhsv(roi.height / 2, roi.width / 2, CV_8UC3);
 		Mat Rhsv(roi.height / 2, roi.width / 2, CV_8UC3);
+		Mat lHSV(roi.height / 2, roi.width / 2, CV_8UC3);
+		Mat rHSV(roi.height / 2, roi.width / 2, CV_8UC3);
 		Mat Lresult(roi.height / 2, roi.width / 2, CV_8UC4);
 		Mat Rresult(roi.height / 2, roi.width / 2, CV_8UC4);
 		Mat blur(roi.height / 2, roi.width / 2, CV_8UC4);
+		Mat blur2(roi.height / 2, roi.width / 2, CV_8UC4);
 
 		//std::vector<std::vector<Point>> contours;
 
@@ -166,11 +169,11 @@ int main(int argc, char* argv[])
 		histgram = imread("histgram.bmp");
 		if (histgram.empty())
 		{
-			estimateSkincolor(histgram, ovrvision, roi);
+			//estimateSkincolor(histgram, ovrvision, roi);
 		}
 		else
 		{
-			useHistgram = true;
+			//useHistgram = true;
 			imshow("histgram", histgram);
 			for (int y = 0; y < 256; y += 4)
 			{
@@ -202,12 +205,14 @@ int main(int argc, char* argv[])
 					resize(right, RIGHT, RIGHT.size());
 					cvtColor(RIGHT, Rhsv, CV_BGR2HSV_FULL);
 
+					medianBlur(Lhsv, lHSV, ksize);
+					GaussianBlur(Rhsv, rHSV, Size(ksize, ksize), 0);
 					Lresult.setTo(Scalar::all(0));
 					Rresult.setTo(Scalar::all(0));
 					for (uint y = 0; y < roi.height / 2; y++)
 					{
-						Vec3b *l = Lhsv.ptr<Vec3b>(y);
-						Vec3b *r = Rhsv.ptr<Vec3b>(y);
+						Vec3b *l = lHSV.ptr<Vec3b>(y);
+						Vec3b *r = rHSV.ptr<Vec3b>(y);
 						Vec4b *Lpixel = Lresult.ptr<Vec4b>(y);
 						Vec4b *Rpixel = Rresult.ptr<Vec4b>(y);
 						for (uint x = 0; x < roi.width / 2; x++)
@@ -243,13 +248,15 @@ int main(int argc, char* argv[])
 						}
 					}
 					erode(Lresult, blur, Mat());
+					erode(Rresult, blur2, Mat());
 					//medianBlur(Lresult, blur, ksize);
 					// Show frame data
 					imshow("Left", LEFT);
 					imshow("Right", RIGHT);
 					imshow("L", Lresult);
 					imshow("R", Rresult);
-					imshow("Blur", blur);
+					imshow("Blur(L)", blur);
+					imshow("Blur(R)", blur2);
 					imshow("Lhsv", Lhsv);
 				}
 				else
@@ -315,9 +322,14 @@ int main(int argc, char* argv[])
 				imwrite("left.png", left);
 				imwrite("right.png", right);
 				//imwrite("histgram.png", histgram);
+				imwrite("hsv_L.bmp", lHSV);
+				imwrite("hsv_R.bmp", rHSV);
 				imwrite("hsv_l.png", Lhsv);
+				imwrite("hsv_r.png", Rhsv);
 				imwrite("result_l.png", Lresult);
+				imwrite("result_r.png", Rresult);
 				imwrite("blur_l.png", blur);
+				imwrite("blur_r.png", blur2);
 				break;
 
 			case 'e':
