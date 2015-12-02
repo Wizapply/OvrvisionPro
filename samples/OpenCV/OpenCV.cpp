@@ -130,6 +130,7 @@ void estimateSkincolor(Mat &histgram, OvrvisionPro &camera, ROI roi)
 	//imshow("foreground", histgram);
 	normalize(diff, histgram, 0, 255, NORM_MINMAX, histgram.type());
 	imshow("histgram", histgram);
+	imwrite("histgram.png", histgram);
 }
 
 int main(int argc, char* argv[])
@@ -152,15 +153,36 @@ int main(int argc, char* argv[])
 		Mat Rresult(roi.height / 2, roi.width / 2, CV_8UC4);
 		Mat blur(roi.height / 2, roi.width / 2, CV_8UC4);
 
-		std::vector<std::vector<Point>> contours;
+		//std::vector<std::vector<Point>> contours;
 
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
 
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
 		bool show = true;
+		bool useHistgram = false;
 
-		estimateSkincolor(histgram, ovrvision, roi);
+		// Read histgram
+		histgram = imread("histgram.bmp");
+		if (histgram.empty())
+		{
+			estimateSkincolor(histgram, ovrvision, roi);
+		}
+		else
+		{
+			useHistgram = true;
+			imshow("histgram", histgram);
+			for (int y = 0; y < 256; y += 4)
+			{
+				printf("H:%03d, ", y);
+				uchar *row = histgram.ptr<uchar>(y);
+				for (int x = 0; x < 256; x += 4)
+				{
+					printf("%d, ", row[x]);
+				}
+				puts("");
+			}
+		}
 
 		for (bool loop = true; loop;)
 		{
@@ -192,19 +214,36 @@ int main(int argc, char* argv[])
 						{
 							uchar h = l[x][0];
 							uchar s = l[x][1];
-							if (15 <= h && h <= 29 && 55 < s && s < 160)
+							if (useHistgram)
 							{
-								Lpixel[x] = LEFT.at<Vec4b>(y, x);
+								if (1 < histgram.at<uchar>(h, s))
+								{
+									Lpixel[x] = LEFT.at<Vec4b>(y, x);
+								}
+								h = r[x][0];
+								s = r[x][1];
+								if (3 < histgram.at<uchar>(h, s))
+								{
+									Rpixel[x] = RIGHT.at<Vec4b>(y, x);
+								}
 							}
-							h = r[x][0];
-							s = r[x][1];
-							if (15 <= h && h <= 29 && 55 < s && s < 160)
+							else
 							{
-								Rpixel[x] = RIGHT.at<Vec4b>(y, x);
+								if (15 <= h && h <= 30 && 55 < s && s < 160)
+								{
+									Lpixel[x] = LEFT.at<Vec4b>(y, x);
+								}
+								h = r[x][0];
+								s = r[x][1];
+								if (15 <= h && h <= 30 && 55 < s && s < 160)
+								{
+									Rpixel[x] = RIGHT.at<Vec4b>(y, x);
+								}
 							}
 						}
 					}
-					medianBlur(Lresult, blur, ksize);
+					erode(Lresult, blur, Mat());
+					//medianBlur(Lresult, blur, ksize);
 					// Show frame data
 					imshow("Left", LEFT);
 					imshow("Right", RIGHT);
@@ -268,10 +307,14 @@ int main(int argc, char* argv[])
 				ksize = 9;
 				break;
 
+			case 'h':
+				useHistgram = !useHistgram;
+				break;
+
 			case ' ':
 				imwrite("left.png", left);
 				imwrite("right.png", right);
-				imwrite("histgram.png", histgram);
+				//imwrite("histgram.png", histgram);
 				imwrite("hsv_l.png", Lhsv);
 				imwrite("result_l.png", Lresult);
 				imwrite("blur_l.png", blur);
