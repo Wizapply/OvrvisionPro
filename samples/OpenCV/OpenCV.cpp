@@ -155,11 +155,26 @@ int main(int argc, char* argv[])
 		Mat Rresult(roi.height / 2, roi.width / 2, CV_8UC4);
 		Mat blur(roi.height / 2, roi.width / 2, CV_8UC4);
 		Mat blur2(roi.height / 2, roi.width / 2, CV_8UC4);
+		Mat bilevel_l(roi.height / 2, roi.width / 2, CV_8UC1);
+		Mat bilevel_r(roi.height / 2, roi.width / 2, CV_8UC1);
 
-		//std::vector<std::vector<Point>> contours;
+		std::vector<std::vector<Point>> contours;
+		std::vector<Vec4i> hierarchy;
 
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
+
+		Mat P1, P2;
+		FileStorage cvfs;
+		if (cvfs.open("epipolar.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML))
+		{
+			//get data node
+			FileNode data(cvfs.fs, NULL);
+			data["P1"] >> P1;
+			data["P2"] >> P2;
+			cvfs.release();
+			printf("P2[0][3]:%f\n", P2.at<double>(0, 3));
+		}
 
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
 		bool show = true;
@@ -175,6 +190,7 @@ int main(int argc, char* argv[])
 		{
 			//useHistgram = true;
 			imshow("histgram", histgram);
+			/*
 			for (int y = 0; y < 256; y += 4)
 			{
 				printf("H:%03d, ", y);
@@ -185,6 +201,7 @@ int main(int argc, char* argv[])
 				}
 				puts("");
 			}
+			*/
 		}
 
 		for (bool loop = true; loop;)
@@ -209,12 +226,16 @@ int main(int argc, char* argv[])
 					GaussianBlur(Rhsv, rHSV, Size(ksize, ksize), 0);
 					Lresult.setTo(Scalar::all(0));
 					Rresult.setTo(Scalar::all(0));
+					bilevel_l.setTo(Scalar::all(0));
+					bilevel_r.setTo(Scalar::all(0));
 					for (uint y = 0; y < roi.height / 2; y++)
 					{
 						Vec3b *l = lHSV.ptr<Vec3b>(y);
 						Vec3b *r = rHSV.ptr<Vec3b>(y);
 						Vec4b *Lpixel = Lresult.ptr<Vec4b>(y);
 						Vec4b *Rpixel = Rresult.ptr<Vec4b>(y);
+						uchar *b_l = bilevel_l.ptr<uchar>(y);
+						uchar *b_r = bilevel_r.ptr<uchar>(y);
 						for (uint x = 0; x < roi.width / 2; x++)
 						{
 							uchar h = l[x][0];
@@ -224,12 +245,14 @@ int main(int argc, char* argv[])
 								if (1 < histgram.at<uchar>(h, s))
 								{
 									Lpixel[x] = LEFT.at<Vec4b>(y, x);
+									b_l[x] = 255;
 								}
 								h = r[x][0];
 								s = r[x][1];
 								if (3 < histgram.at<uchar>(h, s))
 								{
 									Rpixel[x] = RIGHT.at<Vec4b>(y, x);
+									b_r[x] = 255;
 								}
 							}
 							else
@@ -237,20 +260,29 @@ int main(int argc, char* argv[])
 								if (15 <= h && h <= 30 && 55 < s && s < 160)
 								{
 									Lpixel[x] = LEFT.at<Vec4b>(y, x);
+									b_l[x] = 255;
 								}
 								h = r[x][0];
 								s = r[x][1];
 								if (15 <= h && h <= 30 && 55 < s && s < 160)
 								{
 									Rpixel[x] = RIGHT.at<Vec4b>(y, x);
+									b_r[x] = 255;
 								}
 							}
 						}
 					}
+					findContours(bilevel_r, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+					printf("%d contours\n", contours.size());
 					erode(Lresult, blur, Mat());
 					erode(Rresult, blur2, Mat());
+					for (int i = 0; 0 <= i; i = hierarchy[i][0])
+					{
+						drawContours(blur2, contours, i, Scalar(255, 255, 255), 1, 8, hierarchy);
+					}
 					//medianBlur(Lresult, blur, ksize);
 					// Show frame data
+					imshow("bilevel(L)", bilevel_l);
 					imshow("Left", LEFT);
 					imshow("Right", RIGHT);
 					imshow("L", Lresult);
