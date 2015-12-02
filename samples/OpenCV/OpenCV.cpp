@@ -157,10 +157,22 @@ int main(int argc, char* argv[])
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
 
+		Mat P1, P2;
+		FileStorage cvfs;
+		if (cvfs.open("epipolar.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML))
+		{
+			//get data node
+			FileNode data(cvfs.fs, NULL);
+			data["P1"] >> P1;
+			data["P2"] >> P2;
+			cvfs.release();
+			printf("P2[0][3]:%f\n", P2.at<double>(0, 3));
+		}
+
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
 		bool show = true;
 
-		estimateSkincolor(histgram, ovrvision, roi);
+		//estimateSkincolor(histgram, ovrvision, roi);
 
 		for (bool loop = true; loop;)
 		{
