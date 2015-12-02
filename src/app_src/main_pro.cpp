@@ -65,7 +65,7 @@ int Initialize()
 
 	//Create Ovrvision object
 	g_pOvrvision = new OVR::OvrvisionPro();
-	if (g_pOvrvision->Open(0, OVR::OV_CAMVR_FULL) == 0) {	//Open 1280x960@45
+	if (g_pOvrvision->Open(0, OVR::OV_CAMVR_FULL) == 0) {	//Open 960x950@60
 		printf("Ovrvision Pro Open Error!\nPlease check whether OvrvisionPro is connected.");
 	}
 

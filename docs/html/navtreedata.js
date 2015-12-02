@@ -23,6 +23,7 @@ var NAVTREE =
     ] ],
     [ "How to Rebuild SDK", "page3.html", null ],
     [ "Release Notes", "page4.html", [
+      [ "Ovrvision SDK v1.01", "page4.html#sdk2", null ],
       [ "Ovrvision SDK v1.0", "page4.html#sdk1", null ]
     ] ],
     [ "FAQ", "page5.html", null ],

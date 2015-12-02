@@ -58,13 +58,13 @@ Ovrvision SDK
 - include/ : include files
 - tools/
   - <b>calibration.exe</b> : Calibration Tool
+  - <b>chess4x7x30mm.pdf</b> : The calibration board for printing.
 - marker_samples/
 - examples/
   - vs2013/ : VisualStudio 2013 build project files
   - vs2015/ : VisualStudio 2015 build project files
 - <b>LICENSE</b> : Ovrvision SDK license
 - <b>OculusVR_LICENSE</b> : Oculus Rift license for lib
-- <b>VERSION</b> : Ovrvision SDK version infomation
  
 @section conststruct Recommended System Requirements
 - CPU : Intel Core i5,i7 (Haswell) 3.0Ghz processor, AMD FX-6300 processor or faster
@@ -82,13 +82,13 @@ Ovrvision SDK
 Before you start developing applications with the Ovrvision Pro, setup the environment of a your computer. 
 -# Install latest USB3.0 driver. 
 -# Install latest GPU driver. (OpenCL1.2 or more)
--# Install latest Oculus Rift runtime.(Only when Oculus Rift is used.)
+-# Install latest Oculus Rift <b>v0.8</b> runtime.(Only when Oculus Rift is used.)
 -# Install development environment, VisualStudio and Unity5 and etc...
 
 OvrvisionProを接続する前に、パソコンの環境を設定する。
 -# 最新のUSB3.0 driverをインストール
 -# 最新のGPUドライバをインストール(OpenCL1.2以上に対応するもの)
--# 最新のOculus Runtimeをインストール(Oculus Riftを使用する場合のみ)
+-# 最新のOculus Runtime v0.8をインストール(Oculus Riftを使用する場合のみ)
 -# VisualStudioやUnityなどの開発環境を予めインストール
 
 @subsection gstep2 Step 2: Run the Ovrvision Pro
@@ -158,7 +158,20 @@ The usage should confirm the following video. <br />
 
 /*! @page page4 Release Notes
 @tableofcontents
+@section sdk2 Ovrvision SDK v1.01
+Date : 02/Dec/2015<br />
+<b>Notes</b>
+- Fixed bugs.
+- OpenCL system is choose suitable GPU. 
+
+<b>Unimplementeds and issue</b>
+- OvrvisionTracking class : Hand tracking (in a few days) 
+- Mac OSX support (in a few days) 
+- Linux OS support
+- Unreal Engine 4
+
 @section sdk1 Ovrvision SDK v1.0
+Date : 01/Dec/2015<br />
 <b>Notes</b>
 - First release.
 

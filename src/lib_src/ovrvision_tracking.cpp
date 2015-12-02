@@ -108,11 +108,11 @@ void OvrvisionTracking::Render() {
 	//•ÏŠ·
 	cv::Mat pCamBGR_L(pCamBGRAResize_L.size(), CV_MAKETYPE(CV_8U, 3));
 	cv::cvtColor(pCamBGRAResize_L, pCamBGR_L, CV_BGRA2BGR);		// BGRA->BGR•ÏŠ·
-	cv::cvtColor(pCamBGR_L, pCamBGR_L, CV_BGR2HLS);		// BGR->HLS•ÏŠ·
+	cv::cvtColor(pCamBGR_L, pCamBGR_L, CV_BGR2HLS);				// BGR->HLS•ÏŠ·
 
 	cv::Mat pCamBGR_R(pCamBGRAResize_R.size(), CV_MAKETYPE(CV_8U, 3));
 	cv::cvtColor(pCamBGRAResize_R, pCamBGR_R, CV_BGRA2BGR);		// BGRA->BGR•ÏŠ·
-	cv::cvtColor(pCamBGR_R, pCamBGR_R, CV_BGR2HLS);		// BGR->HLS•ÏŠ·
+	cv::cvtColor(pCamBGR_R, pCamBGR_R, CV_BGR2HLS);				// BGR->HLS•ÏŠ·
 
 	//’ŠoÏ‚İ‚Ì‚Q’l
 	cv::Mat pCamExtractionImg_L(pCamBGR_L.size(), CV_MAKETYPE(CV_8U, 1));
