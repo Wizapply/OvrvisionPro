@@ -94,6 +94,8 @@ public:
 	ovMat	m_R2;
 	ovMat	m_trans;
 	ovMat	m_focalPoint;
+	ovMat	m_P1;
+	ovMat	m_P2;
 
 	//system
 	OvrvisionPro*	m_pSystem;

@@ -273,7 +273,7 @@ int main(int argc, char* argv[])
 						}
 					}
 					findContours(bilevel_r, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
-					printf("%d contours\n", contours.size());
+					//printf("%d contours\n", contours.size());
 					erode(Lresult, blur, Mat());
 					erode(Rresult, blur2, Mat());
 					for (int i = 0; 0 <= i; i = hierarchy[i][0])

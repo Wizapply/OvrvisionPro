@@ -261,6 +261,12 @@ void OvrvisionCalibration::SaveCalibrationParameter(OvrvisionPro* system)
 
 	//Write
 	ovrset.WriteEEPROM(WRITE_EEPROM_FLAG_ALLWR);	//WRITE_EEPROM_FLAG_LENSPARAMWR
+
+	// 
+	FileStorage cvfs("epipolar.xml", CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
+	write(cvfs, "P1", m_cameraCalibration[OV_CAMEYE_LEFT].P);
+	write(cvfs, "P2", m_cameraCalibration[OV_CAMEYE_RIGHT].P);
+	cvfs.release();
 }
 
 };

@@ -211,6 +211,16 @@ bool OvrvisionSetting::ReadEEPROM() {
 			return false;
 		}
 	}
+	
+	//FileStorage cvfs;
+	if (cvfs.open("epipolar.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML))
+	{
+		//get data node
+		FileNode data(cvfs.fs, NULL);
+		data["P1"] >> m_P1;
+		data["P2"] >> m_P2;
+		cvfs.release();
+	}
 
 	isReaded = true;
 
@@ -395,10 +405,14 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 
 	//Undistort
 	if (eye == OV_CAMEYE_LEFT) {
+		if (!m_P1.empty())
+			camPs = m_P1;
 		initUndistortRectifyMap(left_CamIns, m_leftCameraDistortion, m_R1,
 			camPs, size, CV_32FC1, mapX, mapY);
 	}
 	if (eye == OV_CAMEYE_RIGHT) {
+		if (!m_P2.empty())
+			camPs = m_P2;
 		initUndistortRectifyMap(right_CamIns, m_rightCameraDistortion, m_R2,
 			camPs, size, CV_32FC1, mapX, mapY);
 	}
