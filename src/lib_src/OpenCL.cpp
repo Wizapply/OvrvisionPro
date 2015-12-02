@@ -237,9 +237,12 @@ namespace OVR
 					char buffer[32];
 					if (clGetDeviceInfo(id[j], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, &length) == CL_SUCCESS)
 					{
+						char devicename[80];
 						cl_uint freq, units;
 						clGetDeviceInfo(id[j], CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(cl_uint), &freq, &length);
 						clGetDeviceInfo(id[j], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint), &units, &length);
+						clGetDeviceInfo(id[j], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
+						printf("%s %d Compute units %dMHz : %s\n", devicename, units, freq, buffer);
 						if (_strcmpi(buffer, version) >= 0)
 						{
 							if ((maxFreq * maxUnits) < (freq * units))
@@ -249,6 +252,11 @@ namespace OVR
 								maxFreq = freq;
 								maxUnits = units;
 							}
+						}
+						else
+						{
+							//clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
+							printf("%d Compute units %dMHz : %s\n", units, freq, buffer);
 						}
 					}
 				}
@@ -288,6 +296,7 @@ namespace OVR
 		}
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #ifdef _DEBUG
+		char buffer[80];
 		clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
 		printf("DEVICE: %s\n", buffer);
 #endif
