@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
 
-		Mat P1, P2;
+		Mat P1, P2, T;
 		FileStorage cvfs;
 		if (cvfs.open("epipolar.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML))
 		{
@@ -172,8 +172,9 @@ int main(int argc, char* argv[])
 			FileNode data(cvfs.fs, NULL);
 			data["P1"] >> P1;
 			data["P2"] >> P2;
+			data["T"] >> T;
 			cvfs.release();
-			printf("P2[0][3]:%f\n", P2.at<double>(0, 3));
+			printf("T %f %f %f\n", T.at<double>(0, 0), T.at<double>(0, 1), T.at<double>(0, 2));
 		}
 
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
@@ -222,10 +223,11 @@ int main(int argc, char* argv[])
 					resize(right, RIGHT, RIGHT.size());
 					cvtColor(RIGHT, Rhsv, CV_BGR2HSV_FULL);
 
-					medianBlur(Lhsv, lHSV, ksize);
+					//medianBlur(Lhsv, lHSV, ksize);
+					GaussianBlur(Lhsv, lHSV, Size(ksize, ksize), 0);
 					GaussianBlur(Rhsv, rHSV, Size(ksize, ksize), 0);
-					Lresult.setTo(Scalar::all(0));
-					Rresult.setTo(Scalar::all(0));
+					Lresult.setTo(Scalar(0, 0, 0, 255));
+					Rresult.setTo(Scalar(0, 0, 0, 255));
 					bilevel_l.setTo(Scalar::all(0));
 					bilevel_r.setTo(Scalar::all(0));
 					for (uint y = 0; y < roi.height / 2; y++)
@@ -257,14 +259,14 @@ int main(int argc, char* argv[])
 							}
 							else
 							{
-								if (15 <= h && h <= 30 && 55 < s && s < 160)
+								if (15 <= h && h <= 30 && 55 < s && s < 150)
 								{
 									Lpixel[x] = LEFT.at<Vec4b>(y, x);
 									b_l[x] = 255;
 								}
 								h = r[x][0];
 								s = r[x][1];
-								if (15 <= h && h <= 30 && 55 < s && s < 160)
+								if (15 <= h && h <= 30 && 55 < s && s < 150)
 								{
 									Rpixel[x] = RIGHT.at<Vec4b>(y, x);
 									b_r[x] = 255;
@@ -274,21 +276,27 @@ int main(int argc, char* argv[])
 					}
 					findContours(bilevel_r, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
 					//printf("%d contours\n", contours.size());
-					erode(Lresult, blur, Mat());
-					erode(Rresult, blur2, Mat());
+					//erode(Lresult, blur, Mat());
+					//erode(Rresult, blur2, Mat());
 					for (int i = 0; 0 <= i; i = hierarchy[i][0])
 					{
-						drawContours(blur2, contours, i, Scalar(255, 255, 255), 1, 8, hierarchy);
+						drawContours(Rresult, contours, i, Scalar(255, 255, 255), 1, 8, hierarchy);
+					}
+					findContours(bilevel_l, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+					for (int i = 0; 0 <= i; i = hierarchy[i][0])
+					{
+						drawContours(Lresult, contours, i, Scalar(255, 255, 255), 1, 8, hierarchy);
 					}
 					//medianBlur(Lresult, blur, ksize);
 					// Show frame data
 					imshow("bilevel(L)", bilevel_l);
+					imshow("bilevel(R)", bilevel_r);
 					imshow("Left", LEFT);
 					imshow("Right", RIGHT);
 					imshow("L", Lresult);
 					imshow("R", Rresult);
-					imshow("Blur(L)", blur);
-					imshow("Blur(R)", blur2);
+					//imshow("Blur(L)", blur);
+					//imshow("Blur(R)", blur2);
 					imshow("Lhsv", Lhsv);
 				}
 				else
@@ -360,8 +368,8 @@ int main(int argc, char* argv[])
 				imwrite("hsv_r.png", Rhsv);
 				imwrite("result_l.png", Lresult);
 				imwrite("result_r.png", Rresult);
-				imwrite("blur_l.png", blur);
-				imwrite("blur_r.png", blur2);
+				//imwrite("blur_l.png", blur);
+				//imwrite("blur_r.png", blur2);
 				break;
 
 			case 'e':

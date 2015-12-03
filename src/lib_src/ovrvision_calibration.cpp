@@ -266,6 +266,7 @@ void OvrvisionCalibration::SaveCalibrationParameter(OvrvisionPro* system)
 	FileStorage cvfs("epipolar.xml", CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
 	write(cvfs, "P1", m_cameraCalibration[OV_CAMEYE_LEFT].P);
 	write(cvfs, "P2", m_cameraCalibration[OV_CAMEYE_RIGHT].P);
+	write(cvfs, "T", m_relate_trans);
 	cvfs.release();
 }
 
