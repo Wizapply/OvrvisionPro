@@ -274,18 +274,20 @@ int main(int argc, char* argv[])
 							}
 						}
 					}
-					findContours(bilevel_r, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+					findContours(bilevel_r, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
 					//printf("%d contours\n", contours.size());
 					//erode(Lresult, blur, Mat());
 					//erode(Rresult, blur2, Mat());
-					for (int i = 0; 0 <= i; i = hierarchy[i][0])
+					for (int i = 0; i < contours.size(); i++)
 					{
-						drawContours(Rresult, contours, i, Scalar(255, 255, 255), 1, 8, hierarchy);
+						if (200 < contours[i].size())
+							drawContours(Rresult, contours, i, Scalar(255, 255, 255), 1, 8);
 					}
 					findContours(bilevel_l, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
-					for (int i = 0; 0 <= i; i = hierarchy[i][0])
+					for (int i = 0; i < contours.size(); i++)
 					{
-						drawContours(Lresult, contours, i, Scalar(255, 255, 255), 1, 8, hierarchy);
+						if (200 < contours[i].size())
+							drawContours(Lresult, contours, i, Scalar(255, 255, 255), 1, 8);
 					}
 					//medianBlur(Lresult, blur, ksize);
 					// Show frame data
