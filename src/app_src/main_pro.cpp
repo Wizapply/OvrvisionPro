@@ -80,6 +80,9 @@ int Initialize()
 	g_camWidth = g_pOvrvision->GetCamWidth();
 	g_camHeight = g_pOvrvision->GetCamHeight();
 
+	g_pOvrvision->SetCameraWhiteBalanceAuto(false);
+	g_pOvrTrack = new OVR::OvrvisionTracking(g_camWidth, g_camHeight, g_pOvrvision->GetCamFocalPoint());
+
 	//Create texture
 	wzCreateTextureBuffer(&g_screen_texture, g_camWidth, g_camHeight, WZ_FORMATTYPE_BGRA_RGBA);
 
@@ -96,7 +99,6 @@ int Terminate()
 	//Delete object
 	delete g_pOvrvision;
 	wzDeleteTexture(&g_screen_texture);
-
 	delete g_pOvrTrack;
 
 	/*------------------------------------------------------------------*/
@@ -122,6 +124,12 @@ void DrawLoop(void)
 		g_pOvrvision->PreStoreCamData(OVR::Camqt::OV_CAMQT_DMS);
 		unsigned char* p = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 		unsigned char* p2 = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
+
+		g_pOvrTrack->SetImageBGRA(p, p2);
+		g_pOvrTrack->Render(true, true);
+
+		if (wzGetKeyStateTrigger(WZ_KEY_SPACE))
+			g_pOvrTrack->SetHue();
 
 		wzClear();
 

@@ -114,8 +114,11 @@ public:
 		@param pRightImageMat Right OpenCV Mat pointer. */
 	void SetImageOpenCVImage(ovMat* pLeftImageMat, ovMat* pRightImageMat);
 	/*!	@brief Run hand detection processing. */
-	void Render();
-	//Get tracking data
+	void Render(bool calib, bool point);
+	//Get tracking data (preliminary version)
+	float FingerPosX(){ return m_pos_x; };
+	float FingerPosY(){ return m_pos_y; };
+	float FingerPosZ(){ return m_pos_z; };
 
 	//set
 	void SetHue();
@@ -132,6 +135,10 @@ private:
 	unsigned char m_hue_max;
 	unsigned char m_hue_min_finger;
 	unsigned char m_hue_max_finger;
+
+	int m_lifetime;
+	float m_pos_x, m_pos_y, m_pos_z;
+	float m_posr_x, m_posr_y;
 
 	bool		m_set;
 };

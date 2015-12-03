@@ -53,6 +53,7 @@ public class OvrvisionEditor : Editor {
 		//Ovrvision AR
 		obj.useOvrvisionAR = EditorGUILayout.Toggle("Use the OvrvisionAR", obj.useOvrvisionAR);
 		obj.ARsize = EditorGUILayout.FloatField("AR Marker size(meter)", obj.ARsize);
+		obj.useOvrvisionTrack = EditorGUILayout.Toggle("Use the OvrvisionTrack", obj.useOvrvisionTrack);
 
 		EditorGUILayout.Space();
 

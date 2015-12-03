@@ -25,6 +25,7 @@ public class Ovrvision : MonoBehaviour
 	//public propaty
 	public bool useOvrvisionAR = false;
 	public float ARsize = 0.15f;
+	public bool useOvrvisionTrack = false;
 
 	public bool overlaySettings = false;
 	public int conf_exposure = 12960;
@@ -122,18 +123,33 @@ public class Ovrvision : MonoBehaviour
 		if (!OvrPro.camStatus)
 			return;
 
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			OvrPro.OvrvisionTrackReset();
+		}
+
+		if (Input.GetKeyDown(KeyCode.G))
+		{
+			useOvrvisionTrack ^= true;
+		}
+		if (Input.GetKeyDown(KeyCode.H))
+		{
+			OvrPro.useOvrvisionTrack_Calib ^= true;
+		}
+
 		//get image data
 		OvrPro.useOvrvisionAR = useOvrvisionAR;
+		OvrPro.useOvrvisionTrack = useOvrvisionTrack;
+
 		OvrPro.UpdateImage(CameraTexLeft.GetNativeTexturePtr(), CameraTexRight.GetNativeTexturePtr());
 
 		if (useOvrvisionAR) OvrvisionARRender();
+		if (useOvrvisionTrack) OvrvisionTrackRender();
 	}
 
 	//Ovrvision AR Render to OversitionTracker Objects.
-	int OvrvisionARRender()
+	private int OvrvisionARRender()
 	{
-		OvrPro.OvrvisionARRender();
-
 		float[] markerGet = new float[MARKERGET_MAXNUM10];
 		GCHandle marker = GCHandle.Alloc(markerGet, GCHandleType.Pinned);
 
@@ -157,6 +173,12 @@ public class Ovrvision : MonoBehaviour
 		marker.Free();
 
 		return ri;
+	}
+
+	//Ovrvision Tracking Render
+	private int OvrvisionTrackRender()
+	{
+		return 1;
 	}
 
 	// Quit

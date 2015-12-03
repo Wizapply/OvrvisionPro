@@ -10,10 +10,10 @@ Shader "Ovrvision/ovHandMaskRev" {
 		
 		_Color_maxY ("Max Y",Range (0.0,1.0)) = 1.0
 		_Color_minY ("Min Y",Range (0.0,1.0)) = 0.0
-		_Color_maxCB ("Max Cb",Range (0.0,1.0)) = 1.0
-		_Color_minCB ("Min Cb",Range (0.0,1.0)) = 0.0
-		_Color_maxCR ("Max Cr",Range (0.0,1.0)) = 1.0
-		_Color_minCR ("Min Cr",Range (0.0,1.0)) = 0.0
+		_Color_maxCb ("Max Cb",Range (0.0,1.0)) = 1.0
+		_Color_minCb ("Min Cb",Range (0.0,1.0)) = 0.0
+		_Color_maxCr ("Max Cr",Range (0.0,1.0)) = 1.0
+		_Color_minCr ("Min Cr",Range (0.0,1.0)) = 0.0
 	}
 	SubShader {
 		Tags { "Queue" = "Overlay+1" "RenderType"="Overlay" }

@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 日本語 resources
+// Japanese (Japan) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
-#ifdef _WIN32
 LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 #pragma code_page(932)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -69,12 +67,12 @@ BEGIN
     BEGIN
         BLOCK "041104b0"
         BEGIN
-            VALUE "FileDescription", "example_wizapply アプリケーション"
+            VALUE "FileDescription", "Ovrvision Pro Application"
             VALUE "FileVersion", "1, 0, 0, 1"
-            VALUE "InternalName", "example_wizapply"
-            VALUE "LegalCopyright", "Copyright (C) 2011 "
-            VALUE "OriginalFilename", "example_wizapply.exe"
-            VALUE "ProductName", "example_wizapply アプリケーション"
+            VALUE "InternalName", "ovrvision_wizapply"
+            VALUE "LegalCopyright", "Copyright (C) 2015"
+            VALUE "OriginalFilename", "overvision_app.exe"
+            VALUE "ProductName", "Ovrvision Pro Application"
             VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
@@ -84,7 +82,7 @@ BEGIN
     END
 END
 
-#endif    // 日本語 resources
+#endif    // Japanese (Japan) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

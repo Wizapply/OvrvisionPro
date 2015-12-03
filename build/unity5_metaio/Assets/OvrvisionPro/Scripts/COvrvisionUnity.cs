@@ -34,16 +34,16 @@ public class COvrvisionUnity
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern void ovPreStoreCamData(int qt);
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    static extern void ovGetCamImageBGRA(System.IntPtr img, int eye, int useAR);
+    static extern void ovGetCamImageBGRA(System.IntPtr img, int eye);
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    static extern void ovGetCamImageRGB(System.IntPtr img, int eye, int useAR);
+    static extern void ovGetCamImageRGB(System.IntPtr img, int eye);
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    static extern void ovGetCamImageBGR(System.IntPtr img, int eye, int useAR);
+    static extern void ovGetCamImageBGR(System.IntPtr img, int eye);
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    static extern void ovGetCamImageForUnity(System.IntPtr pImagePtr_Left, System.IntPtr pImagePtr_Right, int qt, int useAR);
+    static extern void ovGetCamImageForUnity(System.IntPtr pImagePtr_Left, System.IntPtr pImagePtr_Right);
 
-	[DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-	static extern void ovGetCamImageForUnityNative(System.IntPtr pTexPtr_Left, System.IntPtr pTexPtr_Right, int qt, int useAR);
+    [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+    static extern void ovGetCamImageForUnityNative(System.IntPtr pTexPtr_Left, System.IntPtr pTexPtr_Right);
 
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern int ovGetImageWidth();
@@ -97,8 +97,6 @@ public class COvrvisionUnity
 
     ////////////// Ovrvision AR System //////////////
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-    static extern void ovARSetImageBGRA(System.IntPtr img);
-    [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern void ovARRender();
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern int ovARGetData(System.IntPtr mdata, int datasize);
@@ -106,6 +104,16 @@ public class COvrvisionUnity
     static extern void ovARSetMarkerSize(int value);
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern int ovARGetMarkerSize();
+
+    ////////////// Ovrvision Tracking System //////////////
+    //testing
+    [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+    static extern void ovTrackRender(bool calib, bool point);
+    [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+    static extern int ovGetTrackData(System.IntPtr mdata);
+	[DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+	static extern void ovTrackingCalibReset();
+
     ////////////// Ovrvision Calibration //////////////
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern void ovCalibInitialize(int pattern_size_w, int pattern_size_h, double chessSizeMM);
@@ -146,6 +154,8 @@ public class COvrvisionUnity
     //Camera status
     public bool camStatus = false;
     public bool useOvrvisionAR = false;
+	public bool useOvrvisionTrack = false;
+	public bool useOvrvisionTrack_Calib = false;
     public int useProcessingQuality = OV_CAMQT_DMSRMP;
 
     public int imageSizeW, imageSizeH;
@@ -193,10 +203,15 @@ public class COvrvisionUnity
         if (!camStatus)
             return;
 
+		ovPreStoreCamData(useProcessingQuality);
+
 		if (useOvrvisionAR)
-			ovGetCamImageForUnityNative(leftPtr, rightPtr, useProcessingQuality, 1);
-		else
-			ovGetCamImageForUnityNative(leftPtr, rightPtr, useProcessingQuality, 0);
+			ovARRender();
+
+		if (useOvrvisionTrack)
+			ovTrackRender(useOvrvisionTrack_Calib, true);
+
+		ovGetCamImageForUnityNative(leftPtr, rightPtr);
     }
 
     //Close the Ovrvision
@@ -332,6 +347,20 @@ public class COvrvisionUnity
 	public int OvrvisionGetAR(System.IntPtr mdata, int datasize)
 	{
 		return ovARGetData(mdata, datasize);
+	}
+
+	//Tracking
+	public void OvrvisionTrackRender(bool calib, bool point)
+	{
+		ovTrackRender(calib,point);
+	}
+	public int OvrvisionGetTracking(System.IntPtr mdata)
+	{
+		return ovGetTrackData(mdata);
+	}
+	public void OvrvisionTrackReset()
+	{
+		ovTrackingCalibReset();
 	}
 
     //Calibration

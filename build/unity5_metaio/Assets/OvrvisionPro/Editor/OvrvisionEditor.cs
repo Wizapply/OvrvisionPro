@@ -53,6 +53,7 @@ public class OvrvisionEditor : Editor {
 		//Ovrvision AR
 		obj.useOvrvisionAR = EditorGUILayout.Toggle("Use the OvrvisionAR", obj.useOvrvisionAR);
 		obj.ARsize = EditorGUILayout.FloatField("AR Marker size(meter)", obj.ARsize);
+		obj.useOvrvisionTrack = EditorGUILayout.Toggle("Use the OvrvisionTrack", obj.useOvrvisionTrack);
 
 		EditorGUILayout.Space();
 
@@ -69,19 +70,7 @@ public class OvrvisionEditor : Editor {
 			obj.chroma_brightness.y = EditorGUILayout.Slider("Min Brightness ", obj.chroma_brightness.y, 0.0f, 1.0f);
 		} else if (obj.camViewShader == 2)
 		{	//Hand Mask
-			obj.chroma_hue.x = EditorGUILayout.Slider("Max Hue", obj.chroma_hue.x, 0.0f, 1.0f);
-			obj.chroma_hue.y = EditorGUILayout.Slider("Min Hue", obj.chroma_hue.y, 0.0f, 1.0f);
-			obj.chroma_saturation.x = EditorGUILayout.Slider("Max Saturation", obj.chroma_saturation.x, 0.0f, 1.0f);
-			obj.chroma_saturation.y = EditorGUILayout.Slider("Min Saturation", obj.chroma_saturation.y, 0.0f, 1.0f);
-			obj.chroma_brightness.x = EditorGUILayout.Slider("Max Brightness", obj.chroma_brightness.x, 0.0f, 1.0f);
-			obj.chroma_brightness.y = EditorGUILayout.Slider("Min Brightness ", obj.chroma_brightness.y, 0.0f, 1.0f);
 
-			obj.chroma_y.x = EditorGUILayout.Slider("Max Y", obj.chroma_y.x, 0.0f, 1.0f);
-			obj.chroma_y.y = EditorGUILayout.Slider("Min Y", obj.chroma_y.y, 0.0f, 1.0f);
-			obj.chroma_cb.x = EditorGUILayout.Slider("Max Cb", obj.chroma_cb.x, 0.0f, 1.0f);
-			obj.chroma_cb.y = EditorGUILayout.Slider("Min Cb", obj.chroma_cb.y, 0.0f, 1.0f);
-			obj.chroma_cr.x = EditorGUILayout.Slider("Max Cr", obj.chroma_cr.x, 0.0f, 1.0f);
-			obj.chroma_cr.y = EditorGUILayout.Slider("Min Cr ", obj.chroma_cr.y, 0.0f, 1.0f);
 		}
 
 		//changed param

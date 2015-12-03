@@ -17,6 +17,7 @@
 #ifdef WIN32
 #include <ovrvision_pro.h>
 #include <ovrvision_ar.h>
+#include <ovrvision_tracking.h>
 #include "ovrvision_setting.h"
 #include "ovrvision_calibration.h"
 #elif MACOSX
@@ -71,6 +72,8 @@
 static OVR::OvrvisionPro* g_ovOvrvision = NULL;	// Always open
 //AR Ovrvision Object
 static OVR::OvrvisionAR* g_ovOvrvisionAR = NULL;
+//AR Ovrvision Object
+static OVR::OvrvisionTracking* g_ovOvrvisionTrack = NULL;
 //Calibration Ovrvision Object
 static OVR::OvrvisionCalibration* g_ovOvrvisionCalib = NULL;
 
@@ -97,6 +100,10 @@ CSHARP_EXPORT int ovOpen(int locationID, float arMeter, int type)
 		g_ovOvrvisionAR = new OVR::OvrvisionAR(arMeter, g_ovOvrvision->GetCamWidth(),
 														 g_ovOvrvision->GetCamHeight(),
 														 g_ovOvrvision->GetCamFocalPoint());	//AR
+	//Create AR object
+	if (g_ovOvrvisionTrack == NULL)
+		g_ovOvrvisionTrack = new OVR::OvrvisionTracking(g_ovOvrvision->GetCamWidth(),
+						g_ovOvrvision->GetCamHeight(), g_ovOvrvision->GetCamFocalPoint());	//Tracking
 
 	return 0;	//OK
 }
@@ -116,6 +123,11 @@ CSHARP_EXPORT int ovClose(void)
 		g_ovOvrvisionAR = NULL;
 	}
 
+	if (g_ovOvrvisionTrack) {
+		delete g_ovOvrvisionTrack;
+		g_ovOvrvisionTrack = NULL;
+	}
+
 	delete g_ovOvrvision;
 	g_ovOvrvision = NULL;
 
@@ -126,26 +138,19 @@ CSHARP_EXPORT int ovClose(void)
 CSHARP_EXPORT void ovPreStoreCamData(int qt)
 {
 	g_ovOvrvision->PreStoreCamData((OVR::Camqt)qt);	//Renderer
-
 }
 
-// int ovGetCamImage(unsigned char* pImage, int eye, int qt)
-CSHARP_EXPORT void ovGetCamImageBGRA(unsigned char* pImage, int eye, int useAR)
+// int ovGetCamImage(unsigned char* pImage, int eye)
+CSHARP_EXPORT void ovGetCamImageBGRA(unsigned char* pImage, int eye)
 {
 	if(g_ovOvrvision==NULL)
 		return;
 
 	//Get image
 	g_ovOvrvision->GetCamImageBGRA(pImage, (OVR::Cameye)eye);
-
-	//AR System
-	if (useAR) {
-		if (g_ovOvrvisionAR != NULL) g_ovOvrvisionAR->SetImageBGRA(pImage);
-	}
-
 }
-// int ovGetCamImageRGB(unsigned char* pImage, int eye, int qt)
-CSHARP_EXPORT void ovGetCamImageRGB(unsigned char* pImage, int eye, int useAR)
+// int ovGetCamImageRGB(unsigned char* pImage, int eye)
+CSHARP_EXPORT void ovGetCamImageRGB(unsigned char* pImage, int eye)
 {
 	if(g_ovOvrvision==NULL)
 		return;
@@ -167,15 +172,10 @@ CSHARP_EXPORT void ovGetCamImageRGB(unsigned char* pImage, int eye, int useAR)
 		pImage[i + 2] = pData[srcj + 0];	//B
 		srcj += offsetlen;
 	}
-
-	//AR System
-	if (useAR) {
-		if (g_ovOvrvisionAR != NULL) g_ovOvrvisionAR->SetImageBGRA(pImage);
-	}
 }
 
-// int ovGetCamImageRGB(unsigned char* pImage, int eye, int qt)
-CSHARP_EXPORT void ovGetCamImageBGR(unsigned char* pImage, int eye, int useAR)
+// int ovGetCamImageRGB(unsigned char* pImage, int eye)
+CSHARP_EXPORT void ovGetCamImageBGR(unsigned char* pImage, int eye)
 {
 	if (g_ovOvrvision == NULL)
 		return;
@@ -197,16 +197,10 @@ CSHARP_EXPORT void ovGetCamImageBGR(unsigned char* pImage, int eye, int useAR)
 		pImage[i + 2] = pData[srcj + 2];	//R
 		srcj += offsetlen;
 	}
-
-	//AR System
-	if (useAR) {
-		if (g_ovOvrvisionAR != NULL) g_ovOvrvisionAR->SetImageBGRA(pImage);
-	}
 }
 
-// void ovGetCamImageForUnity(unsigned char* pImagePtr_Left, unsigned char* pImagePtr_Right, int qt)
-CSHARP_EXPORT void ovGetCamImageForUnity(unsigned char* pImagePtr_Left,
-										 unsigned char* pImagePtr_Right, int qt, int useAR)
+// void ovGetCamImageForUnity(unsigned char* pImagePtr_Left, unsigned char* pImagePtr_Right, int qt, int useTrack)
+CSHARP_EXPORT void ovGetCamImageForUnity(unsigned char* pImagePtr_Left, unsigned char* pImagePtr_Right)
 {
 	if(g_ovOvrvision==NULL)
 		return;
@@ -215,7 +209,6 @@ CSHARP_EXPORT void ovGetCamImageForUnity(unsigned char* pImagePtr_Left,
 	int i;
 
 	//Get image
-	g_ovOvrvision->PreStoreCamData((OVR::Camqt)qt);	//Renderer
 	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 	unsigned char* pRight = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
@@ -236,11 +229,6 @@ CSHARP_EXPORT void ovGetCamImageForUnity(unsigned char* pImagePtr_Left,
 		pImagePtr_Right[i + 2] = pRight[i + 0];
 		pImagePtr_Right[i + 3] = pRight[i + 3];
 	}
-
-	//AR System
-	if (useAR) {
-		if (g_ovOvrvisionAR != NULL) g_ovOvrvisionAR->SetImageBGRA(pLeft);
-	}
 }
 
 //for Unity extern
@@ -249,14 +237,13 @@ extern int g_DeviceType;
 extern ID3D11Device* g_D3D11Device;
 extern IDirect3DDevice9* g_D3D9Device;
 
-// void ovGetCamImageForUnity(unsigned char* pImagePtr_Left, unsigned char* pImagePtr_Right, int qt)
-CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr_Right, int qt, int useAR)
+// void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr_Right, int qt, int useAR)
+CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr_Right)
 {
 	if (g_ovOvrvision == NULL)
 		return;
 
 	//Get image
-	g_ovOvrvision->PreStoreCamData((OVR::Camqt)qt);	//Renderer
 	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 	unsigned char* pRight = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
@@ -304,11 +291,6 @@ CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_RGBA, GL_UNSIGNED_BYTE, pLeft);
 		glBindTexture(GL_TEXTURE_2D, gltex_right);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_RGBA, GL_UNSIGNED_BYTE, pRight);
-	}
-
-	//AR System
-	if (useAR) {
-		if (g_ovOvrvisionAR != NULL) g_ovOvrvisionAR->SetImageBGRA(pLeft);
 	}
 }
 
@@ -527,26 +509,20 @@ CSHARP_EXPORT bool ovSaveCamStatusToEEPROM()
 
 ////////////// Ovrvision AR //////////////
 
-// ovARSetImage(unsigned char* pImgSrc)
-CSHARP_EXPORT void ovARSetImageBGRA(unsigned char* pImgSrc)
-{
-	if(g_ovOvrvisionAR==NULL)
-		return;
-
-	g_ovOvrvisionAR->SetImageBGRA(pImgSrc);
-}
-
 // void ovARRender(void)
 CSHARP_EXPORT void ovARRender()
 {
 	if(g_ovOvrvisionAR==NULL)
 		return;
 
+	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
+	g_ovOvrvisionAR->SetImageBGRA(pLeft);
+
 	//Rendering
 	g_ovOvrvisionAR->Render();
 }
 
-// int ovARGetData(float* mdata, int datasize)
+// int ovARGetData(float* mdata, int datasize) : mdata*FLOATDATA_DATA_OFFSET(10)
 CSHARP_EXPORT int ovARGetData(float* mdata, int datasize)
 {
 	int i;
@@ -602,6 +578,44 @@ CSHARP_EXPORT void ov3DInstantTraking_Metaio(int value)
 		return;
 
 	g_ovOvrvisionAR->SetInstantTraking((bool)value);
+}
+
+////////////// Ovrvision Tracking //////////////
+
+// ovTrackRender
+CSHARP_EXPORT void ovTrackRender(bool calib, bool point)
+{
+	if (g_ovOvrvisionTrack == NULL)
+		return;
+
+	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
+	unsigned char* pRight = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
+	g_ovOvrvisionTrack->SetImageBGRA(pLeft, pRight);
+
+	g_ovOvrvisionTrack->Render(calib, point);
+}
+
+CSHARP_EXPORT int ovGetTrackData(float* mdata)
+{
+	if (g_ovOvrvisionTrack == NULL)
+		return 0 ;
+
+	mdata[0] = g_ovOvrvisionTrack->FingerPosX();
+	mdata[1] = g_ovOvrvisionTrack->FingerPosY();
+	mdata[2] = g_ovOvrvisionTrack->FingerPosZ();
+
+	if (mdata[0] <= 0.0 && mdata[1] <= 0.0)
+		return 0;
+
+	return 1;
+}
+
+CSHARP_EXPORT void ovTrackingCalibReset()
+{
+	if (g_ovOvrvisionTrack == NULL)
+		return;
+
+	g_ovOvrvisionTrack->SetHue();
 }
 
 ////////////// Ovrvision Calibration //////////////

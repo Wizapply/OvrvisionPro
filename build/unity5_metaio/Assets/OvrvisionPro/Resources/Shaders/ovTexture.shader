@@ -3,8 +3,8 @@ Shader "Ovrvision/ovTexture" {
 		_MainTex ("Base (RGB)", 2D) = "white" {}
 	}
 	SubShader {
-		Tags { "Queue" = "Background+1" "RenderType"="Background" }
-		LOD 0
+		Tags { "Queue" = "Background +1" "RenderType"="Background " }
+		LOD 200
 		
 		Pass {
 			Lighting Off
