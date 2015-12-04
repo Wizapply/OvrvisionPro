@@ -43,6 +43,7 @@ OvrvisionCalibration::OvrvisionCalibration(int img_size_w, int img_size_h, int p
 	m_relate_trans.create (1, 3, CV_64FC1);
 	m_E=cv::Mat::eye(3, 3, CV_64FC1);
 	m_F=cv::Mat::eye(3, 3, CV_64FC1);
+	m_Q.create(4, 4, CV_64FC1);	//map matrix
 }
 
 OvrvisionCalibration::OvrvisionCalibration()
@@ -55,6 +56,7 @@ OvrvisionCalibration::OvrvisionCalibration()
 	m_relate_trans.create (1, 3, CV_64FC1);
 	m_E=cv::Mat::eye(3, 3, CV_64FC1);
 	m_F=cv::Mat::eye(3, 3, CV_64FC1);
+	m_Q.create(4, 4, CV_64FC1);	//map matrix
 }
 
 OvrvisionCalibration::~OvrvisionCalibration()
@@ -233,7 +235,7 @@ void OvrvisionCalibration::StereoRectificationMatrix()
 		m_cameraCalibration[OV_CAMEYE_RIGHT].intrinsic, m_cameraCalibration[OV_CAMEYE_RIGHT].distortion,
 		m_image_size, m_relate_rot, m_relate_trans,
 		m_cameraCalibration[OV_CAMEYE_LEFT].R, m_cameraCalibration[OV_CAMEYE_RIGHT].R,
-		m_cameraCalibration[OV_CAMEYE_LEFT].P, m_cameraCalibration[OV_CAMEYE_RIGHT].P, Q, cv::CALIB_ZERO_DISPARITY);
+		m_cameraCalibration[OV_CAMEYE_LEFT].P, m_cameraCalibration[OV_CAMEYE_RIGHT].P, m_Q, cv::CALIB_ZERO_DISPARITY);
 
 	//vertical or horizontal
 	bool isVerticalStereo = fabs(m_cameraCalibration[OV_CAMEYE_RIGHT].P.at<double>(1, 3)) > fabs(m_cameraCalibration[OV_CAMEYE_RIGHT].P.at<double>(0, 3));
@@ -263,11 +265,12 @@ void OvrvisionCalibration::SaveCalibrationParameter(OvrvisionPro* system)
 	ovrset.WriteEEPROM(WRITE_EEPROM_FLAG_ALLWR);	//WRITE_EEPROM_FLAG_LENSPARAMWR
 
 	// 
-	FileStorage cvfs("epipolar.xml", CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
-	write(cvfs, "P1", m_cameraCalibration[OV_CAMEYE_LEFT].P);
-	write(cvfs, "P2", m_cameraCalibration[OV_CAMEYE_RIGHT].P);
-	write(cvfs, "T", m_relate_trans);
-	cvfs.release();
+	//FileStorage cvfs("epipolar.xml", CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
+	//write(cvfs, "P1", m_cameraCalibration[OV_CAMEYE_LEFT].P);
+	//write(cvfs, "P2", m_cameraCalibration[OV_CAMEYE_RIGHT].P);
+	//write(cvfs, "T", m_relate_trans);
+	//write(cvfs, "Q", m_Q);
+	//cvfs.release();
 }
 
 };
