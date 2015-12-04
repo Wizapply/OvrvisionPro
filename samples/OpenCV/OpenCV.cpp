@@ -345,8 +345,6 @@ int main(int argc, char* argv[])
 			else
 			{
 				ovrvision.Capture(mode);
-				ROI roi = { 50, 0, CROP_W, CROP_H };
-				//ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
 				ovrvision.Read(l.data, r.data);
 				
 				imshow("Left", l);

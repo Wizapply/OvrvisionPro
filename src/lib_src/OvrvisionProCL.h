@@ -116,28 +116,28 @@ namespace OVR
 			
 
 			// TODO: 縮小したグレースケール画像を取得
-			void Grayscale(uchar *left, uchar *right, enum SCALING scale);
+			void Grayscale(uchar *left, uchar *right, enum SCALING scale, cl_event *execute = NULL);
 
 			// TODO: 縮小画像（1/2)
 			/*! @brief Get half scaled image
-				@param src
-				@param dst
-				@param scale */
-			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF);
+			@param src
+			@param dst
+			@param scale */
+			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF, cl_event *execute = NULL);
 
 			// TODO: Convert to HSV color space
 			/*! @brief Convert image to HSV color space
-				@param src image
-				@param dst image
-				@param filter */
-			void ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter = RAW);
+			@param src image
+			@param dst image
+			@param filter */
+			void ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter = RAW, cl_event *execute = NULL);
 
 			// TODO: Make mask 
 			/*! @brief Make mask from HSV region
-				@param hsv image
-				@param dst monochrome mask
-				@param region when in HSV color region, set mask 255, others are 0`*/
-			void CreateMask(cl_mem hsv, cl_mem dst, Rect region);
+			@param hsv image
+			@param dst monochrome mask
+			@param region when in HSV color region, set mask 255, others are 0`*/
+			void CreateMask(cl_mem hsv, cl_mem dst, Rect region, cl_event *execute = NULL);
 
 			// OpenGL連携用のテクスチャーを生成
 			// pixelFormat must be GL_RGBA

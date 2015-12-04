@@ -522,7 +522,7 @@ namespace OVR
 		@param left ptr for left image
 		@param right ptr for right image
 		@param scaling */
-	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling)
+	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling, cl_event *execute)
 	{
 		// _l, _rから縮小グレースケール画像を生成して返す
 		int scale = 2;
@@ -546,21 +546,21 @@ namespace OVR
 		size_t reSize[] = { _width / scale, _height / scale };
 		size_t region[3] = { _width / scale, _height / scale, 1 };
 		size_t origin[3] = { 0, 0, 0 };
-		cl_event writeEvent, execute;
+		cl_event writeEvent[2];
 
 		clSetKernelArg(_remap, 0, sizeof(cl_mem), &_l);
 		clSetKernelArg(_remap, 1, sizeof(cl_mem), &_grayL);
 		clSetKernelArg(_remap, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _grayscale, 2, NULL, reSize, 0, 1, &writeEvent, &execute);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _grayscale, 2, NULL, reSize, 0, 0, NULL, &writeEvent[0]);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		clSetKernelArg(_remap, 0, sizeof(cl_mem), &_r);
 		clSetKernelArg(_remap, 1, sizeof(cl_mem), &_grayR);
 		clSetKernelArg(_remap, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _grayscale, 2, NULL, reSize, 0, 1, &writeEvent, &execute);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _grayscale, 2, NULL, reSize, 0, 0, NULL, &writeEvent[1]);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		// Read result
-		_errorCode = clEnqueueReadImage(_commandQueue, _grayL, CL_TRUE, origin, region, _width * sizeof(uchar), 0, left, 1, &execute, NULL);
-		_errorCode = clEnqueueReadImage(_commandQueue, _grayR, CL_TRUE, origin, region, _width * sizeof(uchar), 0, right, 1, &execute, NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, _grayL, CL_TRUE, origin, region, _width * sizeof(uchar), 0, left, 1, &writeEvent[0], NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, _grayR, CL_TRUE, origin, region, _width * sizeof(uchar), 0, right, 1, &writeEvent[1], NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
@@ -568,7 +568,7 @@ namespace OVR
 		@param src image
 		@param dst image
 		@param scaling */
-	void OvrvisionProOpenCL::Resize(const cl_mem src, cl_mem dst, enum SCALING scaling)
+	void OvrvisionProOpenCL::Resize(const cl_mem src, cl_mem dst, enum SCALING scaling, cl_event *execute)
 	{
 		//cl_image_format format;
 		size_t width, height;
@@ -593,9 +593,8 @@ namespace OVR
 		size_t reSize[] = { width / scale, height / scale };
 		size_t region[3] = { width / scale, height / scale, 1 };
 		size_t origin[3] = { 0, 0, 0 };
-		//cl_mem dst = clCreateImage2D(_context, CL_MEM_READ_WRITE, &format, width / scale, height / scale, 0, 0, &_errorCode);
 
-		//cl_event writeEvent, execute;
+		//cl_event writeEvent;
 
 		//__kernel void resize( // TODO UNDER CONSTRUCTION
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
@@ -605,18 +604,18 @@ namespace OVR
 		clSetKernelArg(_resize, 0, sizeof(cl_mem), &src);
 		clSetKernelArg(_resize, 1, sizeof(cl_mem), &dst);
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, reSize, 0, 0, NULL, NULL);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, reSize, 0, 0, NULL, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
 	// UNDER CONSTRUCTION
-	void OvrvisionProOpenCL::ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter)
+	void OvrvisionProOpenCL::ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter, cl_event *execute)
 	{
 
 	}
 
 	// UNDER CONSTRUCTION
-	void OvrvisionProOpenCL::CreateMask(cl_mem hsv, cl_mem dst, Rect region)
+	void OvrvisionProOpenCL::CreateMask(cl_mem hsv, cl_mem dst, Rect region, cl_event *execute)
 	{
 
 	}
@@ -684,13 +683,20 @@ namespace OVR
 				height /= 8;
 				break;
 			}
+			size_t origin[3] = { 0, 0, 0 };
+			size_t region[3] = { width, height, 1 };
+
 			l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
 			r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-			Resize(_l, l, scaling);
-			Resize(_r, r, scaling);
-			clFinish(_commandQueue);
-			Download(l, left, 0, 0, width, height);
-			Download(r, left, 0, 0, width, height);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			cl_event event[2];
+			Resize(_l, l, scaling, &event[0]);
+			Resize(_r, r, scaling, &event[1]);
+			_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
 			clReleaseMemObject(l);
 			clReleaseMemObject(r);
 		}

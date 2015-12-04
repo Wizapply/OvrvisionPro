@@ -263,7 +263,7 @@ void  OvrvisionPro::GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRig
 
 void OvrvisionPro::Read(unsigned char *left, unsigned char *right)
 {
-	m_pOpenCL->Read(left, right, SCALING::FOURTH);
+	m_pOpenCL->Read(left, right, SCALING::HALF);
 }
 
 //Get Camera data pre-store.

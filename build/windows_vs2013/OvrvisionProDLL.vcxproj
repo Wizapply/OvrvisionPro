@@ -160,6 +160,7 @@
     <ClCompile Include="..\src\OvrvisionSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\OpenCL_kernel.h" />
     <ClInclude Include="..\src\OvrvisionProDLL.h" />
     <ClInclude Include="..\src\OvrvisionSettings.h" />
   </ItemGroup>

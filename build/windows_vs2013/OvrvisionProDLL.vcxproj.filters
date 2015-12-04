@@ -32,5 +32,8 @@
     <ClInclude Include="..\src\OvrvisionSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\OpenCL_kernel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

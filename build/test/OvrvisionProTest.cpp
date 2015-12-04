@@ -13,11 +13,13 @@
 using namespace cv;
 using namespace OVR;
 
+static OvrvisionProOpenCL ovrvision(WIDTH, HEIGHT);
+
 int main(int argc, char* argv[])
 {
 	ushort *image = new ushort[BUFFER_SIZE];
-	Mat *left = new Mat(Size(WIDTH, HEIGHT), CV_8UC4);
-	Mat *right = new Mat(Size(WIDTH, HEIGHT), CV_8UC4);
+	Mat *left = new Mat(HEIGHT / 2, WIDTH / 2, CV_8UC4);
+	Mat *right = new Mat(HEIGHT / 2, WIDTH / 2, CV_8UC4);
 
 	if (3 < argc)
 	{
@@ -26,7 +28,17 @@ int main(int argc, char* argv[])
 		const char *config_file = argv[3];
 
 		printf("INPUT: %s\nKERNEL: %s\nCONFIG: %s\n", input_file, kernel_file, config_file);
+		FILE *file;
+		fopen_s(&file, input_file, "rb");
+		fread(image, sizeof(ushort), BUFFER_SIZE, file);
+		fclose(file);
 
+		ovrvision.Demosaic(image);
+		ovrvision.Read(left->data, right->data);
+		imshow("Left", *left);
+		imshow("Right", *right);
+		while (waitKey(10) != 'q')
+		{ }
 	}
 	delete left;
 	delete right;
