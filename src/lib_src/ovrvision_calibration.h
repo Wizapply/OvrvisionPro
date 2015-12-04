@@ -102,6 +102,7 @@ private:
 	cv::Mat m_relate_trans;
 	cv::Mat m_E;		//essential matrix
 	cv::Mat m_F;		//fundamental matrix
+	cv::Mat m_Q;		//map matrix
 
 	//Private method
 	void StereoRectificationMatrix();

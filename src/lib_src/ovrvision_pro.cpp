@@ -256,9 +256,9 @@ void OvrvisionPro::Capture(OVR::Camqt qt)
 }
 
 //Get camera image region of interest
-void  OvrvisionPro::GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRight, ROI roi)
+void  OvrvisionPro::GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRight, ROI roi, int dx, int dy)
 {
-	m_pOpenCL->Read(pLeft, pRight, roi.offsetX, roi.offsetY, roi.width, roi.height);
+	m_pOpenCL->Read(pLeft, pRight, roi.offsetX, roi.offsetY, roi.width, roi.height, dx, dy);
 }
 
 //Get Camera data pre-store.

@@ -7,8 +7,8 @@
 
 #include "ovrvision_pro.h"
 
-#define CROP_W 800
-#define CROP_H 600
+#define CROP_W 1024
+#define CROP_H 768
 
 //using namespace std;
 using namespace cv;
@@ -140,6 +140,8 @@ int main(int argc, char* argv[])
 		int ksize = 5;
 		int width = ovrvision.GetCamWidth();
 		int height = ovrvision.GetCamHeight();
+		//Mat l(height, width, CV_8UC4);
+		//Mat r(height, width, CV_8UC4);
 		ROI roi = {(width - CROP_W) / 2, (height - CROP_H) / 2, CROP_W, CROP_H};
 		Mat left(roi.height, roi.width, CV_8UC4);
 		Mat right(roi.height, roi.width, CV_8UC4);
@@ -164,7 +166,8 @@ int main(int argc, char* argv[])
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
 
-		Mat P1, P2, T;
+		Mat P1, P2, T, Q;
+		/*
 		FileStorage cvfs;
 		if (cvfs.open("epipolar.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML))
 		{
@@ -173,9 +176,12 @@ int main(int argc, char* argv[])
 			data["P1"] >> P1;
 			data["P2"] >> P2;
 			data["T"] >> T;
+			data["Q"] >> Q;
 			cvfs.release();
-			printf("T %f %f %f\n", T.at<double>(0, 0), T.at<double>(0, 1), T.at<double>(0, 2));
+			printf("T =[ %f %f %f ]\n", T.at<double>(0, 0), T.at<double>(0, 1), T.at<double>(0, 2));
+			printf("Q[3] = [ %f %f %f %f ]\n", Q.at<double>(0, 3), Q.at<double>(1, 3), Q.at<double>(2, 3), Q.at<double>(3, 3));
 		}
+		*/
 
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
 		bool show = true;
@@ -309,6 +315,13 @@ int main(int argc, char* argv[])
 			else
 			{
 				ovrvision.Capture(mode);
+				ROI roi = { 50, 0, CROP_W, CROP_H };
+				ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
+
+				//ovrvision.GetCamImageBGRA(l.data, Cameye::OV_CAMEYE_LEFT);
+				//ovrvision.GetCamImageBGRA(r.data, Cameye::OV_CAMEYE_RIGHT);
+				imshow("LEFT", left);
+				imshow("RIGHT", right);
 			}
 
 			switch (waitKey(1))
@@ -326,11 +339,7 @@ int main(int argc, char* argv[])
 				break;
 
 			case 's':
-				show = true;
-				break;
-
-			case 'n':
-				show = false;
+				show = !show;
 				break;
 
 			case '0':
@@ -359,17 +368,25 @@ int main(int argc, char* argv[])
 				break;
 
 			case ' ':
-				imwrite("left.png", left);
-				imwrite("right.png", right);
-				//imwrite("histgram.png", histgram);
-				imwrite("hsv_L.bmp", lHSV);
-				imwrite("hsv_R.bmp", rHSV);
-				imwrite("hsv_l.png", Lhsv);
-				imwrite("hsv_r.png", Rhsv);
-				imwrite("result_l.png", Lresult);
-				imwrite("result_r.png", Rresult);
-				//imwrite("blur_l.png", blur);
-				//imwrite("blur_r.png", blur2);
+				if (show)
+				{
+					imwrite("left.png", left);
+					imwrite("right.png", right);
+					imwrite("hsv_L.bmp", lHSV);
+					imwrite("hsv_R.bmp", rHSV);
+					imwrite("hsv_l.png", Lhsv);
+					imwrite("hsv_r.png", Rhsv);
+					imwrite("result_l.png", Lresult);
+					imwrite("result_r.png", Rresult);
+					//imwrite("blur_l.png", blur);
+					//imwrite("blur_r.png", blur2);
+					//imwrite("histgram.png", histgram);
+				}
+				else
+				{
+					imwrite("LEFT.tiff", left);
+					imwrite("RIGHT.tiff", right);
+				}
 				break;
 
 			case 'e':

@@ -211,16 +211,6 @@ bool OvrvisionSetting::ReadEEPROM() {
 			return false;
 		}
 	}
-	
-	//FileStorage cvfs;
-	if (cvfs.open("epipolar.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML))
-	{
-		//get data node
-		FileNode data(cvfs.fs, NULL);
-		data["P1"] >> m_P1;
-		data["P2"] >> m_P2;
-		cvfs.release();
-	}
 
 	isReaded = true;
 
@@ -362,6 +352,7 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 	cv::Size size(width, height);
 	cv::Size sizeCalibBase(1280, 960);
 	double m_focalPointScale = 1.00;
+	//Rect roi; // Valid Region of Interest
 
 	//Adjustment calc
 	if (size.width > 1280) {
@@ -383,36 +374,45 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 	cameramat.at<float>(6) = 0.0f;
 	cameramat.at<float>(7) = 0.0f;
 	cameramat.at<float>(8) = 1.0f;
-	cv::Mat camPs = getOptimalNewCameraMatrix(cameramat, distorsionCoeff, size, 0, size, 0);
+	if (eye == Cameye::OV_CAMEYE_LEFT)
+	{
+		cv::Mat camPs = getOptimalNewCameraMatrix(m_leftCameraInstric, m_leftCameraDistortion, size, 0, size, &m_leftROI);
 
-	//Calc clone
-	cv::Mat left_CamIns = m_leftCameraInstric.clone();
-	cv::Mat right_CamIns = m_rightCameraInstric.clone();
+		//Calc clone
+		cv::Mat left_CamIns = m_leftCameraInstric.clone();
 
-	double cals_x = (double)size.width / (double)sizeCalibBase.width;
-	double cals_y = (double)size.height / (double)sizeCalibBase.height;
+		double cals_x = (double)size.width / (double)sizeCalibBase.width;
+		double cals_y = (double)size.height / (double)sizeCalibBase.height;
 
-	//Position
-	left_CamIns.at<double>(2) = m_leftCameraInstric.at<double>(2) * cals_x;
-	right_CamIns.at<double>(2) = m_rightCameraInstric.at<double>(2) * cals_x;
-	left_CamIns.at<double>(5) = m_leftCameraInstric.at<double>(5) * cals_y;
-	right_CamIns.at<double>(5) = m_rightCameraInstric.at<double>(5) * cals_y;
+		//Position
+		left_CamIns.at<double>(2) = m_leftCameraInstric.at<double>(2) * cals_x;
+		left_CamIns.at<double>(5) = m_leftCameraInstric.at<double>(5) * cals_y;
 
-	left_CamIns.at<double>(0) = m_leftCameraInstric.at<double>(0) * m_focalPointScale;
-	right_CamIns.at<double>(0) = m_rightCameraInstric.at<double>(0) * m_focalPointScale;
-	left_CamIns.at<double>(4) = m_leftCameraInstric.at<double>(4) * m_focalPointScale;
-	right_CamIns.at<double>(4) = m_rightCameraInstric.at<double>(4) * m_focalPointScale;
+		left_CamIns.at<double>(0) = m_leftCameraInstric.at<double>(0) * m_focalPointScale;
+		left_CamIns.at<double>(4) = m_leftCameraInstric.at<double>(4) * m_focalPointScale;
 
-	//Undistort
-	if (eye == OV_CAMEYE_LEFT) {
-		if (!m_P1.empty())
-			camPs = m_P1;
+		//Undistort
 		initUndistortRectifyMap(left_CamIns, m_leftCameraDistortion, m_R1,
 			camPs, size, CV_32FC1, mapX, mapY);
 	}
-	if (eye == OV_CAMEYE_RIGHT) {
-		if (!m_P2.empty())
-			camPs = m_P2;
+	else 
+	{
+		cv::Mat camPs = getOptimalNewCameraMatrix(m_rightCameraInstric, m_rightCameraDistortion, size, 0, size, &m_rightROI);
+
+		//Calc clone
+		cv::Mat right_CamIns = m_rightCameraInstric.clone();
+
+		double cals_x = (double)size.width / (double)sizeCalibBase.width;
+		double cals_y = (double)size.height / (double)sizeCalibBase.height;
+
+		//Position
+		right_CamIns.at<double>(2) = m_rightCameraInstric.at<double>(2) * cals_x;
+		right_CamIns.at<double>(5) = m_rightCameraInstric.at<double>(5) * cals_y;
+
+		right_CamIns.at<double>(0) = m_rightCameraInstric.at<double>(0) * m_focalPointScale;
+		right_CamIns.at<double>(4) = m_rightCameraInstric.at<double>(4) * m_focalPointScale;
+
+		//Undistort
 		initUndistortRectifyMap(right_CamIns, m_rightCameraDistortion, m_R2,
 			camPs, size, CV_32FC1, mapX, mapY);
 	}
