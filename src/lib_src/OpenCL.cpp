@@ -159,12 +159,6 @@ namespace OVR
 		// Destructor
 	OvrvisionProOpenCL::~OvrvisionProOpenCL()
 		{
-			//intrinsic.release();
-			//distortion.release();
-			//mapX[0]->release();
-			//mapY[0]->release();
-			//mapX[1]->release();
-			//mapY[1]->release();
 			delete mapX[0];
 			delete mapY[0];
 			delete mapX[1];
@@ -391,7 +385,106 @@ namespace OVR
 	}
 #endif
 
+	// Load camera parameters 
+	bool OvrvisionProOpenCL::LoadCameraParams(const char *filename)
+	{
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { _width, _height, 1 };
+		OvrvisionSetting _settings(NULL);
+
+		if (_settings.ReadEEPROM())
+		{
+			// Left camera
+			_settings.GetUndistortionMatrix(OV_CAMEYE_LEFT, *mapX[0], *mapY[0], _width, _height);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[0]->ptr(0), 0, NULL, NULL);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _my[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[0]->ptr(0), 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+
+			// Right camera
+			_settings.GetUndistortionMatrix(OV_CAMEYE_RIGHT, *mapX[1], *mapY[1], _width, _height);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[1]->ptr(0), 0, NULL, NULL);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[1]->ptr(0), 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+
+			_remapAvailable = true;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	// Load camera parameters 
+	bool OvrvisionProOpenCL::LoadCameraParams(OvrvisionSetting* ovrset)
+	{
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { _width, _height, 1 };
+
+		// Left camera
+		ovrset->GetUndistortionMatrix(OV_CAMEYE_LEFT, *mapX[0], *mapY[0], _width, _height);
+		_errorCode = clEnqueueWriteImage(_commandQueue, _mx[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[0]->ptr(0), 0, NULL, NULL);
+		_errorCode = clEnqueueWriteImage(_commandQueue, _my[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[0]->ptr(0), 0, NULL, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Right camera
+		ovrset->GetUndistortionMatrix(OV_CAMEYE_RIGHT, *mapX[1], *mapY[1], _width, _height);
+		_errorCode = clEnqueueWriteImage(_commandQueue, _mx[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[1]->ptr(0), 0, NULL, NULL);
+		_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[1]->ptr(0), 0, NULL, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		_remapAvailable = true;
+		return true;
+	}
+
+	/*! @brief Create OpenCL kernels */
+	bool OvrvisionProOpenCL::CreateProgram()
+	{
+		size_t size = strlen(kernel);
+		_program = clCreateProgramWithSource(_context, 1, (const char **)&kernel, &size, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
+		if (_errorCode == CL_BUILD_PROGRAM_FAILURE)
+		{
+			// Determine the size of the log
+			size_t log_size;
+			clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
+
+			// Allocate memory for the log
+			char *log = (char *)malloc(log_size);
+
+			// Get the log
+			clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
+
+			// Print the log
+			printf("%s\n", log);
+			return false;
+		}
+		else
+		{
+			_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_remap = clCreateKernel(_program, "remap", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_grayscale = clCreateKernel(_program, "grayscale", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_skincolor = clCreateKernel(_program, "skincolor", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_resize = clCreateKernel(_program, "resize", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_convertHSV = clCreateKernel(_program, "convertHSV", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_convertGrayscale = clCreateKernel(_program, "convertGrayscale", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			return true;
+		}
+	}
+
 	// TODO:　縮小グレースケール画像を取得
+	/*! @brief Get scaled grayscale images
+		@param left ptr for left image
+		@param right ptr for right image
+		@param scaling */
 	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling)
 	{
 		// _l, _rから縮小グレースケール画像を生成して返す
@@ -434,58 +527,62 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
-		// Load camera parameters 
-		bool OvrvisionProOpenCL::LoadCameraParams(const char *filename)
+	/*! @brief Resize image
+		@param src image
+		@param dst image
+		@param scaling */
+	void OvrvisionProOpenCL::Resize(const cl_mem src, cl_mem dst, enum SCALING scaling)
+	{
+		//cl_image_format format;
+		size_t width, height;
+		clGetImageInfo(src, CL_IMAGE_WIDTH, sizeof(width), &width, NULL);
+		clGetImageInfo(src, CL_IMAGE_HEIGHT, sizeof(height), &height, NULL);
+		//clGetImageInfo(src, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
+		int scale = 2;
+		switch (scaling)
 		{
-			size_t origin[3] = { 0, 0, 0 };
-			size_t region[3] = { _width, _height, 1 };
-			OvrvisionSetting _settings(NULL);
+		case HALF:
+			scale = 2;
+			break;
 
-			if (_settings.ReadEEPROM())
-			{
-				// Left camera
-				_settings.GetUndistortionMatrix(OV_CAMEYE_LEFT, *mapX[0], *mapY[0], _width, _height);
-				_errorCode = clEnqueueWriteImage(_commandQueue, _mx[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[0]->ptr(0), 0, NULL, NULL);
-				_errorCode = clEnqueueWriteImage(_commandQueue, _my[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[0]->ptr(0), 0, NULL, NULL);
-				SAMPLE_CHECK_ERRORS(_errorCode);
+		case FOURTH:
+			scale = 4;
+			break;
 
-				// Right camera
-				_settings.GetUndistortionMatrix(OV_CAMEYE_RIGHT, *mapX[1], *mapY[1], _width, _height);
-				_errorCode = clEnqueueWriteImage(_commandQueue, _mx[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[1]->ptr(0), 0, NULL, NULL);
-				_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[1]->ptr(0), 0, NULL, NULL);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-
-				_remapAvailable = true;
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+		case EIGHTH:
+			scale = 8;
+			break;
 		}
+		size_t reSize[] = { width / scale, height / scale };
+		size_t region[3] = { width / scale, height / scale, 1 };
+		size_t origin[3] = { 0, 0, 0 };
+		//cl_mem dst = clCreateImage2D(_context, CL_MEM_READ_WRITE, &format, width / scale, height / scale, 0, 0, &_errorCode);
 
-		// Load camera parameters 
-		bool OvrvisionProOpenCL::LoadCameraParams(OvrvisionSetting* ovrset)
-		{
-			size_t origin[3] = { 0, 0, 0 };
-			size_t region[3] = { _width, _height, 1 };
+		cl_event writeEvent, execute;
 
-			// Left camera
-			ovrset->GetUndistortionMatrix(OV_CAMEYE_LEFT, *mapX[0], *mapY[0], _width, _height);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[0]->ptr(0), 0, NULL, NULL);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _my[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[0]->ptr(0), 0, NULL, NULL);
-			SAMPLE_CHECK_ERRORS(_errorCode);
+		//__kernel void resize( // TODO UNDER CONSTRUCTION
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
+		//		__read_only int scale)		// 2, 4, 8
 
-			// Right camera
-			ovrset->GetUndistortionMatrix(OV_CAMEYE_RIGHT, *mapX[1], *mapY[1], _width, _height);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[1]->ptr(0), 0, NULL, NULL);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[1]->ptr(0), 0, NULL, NULL);
-			SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_resize, 0, sizeof(cl_mem), &src);
+		clSetKernelArg(_resize, 1, sizeof(cl_mem), &dst);
+		clSetKernelArg(_resize, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, reSize, 0, 1, &writeEvent, &execute);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+	}
 
-			_remapAvailable = true;
-			return true;
-		}
+	// UNDER CONSTRUCTION
+	void OvrvisionProOpenCL::ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter)
+	{
 
+	}
+
+	// UNDER CONSTRUCTION
+	void OvrvisionProOpenCL::CreateMask(cl_mem hsv, cl_mem dst, Rect region)
+	{
+
+	}
 		// Demosaicing
 		void OvrvisionProOpenCL::Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *execute)
 		{
@@ -678,42 +775,6 @@ namespace OVR
 			//size_t demosaicSize[] = { src.cols / 2, src.rows / 2 };
 			const uchar *ptr = src.ptr(0);
 			DemosaicRemap((const ushort *)ptr, left, right);
-		}
-
-		bool OvrvisionProOpenCL::CreateProgram()
-		{
-			size_t size = strlen(kernel);
-			_program = clCreateProgramWithSource(_context, 1, (const char **)&kernel, &size, &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
-			if (_errorCode == CL_BUILD_PROGRAM_FAILURE)
-			{
-				// Determine the size of the log
-				size_t log_size;
-				clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
-
-				// Allocate memory for the log
-				char *log = (char *)malloc(log_size);
-
-				// Get the log
-				clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
-
-				// Print the log
-				printf("%s\n", log);
-				return false;
-			}
-			else
-			{
-				_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-				_remap = clCreateKernel(_program, "remap", &_errorCode);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-				_grayscale = clCreateKernel(_program, "grayscale", &_errorCode);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-				_skincolor = clCreateKernel(_program, "skincolor", &_errorCode);
-				SAMPLE_CHECK_ERRORS(_errorCode);
-				return true;
-			}
 		}
 
 		// CreateProgram from file

@@ -54,6 +54,19 @@ namespace OVR
 		NVIDIA		// NVIDIA specific extension
 	};
 
+	// Filter mode
+	enum FILTER {
+		RAW,
+		GAUSSIAN,
+		MEDIAN,
+		GAUSSIAN_3,
+		GAUSSIAN_5,
+		GAUSSIAN_7,
+		MEDIAN_3,
+		MEDIAN_5,
+		MEDIAN_7,
+	};
+
 	// OpenCLの機能拡張情報を返すコールバック関数
 	typedef int(*EXTENSION_CALLBACK)(void *pItem, const char *extensions);
 
@@ -90,6 +103,30 @@ namespace OVR
 			// Remap
 			void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);
 			
+			// TODO: 縮小したグレースケール画像を取得
+			void Grayscale(uchar *left, uchar *right, enum SCALING scale);
+
+			// TODO: 縮小画像（1/2)
+			/*! @brief Get half scaled image
+				@param src
+				@param dst
+				@param scale */
+			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF);
+
+			// TODO: Convert to HSV color space
+			/*! @brief Convert image to HSV color space
+				@param src image
+				@param dst image
+				@param filter */
+			void ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter = RAW);
+
+			// TODO: Make mask 
+			/*! @brief Make mask from HSV region
+				@param hsv image
+				@param dst monochrome mask
+				@param region when in HSV color region, set mask 255, others are 0`*/
+			void CreateMask(cl_mem hsv, cl_mem dst, Rect region);
+
 			// OpenGL連携用のテクスチャーを生成
 			// pixelFormat must be GL_RGBA
 			// dataType must be GL_UNSIGNED_BYTE
@@ -98,8 +135,6 @@ namespace OVR
 			// Direct3D連携用のテクスチャーを生成
 			cl_mem CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height);
 #endif
-			// TODO: 縮小したグレースケール画像を取得
-			void Grayscale(uchar *left, uchar *right, enum SCALING scale);	
 
 			// Enumerate OpenCL extensions
 			int DeviceExtensions(EXTENSION_CALLBACK callback = NULL, void *item = NULL);
@@ -141,17 +176,22 @@ namespace OVR
 			cl_platform_id	_platformId;
 			cl_device_id	_deviceId;
 			cl_context		_context;
-			cl_program		_program;
-			cl_kernel		_demosaic;
-			cl_kernel		_remap;
-			cl_kernel		_grayscale;
-			cl_kernel		_skincolor;
+
 			cl_command_queue _commandQueue;
 			cl_image_format	_format16UC1;
 			cl_image_format	_format8UC4;
 			cl_image_format _format8UC1;
 			cl_image_format _formatMap;
 			cl_int			_errorCode;
+
+			cl_program		_program;
+			cl_kernel		_demosaic;
+			cl_kernel		_remap;
+			cl_kernel		_grayscale;
+			cl_kernel		_skincolor;
+			cl_kernel		_resize;
+			cl_kernel		_convertHSV;
+			cl_kernel		_convertGrayscale;
 
 		private:
 			cl_event _execute;

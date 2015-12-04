@@ -245,12 +245,15 @@ public:
 	/*!	@brief Get OpenCL extensions of GPU */
 	int OpenCLExtensions(int(*callback)(void *, const char *), void *item);
 
-	/*!	@brief Grayscaled image of 1/2 scaled */
+	/*!	@brief UNDER CONSTRUCTION Grayscaled image of 1/2 scaled */
 	void GrayscaleHalf(unsigned char *left, unsigned char *right);		// 1/2 scaled
-	/*!	@brief Grayscaled image of 1/4 scaled */
+	/*!	@brief UNDER CONSTRUCTION Grayscaled image of 1/4 scaled */
 	void GrayscaleFourth(unsigned char *left, unsigned char *right);	// 1/4 scaled
-	/*!	@brief Grayscaled image of 1/8 scaled */
+	/*!	@brief UNDER CONSTRUCTION Grayscaled image of 1/8 scaled */
 	void GrayscaleEighth(unsigned char *left, unsigned char *right);	// 1/8 scaled
+
+	// Temporary function
+	OvrvisionProOpenCL *getOpenCL() { return m_pOpenCL;  }
 
 	//Parameter EEPROM (Don't touch)
 	void UserDataAccessUnlock();

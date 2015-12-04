@@ -133,15 +133,21 @@ void estimateSkincolor(Mat &histgram, OvrvisionPro &camera, ROI roi)
 	imwrite("histgram.png", histgram);
 }
 
+enum FILTER {
+	GAUSSIAN,
+	MEDIAN,
+	NONE,
+};
+
 int main(int argc, char* argv[])
 {
 	if (ovrvision.Open(0, Camprop::OV_CAMHD_FULL))
 	{
 		int ksize = 5;
+		enum FILTER filter = GAUSSIAN;
 		int width = ovrvision.GetCamWidth();
 		int height = ovrvision.GetCamHeight();
-		//Mat l(height, width, CV_8UC4);
-		//Mat r(height, width, CV_8UC4);
+
 		ROI roi = {(width - CROP_W) / 2, (height - CROP_H) / 2, CROP_W, CROP_H};
 		Mat left(roi.height, roi.width, CV_8UC4);
 		Mat right(roi.height, roi.width, CV_8UC4);
@@ -155,10 +161,10 @@ int main(int argc, char* argv[])
 		Mat rHSV(roi.height / 2, roi.width / 2, CV_8UC3);
 		Mat Lresult(roi.height / 2, roi.width / 2, CV_8UC4);
 		Mat Rresult(roi.height / 2, roi.width / 2, CV_8UC4);
-		Mat blur(roi.height / 2, roi.width / 2, CV_8UC4);
-		Mat blur2(roi.height / 2, roi.width / 2, CV_8UC4);
 		Mat bilevel_l(roi.height / 2, roi.width / 2, CV_8UC1);
 		Mat bilevel_r(roi.height / 2, roi.width / 2, CV_8UC1);
+		//Mat blur(roi.height / 2, roi.width / 2, CV_8UC4);
+		//Mat blur2(roi.height / 2, roi.width / 2, CV_8UC4);
 
 		std::vector<std::vector<Point>> contours;
 		std::vector<Vec4i> hierarchy;
@@ -166,8 +172,8 @@ int main(int argc, char* argv[])
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
 
-		Mat P1, P2, T, Q;
 		/*
+		Mat P1, P2, T, Q;
 		FileStorage cvfs;
 		if (cvfs.open("epipolar.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML))
 		{
@@ -224,14 +230,33 @@ int main(int argc, char* argv[])
 				// ここでOpenCVでの加工など
 				if (0 < ksize)
 				{
+					// ここからGPU（OpenCL化）
 					resize(left, LEFT, LEFT.size());
-					cvtColor(LEFT, Lhsv, CV_BGR2HSV_FULL);
 					resize(right, RIGHT, RIGHT.size());
-					cvtColor(RIGHT, Rhsv, CV_BGR2HSV_FULL);
 
-					//medianBlur(Lhsv, lHSV, ksize);
-					GaussianBlur(Lhsv, lHSV, Size(ksize, ksize), 0);
-					GaussianBlur(Rhsv, rHSV, Size(ksize, ksize), 0);
+					//
+					switch (filter)
+					{
+					case GAUSSIAN:
+						cvtColor(LEFT, Lhsv, CV_BGR2HSV_FULL);
+						cvtColor(RIGHT, Rhsv, CV_BGR2HSV_FULL);
+						GaussianBlur(Lhsv, lHSV, Size(ksize, ksize), 0);
+						GaussianBlur(Rhsv, rHSV, Size(ksize, ksize), 0);
+						break;
+
+					case MEDIAN:
+						cvtColor(LEFT, Lhsv, CV_BGR2HSV_FULL);
+						cvtColor(RIGHT, Rhsv, CV_BGR2HSV_FULL);
+						medianBlur(Lhsv, lHSV, ksize);
+						medianBlur(Rhsv, rHSV, ksize);
+						break;
+
+					default:
+						cvtColor(LEFT, lHSV, CV_BGR2HSV_FULL);
+						cvtColor(RIGHT, rHSV, CV_BGR2HSV_FULL);
+						break;
+					}
+					
 					Lresult.setTo(Scalar(0, 0, 0, 255));
 					Rresult.setTo(Scalar(0, 0, 0, 255));
 					bilevel_l.setTo(Scalar::all(0));
@@ -280,22 +305,23 @@ int main(int argc, char* argv[])
 							}
 						}
 					}
+					// ここまでGPU（OpenCL）で
+
+					// CPU側（OpenCV）
 					findContours(bilevel_r, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
-					//printf("%d contours\n", contours.size());
-					//erode(Lresult, blur, Mat());
-					//erode(Rresult, blur2, Mat());
-					for (int i = 0; i < contours.size(); i++)
+					for (uint i = 0; i < contours.size(); i++)
 					{
 						if (200 < contours[i].size())
 							drawContours(Rresult, contours, i, Scalar(255, 255, 255), 1, 8);
 					}
 					findContours(bilevel_l, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
-					for (int i = 0; i < contours.size(); i++)
+					for (uint i = 0; i < contours.size(); i++)
 					{
 						if (200 < contours[i].size())
 							drawContours(Lresult, contours, i, Scalar(255, 255, 255), 1, 8);
 					}
-					//medianBlur(Lresult, blur, ksize);
+					// ここまでOpenCVで処理してGPUに戻す
+
 					// Show frame data
 					imshow("bilevel(L)", bilevel_l);
 					imshow("bilevel(R)", bilevel_r);
@@ -305,7 +331,7 @@ int main(int argc, char* argv[])
 					imshow("R", Rresult);
 					//imshow("Blur(L)", blur);
 					//imshow("Blur(R)", blur2);
-					imshow("Lhsv", Lhsv);
+					//imshow("Lhsv", Lhsv);
 				}
 				else
 				{
@@ -320,8 +346,6 @@ int main(int argc, char* argv[])
 				ROI roi = { 50, 0, CROP_W, CROP_H };
 				ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
 
-				//ovrvision.GetCamImageBGRA(l.data, Cameye::OV_CAMEYE_LEFT);
-				//ovrvision.GetCamImageBGRA(r.data, Cameye::OV_CAMEYE_RIGHT);
 				imshow("LEFT", left);
 				imshow("RIGHT", right);
 			}
@@ -340,8 +364,24 @@ int main(int argc, char* argv[])
 				mode = Camqt::OV_CAMQT_DMS;
 				break;
 
+			case 'h':
+				useHistgram = !useHistgram;
+				break;
+
 			case 's':
 				show = !show;
+				break;
+
+			case 'g':
+				filter = GAUSSIAN;
+				break;
+
+			case 'm':
+				filter = MEDIAN;
+				break;
+
+			case 'n':
+				filter = NONE;
 				break;
 
 			case '0':
@@ -363,10 +403,6 @@ int main(int argc, char* argv[])
 
 			case '9':
 				ksize = 9;
-				break;
-
-			case 'h':
-				useHistgram = !useHistgram;
 				break;
 
 			case ' ':
