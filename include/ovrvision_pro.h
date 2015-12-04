@@ -253,7 +253,7 @@ public:
 	void GrayscaleEighth(unsigned char *left, unsigned char *right);	// 1/8 scaled
 
 	// Temporary function
-	OvrvisionProOpenCL *getOpenCL() { return m_pOpenCL;  }
+	void Read(unsigned char *left, unsigned char *right);
 
 	//Parameter EEPROM (Don't touch)
 	void UserDataAccessUnlock();

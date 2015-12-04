@@ -148,6 +148,8 @@ int main(int argc, char* argv[])
 		int width = ovrvision.GetCamWidth();
 		int height = ovrvision.GetCamHeight();
 
+		Mat l(height / 2, width / 2, CV_8UC4);
+		Mat r(height / 2, width / 2, CV_8UC4);
 		ROI roi = {(width - CROP_W) / 2, (height - CROP_H) / 2, CROP_W, CROP_H};
 		Mat left(roi.height, roi.width, CV_8UC4);
 		Mat right(roi.height, roi.width, CV_8UC4);
@@ -344,10 +346,11 @@ int main(int argc, char* argv[])
 			{
 				ovrvision.Capture(mode);
 				ROI roi = { 50, 0, CROP_W, CROP_H };
-				ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
-
-				imshow("LEFT", left);
-				imshow("RIGHT", right);
+				//ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
+				ovrvision.Read(l.data, r.data);
+				
+				imshow("Left", l);
+				imshow("Right", r);
 			}
 
 			switch (waitKey(1))

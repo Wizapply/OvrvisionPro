@@ -480,6 +480,43 @@ namespace OVR
 		}
 	}
 
+	void OvrvisionProOpenCL::Download(const cl_mem image, uchar *ptr, int offsetX, int offsetY, uint width, uint height)
+	{
+		size_t origin[3] = { offsetX, offsetY, 0 };
+		size_t region[3] = { width, height, 1 };
+		size_t size;
+		cl_image_format format;
+		clGetImageInfo(image, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
+		clGetImageInfo(image, CL_IMAGE_ELEMENT_SIZE, sizeof(size), &size, NULL);
+		size_t channels;
+		switch (format.image_channel_order)
+		{
+		case CL_R:
+		case CL_A:
+		case CL_INTENSITY:
+		case CL_LUMINANCE:
+			channels = 1;
+			break;
+		case CL_RG:
+		case CL_RA:
+		case CL_Rx:
+			channels = 2;
+			break;
+		case CL_RGB:
+		case CL_RGx:
+			channels = 3;
+			break;
+		case CL_RGBA:
+		case CL_BGRA:
+		case CL_ARGB:
+		case CL_RGBx:
+			channels = 4;
+			break;
+		}
+		cl_event execute;
+		_errorCode = clEnqueueReadImage(_commandQueue, image, CL_TRUE, origin, region, width * size * channels, 0, ptr, 1, &execute, NULL);
+	}
+
 	// TODO:　縮小グレースケール画像を取得
 	/*! @brief Get scaled grayscale images
 		@param left ptr for left image
@@ -558,7 +595,7 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 		//cl_mem dst = clCreateImage2D(_context, CL_MEM_READ_WRITE, &format, width / scale, height / scale, 0, 0, &_errorCode);
 
-		cl_event writeEvent, execute;
+		//cl_event writeEvent, execute;
 
 		//__kernel void resize( // TODO UNDER CONSTRUCTION
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
@@ -568,7 +605,7 @@ namespace OVR
 		clSetKernelArg(_resize, 0, sizeof(cl_mem), &src);
 		clSetKernelArg(_resize, 1, sizeof(cl_mem), &dst);
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, reSize, 0, 1, &writeEvent, &execute);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, reSize, 0, 0, NULL, NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
@@ -617,7 +654,7 @@ namespace OVR
 		{
 			size_t origin[3] = { offsetX, offsetY, 0 };
 			size_t region[3] = { width, height, 1 };
-			cl_event execute;
+			//cl_event execute;
 			if (left != NULL)
 			{
 				_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
@@ -628,6 +665,35 @@ namespace OVR
 			}
 		}
 
+		void OvrvisionProOpenCL::Read(uchar *left, uchar *right, SCALING scaling)
+		{
+			cl_mem l, r;
+			uint width = _width, height = _height;
+			switch (scaling)
+			{
+			case OVR::HALF:
+				width /= 2;
+				height /= 2;
+				break;
+			case OVR::FOURTH:
+				width /= 4;
+				height /= 4;
+				break;
+			case OVR::EIGHTH:
+				width /= 8;
+				height /= 8;
+				break;
+			}
+			l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+			r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+			Resize(_l, l, scaling);
+			Resize(_r, r, scaling);
+			clFinish(_commandQueue);
+			Download(l, left, 0, 0, width, height);
+			Download(r, left, 0, 0, width, height);
+			clReleaseMemObject(l);
+			clReleaseMemObject(r);
+		}
 
 		void OvrvisionProOpenCL::Demosaic(const ushort* src, uchar *left, uchar *right)
 		{

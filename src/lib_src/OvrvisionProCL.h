@@ -100,9 +100,21 @@ namespace OVR
 			// Read images region of interest
 			void Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height);
 
+			void Read(uchar *left, uchar *right, SCALING scaling = HALF);
+
+			/*! @brief Download from GPU
+				@param image 
+				@param ptr for read buffer 
+				@param offsetX
+				@param offsetY
+				@param width
+				@param height */
+			void Download(const cl_mem image, uchar *ptr, int offsetX, int offsetY, uint width, uint height);
+
 			// Remap
 			void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);
 			
+
 			// TODO: 縮小したグレースケール画像を取得
 			void Grayscale(uchar *left, uchar *right, enum SCALING scale);
 
