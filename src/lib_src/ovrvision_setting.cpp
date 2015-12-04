@@ -374,15 +374,16 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 	cameramat.at<float>(6) = 0.0f;
 	cameramat.at<float>(7) = 0.0f;
 	cameramat.at<float>(8) = 1.0f;
+
+	double cals_x = (double)size.width / (double)sizeCalibBase.width;
+	double cals_y = (double)size.height / (double)sizeCalibBase.height;
+
 	if (eye == Cameye::OV_CAMEYE_LEFT)
 	{
 		cv::Mat camPs = getOptimalNewCameraMatrix(m_leftCameraInstric, m_leftCameraDistortion, size, 0, size, &m_leftROI);
 
 		//Calc clone
 		cv::Mat left_CamIns = m_leftCameraInstric.clone();
-
-		double cals_x = (double)size.width / (double)sizeCalibBase.width;
-		double cals_y = (double)size.height / (double)sizeCalibBase.height;
 
 		//Position
 		left_CamIns.at<double>(2) = m_leftCameraInstric.at<double>(2) * cals_x;
@@ -401,9 +402,6 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 
 		//Calc clone
 		cv::Mat right_CamIns = m_rightCameraInstric.clone();
-
-		double cals_x = (double)size.width / (double)sizeCalibBase.width;
-		double cals_y = (double)size.height / (double)sizeCalibBase.height;
 
 		//Position
 		right_CamIns.at<double>(2) = m_rightCameraInstric.at<double>(2) * cals_x;

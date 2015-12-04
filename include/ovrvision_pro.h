@@ -162,10 +162,8 @@ public:
 	/*!	@brief Get camera image region of interest
 		@param pLeft Image buffer pointer for left eye
 		@param pRight Image buffer pointer for right eye
-		@param roi ROI
-		@param dx offset between left and right 
-		@param dy offset between left and right */
-	void GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRight, ROI roi, int dx = 0, int dy = 0);
+		@param roi ROI */
+	void GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRight, ROI roi);
 
 	/*!	@brief Check whether OvrvisionPro is open. 
 		@return If open, It is true */

@@ -85,7 +85,7 @@ namespace OVR
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
 			// Read images region of interest
-			void Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height, int dx = 0, int dy = 0);
+			void Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height);
 
 			// Remap
 			void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);

@@ -482,8 +482,6 @@ namespace OVR
 			_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[1]->ptr(0), 0, NULL, NULL);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
-			printf("ROI left = {%d %d %d %d}\n", ovrset->m_leftROI.x, ovrset->m_leftROI.y, ovrset->m_leftROI.width, ovrset->m_leftROI.height);
-			printf("ROI right = {%d %d %d %d}\n", ovrset->m_rightROI.x, ovrset->m_rightROI.y, ovrset->m_rightROI.width, ovrset->m_rightROI.height);
 			_remapAvailable = true;
 			return true;
 		}
@@ -518,7 +516,7 @@ namespace OVR
 		}
 
 		// Read images region of interest
-		void OvrvisionProOpenCL::Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height, int dx, int dy)
+		void OvrvisionProOpenCL::Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height)
 		{
 			size_t origin[3] = { offsetX, offsetY, 0 };
 			size_t region[3] = { width, height, 1 };
