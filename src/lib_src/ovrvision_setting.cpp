@@ -378,8 +378,9 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 	double cals_x = (double)size.width / (double)sizeCalibBase.width;
 	double cals_y = (double)size.height / (double)sizeCalibBase.height;
 
+    // Stereo rectify maps need calibrated camera matrix and coeffs
 	if (eye == Cameye::OV_CAMEYE_LEFT)
-	{
+	{ 
 		cv::Mat camPs = getOptimalNewCameraMatrix(m_leftCameraInstric, m_leftCameraDistortion, size, 0, size, &m_leftROI);
 
 		//Calc clone
