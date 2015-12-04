@@ -108,9 +108,8 @@ namespace ovrvision_calibration
                 cameraPicLeft.Invalidate();
                 cameraPicRight.Invalidate();
                 
-                Thread.Sleep(20);	//50fps
                 while (UPDATE_LEFTDATA || UPDATE_RIGHTDATA)
-                    Thread.Sleep(1);
+                    Thread.Sleep(2);
             }
         }
 
@@ -152,6 +151,10 @@ namespace ovrvision_calibration
 			}
 			else if (cabliButton.Text == "Find Chessboard")
 			{
+                cameraPicRight.Visible = false;
+                cameraPicLeft.Visible = false;
+                Thread.Sleep(25);
+
                 if(Ovrvision.CalibFindChess() != 0)
                     textBox1.AppendText(String.Format("[Success]Chess board was found: No.{0} / {1}\r\n", Ovrvision.CalibGetImageCount(), CalibrationImageNum));
                 else
@@ -161,13 +164,16 @@ namespace ovrvision_calibration
 				{
 					cabliButton.Text = "Create Parameters";
 				}
+
+                cameraPicRight.Visible = true;
+                cameraPicLeft.Visible = true;
 			}
 			else if (cabliButton.Text == "Create Parameters")
 			{
                 textBox1.AppendText(String.Format("Setup in the data..... "));
 				Ovrvision.CalibSolveStereoParameter();
 				textBox1.AppendText(String.Format("OK!\r\n"));
-                Thread.Sleep(1000); //1s wait
+                Thread.Sleep(500); //0.5s wait
                 textBox1.AppendText(String.Format("The calibration params was saved successfully.\r\n"));
 
                 //Close

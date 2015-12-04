@@ -114,7 +114,6 @@ namespace ovrvision_app
 				cameraPicLeft.Invalidate();
 				cameraPicRight.Invalidate();
 
-				//Thread.Sleep(20);	//50fps
                 while (UPDATE_LEFTDATA || UPDATE_RIGHTDATA)
                     Thread.Sleep(2);    //2ms
 			}
