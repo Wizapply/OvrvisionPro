@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
 		ovrvision.SetCameraSyncMode(true);
 
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
-		bool show = true;
+		bool show = false;
 		bool useHistgram = false;
 
 		// Read histgram
@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
 
 				// Retrieve frame data
 				ovrvision.Read(left.data, right.data);
-				ovrvision.SkinRegion(Lhsv.data, Rhsv.data);
+				//ovrvision.SkinRegion(Lhsv.data, Rhsv.data);
 
 				// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
 				if (0 < ksize)
@@ -310,8 +310,8 @@ int main(int argc, char* argv[])
 			else
 			{
 				ovrvision.Capture(mode);
-				ovrvision.SkinRegion(left.data, right.data);
-				ovrvision.GrayscaleHalf(bilevel_l.data, bilevel_r.data);
+				ovrvision.SkinRegion(bilevel_l.data, bilevel_r.data);
+				//ovrvision.GrayscaleHalf(bilevel_l.data, bilevel_r.data);
 				imshow("Left", left);
 				imshow("Right", right);
 				imshow("bilevel(L)", bilevel_l);

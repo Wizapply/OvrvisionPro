@@ -148,7 +148,7 @@ namespace OVR
 			@param hsv image
 			@param dst monochrome mask
 			@param region when in HSV color region, set mask 255, others are 0`*/
-			void CreateMask(cl_mem hsv, cl_mem dst, Rect region, cl_event *execute = NULL);
+			//void CreateMask(cl_mem hsv, cl_mem dst, Rect region, cl_event *execute = NULL);
 
 			// OpenGL連携用のテクスチャーを生成
 			// pixelFormat must be GL_RGBA
