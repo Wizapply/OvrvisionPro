@@ -261,6 +261,12 @@ void  OvrvisionPro::GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRig
 	m_pOpenCL->Read(pLeft, pRight, roi.offsetX, roi.offsetY, roi.width, roi.height);
 }
 
+int OvrvisionPro::SkinRegion(unsigned char* left, unsigned char* right)
+{
+	m_pOpenCL->SkinRegion(left, right, SCALING::HALF);
+	return 2;
+}
+
 void OvrvisionPro::Read(unsigned char *left, unsigned char *right)
 {
 	m_pOpenCL->Read(left, right, SCALING::HALF);

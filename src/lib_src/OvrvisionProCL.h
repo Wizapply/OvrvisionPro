@@ -97,6 +97,12 @@ namespace OVR
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
+			// Skin color region
+			/*! @brief Skin color region */
+			void SkinRegion(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
+			/*! @brief Skin color region */
+			void SkinRegion(uchar *left, uchar *right, SCALING scale);
+
 			// Read images region of interest
 			void Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height);
 

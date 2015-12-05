@@ -33,8 +33,9 @@ int main(int argc, char* argv[])
 		fread(image, sizeof(ushort), BUFFER_SIZE, file);
 		fclose(file);
 
-		ovrvision.Demosaic(image);
-		ovrvision.Read(left->data, right->data);
+		cl_event events[2], event;
+		ovrvision.Demosaic(image, &event);
+		ovrvision.SkinRegion(left->data, right->data, HALF);
 		imshow("Left", *left);
 		imshow("Right", *right);
 		while (waitKey(10) != 'q')

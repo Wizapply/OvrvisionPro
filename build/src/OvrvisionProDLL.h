@@ -97,10 +97,24 @@ namespace OVR
 		void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 		void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
+		// Skin color region
+		/*! @brief Skin color region */
+		void SkinRegion(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
+		/*! @brief Skin color region */
+		void SkinRegion(uchar *left, uchar *right, SCALING scale);
+
 		// Read images region of interest
 		void Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height);
-
+		void Read(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r);
 		void Read(uchar *left, uchar *right, SCALING scaling = HALF);
+
+		/*! @brief Create Image2d on GPU
+			@param width 
+			@param height
+			@param dataType
+			@param channels (1 or 4) 
+			@return image2d */
+		cl_mem CreateImage2d(uint width, uint height, int dataType, uint channels);
 
 		/*! @brief Download from GPU
 		@param image
@@ -109,7 +123,7 @@ namespace OVR
 		@param offsetY
 		@param width
 		@param height */
-		void Download(const cl_mem image, uchar *ptr, int offsetX, int offsetY, uint width, uint height);
+		void Download(const cl_mem image, uchar *ptr, uint width, uint height, cl_event *event);
 
 		// Remap
 		void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);

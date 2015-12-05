@@ -165,6 +165,12 @@ public:
 		@param roi ROI */
 	void GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRight, ROI roi);
 
+	/*! @brief Get skin color region 
+		@param left image 
+		@param right image 
+		@return scale (2, 4) */
+	int SkinRegion(unsigned char* left, unsigned char* right);
+
 	/*!	@brief Check whether OvrvisionPro is open. 
 		@return If open, It is true */
 	bool isOpen();

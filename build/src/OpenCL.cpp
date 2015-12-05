@@ -188,6 +188,44 @@ namespace OVR
 		}
 	}
 
+	cl_mem OvrvisionProOpenCL::CreateImage2d(uint width, uint height, int dataType, uint channels)
+	{
+		cl_image_format format;
+		switch (channels)
+		{
+		case 1:
+			format.image_channel_order = CL_R;
+			break;
+		case 4:
+		default:
+			format.image_channel_order = CL_RGBA;
+			break;
+		}
+		switch (dataType)
+		{
+		case CV_8U:
+			format.image_channel_data_type = CL_UNSIGNED_INT8;
+			break;
+		case CV_8S:
+			format.image_channel_data_type = CL_SIGNED_INT8;
+			break;
+		case CV_16U:
+			format.image_channel_data_type = CL_UNSIGNED_INT16;
+			break;
+		case CV_16S:
+			format.image_channel_data_type = CL_SIGNED_INT16;
+			break;
+		case CV_32S:
+			format.image_channel_data_type = CL_SIGNED_INT32;
+			break;
+		case CV_32F:
+			format.image_channel_data_type = CL_FLOAT;
+			break;
+
+		}
+		return clCreateImage2D(_context, CL_MEM_READ_WRITE, &format, width, height, 0, 0, &_errorCode);
+	}
+
 	// Select GPU device
 	cl_device_id OvrvisionProOpenCL::SelectGPU(const char *platform, const char *version)
 	{
@@ -483,43 +521,15 @@ namespace OVR
 		}
 	}
 
-	void OvrvisionProOpenCL::Download(const cl_mem image, uchar *ptr, int offsetX, int offsetY, uint width, uint height)
+	void OvrvisionProOpenCL::Download(const cl_mem image, uchar *ptr, uint width, uint height, cl_event *event)
 	{
-		size_t origin[3] = { offsetX, offsetY, 0 };
+		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 		size_t size;
-		cl_image_format format;
-		clGetImageInfo(image, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
+		//cl_image_format format;
+		//clGetImageInfo(image, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
 		clGetImageInfo(image, CL_IMAGE_ELEMENT_SIZE, sizeof(size), &size, NULL);
-		/*
-		size_t channels;
-		switch (format.image_channel_order)
-		{
-		case CL_R:
-		case CL_A:
-		case CL_INTENSITY:
-		case CL_LUMINANCE:
-			channels = 1;
-			break;
-		case CL_RG:
-		case CL_RA:
-		case CL_Rx:
-			channels = 2;
-			break;
-		case CL_RGB:
-		case CL_RGx:
-			channels = 3;
-			break;
-		case CL_RGBA:
-		case CL_BGRA:
-		case CL_ARGB:
-		case CL_RGBx:
-			channels = 4;
-			break;
-		}
-		*/
-		cl_event execute;
-		_errorCode = clEnqueueReadImage(_commandQueue, image, CL_TRUE, origin, region, width * size, 0, ptr, 0, NULL, &execute);
+		_errorCode = clEnqueueReadImage(_commandQueue, image, CL_TRUE, origin, region, width * size, 0, ptr, 1, event, NULL);
 	}
 
 	// TODO:　縮小グレースケール画像を取得
@@ -609,14 +619,118 @@ namespace OVR
 		clSetKernelArg(_resize, 0, sizeof(cl_mem), &src);
 		clSetKernelArg(_resize, 1, sizeof(cl_mem), &dst);
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, reSize, 0, 0, NULL, execute);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, reSize, NULL, 0, NULL, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+	}
+
+	void OvrvisionProOpenCL::SkinRegion(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	{
+		cl_mem l, r;
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+		size_t size[] = { width, height };
+
+		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Resize
+		cl_event event[2];
+		Resize(_l, l, scaling, &event[0]);
+		Resize(_r, r, scaling, &event[1]);
+
+		// Convert to HSV
+		//__kernel void convertHSV( // TODO UNDER CONSTRUCTION
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8 x 4
+
+		clSetKernelArg(_convertHSV, 0, sizeof(cl_mem), &l);
+		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &left);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 1, &event[0], event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_convertHSV, 0, sizeof(cl_mem), &r);
+		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &right);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 1, &event[1], event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporary images
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+
+	void OvrvisionProOpenCL::SkinRegion(uchar *left, uchar *right, SCALING scaling)
+	{
+		cl_mem l, r;
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+
+		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_event event[2];
+
+		SkinRegion(l, r, scaling, &event[0], &event[1]);
+
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
 	}
 
 	// UNDER CONSTRUCTION
 	void OvrvisionProOpenCL::ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter, cl_event *execute)
 	{
+		size_t width, height;
+		clGetImageInfo(src, CL_IMAGE_WIDTH, sizeof(width), &width, NULL);
+		clGetImageInfo(src, CL_IMAGE_HEIGHT, sizeof(height), &height, NULL);
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+		size_t size[] = { width, height };
 
+		//__kernel void convertHSV( // TODO UNDER CONSTRUCTION
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8 x 4
+
+		clSetKernelArg(_convertHSV, 0, sizeof(cl_mem), &src);
+		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &dst);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 0, NULL, execute);
+		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
 	// UNDER CONSTRUCTION
@@ -644,7 +758,7 @@ namespace OVR
 		clSetKernelArg(_demosaic, 0, sizeof(cl_mem), &_src);
 		clSetKernelArg(_demosaic, 1, sizeof(cl_mem), &left);
 		clSetKernelArg(_demosaic, 2, sizeof(cl_mem), &right);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _demosaic, 2, NULL, demosaicSize, 0, 1, &writeEvent, execute);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _demosaic, 2, NULL, demosaicSize, NULL, 1, &writeEvent, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
@@ -667,6 +781,12 @@ namespace OVR
 		{
 			_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
 		}
+	}
+
+	void OvrvisionProOpenCL::Read(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	{
+		Resize(_l, left, scaling, event_l);
+		Resize(_r, right, scaling, event_r);
 	}
 
 	void OvrvisionProOpenCL::Read(uchar *left, uchar *right, SCALING scaling)
@@ -696,11 +816,9 @@ namespace OVR
 		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_event event[2];
-		Resize(_l, l, scaling, &event[0]);
-		Resize(_r, r, scaling, &event[1]);
-		//clFinish(_commandQueue);
-		//Download(l, left, 0, 0, width, height);
-		//Download(r, left, 0, 0, width, height);
+
+		Read(l, r, scaling, &event[0], &event[1]);
+
 		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
