@@ -168,7 +168,7 @@ namespace OVR
 			clReleaseKernel(_resize);
 			clReleaseKernel(_convertGrayscale);
 			clReleaseKernel(_convertHSV);
-			//clReleaseKernel(_skincolor);
+			clReleaseKernel(_skincolor);
 			clReleaseProgram(_program);
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
@@ -474,8 +474,8 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_convertGrayscale = clCreateKernel(_program, "convertGrayscale", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
-			//_skincolor = clCreateKernel(_program, "skincolor", &_errorCode);
-			//SAMPLE_CHECK_ERRORS(_errorCode);
+			_skincolor = clCreateKernel(_program, "skincolor", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
 			return true;
 		}
 	}
@@ -559,7 +559,8 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
-	void OvrvisionProOpenCL::SkinRegion(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	// Skin color extraction
+	void OvrvisionProOpenCL::SkinColor(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
 	{
 		cl_mem l, r;
 		uint width = _width, height = _height;
@@ -593,7 +594,7 @@ namespace OVR
 		Resize(_r, r, scaling, &event[1]);
 
 		// Convert to HSV
-		//__kernel void convertHSV( // TODO UNDER CONSTRUCTION
+		//__kernel void convertHSV( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8 x 4
 
@@ -604,6 +605,68 @@ namespace OVR
 		clSetKernelArg(_convertHSV, 0, sizeof(cl_mem), &r);
 		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &right);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 1, &event[1], event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporary images
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+
+	void OvrvisionProOpenCL::SkinRegion(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	{
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+		size_t size[] = { width, height };
+
+		// Get HSV images
+		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		cl_event event[2];
+		SkinColor(l, r, scaling, &event[0], &event[1]);
+
+		int h_low = 10, h_high = 26;
+		int s_low = 55, s_high = 150;
+		//__kernel void skincolor( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t mask,// CL_UNSIGNED_INT8
+		//		__read_only int h_low,		// 
+		//		__read_only int h_hight,	// 
+		//		__read_only int s_low,		// 
+		//		__read_only int s_hight)	// 
+		clSetKernelArg(_skincolor, 0, sizeof(cl_mem), &l);
+		clSetKernelArg(_skincolor, 1, sizeof(cl_mem), &left);
+		clSetKernelArg(_skincolor, 2, sizeof(int), &h_low);
+		clSetKernelArg(_skincolor, 3, sizeof(int), &h_high);
+		clSetKernelArg(_skincolor, 4, sizeof(int), &s_low);
+		clSetKernelArg(_skincolor, 5, sizeof(int), &s_high);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_skincolor, 0, sizeof(cl_mem), &r);
+		clSetKernelArg(_skincolor, 1, sizeof(cl_mem), &right);
+		clSetKernelArg(_skincolor, 2, sizeof(int), &h_low);
+		clSetKernelArg(_skincolor, 3, sizeof(int), &h_high);
+		clSetKernelArg(_skincolor, 4, sizeof(int), &s_low);
+		clSetKernelArg(_skincolor, 5, sizeof(int), &s_high);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		// Release temporary images

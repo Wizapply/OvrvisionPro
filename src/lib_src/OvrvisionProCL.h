@@ -103,6 +103,8 @@ namespace OVR
 			/*! @brief Skin color region */
 			void SkinRegion(uchar *left, uchar *right, SCALING scale);
 
+			void SkinColor(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r);
+
 			// 縮小したグレースケール画像を取得
 			/*! @brief Get Scaled gray image */
 			void Grayscale(cl_mem left, cl_mem right, enum SCALING scale, cl_event *event_l, cl_event *event_r);
@@ -211,7 +213,7 @@ namespace OVR
 			cl_kernel		_resize;
 			cl_kernel		_convertHSV;
 			cl_kernel		_convertGrayscale;
-			//cl_kernel		_skincolor;
+			cl_kernel		_skincolor;
 
 		private:
 			cl_event _execute;

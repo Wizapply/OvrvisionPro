@@ -261,14 +261,14 @@ int main(int argc, char* argv[])
 							}
 							else
 							{
-								if (10 <= h && h <= 21 && 55 < s && s < 150)
+								if (10 <= h && h <= 26 && 55 < s && s < 150)
 								{
 									Lpixel[x] = left.at<Vec4b>(y, x);
 									b_l[x] = 255;
 								}
 								h = r[x][0];
 								s = r[x][1];
-								if (10 <= h && h <= 21 && 55 < s && s < 150)
+								if (10 <= h && h <= 26 && 55 < s && s < 150)
 								{
 									Rpixel[x] = right.at<Vec4b>(y, x);
 									b_r[x] = 255;
