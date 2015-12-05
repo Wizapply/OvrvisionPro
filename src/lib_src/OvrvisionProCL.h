@@ -208,11 +208,10 @@ namespace OVR
 			cl_program		_program;
 			cl_kernel		_demosaic;
 			cl_kernel		_remap;
-			cl_kernel		_grayscale;
-			cl_kernel		_skincolor;
 			cl_kernel		_resize;
 			cl_kernel		_convertHSV;
 			cl_kernel		_convertGrayscale;
+			//cl_kernel		_skincolor;
 
 		private:
 			cl_event _execute;

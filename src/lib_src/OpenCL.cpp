@@ -165,8 +165,10 @@ namespace OVR
 			delete mapY[1];
 			clReleaseKernel(_demosaic);
 			clReleaseKernel(_remap);
-			clReleaseKernel(_grayscale);
-			clReleaseKernel(_skincolor);
+			clReleaseKernel(_resize);
+			clReleaseKernel(_convertGrayscale);
+			clReleaseKernel(_convertHSV);
+			//clReleaseKernel(_skincolor);
 			clReleaseProgram(_program);
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
@@ -466,16 +468,14 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_remap = clCreateKernel(_program, "remap", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
-			_grayscale = clCreateKernel(_program, "grayscale", &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			_skincolor = clCreateKernel(_program, "skincolor", &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
 			_resize = clCreateKernel(_program, "resize", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_convertHSV = clCreateKernel(_program, "convertHSV", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_convertGrayscale = clCreateKernel(_program, "convertGrayscale", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
+			//_skincolor = clCreateKernel(_program, "skincolor", &_errorCode);
+			//SAMPLE_CHECK_ERRORS(_errorCode);
 			return true;
 		}
 	}
