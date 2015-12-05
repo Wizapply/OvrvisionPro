@@ -311,9 +311,11 @@ int main(int argc, char* argv[])
 			{
 				ovrvision.Capture(mode);
 				ovrvision.SkinRegion(left.data, right.data);
-				
+				ovrvision.GrayscaleHalf(bilevel_l.data, bilevel_r.data);
 				imshow("Left", left);
 				imshow("Right", right);
+				imshow("bilevel(L)", bilevel_l);
+				imshow("bilevel(R)", bilevel_r);
 			}
 
 			switch (waitKey(1))

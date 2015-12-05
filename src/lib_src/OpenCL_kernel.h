@@ -251,5 +251,11 @@ const char *kernel =
 "		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4\n"
 "		__write_only image2d_t dst)	// CL_UNSIGNED_INT8\n"
 "{\n"
+"	int x = get_global_id(0);\n"
+"	int y = get_global_id(1);\n"
+"	uint4 pixel = read_imageui(src, NEAREST, (int2)(x, y));\n"
+"	uint4 gray;\n"
+"	gray.x = ((299 * pixel.z) + (587 * pixel.y) + (114 * pixel.x)) / 1000;\n"
+"	write_imageui(dst, (int2)(x, y), gray);\n"
 "}\n"
 ;

@@ -517,53 +517,6 @@ namespace OVR
 		_errorCode = clEnqueueReadImage(_commandQueue, image, CL_TRUE, origin, region, width * size * channels, 0, ptr, 1, &execute, NULL);
 	}
 
-	// TODO:　縮小グレースケール画像を取得
-	/*! @brief Get scaled grayscale images
-		@param left ptr for left image
-		@param right ptr for right image
-		@param scaling */
-	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling, cl_event *execute)
-	{
-		// _l, _rから縮小グレースケール画像を生成して返す
-		int scale = 2;
-		switch (scaling)
-		{
-		case HALF:
-			scale = 2;
-			break;
-
-		case FOURTH:
-			scale = 4;
-			break;
-
-		case EIGHTH:
-			scale = 8;
-			break;
-
-		default:
-			return;
-		}
-		size_t reSize[] = { _width / scale, _height / scale };
-		size_t region[3] = { _width / scale, _height / scale, 1 };
-		size_t origin[3] = { 0, 0, 0 };
-		cl_event writeEvent[2];
-
-		clSetKernelArg(_remap, 0, sizeof(cl_mem), &_l);
-		clSetKernelArg(_remap, 1, sizeof(cl_mem), &_grayL);
-		clSetKernelArg(_remap, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _grayscale, 2, NULL, reSize, 0, 0, NULL, &writeEvent[0]);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		clSetKernelArg(_remap, 0, sizeof(cl_mem), &_r);
-		clSetKernelArg(_remap, 1, sizeof(cl_mem), &_grayR);
-		clSetKernelArg(_remap, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _grayscale, 2, NULL, reSize, 0, 0, NULL, &writeEvent[1]);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		// Read result
-		_errorCode = clEnqueueReadImage(_commandQueue, _grayL, CL_TRUE, origin, region, _width * sizeof(uchar), 0, left, 1, &writeEvent[0], NULL);
-		_errorCode = clEnqueueReadImage(_commandQueue, _grayR, CL_TRUE, origin, region, _width * sizeof(uchar), 0, right, 1, &writeEvent[1], NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-	}
-
 	/*! @brief Resize image
 		@param src image
 		@param dst image
@@ -658,6 +611,58 @@ namespace OVR
 		clReleaseMemObject(r);
 	}
 
+	void OvrvisionProOpenCL::Grayscale(cl_mem left, cl_mem right, enum SCALING scaling, cl_event *event_l, cl_event *event_r)
+	{
+		cl_mem l, r;
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+		size_t size[] = { width, height };
+
+		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Resize
+		cl_event event[2];
+		Resize(_l, l, scaling, &event[0]);
+		Resize(_r, r, scaling, &event[1]);
+
+		// Convert to HSV
+		//__kernel void convertGrayscale( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8
+
+		clSetKernelArg(_convertGrayscale, 0, sizeof(cl_mem), &l);
+		clSetKernelArg(_convertGrayscale, 1, sizeof(cl_mem), &left);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertGrayscale, 2, NULL, size, NULL, 1, &event[0], event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_convertGrayscale, 0, sizeof(cl_mem), &r);
+		clSetKernelArg(_convertGrayscale, 1, sizeof(cl_mem), &right);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertGrayscale, 2, NULL, size, NULL, 1, &event[1], event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporary images
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+
 	void OvrvisionProOpenCL::SkinRegion(uchar *left, uchar *right, SCALING scaling)
 	{
 		cl_mem l, r;
@@ -695,6 +700,50 @@ namespace OVR
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
 	}
+
+	// 縮小グレースケール画像を取得
+	/*! @brief Get scaled grayscale images
+	@param left ptr for left image
+	@param right ptr for right image
+	@param scaling */
+	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling)
+	{
+		cl_mem l, r;
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+
+		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_event event[2];
+
+		Grayscale(l, r, scaling, &event[0], &event[1]);
+
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar), 0, left, 1, &event[0], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event[1], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+
 	// UNDER CONSTRUCTION
 	void OvrvisionProOpenCL::ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter, cl_event *execute)
 	{

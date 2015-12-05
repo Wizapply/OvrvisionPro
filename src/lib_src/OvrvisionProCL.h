@@ -103,6 +103,11 @@ namespace OVR
 			/*! @brief Skin color region */
 			void SkinRegion(uchar *left, uchar *right, SCALING scale);
 
+			// 縮小したグレースケール画像を取得
+			/*! @brief Get Scaled gray image */
+			void Grayscale(cl_mem left, cl_mem right, enum SCALING scale, cl_event *event_l, cl_event *event_r);
+			void Grayscale(uchar *left, uchar *right, enum SCALING scale);
+
 			// Read images region of interest
 			void Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height);
 
@@ -121,17 +126,15 @@ namespace OVR
 			void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);
 			
 
-			// TODO: 縮小したグレースケール画像を取得
-			void Grayscale(uchar *left, uchar *right, enum SCALING scale, cl_event *execute = NULL);
 
-			// TODO: 縮小画像（1/2)
+			// 縮小画像（1/2)
 			/*! @brief Get half scaled image
 			@param src
 			@param dst
 			@param scale */
 			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF, cl_event *execute = NULL);
 
-			// TODO: Convert to HSV color space
+			// Convert to HSV color space
 			/*! @brief Convert image to HSV color space
 			@param src image
 			@param dst image
