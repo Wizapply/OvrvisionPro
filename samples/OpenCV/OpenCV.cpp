@@ -145,51 +145,28 @@ int main(int argc, char* argv[])
 	{
 		int ksize = 5;
 		enum FILTER filter = GAUSSIAN;
-		int width = ovrvision.GetCamWidth();
-		int height = ovrvision.GetCamHeight();
+		int width = ovrvision.GetCamWidth() / 2;
+		int height = ovrvision.GetCamHeight() / 2;
+		ROI roi = { 0, 0, width, height };
 
-		Mat l(height / 2, width / 2, CV_8UC4);
-		Mat r(height / 2, width / 2, CV_8UC4);
-		ROI roi = {(width - CROP_W) / 2, (height - CROP_H) / 2, CROP_W, CROP_H};
-		Mat left(roi.height, roi.width, CV_8UC4);
-		Mat right(roi.height, roi.width, CV_8UC4);
+		Mat left(height, width, CV_8UC4);
+		Mat right(height, width, CV_8UC4);
+		Mat Lhsv(height, width, CV_8UC4);
+		Mat Rhsv(height, width, CV_8UC4);
+		Mat lHSV(height, width, CV_8UC4);
+		Mat rHSV(height, width, CV_8UC4);
+		Mat Lresult(height, width, CV_8UC4);
+		Mat Rresult(height, width, CV_8UC4);
+		Mat bilevel_l(height, width, CV_8UC1);
+		Mat bilevel_r(height, width, CV_8UC1);
+
 		Mat histgram(256, 256, CV_8UC1);
-
-		Mat LEFT(roi.height / 2, roi.width / 2, CV_8UC4);
-		Mat RIGHT(roi.height / 2, roi.width / 2, CV_8UC4);
-		Mat Lhsv(roi.height / 2, roi.width / 2, CV_8UC3);
-		Mat Rhsv(roi.height / 2, roi.width / 2, CV_8UC3);
-		Mat lHSV(roi.height / 2, roi.width / 2, CV_8UC3);
-		Mat rHSV(roi.height / 2, roi.width / 2, CV_8UC3);
-		Mat Lresult(roi.height / 2, roi.width / 2, CV_8UC4);
-		Mat Rresult(roi.height / 2, roi.width / 2, CV_8UC4);
-		Mat bilevel_l(roi.height / 2, roi.width / 2, CV_8UC1);
-		Mat bilevel_r(roi.height / 2, roi.width / 2, CV_8UC1);
-		//Mat blur(roi.height / 2, roi.width / 2, CV_8UC4);
-		//Mat blur2(roi.height / 2, roi.width / 2, CV_8UC4);
 
 		std::vector<std::vector<Point>> contours;
 		std::vector<Vec4i> hierarchy;
 
 		//Sync
 		ovrvision.SetCameraSyncMode(true);
-
-		/*
-		Mat P1, P2, T, Q;
-		FileStorage cvfs;
-		if (cvfs.open("epipolar.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML))
-		{
-			//get data node
-			FileNode data(cvfs.fs, NULL);
-			data["P1"] >> P1;
-			data["P2"] >> P2;
-			data["T"] >> T;
-			data["Q"] >> Q;
-			cvfs.release();
-			printf("T =[ %f %f %f ]\n", T.at<double>(0, 0), T.at<double>(0, 1), T.at<double>(0, 2));
-			printf("Q[3] = [ %f %f %f %f ]\n", Q.at<double>(0, 3), Q.at<double>(1, 3), Q.at<double>(2, 3), Q.at<double>(3, 3));
-		}
-		*/
 
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
 		bool show = true;
@@ -227,35 +204,27 @@ int main(int argc, char* argv[])
 				ovrvision.Capture(mode);
 
 				// Retrieve frame data
-				ovrvision.GetStereoImageBGRA(left.data, right.data, roi);
+				ovrvision.Read(left.data, right.data);
+				ovrvision.SkinRegion(Lhsv.data, Rhsv.data);
 
 				// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
 				if (0 < ksize)
 				{
-					// Ç±Ç±Ç©ÇÁGPUÅiOpenCLâªÅj
-					resize(left, LEFT, LEFT.size());
-					resize(right, RIGHT, RIGHT.size());
-
-					//
 					switch (filter)
 					{
 					case GAUSSIAN:
-						cvtColor(LEFT, Lhsv, CV_BGR2HSV_FULL);
-						cvtColor(RIGHT, Rhsv, CV_BGR2HSV_FULL);
 						GaussianBlur(Lhsv, lHSV, Size(ksize, ksize), 0);
 						GaussianBlur(Rhsv, rHSV, Size(ksize, ksize), 0);
 						break;
 
 					case MEDIAN:
-						cvtColor(LEFT, Lhsv, CV_BGR2HSV_FULL);
-						cvtColor(RIGHT, Rhsv, CV_BGR2HSV_FULL);
 						medianBlur(Lhsv, lHSV, ksize);
 						medianBlur(Rhsv, rHSV, ksize);
 						break;
 
 					default:
-						cvtColor(LEFT, lHSV, CV_BGR2HSV_FULL);
-						cvtColor(RIGHT, rHSV, CV_BGR2HSV_FULL);
+						Lhsv.copyTo(lHSV);
+						Rhsv.copyTo(rHSV);
 						break;
 					}
 					
@@ -263,15 +232,15 @@ int main(int argc, char* argv[])
 					Rresult.setTo(Scalar(0, 0, 0, 255));
 					bilevel_l.setTo(Scalar::all(0));
 					bilevel_r.setTo(Scalar::all(0));
-					for (uint y = 0; y < roi.height / 2; y++)
+					for (int y = 0; y < height; y++)
 					{
-						Vec3b *l = lHSV.ptr<Vec3b>(y);
-						Vec3b *r = rHSV.ptr<Vec3b>(y);
+						Vec4b *l = lHSV.ptr<Vec4b>(y);
+						Vec4b *r = rHSV.ptr<Vec4b>(y);
 						Vec4b *Lpixel = Lresult.ptr<Vec4b>(y);
 						Vec4b *Rpixel = Rresult.ptr<Vec4b>(y);
 						uchar *b_l = bilevel_l.ptr<uchar>(y);
 						uchar *b_r = bilevel_r.ptr<uchar>(y);
-						for (uint x = 0; x < roi.width / 2; x++)
+						for (int x = 0; x < width; x++)
 						{
 							uchar h = l[x][0];
 							uchar s = l[x][1];
@@ -279,29 +248,29 @@ int main(int argc, char* argv[])
 							{
 								if (1 < histgram.at<uchar>(h, s))
 								{
-									Lpixel[x] = LEFT.at<Vec4b>(y, x);
+									Lpixel[x] = left.at<Vec4b>(y, x);
 									b_l[x] = 255;
 								}
 								h = r[x][0];
 								s = r[x][1];
 								if (3 < histgram.at<uchar>(h, s))
 								{
-									Rpixel[x] = RIGHT.at<Vec4b>(y, x);
+									Rpixel[x] = right.at<Vec4b>(y, x);
 									b_r[x] = 255;
 								}
 							}
 							else
 							{
-								if (15 <= h && h <= 30 && 55 < s && s < 150)
+								if (10 <= h && h <= 21 && 55 < s && s < 150)
 								{
-									Lpixel[x] = LEFT.at<Vec4b>(y, x);
+									Lpixel[x] = left.at<Vec4b>(y, x);
 									b_l[x] = 255;
 								}
 								h = r[x][0];
 								s = r[x][1];
-								if (15 <= h && h <= 30 && 55 < s && s < 150)
+								if (10 <= h && h <= 21 && 55 < s && s < 150)
 								{
-									Rpixel[x] = RIGHT.at<Vec4b>(y, x);
+									Rpixel[x] = right.at<Vec4b>(y, x);
 									b_r[x] = 255;
 								}
 							}
@@ -327,17 +296,13 @@ int main(int argc, char* argv[])
 					// Show frame data
 					imshow("bilevel(L)", bilevel_l);
 					imshow("bilevel(R)", bilevel_r);
-					imshow("Left", LEFT);
-					imshow("Right", RIGHT);
+					imshow("Left", left);
+					imshow("Right", right);
 					imshow("L", Lresult);
 					imshow("R", Rresult);
-					//imshow("Blur(L)", blur);
-					//imshow("Blur(R)", blur2);
-					//imshow("Lhsv", Lhsv);
 				}
 				else
 				{
-					// Show frame data
 					imshow("Left", left);
 					imshow("Right", right);
 				}
@@ -345,10 +310,10 @@ int main(int argc, char* argv[])
 			else
 			{
 				ovrvision.Capture(mode);
-				ovrvision.Read(l.data, r.data);
+				ovrvision.SkinRegion(left.data, right.data);
 				
-				imshow("Left", l);
-				imshow("Right", r);
+				imshow("Left", left);
+				imshow("Right", right);
 			}
 
 			switch (waitKey(1))
