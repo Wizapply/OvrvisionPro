@@ -171,6 +171,11 @@ public:
 		@return scale (2, 4) */
 	int SkinRegion(unsigned char* left, unsigned char* right);
 
+	/*! @brief Get color histgram in HSV space
+		@param HSV histgram (256S x 180H)
+		@return scale (2, 4) */
+	int ColorHistgram(unsigned char* histgram);
+
 	/*!	@brief Check whether OvrvisionPro is open. 
 		@return If open, It is true */
 	bool isOpen();

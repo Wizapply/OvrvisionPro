@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
 		Mat bilevel_l(height, width, CV_8UC1);
 		Mat bilevel_r(height, width, CV_8UC1);
 
-		Mat histgram(256, 256, CV_8UC1);
+		Mat histgram(180, 256, CV_8UC1);
 
 		std::vector<std::vector<Point>> contours;
 		std::vector<Vec4i> hierarchy;
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
 		bool useHistgram = false;
 
 		// Read histgram
-		histgram = imread("histgram.bmp");
+		//histgram = imread("histgram.bmp");
 		if (histgram.empty())
 		{
 			//estimateSkincolor(histgram, ovrvision, roi);
@@ -205,6 +205,7 @@ int main(int argc, char* argv[])
 
 				// Retrieve frame data
 				ovrvision.Read(left.data, right.data);
+				
 				//ovrvision.SkinRegion(Lhsv.data, Rhsv.data);
 
 				// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
@@ -310,8 +311,11 @@ int main(int argc, char* argv[])
 			else
 			{
 				ovrvision.Capture(mode);
+				ovrvision.Read(left.data, right.data);
 				ovrvision.SkinRegion(bilevel_l.data, bilevel_r.data);
+				//ovrvision.ColorHistgram(histgram.data);
 				//ovrvision.GrayscaleHalf(bilevel_l.data, bilevel_r.data);
+				//imshow("histgram", histgram);
 				imshow("Left", left);
 				imshow("Right", right);
 				imshow("bilevel(L)", bilevel_l);
@@ -392,6 +396,9 @@ int main(int argc, char* argv[])
 				{
 					imwrite("LEFT.tiff", left);
 					imwrite("RIGHT.tiff", right);
+					imwrite("bilevel_l.png", bilevel_l);
+					imwrite("bilevel_r.png", bilevel_r);
+
 				}
 				break;
 

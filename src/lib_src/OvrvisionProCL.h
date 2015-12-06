@@ -104,6 +104,9 @@ namespace OVR
 			void SkinRegion(uchar *left, uchar *right, SCALING scale);
 
 			void SkinColor(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r);
+			void SkinColorGaussianBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
+			void SkinColor(uchar *left, uchar *right, SCALING scale);
+			void ColorHistgram(uchar *histgram, SCALING scaling);
 
 			// 縮小したグレースケール画像を取得
 			/*! @brief Get Scaled gray image */
@@ -127,8 +130,6 @@ namespace OVR
 			// Remap
 			void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);
 			
-
-
 			// 縮小画像（1/2)
 			/*! @brief Get half scaled image
 			@param src
@@ -142,13 +143,6 @@ namespace OVR
 			@param dst image
 			@param filter */
 			void ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter = RAW, cl_event *execute = NULL);
-
-			// TODO: Make mask 
-			/*! @brief Make mask from HSV region
-			@param hsv image
-			@param dst monochrome mask
-			@param region when in HSV color region, set mask 255, others are 0`*/
-			//void CreateMask(cl_mem hsv, cl_mem dst, Rect region, cl_event *execute = NULL);
 
 			// OpenGL連携用のテクスチャーを生成
 			// pixelFormat must be GL_RGBA
@@ -214,12 +208,13 @@ namespace OVR
 			cl_kernel		_convertHSV;
 			cl_kernel		_convertGrayscale;
 			cl_kernel		_skincolor;
+			cl_kernel		_gaussianBlur;
 
 		private:
 			cl_event _execute;
 			cl_mem	_src;
 			cl_mem	_l, _r, _L, _R;
-			cl_mem	_grayL, _grayR;
+			//cl_mem	_grayL, _grayR;
 			cl_mem	_mx[2], _my[2]; // map for remap in GPU
 			bool	_remapAvailable;
 		};
