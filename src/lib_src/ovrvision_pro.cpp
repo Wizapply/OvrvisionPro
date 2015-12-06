@@ -268,6 +268,12 @@ int OvrvisionPro::SkinRegion(unsigned char* left, unsigned char* right)
 	return 2;
 }
 
+// Set HSV region
+void OvrvisionPro::SetSkinHSV(int h_low, int h_high, int s_low, int s_high)
+{
+	m_pOpenCL->SetHSV(h_low, h_high, s_low, s_high);
+}
+
 // Get color histrgam in HSV space
 int OvrvisionPro::ColorHistgram(unsigned char* histgram)
 {

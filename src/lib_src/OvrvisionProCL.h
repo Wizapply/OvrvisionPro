@@ -104,6 +104,9 @@ namespace OVR
 			@param scale */
 			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF, cl_event *execute = NULL);
 
+			/*! @brief set HSV region for SkinRegion */
+			void SetHSV(int h_low, int h_high, int s_low, int s_high) { _h_low = h_low; _h_high = h_high; _s_low = s_low; _s_high = s_high; }
+
 			// Skin color region
 			/*! @brief Skin color region */
 			void SkinRegion(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
@@ -111,7 +114,7 @@ namespace OVR
 			void SkinRegion(uchar *left, uchar *right, SCALING scale);
 
 			void SkinColor(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r);
-			void SkinColorGaussianBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
+			void SkinColorBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
 			void SkinColor(uchar *left, uchar *right, SCALING scale);
 			void ColorHistgram(uchar *histgram, SCALING scaling);
 
@@ -188,6 +191,9 @@ namespace OVR
 			int _width, _height;
 			Mat *mapX[2], *mapY[2]; // camera parameter
 			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
+			// HSV color region 
+			int _h_low, _h_high;
+			int _s_low, _s_high;
 
 		protected:
 			// OpenCL variables
@@ -209,7 +215,9 @@ namespace OVR
 			cl_kernel		_convertHSV;
 			cl_kernel		_convertGrayscale;
 			cl_kernel		_skincolor;
-			cl_kernel		_gaussianBlur;
+			cl_kernel		_gaussianBlur3x3;
+			cl_kernel		_gaussianBlur5x5;
+			cl_kernel		_medianBlur3x3;
 
 		private:
 			cl_event _execute;

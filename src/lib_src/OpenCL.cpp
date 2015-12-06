@@ -154,6 +154,11 @@ namespace OVR
 			_deviceExtensions = NULL;
 			CreateProgram();
 			Prepare4Sharing();
+			// Skin region
+			_h_low = 13;
+			_h_high = 21;
+			_s_low = 88;
+			_s_high = 136;
 	}
 
 		// Destructor
@@ -169,7 +174,8 @@ namespace OVR
 			clReleaseKernel(_convertGrayscale);
 			clReleaseKernel(_convertHSV);
 			clReleaseKernel(_skincolor);
-			clReleaseKernel(_gaussianBlur);
+			clReleaseKernel(_gaussianBlur3x3);
+			clReleaseKernel(_medianBlur3x3);
 			clReleaseProgram(_program);
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
@@ -229,7 +235,9 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_skincolor = clCreateKernel(_program, "skincolor", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
-			_gaussianBlur = clCreateKernel(_program, "gaussian", &_errorCode);
+			_gaussianBlur3x3 = clCreateKernel(_program, "gaussian3x3", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_medianBlur3x3 = clCreateKernel(_program, "median3x3_H", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			return true;
 		}
@@ -616,7 +624,7 @@ namespace OVR
 		clReleaseMemObject(r);
 	}
 
-	void OvrvisionProOpenCL::SkinColorGaussianBlur(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	void OvrvisionProOpenCL::SkinColorBlur(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
 	{
 		uint width = _width, height = _height;
 		switch (scaling)
@@ -650,16 +658,25 @@ namespace OVR
 		//__kernel void gaussian( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8 x 4
-
-		clSetKernelArg(_gaussianBlur, 0, sizeof(cl_mem), &l);
-		clSetKernelArg(_gaussianBlur, 1, sizeof(cl_mem), &left);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur, 2, NULL, size, NULL, 1, &event[0], event_l);
+#ifdef GAUSSIAN
+		clSetKernelArg(_gaussianBlur3x3, 0, sizeof(cl_mem), &l);
+		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &left);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[0], event_l);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		clSetKernelArg(_gaussianBlur, 0, sizeof(cl_mem), &r);
-		clSetKernelArg(_gaussianBlur, 1, sizeof(cl_mem), &right);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur, 2, NULL, size, NULL, 1, &event[1], event_r);
+		clSetKernelArg(_gaussianBlur3x3, 0, sizeof(cl_mem), &r);
+		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &right);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[1], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-
+#else
+		clSetKernelArg(_medianBlur3x3, 0, sizeof(cl_mem), &l);
+		clSetKernelArg(_medianBlur3x3, 1, sizeof(cl_mem), &left);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _medianBlur3x3, 2, NULL, size, NULL, 1, &event[0], event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_gaussianBlur3x3, 0, sizeof(cl_mem), &r);
+		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &right);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[1], event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+#endif
 		// Release temporary images
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
@@ -694,10 +711,11 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		cl_event event[2];
-		SkinColor(l, r, scaling, &event[0], &event[1]);
+		SkinColorBlur(l, r, scaling, &event[0], &event[1]);
 
-		int h_low = 10, h_high = 20;
-		int s_low = 55, s_high = 150;
+		//int h_low = 13, h_high = 21;
+		//int s_low = 88, s_high = 136;
+
 		//__kernel void skincolor( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t mask,// CL_UNSIGNED_INT8
@@ -707,18 +725,18 @@ namespace OVR
 		//		__read_only int s_hight)	// 
 		clSetKernelArg(_skincolor, 0, sizeof(cl_mem), &l);
 		clSetKernelArg(_skincolor, 1, sizeof(cl_mem), &left);
-		clSetKernelArg(_skincolor, 2, sizeof(int), &h_low);
-		clSetKernelArg(_skincolor, 3, sizeof(int), &h_high);
-		clSetKernelArg(_skincolor, 4, sizeof(int), &s_low);
-		clSetKernelArg(_skincolor, 5, sizeof(int), &s_high);
+		clSetKernelArg(_skincolor, 2, sizeof(int), &_h_low);
+		clSetKernelArg(_skincolor, 3, sizeof(int), &_h_high);
+		clSetKernelArg(_skincolor, 4, sizeof(int), &_s_low);
+		clSetKernelArg(_skincolor, 5, sizeof(int), &_s_high);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_l);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		clSetKernelArg(_skincolor, 0, sizeof(cl_mem), &r);
 		clSetKernelArg(_skincolor, 1, sizeof(cl_mem), &right);
-		clSetKernelArg(_skincolor, 2, sizeof(int), &h_low);
-		clSetKernelArg(_skincolor, 3, sizeof(int), &h_high);
-		clSetKernelArg(_skincolor, 4, sizeof(int), &s_low);
-		clSetKernelArg(_skincolor, 5, sizeof(int), &s_high);
+		clSetKernelArg(_skincolor, 2, sizeof(int), &_h_low);
+		clSetKernelArg(_skincolor, 3, sizeof(int), &_h_high);
+		clSetKernelArg(_skincolor, 4, sizeof(int), &_s_low);
+		clSetKernelArg(_skincolor, 5, sizeof(int), &_s_high);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 

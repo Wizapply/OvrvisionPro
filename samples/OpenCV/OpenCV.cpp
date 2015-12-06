@@ -196,6 +196,12 @@ int main(int argc, char* argv[])
 			*/
 		}
 
+		//_h_low = 13;
+		//_h_high = 21;
+		//_s_low = 88;
+		//_s_high = 136;
+		ovrvision.SetSkinHSV(9, 22, 80, 143);
+
 		for (bool loop = true; loop;)
 		{
 			if (show)
@@ -314,8 +320,8 @@ int main(int argc, char* argv[])
 				ovrvision.Read(left.data, right.data);
 				ovrvision.SkinRegion(bilevel_l.data, bilevel_r.data);
 				//ovrvision.GrayscaleHalf(bilevel_l.data, bilevel_r.data);
-				//ovrvision.ColorHistgram(histgram.data);
-				//imshow("histgram", histgram);
+				ovrvision.ColorHistgram(histgram.data);
+				imshow("histgram", histgram);
 				imshow("Left", left);
 				imshow("Right", right);
 				imshow("bilevel(L)", bilevel_l);
