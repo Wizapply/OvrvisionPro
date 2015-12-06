@@ -97,11 +97,29 @@ namespace OVR
 		void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 		void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
+		// 縮小画像（1/2)
+		/*! @brief Get half scaled image
+		@param src
+		@param dst
+		@param scale */
+		void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF, cl_event *execute = NULL);
+
 		// Skin color region
 		/*! @brief Skin color region */
 		void SkinRegion(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
 		/*! @brief Skin color region */
 		void SkinRegion(uchar *left, uchar *right, SCALING scale);
+
+		void SkinColor(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r);
+		void SkinColorGaussianBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
+		void SkinColorGaussianBlur(uchar *left, uchar *right, SCALING scale);
+		void SkinColor(uchar *left, uchar *right, SCALING scale);
+		void ColorHistgram(uchar *histgram, SCALING scaling);
+
+		// 縮小したグレースケール画像を取得
+		/*! @brief Get Scaled gray image */
+		void Grayscale(cl_mem left, cl_mem right, enum SCALING scale, cl_event *event_l, cl_event *event_r);
+		void Grayscale(uchar *left, uchar *right, enum SCALING scale);
 
 		// Read images region of interest
 		void Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height);
@@ -127,17 +145,6 @@ namespace OVR
 
 		// Remap
 		void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);
-
-
-		// TODO: 縮小したグレースケール画像を取得
-		void Grayscale(uchar *left, uchar *right, enum SCALING scale, cl_event *execute = NULL);
-
-		// TODO: 縮小画像（1/2)
-		/*! @brief Get half scaled image
-		@param src
-		@param dst
-		@param scale */
-		void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF, cl_event *execute = NULL);
 
 		// TODO: Convert to HSV color space
 		/*! @brief Convert image to HSV color space
@@ -213,11 +220,11 @@ namespace OVR
 		cl_program		_program;
 		cl_kernel		_demosaic;
 		cl_kernel		_remap;
-		cl_kernel		_grayscale;
-		cl_kernel		_skincolor;
 		cl_kernel		_resize;
 		cl_kernel		_convertHSV;
 		cl_kernel		_convertGrayscale;
+		cl_kernel		_skincolor;
+		cl_kernel		_gaussianBlur;
 
 	private:
 		cl_event _execute;

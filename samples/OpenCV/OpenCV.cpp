@@ -313,8 +313,8 @@ int main(int argc, char* argv[])
 				ovrvision.Capture(mode);
 				ovrvision.Read(left.data, right.data);
 				ovrvision.SkinRegion(bilevel_l.data, bilevel_r.data);
-				//ovrvision.ColorHistgram(histgram.data);
 				//ovrvision.GrayscaleHalf(bilevel_l.data, bilevel_r.data);
+				//ovrvision.ColorHistgram(histgram.data);
 				//imshow("histgram", histgram);
 				imshow("Left", left);
 				imshow("Right", right);

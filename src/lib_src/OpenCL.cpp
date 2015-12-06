@@ -779,6 +779,49 @@ namespace OVR
 		clReleaseMemObject(r);
 	}
 
+	// 縮小グレースケール画像を取得
+	/*! @brief Get scaled grayscale images
+	@param left ptr for left image
+	@param right ptr for right image
+	@param scaling */
+	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling)
+	{
+		cl_mem l, r;
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+
+		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_event event[2];
+
+		Grayscale(l, r, scaling, &event[0], &event[1]);
+
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar), 0, left, 1, &event[0], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event[1], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+
 	// Get HSV images
 	void OvrvisionProOpenCL::SkinColor(uchar *left, uchar *right, SCALING scaling)
 	{
@@ -856,8 +899,8 @@ namespace OVR
 				count[0]++;
 			}
 		}
-		//Mat h(180, 256, CV_8UC1, histgram);
-		//normalize(hist, h, 0, 255, NORM_MINMAX);
+		Mat h(180, 256, CV_8UC1, histgram);
+		normalize(hist, h, 0, 255, NORM_MINMAX, h.type());
 	}
 
 	void OvrvisionProOpenCL::SkinRegion(uchar *left, uchar *right, SCALING scaling)
@@ -898,48 +941,6 @@ namespace OVR
 		clReleaseMemObject(r);
 	}
 
-	// 縮小グレースケール画像を取得
-	/*! @brief Get scaled grayscale images
-	@param left ptr for left image
-	@param right ptr for right image
-	@param scaling */
-	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling)
-	{
-		cl_mem l, r;
-		uint width = _width, height = _height;
-		switch (scaling)
-		{
-		case OVR::HALF:
-			width /= 2;
-			height /= 2;
-			break;
-		case OVR::FOURTH:
-			width /= 4;
-			height /= 4;
-			break;
-		case OVR::EIGHTH:
-			width /= 8;
-			height /= 8;
-			break;
-		}
-		size_t origin[3] = { 0, 0, 0 };
-		size_t region[3] = { width, height, 1 };
-
-		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_event event[2];
-
-		Grayscale(l, r, scaling, &event[0], &event[1]);
-
-		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar), 0, left, 1, &event[0], NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event[1], NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		clReleaseMemObject(l);
-		clReleaseMemObject(r);
-	}
 
 	// UNDER CONSTRUCTION
 	void OvrvisionProOpenCL::ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter, cl_event *execute)

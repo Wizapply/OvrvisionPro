@@ -97,6 +97,13 @@ namespace OVR
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
+			// èkè¨âÊëúÅi1/2)
+			/*! @brief Get half scaled image
+			@param src
+			@param dst
+			@param scale */
+			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF, cl_event *execute = NULL);
+
 			// Skin color region
 			/*! @brief Skin color region */
 			void SkinRegion(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
@@ -130,12 +137,6 @@ namespace OVR
 			// Remap
 			void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);
 			
-			// èkè¨âÊëúÅi1/2)
-			/*! @brief Get half scaled image
-			@param src
-			@param dst
-			@param scale */
-			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF, cl_event *execute = NULL);
 
 			// Convert to HSV color space
 			/*! @brief Convert image to HSV color space
