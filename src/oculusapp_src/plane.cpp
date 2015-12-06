@@ -127,7 +127,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	}
 	Release(pCompiledShader);
 
-	float aspect = (float)h / (float)w * 0.888889f;
+	float aspect = (float)h / (float)w * 0.82f;
 
 	//四角形ポリゴン
 	SimpleVertex vertices[] =
