@@ -1,4 +1,4 @@
-.TH "OVR::OvrvisionTracking" 3 "Wed Dec 2 2015" "Version 1.0" "OvrvisionSDK" \" -*- nroff -*-
+.TH "OVR::OvrvisionTracking" 3 "Mon Dec 7 2015" "Version 1.0" "OvrvisionSDK" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -29,9 +29,18 @@ OVR::OvrvisionTracking \- \fBOvrvisionPro\fP Hand tracking class\&.
 .br
 .RI "\fISet the pointer of OpenCV Mat data\&. \fP"
 .ti -1c
-.RI "void \fBRender\fP ()"
+.RI "void \fBRender\fP (bool calib, bool point)"
 .br
 .RI "\fIRun hand detection processing\&. \fP"
+.ti -1c
+.RI "float \fBFingerPosX\fP ()"
+.br
+.ti -1c
+.RI "float \fBFingerPosY\fP ()"
+.br
+.ti -1c
+.RI "float \fBFingerPosZ\fP ()"
+.br
 .ti -1c
 .RI "void \fBSetHue\fP ()"
 .br
