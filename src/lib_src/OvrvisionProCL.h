@@ -97,11 +97,26 @@ namespace OVR
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
+			// 縮小画像（1/2)
+			/*! @brief Get half scaled image
+			@param src
+			@param dst
+			@param scale */
+			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF, cl_event *execute = NULL);
+
+			/*! @brief set HSV region for SkinRegion */
+			void SetHSV(int h_low, int h_high, int s_low, int s_high) { _h_low = h_low; _h_high = h_high; _s_low = s_low; _s_high = s_high; }
+
 			// Skin color region
 			/*! @brief Skin color region */
 			void SkinRegion(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
 			/*! @brief Skin color region */
 			void SkinRegion(uchar *left, uchar *right, SCALING scale);
+
+			void SkinColor(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r);
+			void SkinColorBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
+			void SkinColor(uchar *left, uchar *right, SCALING scale);
+			void ColorHistgram(uchar *histgram, SCALING scaling);
 
 			// 縮小したグレースケール画像を取得
 			/*! @brief Get Scaled gray image */
@@ -126,27 +141,12 @@ namespace OVR
 			void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);
 			
 
-
-			// 縮小画像（1/2)
-			/*! @brief Get half scaled image
-			@param src
-			@param dst
-			@param scale */
-			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF, cl_event *execute = NULL);
-
 			// Convert to HSV color space
 			/*! @brief Convert image to HSV color space
 			@param src image
 			@param dst image
 			@param filter */
 			void ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter = RAW, cl_event *execute = NULL);
-
-			// TODO: Make mask 
-			/*! @brief Make mask from HSV region
-			@param hsv image
-			@param dst monochrome mask
-			@param region when in HSV color region, set mask 255, others are 0`*/
-			void CreateMask(cl_mem hsv, cl_mem dst, Rect region, cl_event *execute = NULL);
 
 			// OpenGL連携用のテクスチャーを生成
 			// pixelFormat must be GL_RGBA
@@ -191,6 +191,9 @@ namespace OVR
 			int _width, _height;
 			Mat *mapX[2], *mapY[2]; // camera parameter
 			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
+			// HSV color region 
+			int _h_low, _h_high;
+			int _s_low, _s_high;
 
 		protected:
 			// OpenCL variables
@@ -211,13 +214,16 @@ namespace OVR
 			cl_kernel		_resize;
 			cl_kernel		_convertHSV;
 			cl_kernel		_convertGrayscale;
-			//cl_kernel		_skincolor;
+			cl_kernel		_skincolor;
+			cl_kernel		_gaussianBlur3x3;
+			cl_kernel		_gaussianBlur5x5;
+			cl_kernel		_medianBlur3x3;
 
 		private:
 			cl_event _execute;
 			cl_mem	_src;
 			cl_mem	_l, _r, _L, _R;
-			cl_mem	_grayL, _grayR;
+			//cl_mem	_grayL, _grayR;
 			cl_mem	_mx[2], _my[2]; // map for remap in GPU
 			bool	_remapAvailable;
 		};

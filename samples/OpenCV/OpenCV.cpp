@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
 		Mat bilevel_l(height, width, CV_8UC1);
 		Mat bilevel_r(height, width, CV_8UC1);
 
-		Mat histgram(256, 256, CV_8UC1);
+		Mat histgram(180, 256, CV_8UC1);
 
 		std::vector<std::vector<Point>> contours;
 		std::vector<Vec4i> hierarchy;
@@ -169,11 +169,11 @@ int main(int argc, char* argv[])
 		ovrvision.SetCameraSyncMode(true);
 
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
-		bool show = true;
+		bool show = false;
 		bool useHistgram = false;
 
 		// Read histgram
-		histgram = imread("histgram.bmp");
+		//histgram = imread("histgram.bmp");
 		if (histgram.empty())
 		{
 			//estimateSkincolor(histgram, ovrvision, roi);
@@ -196,6 +196,12 @@ int main(int argc, char* argv[])
 			*/
 		}
 
+		//_h_low = 13;
+		//_h_high = 21;
+		//_s_low = 88;
+		//_s_high = 136;
+		ovrvision.SetSkinHSV(9, 22, 80, 143);
+
 		for (bool loop = true; loop;)
 		{
 			if (show)
@@ -205,7 +211,8 @@ int main(int argc, char* argv[])
 
 				// Retrieve frame data
 				ovrvision.Read(left.data, right.data);
-				ovrvision.SkinRegion(Lhsv.data, Rhsv.data);
+				
+				//ovrvision.SkinRegion(Lhsv.data, Rhsv.data);
 
 				// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
 				if (0 < ksize)
@@ -261,14 +268,14 @@ int main(int argc, char* argv[])
 							}
 							else
 							{
-								if (10 <= h && h <= 21 && 55 < s && s < 150)
+								if (10 <= h && h <= 26 && 55 < s && s < 150)
 								{
 									Lpixel[x] = left.at<Vec4b>(y, x);
 									b_l[x] = 255;
 								}
 								h = r[x][0];
 								s = r[x][1];
-								if (10 <= h && h <= 21 && 55 < s && s < 150)
+								if (10 <= h && h <= 26 && 55 < s && s < 150)
 								{
 									Rpixel[x] = right.at<Vec4b>(y, x);
 									b_r[x] = 255;
@@ -310,8 +317,11 @@ int main(int argc, char* argv[])
 			else
 			{
 				ovrvision.Capture(mode);
-				ovrvision.SkinRegion(left.data, right.data);
-				ovrvision.GrayscaleHalf(bilevel_l.data, bilevel_r.data);
+				ovrvision.Read(left.data, right.data);
+				ovrvision.SkinRegion(bilevel_l.data, bilevel_r.data);
+				//ovrvision.GrayscaleHalf(bilevel_l.data, bilevel_r.data);
+				ovrvision.ColorHistgram(histgram.data);
+				imshow("histgram", histgram);
 				imshow("Left", left);
 				imshow("Right", right);
 				imshow("bilevel(L)", bilevel_l);
@@ -392,6 +402,9 @@ int main(int argc, char* argv[])
 				{
 					imwrite("LEFT.tiff", left);
 					imwrite("RIGHT.tiff", right);
+					imwrite("bilevel_l.png", bilevel_l);
+					imwrite("bilevel_r.png", bilevel_r);
+
 				}
 				break;
 

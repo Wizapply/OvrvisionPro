@@ -268,9 +268,23 @@ void  OvrvisionPro::GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRig
 	m_pOpenCL->Read(pLeft, pRight, roi.offsetX, roi.offsetY, roi.width, roi.height);
 }
 
+// Get skin region mask
 int OvrvisionPro::SkinRegion(unsigned char* left, unsigned char* right)
 {
 	m_pOpenCL->SkinRegion(left, right, SCALING::HALF);
+	return 2;
+}
+
+// Set HSV region
+void OvrvisionPro::SetSkinHSV(int h_low, int h_high, int s_low, int s_high)
+{
+	m_pOpenCL->SetHSV(h_low, h_high, s_low, s_high);
+}
+
+// Get color histrgam in HSV space
+int OvrvisionPro::ColorHistgram(unsigned char* histgram)
+{
+	m_pOpenCL->ColorHistgram(histgram, SCALING::HALF);
 	return 2;
 }
 

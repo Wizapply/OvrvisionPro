@@ -171,6 +171,18 @@ public:
 		@return scale (2, 4) */
 	int SkinRegion(unsigned char* left, unsigned char* right);
 
+	/*! @brief set HSV region for SkinRegion
+		@param h_low (0 < h_low < h_high)
+		@param h_high (h_low < h_high < 180)
+		@param s_low (0 < s_low < s_high)
+		@param s_high (s_low < s_high < 256) */
+	void SetSkinHSV(int h_low, int h_high, int s_low, int s_high);
+	
+	/*! @brief Get color histgram in HSV space
+		@param HSV histgram (256S x 180H)
+		@return scale (2, 4) */
+	int ColorHistgram(unsigned char* histgram);
+
 	/*!	@brief Check whether OvrvisionPro is open. 
 		@return If open, It is true */
 	bool isOpen();

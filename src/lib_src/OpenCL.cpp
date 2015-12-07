@@ -144,16 +144,21 @@ namespace OVR
 			_r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
 			_L = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
 			_R = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
-			_grayL = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, _width, _height, 0, 0, &_errorCode);
-			_grayR = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, _width, _height, 0, 0, &_errorCode);
 			_mx[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_my[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
+			//_grayL = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, _width, _height, 0, 0, &_errorCode);
+			//_grayR = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, _width, _height, 0, 0, &_errorCode);
 
 			_deviceExtensions = NULL;
 			CreateProgram();
 			Prepare4Sharing();
+			// Skin region
+			_h_low = 13;
+			_h_high = 21;
+			_s_low = 88;
+			_s_high = 136;
 	}
 
 		// Destructor
@@ -168,15 +173,15 @@ namespace OVR
 			clReleaseKernel(_resize);
 			clReleaseKernel(_convertGrayscale);
 			clReleaseKernel(_convertHSV);
-			//clReleaseKernel(_skincolor);
+			clReleaseKernel(_skincolor);
+			clReleaseKernel(_gaussianBlur3x3);
+			clReleaseKernel(_medianBlur3x3);
 			clReleaseProgram(_program);
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
 			clReleaseMemObject(_r);
 			clReleaseMemObject(_L);
 			clReleaseMemObject(_R);
-			clReleaseMemObject(_grayL);
-			clReleaseMemObject(_grayR);
 			if (_remapAvailable)
 			{
 				clReleaseMemObject(_mx[0]);
@@ -184,6 +189,9 @@ namespace OVR
 				clReleaseMemObject(_mx[1]);
 				clReleaseMemObject(_my[1]);
 			}
+			//clReleaseMemObject(_grayL);
+			//clReleaseMemObject(_grayR);
+
 			if (_deviceExtensions != NULL)
 			{
 				delete[] _deviceExtensions;
@@ -192,6 +200,51 @@ namespace OVR
 			clReleaseCommandQueue(_commandQueue);
 			clReleaseContext(_context);
 		}
+
+	/*! @brief Create OpenCL kernels */
+	bool OvrvisionProOpenCL::CreateProgram()
+	{
+		size_t size = strlen(kernel);
+		_program = clCreateProgramWithSource(_context, 1, (const char **)&kernel, &size, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
+		if (_errorCode == CL_BUILD_PROGRAM_FAILURE)
+		{
+			// Determine the size of the log
+			size_t log_size;
+			clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
+
+			// Allocate memory for the log
+			char *log = (char *)malloc(log_size);
+
+			// Get the log
+			clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
+
+			// Print the log
+			printf("%s\n", log);
+			return false;
+		}
+		else
+		{
+			_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_remap = clCreateKernel(_program, "remap", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_resize = clCreateKernel(_program, "resize", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_convertHSV = clCreateKernel(_program, "convertHSV", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_convertGrayscale = clCreateKernel(_program, "convertGrayscale", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_skincolor = clCreateKernel(_program, "skincolor", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_gaussianBlur3x3 = clCreateKernel(_program, "gaussian3x3", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_medianBlur3x3 = clCreateKernel(_program, "median3x3_H", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			return true;
+		}
+	}
 
 	// Select GPU device
 	cl_device_id OvrvisionProOpenCL::SelectGPU(const char *platform, const char *version)
@@ -442,47 +495,6 @@ namespace OVR
 		return true;
 	}
 
-	/*! @brief Create OpenCL kernels */
-	bool OvrvisionProOpenCL::CreateProgram()
-	{
-		size_t size = strlen(kernel);
-		_program = clCreateProgramWithSource(_context, 1, (const char **)&kernel, &size, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
-		if (_errorCode == CL_BUILD_PROGRAM_FAILURE)
-		{
-			// Determine the size of the log
-			size_t log_size;
-			clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
-
-			// Allocate memory for the log
-			char *log = (char *)malloc(log_size);
-
-			// Get the log
-			clGetProgramBuildInfo(_program, _deviceId, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
-
-			// Print the log
-			printf("%s\n", log);
-			return false;
-		}
-		else
-		{
-			_demosaic = clCreateKernel(_program, "demosaic", &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			_remap = clCreateKernel(_program, "remap", &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			_resize = clCreateKernel(_program, "resize", &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			_convertHSV = clCreateKernel(_program, "convertHSV", &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			_convertGrayscale = clCreateKernel(_program, "convertGrayscale", &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			//_skincolor = clCreateKernel(_program, "skincolor", &_errorCode);
-			//SAMPLE_CHECK_ERRORS(_errorCode);
-			return true;
-		}
-	}
-
 	void OvrvisionProOpenCL::Download(const cl_mem image, uchar *ptr, int offsetX, int offsetY, uint width, uint height)
 	{
 		size_t origin[3] = { offsetX, offsetY, 0 };
@@ -562,7 +574,8 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
-	void OvrvisionProOpenCL::SkinRegion(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	// Get HSV images
+	void OvrvisionProOpenCL::SkinColor(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
 	{
 		cl_mem l, r;
 		uint width = _width, height = _height;
@@ -596,7 +609,7 @@ namespace OVR
 		Resize(_r, r, scaling, &event[1]);
 
 		// Convert to HSV
-		//__kernel void convertHSV( // TODO UNDER CONSTRUCTION
+		//__kernel void convertHSV( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8 x 4
 
@@ -607,6 +620,127 @@ namespace OVR
 		clSetKernelArg(_convertHSV, 0, sizeof(cl_mem), &r);
 		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &right);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 1, &event[1], event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporary images
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+
+	void OvrvisionProOpenCL::SkinColorBlur(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	{
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+		size_t size[] = { width, height };
+
+		// Get HSV images
+		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		cl_event event[2];
+		SkinColor(l, r, scaling, &event[0], &event[1]);
+
+		//__kernel void gaussian( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8 x 4
+#ifdef GAUSSIAN
+		clSetKernelArg(_gaussianBlur3x3, 0, sizeof(cl_mem), &l);
+		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &left);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[0], event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_gaussianBlur3x3, 0, sizeof(cl_mem), &r);
+		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &right);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[1], event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+#else
+		clSetKernelArg(_medianBlur3x3, 0, sizeof(cl_mem), &l);
+		clSetKernelArg(_medianBlur3x3, 1, sizeof(cl_mem), &left);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _medianBlur3x3, 2, NULL, size, NULL, 1, &event[0], event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_gaussianBlur3x3, 0, sizeof(cl_mem), &r);
+		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &right);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[1], event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+#endif
+		// Release temporary images
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+
+	void OvrvisionProOpenCL::SkinRegion(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	{
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+		size_t size[] = { width, height };
+
+		// Get HSV images
+		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		cl_event event[2];
+		SkinColorBlur(l, r, scaling, &event[0], &event[1]);
+
+		//int h_low = 13, h_high = 21;
+		//int s_low = 88, s_high = 136;
+
+		//__kernel void skincolor( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t mask,// CL_UNSIGNED_INT8
+		//		__read_only int h_low,		// 
+		//		__read_only int h_hight,	// 
+		//		__read_only int s_low,		// 
+		//		__read_only int s_hight)	// 
+		clSetKernelArg(_skincolor, 0, sizeof(cl_mem), &l);
+		clSetKernelArg(_skincolor, 1, sizeof(cl_mem), &left);
+		clSetKernelArg(_skincolor, 2, sizeof(int), &_h_low);
+		clSetKernelArg(_skincolor, 3, sizeof(int), &_h_high);
+		clSetKernelArg(_skincolor, 4, sizeof(int), &_s_low);
+		clSetKernelArg(_skincolor, 5, sizeof(int), &_s_high);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_skincolor, 0, sizeof(cl_mem), &r);
+		clSetKernelArg(_skincolor, 1, sizeof(cl_mem), &right);
+		clSetKernelArg(_skincolor, 2, sizeof(int), &_h_low);
+		clSetKernelArg(_skincolor, 3, sizeof(int), &_h_high);
+		clSetKernelArg(_skincolor, 4, sizeof(int), &_s_low);
+		clSetKernelArg(_skincolor, 5, sizeof(int), &_s_high);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		// Release temporary images
@@ -666,44 +800,6 @@ namespace OVR
 		clReleaseMemObject(r);
 	}
 
-	void OvrvisionProOpenCL::SkinRegion(uchar *left, uchar *right, SCALING scaling)
-	{
-		cl_mem l, r;
-		uint width = _width, height = _height;
-		switch (scaling)
-		{
-		case OVR::HALF:
-			width /= 2;
-			height /= 2;
-			break;
-		case OVR::FOURTH:
-			width /= 4;
-			height /= 4;
-			break;
-		case OVR::EIGHTH:
-			width /= 8;
-			height /= 8;
-			break;
-		}
-		size_t origin[3] = { 0, 0, 0 };
-		size_t region[3] = { width, height, 1 };
-
-		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_event event[2];
-
-		SkinRegion(l, r, scaling, &event[0], &event[1]);
-
-		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		clReleaseMemObject(l);
-		clReleaseMemObject(r);
-	}
-
 	// 縮小グレースケール画像を取得
 	/*! @brief Get scaled grayscale images
 	@param left ptr for left image
@@ -747,6 +843,126 @@ namespace OVR
 		clReleaseMemObject(r);
 	}
 
+	// Get HSV images
+	void OvrvisionProOpenCL::SkinColor(uchar *left, uchar *right, SCALING scaling)
+	{
+		cl_mem l, r;
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+
+		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_event event[2];
+
+		SkinColor(l, r, scaling, &event[0], &event[1]);
+
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+
+	void OvrvisionProOpenCL::ColorHistgram(uchar *histgram, SCALING scaling)
+	{
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		Mat left(height, width, CV_8UC4);
+		Mat right(height, width, CV_8UC4);
+		Mat hist(180, 256, CV_32SC1);
+		hist.setTo(Scalar::all(0));
+
+		// Get HSV images
+		SkinColor(left.data, right.data, scaling);
+
+		for (uint y = 0; y < height; y++)
+		{
+			Vec4b *l = left.ptr<Vec4b>(y);
+			Vec4b *r = right.ptr<Vec4b>(y);
+			for (uint x = 0; x < width; x++)
+			{
+				int *count = hist.ptr<int>(l[x][0], l[x][1]);
+				count[0]++;
+				count = hist.ptr<int>(r[x][0], r[x][1]);
+				count[0]++;
+			}
+		}
+		Mat h(180, 256, CV_8UC1, histgram);
+		normalize(hist, h, 0, 255, NORM_MINMAX, h.type());
+	}
+
+	void OvrvisionProOpenCL::SkinRegion(uchar *left, uchar *right, SCALING scaling)
+	{
+		cl_mem l, r;
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+
+		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_event event[2];
+
+		SkinRegion(l, r, scaling, &event[0], &event[1]);
+
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar), 0, left, 1, &event[0], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event[1], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+
+
 	// UNDER CONSTRUCTION
 	void OvrvisionProOpenCL::ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter, cl_event *execute)
 	{
@@ -767,12 +983,7 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
-	// UNDER CONSTRUCTION
-	void OvrvisionProOpenCL::CreateMask(cl_mem hsv, cl_mem dst, Rect region, cl_event *execute)
-	{
-
-	}
-		// Demosaicing
+	// Demosaicing
 		void OvrvisionProOpenCL::Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *execute)
 		{
 			size_t origin[3] = { 0, 0, 0 };
