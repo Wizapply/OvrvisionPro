@@ -10,5 +10,7 @@ var searchData=
   ['setcamerawhitebalancer',['SetCameraWhiteBalanceR',['../class_o_v_r_1_1_ovrvision_pro.html#aac0096fe42db440c89edf6a90e9ce44b',1,'OVR::OvrvisionPro']]],
   ['setimagebgra',['SetImageBGRA',['../class_o_v_r_1_1_ovrvision_a_r.html#a3ec22f03d5fdf429fe6ec75226383fbb',1,'OVR::OvrvisionAR::SetImageBGRA()'],['../class_o_v_r_1_1_ovrvision_tracking.html#a3ecc4ca91ee707ec796f643bcf0bac44',1,'OVR::OvrvisionTracking::SetImageBGRA()']]],
   ['setimageopencvimage',['SetImageOpenCVImage',['../class_o_v_r_1_1_ovrvision_a_r.html#a9dd4ee3c88518b100ad8ecb5d75088a0',1,'OVR::OvrvisionAR::SetImageOpenCVImage()'],['../class_o_v_r_1_1_ovrvision_tracking.html#ac77b2de6e91ccfae17bcfbb5de579d73',1,'OVR::OvrvisionTracking::SetImageOpenCVImage()']]],
-  ['setmarkersizemeter',['SetMarkerSizeMeter',['../class_o_v_r_1_1_ovrvision_a_r.html#acaee2f4446c035dd8629269aa801adf4',1,'OVR::OvrvisionAR']]]
+  ['setmarkersizemeter',['SetMarkerSizeMeter',['../class_o_v_r_1_1_ovrvision_a_r.html#acaee2f4446c035dd8629269aa801adf4',1,'OVR::OvrvisionAR']]],
+  ['setskinhsv',['SetSkinHSV',['../class_o_v_r_1_1_ovrvision_pro.html#ad0be51746b770faec807fa13b8c76d37',1,'OVR::OvrvisionPro']]],
+  ['skinregion',['SkinRegion',['../class_o_v_r_1_1_ovrvision_pro.html#a7e16fbcad489ac53c2de07640ce6db19',1,'OVR::OvrvisionPro']]]
 ];

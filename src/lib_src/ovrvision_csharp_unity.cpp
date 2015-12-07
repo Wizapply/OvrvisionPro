@@ -81,10 +81,16 @@ enum GfxDeviceEventType {
 extern "C" {
 #endif
 
+//Global var
 float g_Time;
 int g_DeviceType = -1;
+
+#if SUPPORT_D3D11
 ID3D11Device* g_D3D11Device = NULL;
+#endif
+#if SUPPORT_D3D9
 IDirect3DDevice9* g_D3D9Device = NULL;
+#endif
 
 void CSHARP_EXPORT SetTimeFromUnity(float t)
 {

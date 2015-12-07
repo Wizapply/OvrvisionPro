@@ -112,24 +112,20 @@ CSHARP_EXPORT int ovOpen(int locationID, float arMeter, int type)
 CSHARP_EXPORT int ovClose(void)
 {
 	//Delete
-	if(g_ovOvrvision==NULL)
-		return 1;
-
-	//Close Ovrvision
-	g_ovOvrvision->Close();
-
-	if(g_ovOvrvisionAR) {
-		delete g_ovOvrvisionAR;
-		g_ovOvrvisionAR = NULL;
-	}
-
 	if (g_ovOvrvisionTrack) {
 		delete g_ovOvrvisionTrack;
 		g_ovOvrvisionTrack = NULL;
 	}
 
-	delete g_ovOvrvision;
-	g_ovOvrvision = NULL;
+	if (g_ovOvrvisionAR) {
+		delete g_ovOvrvisionAR;
+		g_ovOvrvisionAR = NULL;
+	}
+
+	if (g_ovOvrvision) {
+		delete g_ovOvrvision;
+		g_ovOvrvision = NULL;
+	}
 
 	return 0;	//OK
 }
@@ -137,6 +133,9 @@ CSHARP_EXPORT int ovClose(void)
 // int ovPreStoreCamData() -> need ovGetCamImage : ovGetCamImageBGR
 CSHARP_EXPORT void ovPreStoreCamData(int qt)
 {
+	if (g_ovOvrvision == NULL)
+		return;
+
 	g_ovOvrvision->PreStoreCamData((OVR::Camqt)qt);	//Renderer
 }
 

@@ -140,7 +140,7 @@ OvrvisionAR::~OvrvisionAR()
 	delete m_cameraParam;
 
 	if(m_pMarkerData)
-		delete m_pMarkerData;
+		delete[] m_pMarkerData;
 
 	//End
 	g_pMappingView[0] = CT_ENDCODE;
@@ -256,7 +256,7 @@ void OvrvisionAR::Render()
 	//edit data
 	m_markerDataSize = idata;
 	if(m_pMarkerData)
-		delete m_pMarkerData;
+		delete[] m_pMarkerData;
 	m_pMarkerData = new OVR::OvMarkerData[m_markerDataSize];
 
 	//insert

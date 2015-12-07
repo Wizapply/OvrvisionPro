@@ -198,6 +198,9 @@ namespace OVR
 			{
 				delete[] _deviceExtensions;
 			}
+
+			clReleaseCommandQueue(_commandQueue);
+			clReleaseContext(_context);
 		}
 
 	/*! @brief Create OpenCL kernels */

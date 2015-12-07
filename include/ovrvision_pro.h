@@ -306,7 +306,7 @@ private:
 	OvrvisionProOpenCL* m_pOpenCL;
 
 	//Frame buffer
-	unsigned short*			m_pFrame;
+	unsigned short*	m_pFrame;
 
 	//Pixels
 	byte*			m_pPixels[OV_CAMNUM];

@@ -1,4 +1,4 @@
-.TH "OVR::OvrvisionPro" 3 "Wed Dec 2 2015" "Version 1.0" "OvrvisionSDK" \" -*- nroff -*-
+.TH "OVR::OvrvisionPro" 3 "Mon Dec 7 2015" "Version 1.0" "OvrvisionSDK" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -48,6 +48,18 @@ OVR::OvrvisionPro \- \fBOvrvisionPro\fP class\&.
 .RI "void \fBGetStereoImageBGRA\fP (unsigned char *pLeft, unsigned char *pRight, \fBROI\fP roi)"
 .br
 .RI "\fIGet camera image region of interest\&. \fP"
+.ti -1c
+.RI "int \fBSkinRegion\fP (unsigned char *left, unsigned char *right)"
+.br
+.RI "\fIGet skin color region\&. \fP"
+.ti -1c
+.RI "void \fBSetSkinHSV\fP (int h_low, int h_high, int s_low, int s_high)"
+.br
+.RI "\fIset HSV region for SkinRegion \fP"
+.ti -1c
+.RI "int \fBColorHistgram\fP (unsigned char *histgram)"
+.br
+.RI "\fIGet color histgram in HSV space\&. \fP"
 .ti -1c
 .RI "bool \fBisOpen\fP ()"
 .br
@@ -157,6 +169,9 @@ OVR::OvrvisionPro \- \fBOvrvisionPro\fP class\&.
 .br
 .RI "\fIGrayscaled image of 1/8 scaled\&. \fP"
 .ti -1c
+.RI "void \fBRead\fP (unsigned char *left, unsigned char *right)"
+.br
+.ti -1c
 .RI "void \fBUserDataAccessUnlock\fP ()"
 .br
 .ti -1c
@@ -197,6 +212,22 @@ Capture frame and hold it in GPU for image processing(Grayscale, Skin color extr
 \fBParameters:\fP
 .RS 4
 \fIqt\fP Set an image processing method\&. 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::ColorHistgram (unsigned char * histgram)"
+
+.PP
+Get color histgram in HSV space\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIHSV\fP histgram (256S x 180H) 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+scale (2, 4) 
 .RE
 .PP
 
@@ -518,6 +549,41 @@ Set white balance R gain of the Ovrvision\&.
 \fBParameters:\fP
 .RS 4
 \fIvalue\fP R gain\&. Range of 0 - 4095 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::SetSkinHSV (int h_low, int h_high, int s_low, int s_high)"
+
+.PP
+set HSV region for SkinRegion 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIh_low\fP (0 < h_low < h_high) 
+.br
+\fIh_high\fP (h_low < h_high < 180) 
+.br
+\fIs_low\fP (0 < s_low < s_high) 
+.br
+\fIs_high\fP (s_low < s_high < 256) 
+.RE
+.PP
+
+.SS "int OVR::OvrvisionPro::SkinRegion (unsigned char * left, unsigned char * right)"
+
+.PP
+Get skin color region\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIleft\fP image 
+.br
+\fIright\fP image 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+scale (2, 4) 
 .RE
 .PP
 

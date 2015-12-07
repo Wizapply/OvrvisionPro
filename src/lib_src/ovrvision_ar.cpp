@@ -86,7 +86,7 @@ OvrvisionAR::~OvrvisionAR()
 	delete m_cameraParam;
 
 	if(m_pMarkerData)
-		delete m_pMarkerData;
+		delete[] m_pMarkerData;
 }
 
 //Private Methods
@@ -190,7 +190,7 @@ void OvrvisionAR::Render()
 	//edit data
 	m_markerDataSize = (int)markers.size();
 	if(m_pMarkerData)
-		delete m_pMarkerData;
+		delete[] m_pMarkerData;
 	m_pMarkerData = new OVR::OvMarkerData[m_markerDataSize];
 
 	//insert

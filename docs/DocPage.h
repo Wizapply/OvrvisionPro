@@ -158,6 +158,19 @@ The usage should confirm the following video. <br />
 
 /*! @page page4 Release Notes
 @tableofcontents
+@section sdk3 Ovrvision SDK v1.1
+Date : 07/Dec/2015<br />
+<b>Notes</b>
+- The memory leak was resolved.
+- OvrvisionTracking was released.
+- The fault which OvrvisionPro does not start was corrected. 
+
+<b>Unimplementeds and issue</b>
+- Mac OSX support (in a few days) 
+- Linux OS support
+- Unreal Engine 4
+- The memory leak of OpenCL.
+
 @section sdk2 Ovrvision SDK v1.01
 Date : 02/Dec/2015<br />
 <b>Notes</b>
