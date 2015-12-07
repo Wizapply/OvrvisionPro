@@ -125,11 +125,13 @@ void DrawLoop(void)
 		unsigned char* p = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 		unsigned char* p2 = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
+		/*
 		g_pOvrTrack->SetImageBGRA(p, p2);
 		g_pOvrTrack->Render(true, true);
 
 		if (wzGetKeyStateTrigger(WZ_KEY_SPACE))
 			g_pOvrTrack->SetHue();
+		*/
 
 		wzClear();
 

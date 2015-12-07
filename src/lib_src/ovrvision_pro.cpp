@@ -53,6 +53,7 @@ OvrvisionPro::OvrvisionPro()
 #ifdef LINUX
 
 #endif
+	m_pFrame = NULL;
 	m_pPixels[0] = m_pPixels[1] = NULL;
 	m_pOpenCL = NULL;
 
@@ -157,13 +158,13 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 
 	Sleep(50);	//50ms wait
 
-	m_pFrame = new ushort[cam_width*cam_height];
-	m_pPixels[0] = new byte[cam_width*cam_height*OV_PIXELSIZE_RGB];
-	m_pPixels[1] = new byte[cam_width*cam_height*OV_PIXELSIZE_RGB];
-
 	//Error
 	if (objs == 0)
 		return 0;
+
+	m_pFrame = new ushort[cam_width*cam_height];
+	m_pPixels[0] = new byte[cam_width*cam_height*OV_PIXELSIZE_RGB];
+	m_pPixels[1] = new byte[cam_width*cam_height*OV_PIXELSIZE_RGB];
 
 	//Initialize OpenCL system
 	m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height);
@@ -193,9 +194,15 @@ void OvrvisionPro::Close()
 		delete m_pOpenCL;
 		m_pOpenCL = NULL;
 	}
-	delete[] m_pFrame;
-	delete[] m_pPixels[0];
-	delete[] m_pPixels[1];
+	if (m_pFrame) {
+		delete[] m_pFrame;
+		m_pFrame = NULL;
+	}
+	if (m_pPixels[0]) {
+		delete[] m_pPixels[0];
+		delete[] m_pPixels[1];
+		m_pPixels[0] = m_pPixels[1] = NULL;
+	}
 
 	m_isOpen = false;
 }
@@ -323,7 +330,9 @@ void OvrvisionPro::InitCameraSetting()
 		m_rightgap[1] = (float)ovrset.m_trans.at<double>(1);	//T:Y
 		m_rightgap[2] = (float)ovrset.m_trans.at<double>(2);	//T:Z
 	}
-	m_pOpenCL->LoadCameraParams(&ovrset);
+
+	if (m_pOpenCL)
+		m_pOpenCL->LoadCameraParams(&ovrset);
 }
 
 bool OvrvisionPro::isOpen(){
