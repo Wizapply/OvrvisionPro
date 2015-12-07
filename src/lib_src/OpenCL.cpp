@@ -136,10 +136,10 @@ namespace OVR
 
 			_remapAvailable = false;
 
-			mapX[0] = new Mat();
-			mapY[0] = new Mat();
-			mapX[1] = new Mat();
-			mapY[1] = new Mat();
+			_mapX[0] = new Mat();
+			_mapY[0] = new Mat();
+			_mapX[1] = new Mat();
+			_mapY[1] = new Mat();
 			_l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
 			_r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
 			_L = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
@@ -164,10 +164,19 @@ namespace OVR
 		// Destructor
 	OvrvisionProOpenCL::~OvrvisionProOpenCL()
 		{
-			delete mapX[0];
-			delete mapY[0];
-			delete mapX[1];
-			delete mapY[1];
+			_mapX[0]->release();
+			_mapY[0]->release();
+			_mapX[1]->release();
+			_mapY[1]->release();
+			delete _mapX[0];
+			delete _mapY[0];
+			delete _mapX[1];
+			delete _mapY[1];
+
+			clReleaseCommandQueue(_commandQueue);
+			clReleaseContext(_context);
+			clReleaseProgram(_program);
+
 			clReleaseKernel(_demosaic);
 			clReleaseKernel(_remap);
 			clReleaseKernel(_resize);
@@ -176,21 +185,16 @@ namespace OVR
 			clReleaseKernel(_skincolor);
 			clReleaseKernel(_gaussianBlur3x3);
 			clReleaseKernel(_medianBlur3x3);
-			clReleaseProgram(_program);
-			clReleaseCommandQueue(_commandQueue);
-			clReleaseContext(_context);
+
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
 			clReleaseMemObject(_r);
 			clReleaseMemObject(_L);
 			clReleaseMemObject(_R);
-			//if (_remapAvailable)
-			{
-				clReleaseMemObject(_mx[0]);
-				clReleaseMemObject(_my[0]);
-				clReleaseMemObject(_mx[1]);
-				clReleaseMemObject(_my[1]);
-			}
+			clReleaseMemObject(_mx[0]);
+			clReleaseMemObject(_my[0]);
+			clReleaseMemObject(_mx[1]);
+			clReleaseMemObject(_my[1]);
 			//clReleaseMemObject(_grayL);
 			//clReleaseMemObject(_grayR);
 
@@ -198,10 +202,7 @@ namespace OVR
 			{
 				delete[] _deviceExtensions;
 			}
-
-			clReleaseCommandQueue(_commandQueue);
-			clReleaseContext(_context);
-		}
+	}
 
 	/*! @brief Create OpenCL kernels */
 	bool OvrvisionProOpenCL::CreateProgram()
@@ -455,15 +456,15 @@ namespace OVR
 		if (_settings.ReadEEPROM())
 		{
 			// Left camera
-			_settings.GetUndistortionMatrix(OV_CAMEYE_LEFT, *mapX[0], *mapY[0], _width, _height);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[0]->ptr(0), 0, NULL, NULL);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _my[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[0]->ptr(0), 0, NULL, NULL);
+			_settings.GetUndistortionMatrix(OV_CAMEYE_LEFT, *_mapX[0], *_mapY[0], _width, _height);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[0], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapX[0]->ptr(0), 0, NULL, NULL);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _my[0], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapY[0]->ptr(0), 0, NULL, NULL);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// Right camera
-			_settings.GetUndistortionMatrix(OV_CAMEYE_RIGHT, *mapX[1], *mapY[1], _width, _height);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[1]->ptr(0), 0, NULL, NULL);
-			_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[1]->ptr(0), 0, NULL, NULL);
+			_settings.GetUndistortionMatrix(OV_CAMEYE_RIGHT, *_mapX[1], *_mapY[1], _width, _height);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _mx[1], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapX[1]->ptr(0), 0, NULL, NULL);
+			_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapY[1]->ptr(0), 0, NULL, NULL);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			_remapAvailable = true;
@@ -482,15 +483,15 @@ namespace OVR
 		size_t region[3] = { _width, _height, 1 };
 
 		// Left camera
-		ovrset->GetUndistortionMatrix(OV_CAMEYE_LEFT, *mapX[0], *mapY[0], _width, _height);
-		_errorCode = clEnqueueWriteImage(_commandQueue, _mx[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[0]->ptr(0), 0, NULL, NULL);
-		_errorCode = clEnqueueWriteImage(_commandQueue, _my[0], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[0]->ptr(0), 0, NULL, NULL);
+		ovrset->GetUndistortionMatrix(OV_CAMEYE_LEFT, *_mapX[0], *_mapY[0], _width, _height);
+		_errorCode = clEnqueueWriteImage(_commandQueue, _mx[0], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapX[0]->ptr(0), 0, NULL, NULL);
+		_errorCode = clEnqueueWriteImage(_commandQueue, _my[0], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapY[0]->ptr(0), 0, NULL, NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		// Right camera
-		ovrset->GetUndistortionMatrix(OV_CAMEYE_RIGHT, *mapX[1], *mapY[1], _width, _height);
-		_errorCode = clEnqueueWriteImage(_commandQueue, _mx[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapX[1]->ptr(0), 0, NULL, NULL);
-		_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _width * sizeof(float), 0, mapY[1]->ptr(0), 0, NULL, NULL);
+		ovrset->GetUndistortionMatrix(OV_CAMEYE_RIGHT, *_mapX[1], *_mapY[1], _width, _height);
+		_errorCode = clEnqueueWriteImage(_commandQueue, _mx[1], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapX[1]->ptr(0), 0, NULL, NULL);
+		_errorCode = clEnqueueWriteImage(_commandQueue, _my[1], CL_TRUE, origin, region, _width * sizeof(float), 0, _mapY[1]->ptr(0), 0, NULL, NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		_remapAvailable = true;

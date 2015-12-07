@@ -200,7 +200,7 @@ namespace OVR
 #endif
 			char *_deviceExtensions;
 			int _width, _height;
-			Mat *mapX[2], *mapY[2]; // camera parameter
+			Mat *_mapX[2], *_mapY[2]; // camera parameter
 			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
 			// HSV color region 
 			int _h_low, _h_high;
