@@ -185,6 +185,7 @@ namespace OVR
 			clReleaseKernel(_skincolor);
 			clReleaseKernel(_gaussianBlur3x3);
 			clReleaseKernel(_medianBlur3x3);
+			clReleaseKernel(_medianBlur5x5);
 
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
@@ -245,6 +246,9 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_medianBlur3x3 = clCreateKernel(_program, "median3x3_H", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
+			_medianBlur5x5 = clCreateKernel(_program, "median5x5_H", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+
 			return true;
 		}
 	}
@@ -673,10 +677,19 @@ namespace OVR
 		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &right);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[1], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-#else
+#elif defined(MEDIAN_3x3)
 		clSetKernelArg(_medianBlur3x3, 0, sizeof(cl_mem), &l);
 		clSetKernelArg(_medianBlur3x3, 1, sizeof(cl_mem), &left);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _medianBlur3x3, 2, NULL, size, NULL, 1, &event[0], event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_gaussianBlur3x3, 0, sizeof(cl_mem), &r);
+		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &right);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[1], event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+#else
+		clSetKernelArg(_medianBlur5x5, 0, sizeof(cl_mem), &l);
+		clSetKernelArg(_medianBlur5x5, 1, sizeof(cl_mem), &left);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _medianBlur5x5, 2, NULL, size, NULL, 1, &event[0], event_l);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		clSetKernelArg(_gaussianBlur3x3, 0, sizeof(cl_mem), &r);
 		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &right);
