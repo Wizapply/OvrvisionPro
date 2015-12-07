@@ -111,8 +111,8 @@ namespace OVR
 		void SkinRegion(uchar *left, uchar *right, SCALING scale);
 
 		void SkinColor(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r);
-		void SkinColorGaussianBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
-		void SkinColorGaussianBlur(uchar *left, uchar *right, SCALING scale);
+		void SkinColorBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
+		void SkinColorBlur(uchar *left, uchar *right, SCALING scale);
 		void SkinColor(uchar *left, uchar *right, SCALING scale);
 		void ColorHistgram(uchar *histgram, SCALING scaling);
 
@@ -225,6 +225,7 @@ namespace OVR
 		cl_kernel		_convertGrayscale;
 		cl_kernel		_skincolor;
 		cl_kernel		_gaussianBlur;
+		cl_kernel		_medianBlurH;
 
 	private:
 		cl_event _execute;

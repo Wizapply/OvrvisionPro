@@ -18,6 +18,15 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\OpenCL.cpp" />
+    <ClCompile Include="..\src\OvrvisionSettings.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\lib_src\OpenCL_kernel.h" />
+    <ClInclude Include="..\src\OvrvisionProDLL.h" />
+    <ClInclude Include="..\src\OvrvisionSettings.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8902B462-767E-4659-9789-AD43A0F86E70}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -154,17 +163,6 @@
       <AdditionalLibraryDirectories>$(OPENCV_INSTALL_DIR)\x64\vc12\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <None Include="kernel.cl" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\OpenCL.cpp" />
-    <ClCompile Include="..\src\OvrvisionSettings.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\OvrvisionProDLL.h" />
-    <ClInclude Include="..\src\OvrvisionSettings.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

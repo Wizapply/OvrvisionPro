@@ -177,12 +177,14 @@ namespace OVR
 			clReleaseKernel(_gaussianBlur3x3);
 			clReleaseKernel(_medianBlur3x3);
 			clReleaseProgram(_program);
+			clReleaseCommandQueue(_commandQueue);
+			clReleaseContext(_context);
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
 			clReleaseMemObject(_r);
 			clReleaseMemObject(_L);
 			clReleaseMemObject(_R);
-			if (_remapAvailable)
+			//if (_remapAvailable)
 			{
 				clReleaseMemObject(_mx[0]);
 				clReleaseMemObject(_my[0]);

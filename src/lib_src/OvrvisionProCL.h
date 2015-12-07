@@ -107,21 +107,32 @@ namespace OVR
 			/*! @brief set HSV region for SkinRegion */
 			void SetHSV(int h_low, int h_high, int s_low, int s_high) { _h_low = h_low; _h_high = h_high; _s_low = s_low; _s_high = s_high; }
 
-			// Skin color region
-			/*! @brief Skin color region */
-			void SkinRegion(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
-			/*! @brief Skin color region */
+			// Skin color region 
+			/*! @brief Skin color region mask 
+			@param left ptr for left HSV image
+			@param right ptr for right HSV image
+			@param scale (HALF, FOURTH, EIGHTH) */
 			void SkinRegion(uchar *left, uchar *right, SCALING scale);
+			/*! @brief Skin color region mask */
+			void SkinRegion(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
 
+			/*! @brief Get HSV images for skin color detection
+			@param left ptr for left HSV image
+			@param right ptr for right HSV image
+			@param scale (HALF, FOURTH, EIGHTH) */
+			void SkinColor(uchar *left, uchar *right, SCALING scale);
+			/*! @brief Get HSV images for skin color detection */
 			void SkinColor(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r);
 			void SkinColorBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
-			void SkinColor(uchar *left, uchar *right, SCALING scale);
 			void ColorHistgram(uchar *histgram, SCALING scaling);
 
 			// 縮小したグレースケール画像を取得
-			/*! @brief Get Scaled gray image */
-			void Grayscale(cl_mem left, cl_mem right, enum SCALING scale, cl_event *event_l, cl_event *event_r);
+			/*! @brief Get Scaled gray image
+			@param left ptr for left HSV image
+			@param right ptr for right HSV image
+			@param scale (HALF, FOURTH, EIGHTH) */
 			void Grayscale(uchar *left, uchar *right, enum SCALING scale);
+			void Grayscale(cl_mem left, cl_mem right, enum SCALING scale, cl_event *event_l, cl_event *event_r);
 
 			// Read images region of interest
 			void Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height);

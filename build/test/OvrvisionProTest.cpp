@@ -61,12 +61,12 @@ int main(int argc, char* argv[])
 	Mat hist(180, 256, CV_16UC1);
 	Mat histgram(180, 256, CV_8UC1);
 
-	cl_event events[2], event;
-	while (waitKey(10) != 'q')
+	//cl_event events[2], event;
+	for (bool loop = true; loop;) 
 	{ 
 		if (m_pODS->GetBayer16Image((uchar *)m_pFrame) == RESULT_OK) {
 			opencl.Demosaic(m_pFrame);		//OpenCL
-			opencl.SkinColorGaussianBlur(left.data, right.data, HALF);
+			opencl.SkinColorBlur(left.data, right.data, HALF);
 			//opencl.SkinColor(left.data, right.data, HALF);
 			hist.setTo(Scalar::all(0));
 			for (int y = 0; y < height; y++)
@@ -95,9 +95,19 @@ int main(int argc, char* argv[])
 			}
 
 			normalize(hist, histgram, 0, 255, NORM_MINMAX, histgram.type());
-			imshow("histgram", histgram);
-			imshow("Left", left);
-			imshow("Right", right);
+			cv::imshow("histgram", histgram);
+			cv::imshow("Left", left);
+			cv::imshow("Right", right);
+			switch (waitKey(10))
+			{
+			case 'q':
+				loop = false;
+				break;
+
+			case ' ':
+				imwrite("histgram.png", histgram);
+				break;
+			}
 		}
 	}
 

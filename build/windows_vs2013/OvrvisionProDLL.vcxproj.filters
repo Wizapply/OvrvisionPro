@@ -15,21 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="kernel.cl" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\OpenCL.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\OvrvisionSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\OpenCL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\OvrvisionProDLL.h">
+    <ClInclude Include="..\..\src\lib_src\OpenCL_kernel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\OvrvisionSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\OvrvisionProDLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
