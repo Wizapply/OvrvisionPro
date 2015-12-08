@@ -76,6 +76,9 @@ namespace OVR
 			OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode = NONE);
 			~OvrvisionProOpenCL();
 
+			/*! @brief release resources */
+			void Close();
+
 			// Select GPU device
 			cl_device_id SelectGPU(const char *platform, const char *version);
 
@@ -106,6 +109,13 @@ namespace OVR
 
 			/*! @brief set HSV region for SkinRegion */
 			void SetHSV(int h_low, int h_high, int s_low, int s_high) { _h_low = h_low; _h_high = h_high; _s_low = s_low; _s_high = s_high; }
+
+			/*! @brief Get Skin images
+				@param left ptr of BGRA image
+				@param right ptr of BGRA image
+				@param scaling (HALF, FOURTH, EIGHTH) */
+			void SkinImages(uchar *left, uchar *right, SCALING scaling);
+			void SkinImages(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
 
 			// Skin color region 
 			/*! @brief Skin color region mask 
@@ -240,6 +250,7 @@ namespace OVR
 			//cl_mem	_grayL, _grayR;
 			cl_mem	_mx[2], _my[2]; // map for remap in GPU
 			bool	_remapAvailable;
+			bool	_released;
 		};
 
 	/*

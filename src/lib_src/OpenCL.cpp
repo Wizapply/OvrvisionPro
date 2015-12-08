@@ -159,10 +159,19 @@ namespace OVR
 			_h_high = 21;
 			_s_low = 88;
 			_s_high = 136;
+			_released = false;
 	}
 
 		// Destructor
 	OvrvisionProOpenCL::~OvrvisionProOpenCL()
+	{
+		if (!_released)
+			Close();
+	}
+
+	void OvrvisionProOpenCL::Close()
+	{
+		if (!_released)
 		{
 			_mapX[0]->release();
 			_mapY[0]->release();
@@ -205,6 +214,8 @@ namespace OVR
 			{
 				delete[] _deviceExtensions;
 			}
+			_released = true;
+		}
 	}
 
 	/*! @brief Create OpenCL kernels */
@@ -330,10 +341,11 @@ namespace OVR
 			}
 		}
 #ifdef _WIN32
+		// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
 		cl_context_properties opengl_props[] = {
+			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
 			CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
 			CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
-			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
 			0
 		};
 
@@ -639,6 +651,62 @@ namespace OVR
 		// Release temporary images
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
+	}
+
+	void OvrvisionProOpenCL::SkinImages(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	{
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+		size_t size[] = { width, height };
+
+		cl_mem rgba_l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_mem rgba_r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Resize
+		cl_event event[2];
+		Resize(_l, rgba_l, scaling, &event[0]);
+		Resize(_r, rgba_r, scaling, &event[1]);
+
+		// Convert to HSV
+		//__kernel void convertHSV( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8 x 4
+
+		clSetKernelArg(_convertHSV, 0, sizeof(cl_mem), &rgba_l);
+		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &left);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 1, &event[0], event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_convertHSV, 0, sizeof(cl_mem), &rgba_r);
+		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &right);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 1, &event[1], event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporary images
+		clReleaseMemObject(rgba_l);
+		clReleaseMemObject(rgba_r);
+	}
+
+	void OvrvisionProOpenCL::SkinImages(uchar *left, uchar *right, SCALING scaling)
+	{
+
 	}
 
 	void OvrvisionProOpenCL::SkinColorBlur(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
@@ -984,7 +1052,6 @@ namespace OVR
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
 	}
-
 
 	// UNDER CONSTRUCTION
 	void OvrvisionProOpenCL::ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter, cl_event *execute)
