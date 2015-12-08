@@ -230,6 +230,8 @@ namespace OVR
 			cl_kernel		_gaussianBlur5x5;
 			cl_kernel		_medianBlur3x3;
 			cl_kernel		_medianBlur5x5;
+			cl_kernel		_mask;
+			cl_kernel		_invertMask;
 
 		private:
 			cl_event _execute;

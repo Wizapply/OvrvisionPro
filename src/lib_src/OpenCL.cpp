@@ -186,6 +186,8 @@ namespace OVR
 			clReleaseKernel(_gaussianBlur3x3);
 			clReleaseKernel(_medianBlur3x3);
 			clReleaseKernel(_medianBlur5x5);
+			clReleaseKernel(_mask);
+			clReleaseKernel(_invertMask);
 
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
@@ -248,6 +250,10 @@ namespace OVR
 			_medianBlur3x3 = clCreateKernel(_program, "median3x3_H", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_medianBlur5x5 = clCreateKernel(_program, "median5x5_H", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_mask = clCreateKernel(_program, "mask", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_invertMask = clCreateKernel(_program, "invert_mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			return true;
