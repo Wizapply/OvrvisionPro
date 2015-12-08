@@ -173,6 +173,11 @@ namespace OVR
 			// pixelFormat must be GL_RGBA
 			// dataType must be GL_UNSIGNED_BYTE
 			cl_mem CreateGLTexture2D(GLuint texture, int width, int height);
+
+			/*! @brief Update skin textures for drawing
+				@param textures textures[0]:left textures[1]:right */
+			void UpdateSkinTextureObjects(cl_mem textures[2], enum SCALING scaling);
+
 #ifdef _WIN32
 			// Direct3D連携用のテクスチャーを生成
 			cl_mem CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height);

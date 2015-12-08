@@ -14,7 +14,7 @@
 using namespace cv;
 using namespace OVR;
 
-static 	OvrvisionPro ovrvision;
+//static 	OvrvisionPro ovrvision;
 
 int callback(void *pItem, const char *extensions)
 {
@@ -26,6 +26,7 @@ int callback(void *pItem, const char *extensions)
 }
 
 // Estimate skin color 
+/*
 void estimateSkincolor(Mat &histgram, OvrvisionPro &camera, ROI roi)
 {
 	Mat left(roi.height, roi.width, CV_8UC4);
@@ -132,6 +133,7 @@ void estimateSkincolor(Mat &histgram, OvrvisionPro &camera, ROI roi)
 	imshow("histgram", histgram);
 	imwrite("histgram.png", histgram);
 }
+*/
 
 enum FILTER {
 	GAUSSIAN,
@@ -141,12 +143,13 @@ enum FILTER {
 
 int main(int argc, char* argv[])
 {
-	if (ovrvision.Open(0, Camprop::OV_CAMHD_FULL))
+	OvrvisionPro *ovrvision = new OvrvisionPro();
+	if (ovrvision->Open(0, Camprop::OV_CAMHD_FULL))
 	{
 		int ksize = 5;
 		enum FILTER filter = GAUSSIAN;
-		int width = ovrvision.GetCamWidth() / 2;
-		int height = ovrvision.GetCamHeight() / 2;
+		int width = ovrvision->GetCamWidth() / 2;
+		int height = ovrvision->GetCamHeight() / 2;
 		ROI roi = { 0, 0, width, height };
 
 		Mat left(height, width, CV_8UC4);
@@ -166,7 +169,7 @@ int main(int argc, char* argv[])
 		std::vector<Vec4i> hierarchy;
 
 		//Sync
-		ovrvision.SetCameraSyncMode(true);
+		ovrvision->SetCameraSyncMode(true);
 
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
 		bool show = false;
@@ -200,17 +203,17 @@ int main(int argc, char* argv[])
 		//_h_high = 21;
 		//_s_low = 88;
 		//_s_high = 136;
-		ovrvision.SetSkinHSV(9, 22, 80, 143);
+		ovrvision->SetSkinHSV(9, 22, 80, 143);
 
 		for (bool loop = true; loop;)
 		{
 			if (show)
 			{
 				// Capture frame
-				ovrvision.Capture(mode);
+				ovrvision->Capture(mode);
 
 				// Retrieve frame data
-				ovrvision.Read(left.data, right.data);
+				ovrvision->Read(left.data, right.data);
 				
 				//ovrvision.SkinRegion(Lhsv.data, Rhsv.data);
 
@@ -316,11 +319,11 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				ovrvision.Capture(mode);
-				ovrvision.Read(left.data, right.data);
-				ovrvision.SkinRegion(bilevel_l.data, bilevel_r.data);
-				//ovrvision.GrayscaleHalf(bilevel_l.data, bilevel_r.data);
-				ovrvision.ColorHistgram(histgram.data);
+				ovrvision->Capture(mode);
+				ovrvision->Read(left.data, right.data);
+				ovrvision->SkinRegion(bilevel_l.data, bilevel_r.data);
+				//ovrvision->GrayscaleHalf(bilevel_l.data, bilevel_r.data);
+				ovrvision->ColorHistgram(histgram.data);
 				imshow("histgram", histgram);
 				imshow("Left", left);
 				imshow("Right", right);
@@ -413,7 +416,7 @@ int main(int argc, char* argv[])
 				{
 					callback(NULL, "Device Extensions");
 				}
-				ovrvision.OpenCLExtensions(callback, NULL);
+				ovrvision->OpenCLExtensions(callback, NULL);
 				break;
 			}
 		}
@@ -422,6 +425,8 @@ int main(int argc, char* argv[])
 	{
 		puts("FAILED TO OPEN CAMERA");
 	}
+	//ovrvision->Close();
+	delete ovrvision;
 	return 0;
 }
 

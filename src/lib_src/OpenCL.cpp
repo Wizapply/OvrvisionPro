@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <opencv2/opencv.hpp>
-//#include <opencv2/core/ocl.hpp>
+
 
 #include "OvrvisionProCL.h"
 
@@ -16,6 +16,7 @@
 using namespace std;
 using namespace cv;
 
+#pragma region MACROS
 #if 0
 // Report about an OpenCL problem.
 // Macro is used instead of a function here
@@ -103,11 +104,13 @@ string opencl_error_to_str(cl_int error)
 #define INITPFN(x) \
     x = (x ## _fn)clGetExtensionFunctionAddress(#x);
 //if(!x) { shrLog("failed getting " #x); Cleanup(EXIT_FAILURE); }
+#pragma endregion
 
 namespace OVR
 {
 	//namespace OPENCL
 	//{
+#pragma region CONSTRUCTOR_DESTRUCTOR
 		// Constructor
 	OvrvisionProOpenCL::OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode)
 		{
@@ -217,7 +220,9 @@ namespace OVR
 			_released = true;
 		}
 	}
+#pragma endregion
 
+#pragma region FUNDAMENTAL_FUNCTIONS
 	/*! @brief Create OpenCL kernels */
 	bool OvrvisionProOpenCL::CreateProgram()
 	{
@@ -402,73 +407,6 @@ namespace OVR
 		return (int)size;
 	}
 
-	// OpenGL/D3D連携準備
-	bool OvrvisionProOpenCL::Prepare4Sharing()
-	{
-		DeviceExtensions();
-#ifdef _WIN32
-		if (strstr(_deviceExtensions, "cl_nv_d3d11_sharing"))
-		{
-			_vendorD3D11 = NVIDIA;
-			INITPFN(clGetDeviceIDsFromD3D11NV);
-			INITPFN(clCreateFromD3D11BufferNV);
-			INITPFN(clCreateFromD3D11Texture2DNV);
-			INITPFN(clCreateFromD3D11Texture3DNV);
-			INITPFN(clEnqueueAcquireD3D11ObjectsNV);
-			INITPFN(clEnqueueReleaseD3D11ObjectsNV);
-			if (clCreateFromD3D11Texture2DNV != NULL)
-				return true;
-		}
-		else if (strstr(_deviceExtensions, "cl_khr_d3d11_sharing"))
-		{
-			_vendorD3D11 = KHRONOS;
-			INITPFN(clGetDeviceIDsFromD3D11KHR);
-			INITPFN(clCreateFromD3D11BufferKHR);
-			INITPFN(clCreateFromD3D11Texture2DKHR);
-			INITPFN(clCreateFromD3D11Texture3DKHR);
-			INITPFN(clEnqueueAcquireD3D11ObjectsKHR);
-			INITPFN(clEnqueueReleaseD3D11ObjectsKHR);
-			if (clCreateFromD3D11Texture2DKHR != NULL)
-				return true;
-		}
-		return false;
-#else
-		return true;
-#endif
-	}
-
-	// OpenGL連携テクスチャー
-	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint textureId, int width, int height)
-	{
-		/*
-		glBindTexture(GL_TEXTURE_2D, textureId);
-		glTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, width, height, 0, pixelFormat, dataType, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glEnable(GL_TEXTURE_2D);
-		*/
-		return clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, textureId, &_errorCode);
-	}
-
-#ifdef _WIN32
-	// TODO: Direct3D連携用のテクスチャーを生成
-	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height)
-	{
-		if (_vendorD3D11 == NVIDIA)
-		{
-			return clCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
-		}
-		else
-		{
-			return clCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
-		}
-	}
-#endif
-
 	// Load camera parameters 
 	bool OvrvisionProOpenCL::LoadCameraParams(const char *filename)
 	{
@@ -520,44 +458,86 @@ namespace OVR
 		_remapAvailable = true;
 		return true;
 	}
+#pragma endregion
 
-	void OvrvisionProOpenCL::Download(const cl_mem image, uchar *ptr, int offsetX, int offsetY, uint width, uint height)
+#pragma region TEXTURE_SHARING
+	// OpenGL/D3D連携準備
+	bool OvrvisionProOpenCL::Prepare4Sharing()
 	{
-		size_t origin[3] = { offsetX, offsetY, 0 };
-		size_t region[3] = { width, height, 1 };
-		size_t size;
-		cl_image_format format;
-		clGetImageInfo(image, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
-		clGetImageInfo(image, CL_IMAGE_ELEMENT_SIZE, sizeof(size), &size, NULL);
-		size_t channels;
-		switch (format.image_channel_order)
+		DeviceExtensions();
+#ifdef _WIN32
+		if (strstr(_deviceExtensions, "cl_nv_d3d11_sharing"))
 		{
-		case CL_R:
-		case CL_A:
-		case CL_INTENSITY:
-		case CL_LUMINANCE:
-			channels = 1;
-			break;
-		case CL_RG:
-		case CL_RA:
-		case CL_Rx:
-			channels = 2;
-			break;
-		case CL_RGB:
-		case CL_RGx:
-			channels = 3;
-			break;
-		case CL_RGBA:
-		case CL_BGRA:
-		case CL_ARGB:
-		case CL_RGBx:
-			channels = 4;
-			break;
+			_vendorD3D11 = NVIDIA;
+			INITPFN(clGetDeviceIDsFromD3D11NV);
+			INITPFN(clCreateFromD3D11BufferNV);
+			INITPFN(clCreateFromD3D11Texture2DNV);
+			INITPFN(clCreateFromD3D11Texture3DNV);
+			INITPFN(clEnqueueAcquireD3D11ObjectsNV);
+			INITPFN(clEnqueueReleaseD3D11ObjectsNV);
+			if (clCreateFromD3D11Texture2DNV != NULL)
+				return true;
 		}
-		cl_event execute;
-		_errorCode = clEnqueueReadImage(_commandQueue, image, CL_TRUE, origin, region, width * size * channels, 0, ptr, 1, &execute, NULL);
+		else if (strstr(_deviceExtensions, "cl_khr_d3d11_sharing"))
+		{
+			_vendorD3D11 = KHRONOS;
+			INITPFN(clGetDeviceIDsFromD3D11KHR);
+			INITPFN(clCreateFromD3D11BufferKHR);
+			INITPFN(clCreateFromD3D11Texture2DKHR);
+			INITPFN(clCreateFromD3D11Texture3DKHR);
+			INITPFN(clEnqueueAcquireD3D11ObjectsKHR);
+			INITPFN(clEnqueueReleaseD3D11ObjectsKHR);
+			if (clCreateFromD3D11Texture2DKHR != NULL)
+				return true;
+		}
+		return false;
+#else
+		return true;
+#endif
 	}
 
+	// OpenGL連携テクスチャー
+	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
+	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
+	{
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glEnable(GL_TEXTURE_2D);
+		return clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture, &_errorCode);
+	}
+
+	void OvrvisionProOpenCL::UpdateSkinTextureObjects(cl_mem textures[2], enum SCALING scaling)
+	{
+		cl_event event[2];
+		clEnqueueAcquireGLObjects(_commandQueue, 2, textures, 0, NULL, NULL);
+		SkinImages(textures[0], textures[1], scaling, &event[0], &event[1]);
+		clEnqueueReleaseGLObjects(_commandQueue, 2, textures, 2, event, NULL);
+		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+	}
+
+#ifdef _WIN32
+	// TODO: Direct3D連携用のテクスチャーを生成
+	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height)
+	{
+		if (_vendorD3D11 == NVIDIA)
+		{
+			return clCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+		}
+		else
+		{
+			return clCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+		}
+	}
+#endif
+#pragma endregion
+
+#pragma region FILTERS
 	/*! @brief Resize image
 		@param src image
 		@param dst image
@@ -766,9 +746,9 @@ namespace OVR
 		clSetKernelArg(_medianBlur5x5, 1, sizeof(cl_mem), &left);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _medianBlur5x5, 2, NULL, size, NULL, 1, &event[0], event_l);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		clSetKernelArg(_gaussianBlur3x3, 0, sizeof(cl_mem), &r);
-		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &right);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[1], event_r);
+		clSetKernelArg(_medianBlur5x5, 0, sizeof(cl_mem), &r);
+		clSetKernelArg(_medianBlur5x5, 1, sizeof(cl_mem), &right);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _medianBlur5x5, 2, NULL, size, NULL, 1, &event[1], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #endif
 		// Release temporary images
@@ -1072,7 +1052,9 @@ namespace OVR
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, 0, 0, NULL, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
+#pragma endregion
 
+#pragma region DEMOSAIC_AND_REMAP
 	// Demosaicing
 		void OvrvisionProOpenCL::Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *execute)
 		{
@@ -1302,7 +1284,9 @@ namespace OVR
 			const uchar *ptr = src.ptr(0);
 			DemosaicRemap((const ushort *)ptr, left, right);
 		}
+#pragma endregion
 
+#pragma region UNUSED
 		// CreateProgram from file
 		void OvrvisionProOpenCL::createProgram(const char *filename, bool binary)
 		{
@@ -1378,4 +1362,43 @@ namespace OVR
 				return 1;
 			}
 		}
+
+		void OvrvisionProOpenCL::Download(const cl_mem image, uchar *ptr, int offsetX, int offsetY, uint width, uint height)
+		{
+			size_t origin[3] = { offsetX, offsetY, 0 };
+			size_t region[3] = { width, height, 1 };
+			size_t size;
+			cl_image_format format;
+			clGetImageInfo(image, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
+			clGetImageInfo(image, CL_IMAGE_ELEMENT_SIZE, sizeof(size), &size, NULL);
+			size_t channels;
+			switch (format.image_channel_order)
+			{
+			case CL_R:
+			case CL_A:
+			case CL_INTENSITY:
+			case CL_LUMINANCE:
+				channels = 1;
+				break;
+			case CL_RG:
+			case CL_RA:
+			case CL_Rx:
+				channels = 2;
+				break;
+			case CL_RGB:
+			case CL_RGx:
+				channels = 3;
+				break;
+			case CL_RGBA:
+			case CL_BGRA:
+			case CL_ARGB:
+			case CL_RGBx:
+				channels = 4;
+				break;
+			}
+			cl_event execute;
+			_errorCode = clEnqueueReadImage(_commandQueue, image, CL_TRUE, origin, region, width * size * channels, 0, ptr, 1, &execute, NULL);
+		}
+
+#pragma endregion
 }
