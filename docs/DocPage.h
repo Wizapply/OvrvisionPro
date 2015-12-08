@@ -169,7 +169,7 @@ Date : 07/Dec/2015<br />
 - Mac OSX support (in a few days) 
 - Linux OS support
 - Unreal Engine 4
-- The memory leak of OpenCL.
+- The memory leak of OpenCL. (NVIDIA Driver)
 
 @section sdk2 Ovrvision SDK v1.01
 Date : 02/Dec/2015<br />

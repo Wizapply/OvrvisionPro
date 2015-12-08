@@ -226,6 +226,7 @@ namespace OVR
 
 			// Print the log
 			printf("%s\n", log);
+			free(log);
 			return false;
 		}
 		else
@@ -1271,6 +1272,7 @@ namespace OVR
 
 						// Print the log
 						printf("%s\n", log);
+						free(log);
 					}
 					SAMPLE_CHECK_ERRORS(_errorCode);
 				}

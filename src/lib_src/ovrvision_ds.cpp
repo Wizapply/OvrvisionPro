@@ -170,7 +170,7 @@ public:
 //OvrvisionDirectShow
 OvrvisionDirectShow::OvrvisionDirectShow()
 {
-	HRESULT hr = ::CoInitialize(NULL);
+	HRESULT hr = ::CoInitializeEx(0, COINIT_MULTITHREADED);
 	if (hr == S_OK) m_comInit = true;
 	else m_comInit = false;
 

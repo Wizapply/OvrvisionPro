@@ -338,8 +338,6 @@ bool OvrvisionSetting::WriteEEPROM(unsigned char flag) {
 
 	m_pSystem->UserDataAccessLock();
 
-	Sleep(50);	//50ms write wait
-
 	return true;
 }
 

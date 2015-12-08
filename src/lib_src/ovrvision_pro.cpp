@@ -153,10 +153,10 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 			objs++;
 			break;
 		}
+#ifdef WIN32
 		Sleep(150);	//150ms wait
+#endif
 	}
-
-	Sleep(50);	//50ms wait
 
 	//Error
 	if (objs == 0)
@@ -336,8 +336,6 @@ void OvrvisionPro::InitCameraSetting()
 			SetCameraWhiteBalanceG(ovrset.m_propWhiteBalanceG);
 			SetCameraWhiteBalanceB(ovrset.m_propWhiteBalanceB);
 		}
-
-		Sleep(50);	//50ms wait
 
 		m_focalpoint = ovrset.m_focalPoint.at<float>(0);
 		m_rightgap[0] = (float)-ovrset.m_trans.at<double>(0);	//T:X
