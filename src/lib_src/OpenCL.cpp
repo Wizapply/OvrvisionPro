@@ -108,13 +108,15 @@ string opencl_error_to_str(cl_int error)
 
 namespace OVR
 {
-#ifdef WIN32
+
 	void __stdcall createContextCallback(const char *message, const void *data, size_t size, void *userdata)
 	{
 		printf("ERROR: %s\n", message);
+#ifdef WIN32
 		OutputDebugString((LPCWSTR)message);
-	}
 #endif
+	}
+
 
 	//namespace OPENCL
 	//{
