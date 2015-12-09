@@ -183,7 +183,7 @@ namespace OVR
 
 			/*! @brief Update skin textures for drawing
 				@param textures textures[0]:left textures[1]:right */
-			void UpdateSkinTextureObjects(cl_mem textures[2], enum SCALING scaling);
+			void UpdateSkinTextureObjects(uint n, void *textures[], enum SCALING scaling = HALF);
 
 #ifdef _WIN32
 			// Direct3D連携用のテクスチャーを生成

@@ -227,6 +227,12 @@ void* OvrvisionPro::CreateGLTexture2D(unsigned int texture, int width, int heigh
 	return m_pOpenCL->CreateGLTexture2D(texture, width, height);
 }
 
+// Update OpenGL texture objects
+void OvrvisionPro::UpdateGLSkinTextureObjects(unsigned int n, void *textureObjects[])
+{
+	m_pOpenCL->UpdateSkinTextureObjects(n, textureObjects);
+}
+
 // Grayscaled images 1/2 scaled
 void OvrvisionPro::GrayscaleHalf(unsigned char *left, unsigned char *right)
 {

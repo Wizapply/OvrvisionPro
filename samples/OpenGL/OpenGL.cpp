@@ -17,9 +17,10 @@ void SWAPBUFFERS();	// platform depend function
 /* OpenGL globals, defines, and prototypes */ 
 GLfloat latitude, longitude, latinc, longinc; 
 GLdouble radius; 
-GLuint texture;
+GLuint textureIDs[2];
+void *textureObjects[2];
 
-OVR::OvrvisionPro camera;	// OvrvisionPro camera
+OVR::OvrvisionPro ovrvision;	// OvrvisionPro camera
 //VideoCapture camera; // dummy camera
 
 #define GLOBE    1 
@@ -35,7 +36,7 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 {
 	GLfloat     maxObjectSize, aspect;
 	GLdouble    near_plane, far_plane;
-
+	
 	glClearIndex((GLfloat)BLACK_INDEX);
 	glClearDepth(1.0);
 
@@ -56,7 +57,7 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 	latinc = 6.0F;
 	longinc = 2.5F;
 
-	if (camera.Open(0, OVR::Camprop::OV_CAMHD_FULL) == 0)
+	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL) == 0)
 		puts("Can't open OvrvisionPro");
 
 	createObjects();
@@ -79,6 +80,11 @@ GLvoid resize(GLsizei width, GLsizei height)
 GLvoid createObjects()
 {
 	GLUquadricObj *quadObj;
+
+	// Create textures
+	glGenTextures(2, textureIDs);
+	textureObjects[0] = ovrvision.CreateGLTexture2D(textureIDs[0], 100, 100);
+	textureObjects[1] = ovrvision.CreateGLTexture2D(textureIDs[1], 100, 100);
 
 	glNewList(GLOBE, GL_COMPILE);
 	quadObj = gluNewQuadric();
@@ -118,6 +124,37 @@ void polarView(GLdouble radius, GLdouble twist, GLdouble latitude,
 
 GLvoid drawScene(GLvoid)
 {
+	static const GLfloat vtx[] = {
+		200, 120,
+		440, 120,
+		440, 360,
+		200, 360,
+	};
+	glVertexPointer(2, GL_FLOAT, 0, vtx);
+
+	// Step5. テクスチャの領域指定
+	static const GLfloat texuv[] = {
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 0.0f,
+		0.0f, 0.0f,
+	};
+	glTexCoordPointer(2, GL_FLOAT, 0, texuv);
+
+	// Step6. テクスチャの画像指定
+	ovrvision.UpdateGLSkinTextureObjects(2, textureObjects);
+	glBindTexture(GL_TEXTURE_2D, textureIDs[0]); // texture of left hand 
+
+	// Step7. テクスチャの描画
+	glEnable(GL_TEXTURE_2D);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDrawArrays(GL_QUADS, 0, 4);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisable(GL_TEXTURE_2D);
+
+	/*
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glPushMatrix();
@@ -141,6 +178,6 @@ GLvoid drawScene(GLvoid)
 	glPopMatrix();
 
 	glPopMatrix();
-
+	*/
 	SWAPBUFFERS();
 }

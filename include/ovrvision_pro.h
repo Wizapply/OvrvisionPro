@@ -290,7 +290,17 @@ public:
 #endif
 
 	// Create OpenGL Texture
+	/*! @brief Create OpenGL sharing texture object
+		@param texture identifier
+		@param width of texture
+		@param height of texture
+		@return ptr of texture object */
 	void* CreateGLTexture2D(unsigned int texture, int width, int height);
+
+	/*! @brief Update skin texture objects
+		@param n count of onjects
+		@param textureObjects */
+	void UpdateGLSkinTextureObjects(unsigned int n, void *textureObjects[]);
 
 private:
 #ifdef WIN32

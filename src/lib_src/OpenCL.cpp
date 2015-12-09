@@ -509,15 +509,17 @@ namespace OVR
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glEnable(GL_TEXTURE_2D);
-		return clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture, &_errorCode);
+		cl_mem object = clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		return object;
 	}
 
-	void OvrvisionProOpenCL::UpdateSkinTextureObjects(cl_mem textures[2], enum SCALING scaling)
+	void OvrvisionProOpenCL::UpdateSkinTextureObjects(uint n, void *textures[], enum SCALING scaling)
 	{
 		cl_event event[2];
-		clEnqueueAcquireGLObjects(_commandQueue, 2, textures, 0, NULL, NULL);
-		SkinImages(textures[0], textures[1], scaling, &event[0], &event[1]);
-		clEnqueueReleaseGLObjects(_commandQueue, 2, textures, 2, event, NULL);
+		clEnqueueAcquireGLObjects(_commandQueue, n, (cl_mem *)textures, 0, NULL, NULL);
+		SkinImages((cl_mem)(textures[0]), (cl_mem)(textures[1]), scaling, &event[0], &event[1]);
+		clEnqueueReleaseGLObjects(_commandQueue, n, (cl_mem *)textures, 2, event, NULL);
 		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
 	}
 
@@ -537,49 +539,7 @@ namespace OVR
 #endif
 #pragma endregion
 
-#pragma region FILTERS
-	/*! @brief Resize image
-		@param src image
-		@param dst image
-		@param scaling */
-	void OvrvisionProOpenCL::Resize(const cl_mem src, cl_mem dst, enum SCALING scaling, cl_event *execute)
-	{
-		//cl_image_format format;
-		size_t width, height;
-		clGetImageInfo(src, CL_IMAGE_WIDTH, sizeof(width), &width, NULL);
-		clGetImageInfo(src, CL_IMAGE_HEIGHT, sizeof(height), &height, NULL);
-
-		int scale = 2;
-		switch (scaling)
-		{
-		case HALF:
-			scale = 2;
-			break;
-
-		case FOURTH:
-			scale = 4;
-			break;
-
-		case EIGHTH:
-			scale = 8;
-			break;
-		}
-		size_t reSize[] = { width / scale, height / scale };
-		size_t region[3] = { width / scale, height / scale, 1 };
-		size_t origin[3] = { 0, 0, 0 };
-
-		//__kernel void resize( // TODO UNDER CONSTRUCTION
-		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
-		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
-		//		__read_only int scale)		// 2, 4, 8
-
-		clSetKernelArg(_resize, 0, sizeof(cl_mem), &src);
-		clSetKernelArg(_resize, 1, sizeof(cl_mem), &dst);
-		clSetKernelArg(_resize, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, reSize, 0, 0, NULL, execute);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-	}
-
+#pragma region SKIN_COLOR_EXTRACTION
 	// Get HSV images
 	void OvrvisionProOpenCL::SkinColor(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
 	{
@@ -819,6 +779,127 @@ namespace OVR
 		clReleaseMemObject(r);
 	}
 
+	// Get HSV images
+	void OvrvisionProOpenCL::SkinColor(uchar *left, uchar *right, SCALING scaling)
+	{
+		cl_mem l, r;
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+
+		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_event event[2];
+
+		SkinColor(l, r, scaling, &event[0], &event[1]);
+
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+
+	void OvrvisionProOpenCL::SkinRegion(uchar *left, uchar *right, SCALING scaling)
+	{
+		cl_mem l, r;
+		uint width = _width, height = _height;
+		switch (scaling)
+		{
+		case OVR::HALF:
+			width /= 2;
+			height /= 2;
+			break;
+		case OVR::FOURTH:
+			width /= 4;
+			height /= 4;
+			break;
+		case OVR::EIGHTH:
+			width /= 8;
+			height /= 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+
+		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_event event[2];
+
+		SkinRegion(l, r, scaling, &event[0], &event[1]);
+
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar), 0, left, 1, &event[0], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event[1], NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+#pragma endregion
+
+#pragma region FILTERS
+	/*! @brief Resize image
+		@param src image
+		@param dst image
+		@param scaling */
+	void OvrvisionProOpenCL::Resize(const cl_mem src, cl_mem dst, enum SCALING scaling, cl_event *execute)
+	{
+		//cl_image_format format;
+		size_t width, height;
+		clGetImageInfo(src, CL_IMAGE_WIDTH, sizeof(width), &width, NULL);
+		clGetImageInfo(src, CL_IMAGE_HEIGHT, sizeof(height), &height, NULL);
+
+		int scale = 2;
+		switch (scaling)
+		{
+		case HALF:
+			scale = 2;
+			break;
+
+		case FOURTH:
+			scale = 4;
+			break;
+
+		case EIGHTH:
+			scale = 8;
+			break;
+		}
+		size_t reSize[] = { width / scale, height / scale };
+		size_t region[3] = { width / scale, height / scale, 1 };
+		size_t origin[3] = { 0, 0, 0 };
+
+		//__kernel void resize( // TODO UNDER CONSTRUCTION
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
+		//		__read_only int scale)		// 2, 4, 8
+
+		clSetKernelArg(_resize, 0, sizeof(cl_mem), &src);
+		clSetKernelArg(_resize, 1, sizeof(cl_mem), &dst);
+		clSetKernelArg(_resize, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, reSize, 0, 0, NULL, execute);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+	}
+
 	void OvrvisionProOpenCL::Grayscale(cl_mem left, cl_mem right, enum SCALING scaling, cl_event *event_l, cl_event *event_r)
 	{
 		cl_mem l, r;
@@ -914,44 +995,6 @@ namespace OVR
 		clReleaseMemObject(r);
 	}
 
-	// Get HSV images
-	void OvrvisionProOpenCL::SkinColor(uchar *left, uchar *right, SCALING scaling)
-	{
-		cl_mem l, r;
-		uint width = _width, height = _height;
-		switch (scaling)
-		{
-		case OVR::HALF:
-			width /= 2;
-			height /= 2;
-			break;
-		case OVR::FOURTH:
-			width /= 4;
-			height /= 4;
-			break;
-		case OVR::EIGHTH:
-			width /= 8;
-			height /= 8;
-			break;
-		}
-		size_t origin[3] = { 0, 0, 0 };
-		size_t region[3] = { width, height, 1 };
-
-		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_event event[2];
-
-		SkinColor(l, r, scaling, &event[0], &event[1]);
-
-		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		clReleaseMemObject(l);
-		clReleaseMemObject(r);
-	}
 
 	void OvrvisionProOpenCL::ColorHistgram(uchar *histgram, SCALING scaling)
 	{
@@ -993,44 +1036,6 @@ namespace OVR
 		}
 		Mat h(180, 256, CV_8UC1, histgram);
 		normalize(hist, h, 0, 255, NORM_MINMAX, h.type());
-	}
-
-	void OvrvisionProOpenCL::SkinRegion(uchar *left, uchar *right, SCALING scaling)
-	{
-		cl_mem l, r;
-		uint width = _width, height = _height;
-		switch (scaling)
-		{
-		case OVR::HALF:
-			width /= 2;
-			height /= 2;
-			break;
-		case OVR::FOURTH:
-			width /= 4;
-			height /= 4;
-			break;
-		case OVR::EIGHTH:
-			width /= 8;
-			height /= 8;
-			break;
-		}
-		size_t origin[3] = { 0, 0, 0 };
-		size_t region[3] = { width, height, 1 };
-
-		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_event event[2];
-
-		SkinRegion(l, r, scaling, &event[0], &event[1]);
-
-		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar), 0, left, 1, &event[0], NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event[1], NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		clReleaseMemObject(l);
-		clReleaseMemObject(r);
 	}
 
 	// UNDER CONSTRUCTION
