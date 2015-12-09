@@ -167,8 +167,14 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 	m_pPixels[1] = new byte[cam_width*cam_height*OV_PIXELSIZE_RGB];
 
 	//Initialize OpenCL system
-	m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height);
-
+	try {
+		m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height);
+	}
+	catch (std::exception ex)
+	{
+		puts(ex.what());
+		return 0;
+	}
 	//Opened
 	m_isOpen = true;
 

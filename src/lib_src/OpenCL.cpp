@@ -98,7 +98,7 @@ string opencl_error_to_str(cl_int error)
 #undef CASE_CL_CONSTANT
 }
 
-#define SAMPLE_CHECK_ERRORS(ERR) if (ERR != CL_SUCCESS) throw runtime_error(opencl_error_to_str(ERR));
+#define SAMPLE_CHECK_ERRORS(ERR) if (ERR != CL_SUCCESS) throw std::exception(opencl_error_to_str(ERR).c_str());
 #endif
 
 #define INITPFN(x) \
@@ -111,9 +111,9 @@ namespace OVR
 
 	void __stdcall createContextCallback(const char *message, const void *data, size_t size, void *userdata)
 	{
-		printf("ERROR: %s\n", message);
+		printf("clCreateContext: %d %s\n",size,  message);
 #ifdef WIN32
-		OutputDebugString((LPCWSTR)message);
+		OutputDebugStringA(message);
 #endif
 	}
 
@@ -302,6 +302,7 @@ namespace OVR
 
 		cl_uint maxFreq = 0;
 		cl_uint maxUnits = 0;
+		bool device_found = false;
 		vector<cl_device_id> devices;
 		for (cl_uint i = 0; i < num_of_platforms; i++)
 		{
@@ -344,6 +345,7 @@ namespace OVR
 								_deviceId = id[j];
 								maxFreq = freq;
 								maxUnits = units;
+								device_found = true;
 							}
 						}
 						else
@@ -355,6 +357,10 @@ namespace OVR
 				}
 				delete[] id;
 			}
+		}
+		if (!device_found)
+		{
+			throw(exception("GPU NOT FOUND.\nRequired OpenCL 1.2 or above.\n"));
 		}
 #ifdef WIN32
 		// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
@@ -388,7 +394,6 @@ namespace OVR
 			_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
 			break;
 		}
-		printf("ERROR: %s\n", opencl_error_to_str(_errorCode));
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #ifdef _DEBUG
 		char buffer[80];
