@@ -49,9 +49,19 @@ void UpdateFunc(void);	//!<Func
  */
 int Initialize()
 {
+	int locationID = 0;
+	OVR::Camprop cameraMode = OVR::OV_CAMVR_FULL;
+
 	AllocConsole();
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONIN$", "r", stdin);
+
+	if (__argc > 2) {
+		printf("Ovrvisin Pro mode changed.");
+		//__argv[0]; ApplicationPath
+		locationID = atoi(__argv[1]);
+		cameraMode = (OVR::Camprop)atoi(__argv[2]);
+	}
 
 	//Initialize Wizapply library 
 	wzInitCreateWizapply("Ovrvision", APPSCREEN_WIDTH, APPSCREEN_HEIGHT, WZ_CM_NOVSYNC);//|WZ_CM_FULLSCREEN|WZ_CM_FS_DEVICE
@@ -65,7 +75,7 @@ int Initialize()
 
 	//Create Ovrvision object
 	g_pOvrvision = new OVR::OvrvisionPro();
-	if (g_pOvrvision->Open(0, OVR::OV_CAMVR_FULL) == 0) {	//Open 960x950@60
+	if (g_pOvrvision->Open(locationID, cameraMode) == 0) {	//Open 960x950@60 default
 		printf("Ovrvision Pro Open Error!\nPlease check whether OvrvisionPro is connected.");
 	}
 

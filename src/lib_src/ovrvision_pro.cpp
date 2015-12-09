@@ -336,7 +336,15 @@ void OvrvisionPro::InitCameraSetting()
 			SetCameraWhiteBalanceG(ovrset.m_propWhiteBalanceG);
 			SetCameraWhiteBalanceB(ovrset.m_propWhiteBalanceB);
 		}
+		
+		//50ms wait
+#ifdef WIN32
+		Sleep(50);
+#elif MACOSX
 
+#elif LINUX
+
+#endif
 		m_focalpoint = ovrset.m_focalPoint.at<float>(0);
 		m_rightgap[0] = (float)-ovrset.m_trans.at<double>(0);	//T:X
 		m_rightgap[1] = (float)ovrset.m_trans.at<double>(1);	//T:Y

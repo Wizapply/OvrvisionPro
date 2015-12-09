@@ -23,6 +23,7 @@ public class Ovrvision : MonoBehaviour
 	private Vector3 CameraRightGap;
 
 	//public propaty
+	public int cameraMode = COvrvisionUnity.OV_CAMVR_FULL;
 	public bool useOvrvisionAR = false;
 	public float ARsize = 0.15f;
 	public bool useOvrvisionTrack = false;
@@ -54,7 +55,7 @@ public class Ovrvision : MonoBehaviour
 	// Use this for initialization
 	void Awake() {
 		//Open camera
-		if (OvrPro.Open(COvrvisionUnity.OV_CAMVR_FULL, ARsize))
+		if (OvrPro.Open(cameraMode, ARsize))
 		{
 			if (overlaySettings)
 			{

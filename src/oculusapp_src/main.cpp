@@ -182,7 +182,16 @@ static bool MainLoop(bool retryCreate)
 
     bool isVisible = true;
 
-	if (ovrvision.Open(0, OVR::Camprop::OV_CAMVR_FULL)) {
+	int locationID = 0;
+	OVR::Camprop cameraMode = OVR::OV_CAMVR_FULL;
+	if (__argc > 2) {
+		printf("Ovrvisin Pro mode changed.");
+		//__argv[0]; ApplicationPath
+		locationID = atoi(__argv[1]);
+		cameraMode = (OVR::Camprop)atoi(__argv[2]);
+	}
+
+	if (ovrvision.Open(locationID, cameraMode)) {
 		width = ovrvision.GetCamWidth();
 		height = ovrvision.GetCamHeight();
 		pixelsize = ovrvision.GetCamPixelsize();

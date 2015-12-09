@@ -14,12 +14,20 @@ public class OvrvisionEditor : Editor {
 
 	public override void OnInspectorGUI() {
 		Ovrvision obj = target as Ovrvision;
-       
+
+		string[] cammode = { "2560x1920@15", "1920x1080@30", "1280x960@45", "960x950@60:Default", "1280x800@60", "640x480@90", "320x240@120" };
 		EditorGUILayout.LabelField( "Ovrvision Status" );
 		if (obj.CameraStatus())
-			EditorGUILayout.HelpBox( "Opened", MessageType.Info, true );
+		{
+			string text = "Opened : ";
+			text += cammode[obj.cameraMode];
+			EditorGUILayout.HelpBox(text, MessageType.Info, true);
+		}
 		else
-			EditorGUILayout.HelpBox( "Closed", MessageType.Error, true );
+		{
+			obj.cameraMode = EditorGUILayout.Popup("Camera Mode", obj.cameraMode, cammode);
+			EditorGUILayout.HelpBox("Closed", MessageType.Error, true);
+		}
 
 		EditorGUILayout.Space();
 
@@ -53,6 +61,9 @@ public class OvrvisionEditor : Editor {
 		//Ovrvision AR
 		obj.useOvrvisionAR = EditorGUILayout.Toggle("Use the OvrvisionAR", obj.useOvrvisionAR);
 		obj.ARsize = EditorGUILayout.FloatField("AR Marker size(meter)", obj.ARsize);
+
+		EditorGUILayout.Space();
+
 		obj.useOvrvisionTrack = EditorGUILayout.Toggle("Use the OvrvisionTrack", obj.useOvrvisionTrack);
 
 		EditorGUILayout.Space();

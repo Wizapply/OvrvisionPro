@@ -13,15 +13,22 @@
 
 #include <opencv2/core/core.hpp>
 
+#ifdef WIN32
 // OpenCL header
 #include <CL/opencl.h>// OpenCL and its extensions
 
-#ifdef _WIN32
 #include <windows.h>
 #include <dxgi.h>
 #include <d3d11.h>
 #include <GL/gl.h> 
 #include <CL/cl_d3d11_ext.h>	// for OpenCL and Direct3D11 interoperability (NV and KHR are equivalent)
+#endif
+
+#ifdef MACOSX
+// OpenCL header
+#include <OpenCL/cl.h>// OpenCL and its extensions
+#include <OpenGL/gl.h>
+
 #endif
 
 //ovrvision setting
