@@ -108,6 +108,14 @@ string opencl_error_to_str(cl_int error)
 
 namespace OVR
 {
+#ifdef WIN32
+	void __stdcall createContextCallback(const char *message, const void *data, size_t size, void *userdata)
+	{
+		printf("ERROR: %s\n", message);
+		OutputDebugString((LPCWSTR)message);
+	}
+#endif
+
 	//namespace OPENCL
 	//{
 #pragma region CONSTRUCTOR_DESTRUCTOR
@@ -132,6 +140,7 @@ namespace OVR
 				throw runtime_error("Insufficient OpenCL version");
 			}
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// UMatを使うとパフォーマンスが落ちるので、ocl::Image2Dは使わない
 			_src = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_format16UC1, _width, _height, 0, 0, &_errorCode);
@@ -345,7 +354,7 @@ namespace OVR
 				delete[] id;
 			}
 		}
-#ifdef _WIN32
+#ifdef WIN32
 		// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
 		cl_context_properties opengl_props[] = {
 			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
@@ -356,15 +365,15 @@ namespace OVR
 
 		cl_context_properties d3d11_props[] =
 		{
-			//CL_CONTEXT_D3D11_DEVICE_KHR, (cl_context_properties)g_pD3DDevice,
 			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+			//CL_CONTEXT_D3D11_DEVICE_KHR, (cl_context_properties)g_pD3DDevice,
 			0
 		};
 #endif
 		// ここで連携するOpenGL/D3Dのプロパティを設定してコンテキストを取得する
 		switch (_sharing)
 		{
-#ifdef _WIN32
+#ifdef WIN32
 		case OPENGL:
 			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
 			break;
@@ -374,9 +383,10 @@ namespace OVR
 			break;
 #endif
 		default:
-			_context = clCreateContext(NULL, 1, &_deviceId, NULL, NULL, &_errorCode);
+			_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
 			break;
 		}
+		printf("ERROR: %s\n", opencl_error_to_str(_errorCode));
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #ifdef _DEBUG
 		char buffer[80];

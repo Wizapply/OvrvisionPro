@@ -75,8 +75,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\bin\x86;..\..\3rdparty\opencv\build\x86\vc12\staticlib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>strmiids.lib;IlmImfd.lib;ippicvmt.lib;libjpegd.lib;libpngd.lib;libtiffd.lib;libwebpd.lib;libjasperd.lib;opencv_core300d.lib;opencv_hal300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_videoio300d.lib;zlibd.lib;ovrvision.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\bin\x86;..\..\3rdparty\opencv\build\x86\vc12\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core300d.lib;opencv_hal300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_videoio300d.lib;ovrvisiond.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
