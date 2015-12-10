@@ -747,7 +747,6 @@ namespace OVR
 	// Resize
 	void OvrvisionProOpenCL::Resize(const cl_mem src, cl_mem dst, enum SCALING scaling, cl_event *execute)
 	{
-		//cl_image_format format;
 		size_t width, height;
 		clGetImageInfo(src, CL_IMAGE_WIDTH, sizeof(width), &width, NULL);
 		clGetImageInfo(src, CL_IMAGE_HEIGHT, sizeof(height), &height, NULL);
@@ -801,6 +800,7 @@ namespace OVR
 	//
 	void OvrvisionProOpenCL::Read(uchar *left, uchar *right, SCALING scaling)
 	{
+#if 0
 		cl_mem l, r;
 		uint width = _width, height = _height;
 		switch (scaling)
@@ -834,6 +834,13 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
+#else
+		size_t origin[3] = { 0, 0, 0 };
+		_errorCode = clEnqueueReadImage(_commandQueue, _reducedL, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clEnqueueReadImage(_commandQueue, _reducedR, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+#endif
 	}
 
 	//
@@ -931,6 +938,7 @@ namespace OVR
 	// Get HSV images
 	void OvrvisionProOpenCL::GetHSV(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
 	{
+#if 0
 		cl_mem l, r;
 		uint width = _width, height = _height;
 		switch (scaling)
@@ -979,6 +987,23 @@ namespace OVR
 		// Release temporary images
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
+#else
+		size_t size[] = { _scaledRegion[0], _scaledRegion[1] };
+
+		// Convert to HSV
+		//__kernel void convertHSV( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8 x 4
+
+		clSetKernelArg(_convertHSV, 0, sizeof(cl_mem), &_reducedL);
+		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &left);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 0, NULL, event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_convertHSV, 0, sizeof(cl_mem), &_reducedR);
+		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &right);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 0, NULL, event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+#endif
 	}
 
 	//
@@ -1180,17 +1205,43 @@ namespace OVR
 	// 
 	void OvrvisionProOpenCL::Demosaic(const ushort* src, cl_event *execute)
 	{
-#if 1
+#if 0
 		Demosaic(src, _l, _r, execute);
 #else
-		cl_event wait;
+		cl_event wait, wait2;
 		Demosaic(src, _l, _r, &wait);
 
-		size_t origin[3] = { 0, 0, 0 };
 		// Resize
-		cl_event event;
-		Resize(_l, _reducedL, _scaling, &wait, &event);
-		Resize(_r, _reducedR, _scaling, &event, execute);
+		int scale;
+		switch (_scaling)
+		{
+		case HALF:
+			scale = 2;
+			break;
+		case FOURTH:
+			scale = 4;
+			break;
+		case EIGHTH:
+			scale = 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+
+		//__kernel void resize( // TODO UNDER CONSTRUCTION
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
+		//		__read_only int scale)		// 2, 4, 8
+
+		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_l);
+		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedL);
+		clSetKernelArg(_resize, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait, &wait2);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_r);
+		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedR);
+		clSetKernelArg(_resize, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
+		SAMPLE_CHECK_ERRORS(_errorCode);
 #endif
 	}
 
@@ -1208,6 +1259,7 @@ namespace OVR
 		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right, 1, &execute, NULL);
 	}
 
+	//
 	void OvrvisionProOpenCL::Demosaic(const ushort *src, Mat &left, Mat &right)
 	{
 		size_t origin[3] = { 0, 0, 0 };
@@ -1221,6 +1273,7 @@ namespace OVR
 		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right.ptr(0), 1, &execute, NULL);
 	}
 
+	//
 	void OvrvisionProOpenCL::Demosaic(const Mat src, Mat &left, Mat &right)
 	{
 		const uchar *ptr = src.ptr(0);
@@ -1305,7 +1358,44 @@ namespace OVR
 	// 
 	void OvrvisionProOpenCL::DemosaicRemap(const ushort* src, cl_event *execute)
 	{
+#if 0
 		DemosaicRemap(src, _l, _r, execute);
+#else
+		cl_event wait, wait2;
+		Demosaic(src, _l, _r, &wait);
+
+		// Resize
+		int scale;
+		switch (_scaling)
+		{
+		case HALF:
+			scale = 2;
+			break;
+		case FOURTH:
+			scale = 4;
+			break;
+		case EIGHTH:
+			scale = 8;
+			break;
+		}
+		size_t origin[3] = { 0, 0, 0 };
+
+		//__kernel void resize( // TODO UNDER CONSTRUCTION
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
+		//		__read_only int scale)		// 2, 4, 8
+
+		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_l);
+		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedL);
+		clSetKernelArg(_resize, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait, &wait2);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_r);
+		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedR);
+		clSetKernelArg(_resize, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+#endif
 	}
 
 	//
