@@ -94,25 +94,29 @@ namespace OVR
 			bool LoadCameraParams(OvrvisionSetting* ovrset);
 
 			// Demosaicing
-			void Demosaic(const ushort* src, cl_event *execute = NULL);	// OpenGL/D3DòAågÇ≈ÅACPUÇ÷ÇÃì]ëóÇçsÇÌÇ»Ç¢
-			void Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *execute = NULL);
+			void Demosaic(const ushort* src, cl_event *execute);	// OpenGL/D3DòAågÇ≈ÅACPUÇ÷ÇÃì]ëóÇçsÇÌÇ»Ç¢
+			void Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
 			void Demosaic(const ushort* src, uchar *left, uchar *right);
 			void Demosaic(const ushort* src, Mat &left, Mat &right);
 			void Demosaic(const Mat src, Mat &left, Mat &right);
 
 			// Demosaic and Remap
-			void DemosaicRemap(const ushort* src, cl_event *execute = NULL);	// OpenGL/D3DòAågÇ≈ÅACPUÇ÷ÇÃì]ëóÇçsÇÌÇ»Ç¢
-			void DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *execute = NULL);
+			void DemosaicRemap(const ushort* src, cl_event *execute);	// OpenGL/D3DòAågÇ≈ÅACPUÇ÷ÇÃì]ëóÇçsÇÌÇ»Ç¢
+			void DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
 			void DemosaicRemap(const ushort* src, uchar *left, uchar *right);
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
+
+			/*! @brief set scaling (1/2, 1/4, 1/8) 
+				@param scaling (HALF, FOURTH, EIGHTH) */
+			void SetScale(SCALING scaling);
 
 			// èkè¨âÊëúÅi1/2)
 			/*! @brief Get half scaled image
 			@param src
 			@param dst
 			@param scale */
-			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale = HALF, cl_event *execute = NULL);
+			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale, cl_event *execute);
 
 			/*! @brief set HSV region for SkinRegion */
 			void SetHSV(int h_low, int h_high, int s_low, int s_high) { _h_low = h_low; _h_high = h_high; _s_low = s_low; _s_high = s_high; }
@@ -229,6 +233,8 @@ namespace OVR
 			bool	_remapAvailable;
 			bool	_released;
 			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
+			enum SCALING	_scaling;	//
+			size_t	_scaledRegion[3];
 
 		protected:
 			// OpenCL variables
@@ -262,7 +268,7 @@ namespace OVR
 			cl_mem	_src;
 			cl_mem	_l, _r, _L, _R;
 			cl_mem	_mx[2], _my[2]; // map for remap in GPU
-			cl_mem	_resizedL, _resizedR;	// resized image
+			cl_mem	_reducedL, _reducedR;	// reduced image
 		};
 
 	/*

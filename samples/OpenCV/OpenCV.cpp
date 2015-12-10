@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
 			// ここでOpenCVでの加工など
 			if (0 < ksize)
 			{
+				// ここはthread safeではないようなので、OpenMPに入れないこと！
 				switch (filter)
 				{
 				case GAUSSIAN:
@@ -104,7 +105,7 @@ int main(int argc, char* argv[])
 					break;
 				}
 					
-#					pragma omp parallel for
+#				pragma omp parallel for
 				for (int i = 0; i < 2; i++)
 				{
 					results[i].setTo(Scalar(0, 0, 0, 255));
@@ -140,9 +141,9 @@ int main(int argc, char* argv[])
 				}
 				// ここまでGPU（OpenCL）で
 
-				// TODO: ここはOpenMPで左右を並行処理する
+				// ここはOpenMPで左右を並行処理する
 				// CPU側（OpenCV）
-#					pragma omp parallel for
+#				pragma omp parallel for
 				for (int eyes = 0; eyes < 2; eyes++)
 				{
 					std::vector<std::vector<Point>> contours;

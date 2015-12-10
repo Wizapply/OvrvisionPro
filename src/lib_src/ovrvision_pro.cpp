@@ -275,9 +275,9 @@ void OvrvisionPro::Capture(OVR::Camqt qt)
 
 	if (m_pODS->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK) {
 		if (qt == OVR::Camqt::OV_CAMQT_DMSRMP)
-			m_pOpenCL->DemosaicRemap(m_pFrame);	//OpenCL
+			m_pOpenCL->DemosaicRemap(m_pFrame, NULL);	//OpenCL
 		else if (qt == OVR::Camqt::OV_CAMQT_DMS)
-			m_pOpenCL->Demosaic(m_pFrame);		//OpenCL
+			m_pOpenCL->Demosaic(m_pFrame, NULL);		//OpenCL
 	}
 }
 
