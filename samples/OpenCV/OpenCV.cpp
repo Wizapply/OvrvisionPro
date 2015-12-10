@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 		int height = ovrvision->GetCamHeight() / 2;
 		ROI roi = { 0, 0, width, height };
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
-		//bool show = true;
+		bool show = true;
 		bool useHistgram = false;
 
 		Mat images[2];
@@ -74,18 +74,16 @@ int main(int argc, char* argv[])
 
 		for (bool loop = true; loop;)
 		{
-			//if (show)
-			//{
 			// Capture frame
 			ovrvision->Capture(mode);
 
-			// Retrieve frame data
-			ovrvision->Read(images[0].data, images[1].data);				
-			ovrvision->GetStereoImageHSV(hsv[0].data, hsv[1].data);
+			if (show)
+			{		
+				// Retrieve frame data
+				ovrvision->Read(images[0].data, images[1].data);
+				ovrvision->GetStereoImageHSV(hsv[0].data, hsv[1].data);
 
-			// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
-			if (0 < ksize)
-			{
+				// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
 				// Ç±Ç±ÇÕthread safeÇ≈ÇÕÇ»Ç¢ÇÊÇ§Ç»ÇÃÇ≈ÅAOpenMPÇ…ì¸ÇÍÇ»Ç¢Ç±Ç∆ÅI
 				switch (filter)
 				{
@@ -162,17 +160,22 @@ int main(int argc, char* argv[])
 				// Show frame data
 				//imshow("bilevel(L)", bilevel[0]);
 				//imshow("bilevel(R)", bilevel[1]);
-				imshow("Left", images[0]);
-				imshow("Right", images[1]);
+				//imshow("Left", images[0]);
+				//imshow("Right", images[1]);
 				imshow("L", results[0]);
 				imshow("R", results[1]);
 			}
 			else
 			{
-				imshow("Left", images[0]);
-				imshow("Right", images[1]);
+				ovrvision->GetSkinImage(results[0].data, results[1].data);
+				//ovrvision->SkinRegion(bilevel[0].data, bilevel[1].data);
+				//imshow("bilevel(L)", bilevel[0]);
+				//imshow("bilevel(R)", bilevel[1]);
+				//imshow("Left", images[0]);
+				//imshow("Right", images[1]);
+				imshow("L", results[0]);
+				imshow("R", results[1]);
 			}
-			//}
 
 			switch (waitKey(1))
 			{
@@ -192,9 +195,9 @@ int main(int argc, char* argv[])
 				useHistgram = !useHistgram;
 				break;
 
-			//case 's':
-			//	show = !show;
-			//	break;
+			case 's':
+				show = !show;
+				break;
 
 			case 'g':
 				filter = GAUSSIAN;
@@ -208,10 +211,10 @@ int main(int argc, char* argv[])
 				filter = NONE;
 				break;
 
-			case '0':
-			case '1':
-				ksize = 0;
-				break;
+			//case '0':
+			//case '1':
+			//	ksize = 0;
+			//	break;
 
 			case '3':
 				ksize = 3;
@@ -230,7 +233,7 @@ int main(int argc, char* argv[])
 				break;
 
 			case ' ':
-				//if (show)
+				if (show)
 				{
 					imwrite("left.png", images[0]);
 					imwrite("right.png", images[1]);
@@ -244,13 +247,15 @@ int main(int argc, char* argv[])
 					//imwrite("blur_r.png", blur2);
 					//imwrite("histgram.png", histgram);
 				}
-				//else
-				//{
-				//	imwrite("LEFT.tiff", images[0]);
-				//	imwrite("RIGHT.tiff", images[1]);
-				//	imwrite("bilevel_l.png", bilevel[0]);
-				//	imwrite("bilevel_r.png", bilevel[1]);
-				//}
+				else
+				{
+					//imwrite("LEFT.tiff", images[0]);
+					//imwrite("RIGHT.tiff", images[1]);
+					imwrite("result_l.tiff", results[0]);
+					imwrite("result_r.tiff", results[1]);
+					//imwrite("bilevel_l.png", bilevel[0]);
+					//imwrite("bilevel_r.png", bilevel[1]);
+				}
 				break;
 
 			case 'e':
@@ -263,10 +268,10 @@ int main(int argc, char* argv[])
 			}
 		}
 	}
-	else
-	{
-		puts("FAILED TO OPEN CAMERA");
-	}
+	//else
+	//{
+	//	puts("FAILED TO OPEN CAMERA");
+	//}
 	//ovrvision->Close();
 	delete ovrvision;
 	return 0;
