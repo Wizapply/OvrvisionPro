@@ -17,21 +17,7 @@ using namespace std;
 using namespace cv;
 
 #pragma region MACROS
-#if 0
-// Report about an OpenCL problem.
-// Macro is used instead of a function here
-// to report source file name and line number.
-#define SAMPLE_CHECK_ERRORS(ERR)                        \
-    if(ERR != CL_SUCCESS)                               \
-		    {                                                   \
-        throw Error(                                    \
-            "OpenCL error " +                           \
-            opencl_error_to_str(ERR) +                  \
-            " happened in file " + to_str(__FILE__) +   \
-            " at line " + to_str(__LINE__) + "."        \
-        );                                              \
-		    }
-#else
+
 string opencl_error_to_str(cl_int error)
 {
 #define CASE_CL_CONSTANT(NAME) case NAME: return #NAME;
@@ -98,6 +84,22 @@ string opencl_error_to_str(cl_int error)
 #undef CASE_CL_CONSTANT
 }
 
+#if 0
+// Report about an OpenCL problem.
+// Macro is used instead of a function here
+// to report source file name and line number.
+#define SAMPLE_CHECK_ERRORS(ERR)						\
+    if(ERR != CL_SUCCESS)								\
+	{													\
+        throw std::exception(							\
+            "OpenCL error " +							\
+            opencl_error_to_str(ERR) +					\
+            " happened in file " + std::to_str(__FILE__) +	\
+            " at line " + std::to_str(__LINE__) + "."		\
+        );												\
+	}
+#else
+
 #define SAMPLE_CHECK_ERRORS(ERR) if (ERR != CL_SUCCESS) throw std::exception(opencl_error_to_str(ERR).c_str());
 #endif
 
@@ -139,7 +141,7 @@ namespace OVR
 
 			if (SelectGPU("", "OpenCL C 1.2") == NULL) // Find OpenCL(version 1.2 and above) device 
 			{
-				throw runtime_error("Insufficient OpenCL version");
+				throw exception("Insufficient OpenCL version");
 			}
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
@@ -221,8 +223,8 @@ namespace OVR
 			clReleaseMemObject(_my[0]);
 			clReleaseMemObject(_mx[1]);
 			clReleaseMemObject(_my[1]);
-			//clReleaseMemObject(_grayL);
-			//clReleaseMemObject(_grayR);
+			clReleaseMemObject(_resizedL);
+			clReleaseMemObject(_resizedR);
 
 			if (_deviceExtensions != NULL)
 			{

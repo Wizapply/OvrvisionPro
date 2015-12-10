@@ -220,13 +220,15 @@ namespace OVR
 			clEnqueueAcquireD3D11ObjectsKHR_fn	clEnqueueAcquireD3D11ObjectsKHR = NULL;
 			clEnqueueReleaseD3D11ObjectsKHR_fn	clEnqueueReleaseD3D11ObjectsKHR = NULL;
 #endif
-			char *_deviceExtensions;
-			int _width, _height;
-			Mat *_mapX[2], *_mapY[2]; // camera parameter
-			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
+			char	*_deviceExtensions;
+			Mat		*_mapX[2], *_mapY[2]; // camera parameter
+			int		_width, _height;
 			// HSV color region 
-			int _h_low, _h_high;
-			int _s_low, _s_high;
+			int		_h_low, _h_high;
+			int		_s_low, _s_high;
+			bool	_remapAvailable;
+			bool	_released;
+			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
 
 		protected:
 			// OpenCL variables
@@ -259,10 +261,8 @@ namespace OVR
 			cl_event _execute;
 			cl_mem	_src;
 			cl_mem	_l, _r, _L, _R;
-			//cl_mem	_grayL, _grayR;
 			cl_mem	_mx[2], _my[2]; // map for remap in GPU
-			bool	_remapAvailable;
-			bool	_released;
+			cl_mem	_resizedL, _resizedR;	// resized image
 		};
 
 	/*

@@ -152,16 +152,22 @@ int main(int argc, char* argv[])
 		int height = ovrvision->GetCamHeight() / 2;
 		ROI roi = { 0, 0, width, height };
 
-		Mat left(height, width, CV_8UC4);
-		Mat right(height, width, CV_8UC4);
-		Mat Lhsv(height, width, CV_8UC4);
-		Mat Rhsv(height, width, CV_8UC4);
-		Mat lHSV(height, width, CV_8UC4);
-		Mat rHSV(height, width, CV_8UC4);
-		Mat Lresult(height, width, CV_8UC4);
-		Mat Rresult(height, width, CV_8UC4);
-		Mat bilevel_l(height, width, CV_8UC1);
-		Mat bilevel_r(height, width, CV_8UC1);
+		Mat images[2];
+		Mat bilevel[2];
+		Mat hsv[2], HSV[2];
+		Mat results[2];
+
+		results[0].create(height, width, CV_8UC4);
+		results[1].create(height, width, CV_8UC4);
+		hsv[0].create(height, width, CV_8UC4);
+		hsv[1].create(height, width, CV_8UC4);
+		HSV[0].create(height, width, CV_8UC4);
+		HSV[1].create(height, width, CV_8UC4);
+		images[0].create(height, width, CV_8UC4);
+		images[1].create(height, width, CV_8UC4);
+		bilevel[0].create(height, width, CV_8UC1);
+		bilevel[1].create(height, width, CV_8UC1);
+
 
 		Mat histgram(180, 256, CV_8UC1);
 
@@ -184,7 +190,7 @@ int main(int argc, char* argv[])
 		else
 		{
 			//useHistgram = true;
-			imshow("histgram", histgram);
+			//imshow("histgram", histgram);
 			/*
 			for (int y = 0; y < 256; y += 4)
 			{
@@ -213,9 +219,9 @@ int main(int argc, char* argv[])
 				ovrvision->Capture(mode);
 
 				// Retrieve frame data
-				ovrvision->Read(left.data, right.data);
+				ovrvision->Read(images[0].data, images[1].data);
 				
-				//ovrvision.SkinRegion(Lhsv.data, Rhsv.data);
+				//ovrvision.SkinRegion(hsv[1].data, hsv[1].data);
 
 				// ここでOpenCVでの加工など
 				if (0 < ksize)
@@ -223,112 +229,105 @@ int main(int argc, char* argv[])
 					switch (filter)
 					{
 					case GAUSSIAN:
-						GaussianBlur(Lhsv, lHSV, Size(ksize, ksize), 0);
-						GaussianBlur(Rhsv, rHSV, Size(ksize, ksize), 0);
+						GaussianBlur(hsv[0], HSV[0], Size(ksize, ksize), 0);
+						GaussianBlur(hsv[1], HSV[1], Size(ksize, ksize), 0);
 						break;
 
 					case MEDIAN:
-						medianBlur(Lhsv, lHSV, ksize);
-						medianBlur(Rhsv, rHSV, ksize);
+						medianBlur(hsv[0], HSV[0], ksize);
+						medianBlur(hsv[1], HSV[1], ksize);
 						break;
 
 					default:
-						Lhsv.copyTo(lHSV);
-						Rhsv.copyTo(rHSV);
+						hsv[0].copyTo(HSV[0]);
+						hsv[1].copyTo(HSV[1]);
 						break;
 					}
 					
-					Lresult.setTo(Scalar(0, 0, 0, 255));
-					Rresult.setTo(Scalar(0, 0, 0, 255));
-					bilevel_l.setTo(Scalar::all(0));
-					bilevel_r.setTo(Scalar::all(0));
-					for (int y = 0; y < height; y++)
+					results[0].setTo(Scalar(0, 0, 0, 255));
+					results[1].setTo(Scalar(0, 0, 0, 255));
+					bilevel[0].setTo(Scalar::all(0));
+					bilevel[1].setTo(Scalar::all(0));
+
+#					pragma omp parallel for
+					for (int i = 0; i < 2; i++)
 					{
-						Vec4b *l = lHSV.ptr<Vec4b>(y);
-						Vec4b *r = rHSV.ptr<Vec4b>(y);
-						Vec4b *Lpixel = Lresult.ptr<Vec4b>(y);
-						Vec4b *Rpixel = Rresult.ptr<Vec4b>(y);
-						uchar *b_l = bilevel_l.ptr<uchar>(y);
-						uchar *b_r = bilevel_r.ptr<uchar>(y);
-						for (int x = 0; x < width; x++)
+						for (int y = 0; y < height; y++)
 						{
-							uchar h = l[x][0];
-							uchar s = l[x][1];
-							if (useHistgram)
+							Vec4b *l = HSV[i].ptr<Vec4b>(y);
+							Vec4b *Lpixel = results[i].ptr<Vec4b>(y);
+							uchar *b_l = bilevel[i].ptr<uchar>(y);
+							for (int x = 0; x < width; x++)
 							{
-								if (1 < histgram.at<uchar>(h, s))
+								uchar h = l[x][0];
+								uchar s = l[x][1];
+								if (useHistgram)
 								{
-									Lpixel[x] = left.at<Vec4b>(y, x);
-									b_l[x] = 255;
+									if (1 < histgram.at<uchar>(h, s))
+									{
+										Lpixel[x] = images[0].at<Vec4b>(y, x);
+										b_l[x] = 255;
+									}
 								}
-								h = r[x][0];
-								s = r[x][1];
-								if (3 < histgram.at<uchar>(h, s))
+								else
 								{
-									Rpixel[x] = right.at<Vec4b>(y, x);
-									b_r[x] = 255;
-								}
-							}
-							else
-							{
-								if (10 <= h && h <= 26 && 55 < s && s < 150)
-								{
-									Lpixel[x] = left.at<Vec4b>(y, x);
-									b_l[x] = 255;
-								}
-								h = r[x][0];
-								s = r[x][1];
-								if (10 <= h && h <= 26 && 55 < s && s < 150)
-								{
-									Rpixel[x] = right.at<Vec4b>(y, x);
-									b_r[x] = 255;
+									if (10 <= h && h <= 26 && 55 < s && s < 150)
+									{
+										Lpixel[x] = images[0].at<Vec4b>(y, x);
+										b_l[x] = 255;
+									}
 								}
 							}
 						}
 					}
 					// ここまでGPU（OpenCL）で
 
+					// TODO: ここはOpenMPで左右を並行処理する
 					// CPU側（OpenCV）
-					findContours(bilevel_r, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
-					for (uint i = 0; i < contours.size(); i++)
+#					pragma omp parallel for
+					for (int eyes = 0; eyes < 2; eyes++)
 					{
-						if (200 < contours[i].size())
-							drawContours(Rresult, contours, i, Scalar(255, 255, 255), 1, 8);
 					}
-					findContours(bilevel_l, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+					findContours(bilevel[0], contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
 					for (uint i = 0; i < contours.size(); i++)
 					{
 						if (200 < contours[i].size())
-							drawContours(Lresult, contours, i, Scalar(255, 255, 255), 1, 8);
+							drawContours(results[0], contours, i, Scalar(255, 255, 255), 1, 8);
+					}
+					findContours(bilevel[1], contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+					for (uint i = 0; i < contours.size(); i++)
+					{
+						if (200 < contours[i].size())
+							drawContours(results[1], contours, i, Scalar(255, 255, 255), 1, 8);
 					}
 					// ここまでOpenCVで処理してGPUに戻す
 
 					// Show frame data
-					imshow("bilevel(L)", bilevel_l);
-					imshow("bilevel(R)", bilevel_r);
-					imshow("Left", left);
-					imshow("Right", right);
-					imshow("L", Lresult);
-					imshow("R", Rresult);
+					imshow("bilevel(L)", bilevel[0]);
+					imshow("bilevel(R)", bilevel[1]);
+					imshow("Left", images[0]);
+					imshow("Right", images[1]);
+					imshow("L", results[0]);
+					imshow("R", results[1]);
 				}
 				else
 				{
-					imshow("Left", left);
-					imshow("Right", right);
+					imshow("Left", images[0]);
+					imshow("Right", images[1]);
 				}
 			}
 			else
 			{
 				ovrvision->Capture(mode);
-				ovrvision->Read(left.data, right.data);
-				ovrvision->SkinRegion(bilevel_l.data, bilevel_r.data);
+				ovrvision->Read(images[0].data, images[1].data);
+				ovrvision->SkinRegion(bilevel[0].data, bilevel[1].data);
 				//ovrvision->GrayscaleHalf(bilevel_l.data, bilevel_r.data);
 				ovrvision->ColorHistgram(histgram.data);
 				imshow("histgram", histgram);
-				imshow("Left", left);
-				imshow("Right", right);
-				imshow("bilevel(L)", bilevel_l);
-				imshow("bilevel(R)", bilevel_r);
+				imshow("Left", images[0]);
+				imshow("Right", images[1]);
+				imshow("bilevel(L)", bilevel[0]);
+				imshow("bilevel(R)", bilevel[1]);
 			}
 
 			switch (waitKey(1))
@@ -389,24 +388,24 @@ int main(int argc, char* argv[])
 			case ' ':
 				if (show)
 				{
-					imwrite("left.png", left);
-					imwrite("right.png", right);
-					imwrite("hsv_L.bmp", lHSV);
-					imwrite("hsv_R.bmp", rHSV);
-					imwrite("hsv_l.png", Lhsv);
-					imwrite("hsv_r.png", Rhsv);
-					imwrite("result_l.png", Lresult);
-					imwrite("result_r.png", Rresult);
+					imwrite("left.png", images[0]);
+					imwrite("right.png", images[1]);
+					imwrite("hsv_L.bmp", HSV[0]);
+					imwrite("hsv_R.bmp", HSV[1]);
+					imwrite("hsv_l.png", hsv[0]);
+					imwrite("hsv_r.png", hsv[1]);
+					imwrite("result_l.png", results[0]);
+					imwrite("result_r.png", results[1]);
 					//imwrite("blur_l.png", blur);
 					//imwrite("blur_r.png", blur2);
 					//imwrite("histgram.png", histgram);
 				}
 				else
 				{
-					imwrite("LEFT.tiff", left);
-					imwrite("RIGHT.tiff", right);
-					imwrite("bilevel_l.png", bilevel_l);
-					imwrite("bilevel_r.png", bilevel_r);
+					imwrite("LEFT.tiff", images[0]);
+					imwrite("RIGHT.tiff", images[1]);
+					imwrite("bilevel_l.png", bilevel[0]);
+					imwrite("bilevel_r.png", bilevel[1]);
 
 				}
 				break;
