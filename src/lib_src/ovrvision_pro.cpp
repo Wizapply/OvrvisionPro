@@ -172,7 +172,14 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 	}
 	catch (std::exception ex)
 	{
-		puts(ex.what());
+		//ex.what();
+#ifdef WIN32
+		::MessageBox(NULL, TEXT("This OvrvisionSDK is the GPU necessity which is supporting OpenCL1.2 or more."), TEXT("OpenCL Error!"), MB_ICONERROR | MB_OK);
+#elif MACOSX
+
+#elif LINUX
+
+#endif
 		return 0;
 	}
 	//Opened

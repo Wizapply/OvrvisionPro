@@ -215,11 +215,11 @@ void OvrvisionTracking::Render(bool calib, bool point) {
 
 	if (point) {
 		if (m_pos_x > 0.0f && m_pos_y > 0.0f) {
-			char buf[32];
-			sprintf(buf, "Z:%.1f", m_pos_z);
+			//char buf[32];
+			//sprintf(buf, "Z:%.1f", m_pos_z);
 			cv::circle(pCamBGRAImg_L, cv::Point(m_pos_x, m_pos_y), 30, cv::Scalar(0, 0, 255, 255), -1, 0);
-			cv::circle(pCamBGRAImg_R, cv::Point(m_posr_x, m_posr_y), 30, cv::Scalar(0, 255, 0, 255), -1, 0);
-			cv::putText(pCamBGRAImg_L, buf, cv::Point(m_pos_x, m_pos_y + 60), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255, 255), 2, 0);
+			cv::circle(pCamBGRAImg_R, cv::Point(m_posr_x, m_posr_y), 30, cv::Scalar(0, 0, 255, 255), -1, 0);
+			//cv::putText(pCamBGRAImg_L, buf, cv::Point(m_pos_x, m_pos_y + 60), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255, 255), 2, 0);
 		}
 	}
 
@@ -284,7 +284,7 @@ cv::Point2i FingerTracker(cv::Mat &image, cv::Mat &fgimage)
 	cv::Mat dst2(image_detect.size(), CV_8UC1);
 	cv::dilate(dst, dst2, cv::Mat(), cv::Point(-1, -1), 12);
 	cv::Mat dst_img2 = fgimage & dst2;
-	cv::erode(dst_img2, dst_img2, cv::Mat(), cv::Point(-1, -1), 2);
+	cv::erode(dst_img2, dst_img2, cv::Mat(), cv::Point(-1, -1), 1);
 	//cv::imshow("hand", dst);
 	//cv::imshow("finger", fgimage);
 	//cv::imshow("output", dst_img2);

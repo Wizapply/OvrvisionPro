@@ -42,6 +42,7 @@ var class_o_v_r_1_1_ovrvision_pro =
     [ "SetCameraWhiteBalanceR", "class_o_v_r_1_1_ovrvision_pro.html#aac0096fe42db440c89edf6a90e9ce44b", null ],
     [ "SetSkinHSV", "class_o_v_r_1_1_ovrvision_pro.html#ad0be51746b770faec807fa13b8c76d37", null ],
     [ "SkinRegion", "class_o_v_r_1_1_ovrvision_pro.html#a7e16fbcad489ac53c2de07640ce6db19", null ],
+    [ "UpdateGLSkinTextureObjects", "class_o_v_r_1_1_ovrvision_pro.html#aead60868bd65c17aada1ce98f849c92a", null ],
     [ "UserDataAccessCheckSumAddress", "class_o_v_r_1_1_ovrvision_pro.html#ace648c2de490d8862f6e4041de4f0f0a", null ],
     [ "UserDataAccessGetData", "class_o_v_r_1_1_ovrvision_pro.html#ac81c09985acbbce708ec10c7fec36e22", null ],
     [ "UserDataAccessLock", "class_o_v_r_1_1_ovrvision_pro.html#a552d9d6a6bab29d3f0887da706bd218f", null ],

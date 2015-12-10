@@ -152,12 +152,38 @@ The usage should confirm the following video. <br />
 - Coming Soon
 */
 
+/*! @page page25 How to FingerTracking
+指をトラッキングする機能を使います。<br />
+※現在、テスト中で一部は改善予定です。<br />
+
+プログラムを起動したら「H」キーでトラッキング用キャリブレーションを開始します。
+@image html tracking_1.jpg
+画像のように、青色にトラッキング色のキャップ、赤色に肌色に合わせます。
+@image html tracking_2.jpg
+「SPACE」キーを押してセットします。<br />
+上手くいかなかった場合は、何度もキーを押してリセットします。
+@image html tracking_3.jpg
+*/
+
 /*! @page page3 How to Rebuild SDK
 - Coming Soon
 */
 
 /*! @page page4 Release Notes
 @tableofcontents
+@section sdk4 Ovrvision SDK v1.2
+Date : 10/Dec/2015<br />
+<b>Notes</b>
+- Add the function of errors display. 
+- Intensified AR and Tracking function. 
+- Add mask functions in Unity. 
+- Bug of the calibration tools was fixed. 
+
+<b>Unimplementeds and issue</b>
+- Mac OSX support (in a few days) 
+- Linux OS support
+- Unreal Engine 4
+- The memory leak of OpenCL. (NVIDIA Driver)
 @section sdk3 Ovrvision SDK v1.1
 Date : 07/Dec/2015<br />
 <b>Notes</b>

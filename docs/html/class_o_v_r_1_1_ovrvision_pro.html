@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">OvrvisionSDK
-   &#160;<span id="projectnumber">1.0</span>
+   &#160;<span id="projectnumber">1.2</span>
    </div>
   </td>
  </tr>
@@ -272,9 +272,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>UserDataAccessCheckSu
 <tr class="memitem:a719f9a7428c4515411d99d314e4b4a18"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a719f9a7428c4515411d99d314e4b4a18"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM</b> ()</td></tr>
 <tr class="separator:a719f9a7428c4515411d99d314e4b4a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a994249805248ae857cbc8530060fb7fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a994249805248ae857cbc8530060fb7fe"></a>
-void *&#160;</td><td class="memItemRight" valign="bottom"><b>CreateGLTexture2D</b> (unsigned int texture, int width, int height)</td></tr>
+<tr class="memitem:a994249805248ae857cbc8530060fb7fe"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a994249805248ae857cbc8530060fb7fe">CreateGLTexture2D</a> (unsigned int texture, int width, int height)</td></tr>
+<tr class="memdesc:a994249805248ae857cbc8530060fb7fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create OpenGL sharing texture object.  <a href="#a994249805248ae857cbc8530060fb7fe">More...</a><br /></td></tr>
 <tr class="separator:a994249805248ae857cbc8530060fb7fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aead60868bd65c17aada1ce98f849c92a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#aead60868bd65c17aada1ce98f849c92a">UpdateGLSkinTextureObjects</a> (unsigned int n, void *textureObjects[])</td></tr>
+<tr class="memdesc:aead60868bd65c17aada1ce98f849c92a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update skin texture objects.  <a href="#aead60868bd65c17aada1ce98f849c92a">More...</a><br /></td></tr>
+<tr class="separator:aead60868bd65c17aada1ce98f849c92a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html" title="OvrvisionPro class. ">OvrvisionPro</a> class. </p>
@@ -325,6 +328,49 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><b>CreateGLTexture2D</
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>scale (2, 4) </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a994249805248ae857cbc8530060fb7fe"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* OVR::OvrvisionPro::CreateGLTexture2D </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create OpenGL sharing texture object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">texture</td><td>identifier </td></tr>
+    <tr><td class="paramname">width</td><td>of texture </td></tr>
+    <tr><td class="paramname">height</td><td>of texture </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ptr of texture object </dd></dl>
 
 </div>
 </div>
@@ -1034,6 +1080,41 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><b>CreateGLTexture2D</
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>scale (2, 4) </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aead60868bd65c17aada1ce98f849c92a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void OVR::OvrvisionPro::UpdateGLSkinTextureObjects </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>textureObjects</em>[]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update skin texture objects. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">n</td><td>count of onjects </td></tr>
+    <tr><td class="paramname">textureObjects</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

@@ -23,6 +23,7 @@ public class Ovrvision : MonoBehaviour
 	private Vector3 CameraRightGap;
 
 	//public propaty
+	public int cameraMode = COvrvisionUnity.OV_CAMVR_FULL;
 	public bool useOvrvisionAR = false;
 	public float ARsize = 0.15f;
 	public bool useOvrvisionTrack = false;
@@ -38,9 +39,12 @@ public class Ovrvision : MonoBehaviour
 
 	public int camViewShader = 0;
 
-	public Vector2 chroma_hue = new Vector2(0.5f,0.0f);
+	public Vector2 chroma_hue = new Vector2(0.9f,0.2f);
 	public Vector2 chroma_saturation = new Vector2(1.0f, 0.0f);
 	public Vector2 chroma_brightness = new Vector2(1.0f, 0.0f);
+	public Vector2 chroma_y = new Vector2(1.0f, 0.0f);
+	public Vector2 chroma_cb = new Vector2(1.0f, 0.0f);
+	public Vector2 chroma_cr = new Vector2(0.725f, 0.615f);
 
 	//Ar Macro define
 	private const int MARKERGET_MAXNUM10 = 100; //max marker is 10
@@ -54,7 +58,7 @@ public class Ovrvision : MonoBehaviour
 	// Use this for initialization
 	void Awake() {
 		//Open camera
-		if (OvrPro.Open(COvrvisionUnity.OV_CAMVR_FULL, ARsize))
+		if (OvrPro.Open(cameraMode, ARsize))
 		{
 			if (overlaySettings)
 			{
@@ -99,11 +103,18 @@ public class Ovrvision : MonoBehaviour
 		CameraTexLeft.wrapMode = TextureWrapMode.Clamp;
 		CameraTexRight.wrapMode = TextureWrapMode.Clamp;
 
+		//Mesh
+		Mesh m = CreateCameraPlaneMesh();
+		CameraPlaneLeft.GetComponent<MeshFilter>().mesh = m;
+		CameraPlaneRight.GetComponent<MeshFilter>().mesh = m;
+
 		//SetShader
 		SetShader(camViewShader);
 
-		CameraPlaneLeft.GetComponent<Renderer>().material.SetTexture("_MainTex", CameraTexLeft);
-		CameraPlaneRight.GetComponent<Renderer>().material.SetTexture("_MainTex", CameraTexRight);
+		CameraPlaneLeft.GetComponent<Renderer>().materials[0].SetTexture("_MainTex", CameraTexLeft);
+		CameraPlaneRight.GetComponent<Renderer>().materials[0].SetTexture("_MainTex", CameraTexRight);
+		CameraPlaneLeft.GetComponent<Renderer>().materials[1].SetTexture("_MainTex", CameraTexLeft);
+		CameraPlaneRight.GetComponent<Renderer>().materials[1].SetTexture("_MainTex", CameraTexRight);
 
 		CameraRightGap = OvrPro.HMDCameraRightGap();
 
@@ -111,9 +122,42 @@ public class Ovrvision : MonoBehaviour
 		CameraPlaneLeft.transform.localScale = new Vector3(OvrPro.aspectW, -1.0f, 1.0f);
 		CameraPlaneRight.transform.localScale = new Vector3(OvrPro.aspectW, -1.0f, 1.0f);
 		CameraPlaneLeft.transform.localPosition = new Vector3(-0.032f, 0.0f, OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
-		CameraPlaneRight.transform.localPosition = new Vector3(CameraRightGap.x - 0.032f, CameraRightGap.y, OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
+		CameraPlaneRight.transform.localPosition = new Vector3(CameraRightGap.x - 0.036f, CameraRightGap.y, OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
 
 		UnityEngine.VR.InputTracking.Recenter();
+	}
+
+	private Mesh CreateCameraPlaneMesh()
+	{
+		Mesh m = new Mesh();
+		m.name = "CameraImagePlane";
+		Vector3[] vertices = new Vector3[]
+		{
+			new Vector3(-0.5f, -0.5f, 0.0f),
+			new Vector3( 0.5f,  0.5f, 0.0f),
+			new Vector3( 0.5f, -0.5f, 0.0f),
+			new Vector3(-0.5f,  0.5f, 0.0f)
+		};
+		int[] triangles = new int[]
+		{
+			0, 1, 2,
+			1, 0, 3
+		};
+		Vector2[] uv = new Vector2[]
+		{
+			new Vector2(0.0f, 0.0f),
+			new Vector2(1.0f, 1.0f),
+			new Vector2(1.0f, 0.0f),
+			new Vector2(0.0f, 1.0f)
+		};
+		m.vertices = vertices;
+		m.subMeshCount = 2;
+		m.SetTriangles(triangles, 0);
+		m.SetTriangles(triangles, 1);
+		m.uv = uv;
+		m.RecalculateNormals();
+
+		return m;
 	}
 
 	// Update is called once per frame
@@ -123,6 +167,7 @@ public class Ovrvision : MonoBehaviour
 		if (!OvrPro.camStatus)
 			return;
 
+		//Testing
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
 			OvrPro.OvrvisionTrackReset();
@@ -131,10 +176,19 @@ public class Ovrvision : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.G))
 		{
 			useOvrvisionTrack ^= true;
+			if (useOvrvisionTrack)
+			{
+				OvrPro.useOvrvisionTrack_Calib = true;
+				CameraPlaneRight.active = !OvrPro.useOvrvisionTrack_Calib;
+			}
 		}
-		if (Input.GetKeyDown(KeyCode.H))
+		if (useOvrvisionTrack)
 		{
-			OvrPro.useOvrvisionTrack_Calib ^= true;
+			if (Input.GetKeyDown(KeyCode.H))
+			{
+				OvrPro.useOvrvisionTrack_Calib ^= true;
+				CameraPlaneRight.active = !OvrPro.useOvrvisionTrack_Calib;
+			}
 		}
 
 		//get image data
@@ -201,13 +255,16 @@ public class Ovrvision : MonoBehaviour
 			return;
 
 		//set config
-		OvrPro.SetExposure(conf_exposure);
-		OvrPro.SetGain(conf_gain);
-		OvrPro.SetBLC(conf_blc);
-		OvrPro.SetWhiteBalanceR(conf_wb_r);
-		OvrPro.SetWhiteBalanceG(conf_wb_g);
-		OvrPro.SetWhiteBalanceB(conf_wb_b);
-		OvrPro.SetWhiteBalanceAutoMode(conf_wb_auto);
+		if (overlaySettings)
+		{
+			OvrPro.SetExposure(conf_exposure);
+			OvrPro.SetGain(conf_gain);
+			OvrPro.SetBLC(conf_blc);
+			OvrPro.SetWhiteBalanceR(conf_wb_r);
+			OvrPro.SetWhiteBalanceG(conf_wb_g);
+			OvrPro.SetWhiteBalanceB(conf_wb_b);
+			OvrPro.SetWhiteBalanceAutoMode(conf_wb_auto);
+		}
 
 		//SetShader
 		SetShader(camViewShader);
@@ -246,6 +303,34 @@ public class Ovrvision : MonoBehaviour
 			//Hand Mask Shader
 			CameraPlaneLeft.GetComponent<Renderer>().material.shader = Shader.Find("Ovrvision/ovHandMaskRev");
 			CameraPlaneRight.GetComponent<Renderer>().material.shader = Shader.Find("Ovrvision/ovHandMaskRev");
+
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_maxh", chroma_hue.x);
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_minh", chroma_hue.y);
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_maxs", chroma_saturation.x);
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_mins", chroma_saturation.y);
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_maxv", chroma_brightness.x);
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_minv", chroma_brightness.y);
+
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_maxh", chroma_hue.x);
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_minh", chroma_hue.y);
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_maxs", chroma_saturation.x);
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_mins", chroma_saturation.y);
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_maxv", chroma_brightness.x);
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_minv", chroma_brightness.y);
+
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_maxY", chroma_y.x);
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_minY", chroma_y.y);
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_maxCB", chroma_cb.x);
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_minCB", chroma_cb.y);
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_maxCR", chroma_cr.x);
+			CameraPlaneLeft.GetComponent<Renderer>().material.SetFloat("_Color_minCR", chroma_cr.y);
+
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_maxY", chroma_y.x);
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_minY", chroma_y.y);
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_maxCB", chroma_cb.x);
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_minCB", chroma_cb.y);
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_maxCR", chroma_cr.x);
+			CameraPlaneRight.GetComponent<Renderer>().material.SetFloat("_Color_minCR", chroma_cr.y);
 		}
 	}
 }

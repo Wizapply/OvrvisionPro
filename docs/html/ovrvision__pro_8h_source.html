@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">OvrvisionSDK
-   &#160;<span id="projectnumber">1.0</span>
+   &#160;<span id="projectnumber">1.2</span>
    </div>
   </td>
  </tr>
@@ -306,44 +306,46 @@ $(document).ready(function(){initNavTree('ovrvision__pro_8h_source.html','');});
 <div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;</div>
 <div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    <span class="comment">// Create OpenGL Texture</span></div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="keywordtype">void</span>* CreateGLTexture2D(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> texture, <span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height);</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="preprocessor">#ifdef WIN32</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    <span class="comment">//DirectShow</span></div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    OvrvisionDirectShow*    m_pODS;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="preprocessor">#elif MACOSX</span></div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    OvrvisionAVFoundation*  m_pOAV;</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="preprocessor">#elif LINUX</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    <span class="comment">//NONE</span></div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="comment"></span>    <span class="keywordtype">void</span>* CreateGLTexture2D(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> texture, <span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height);</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    <span class="keywordtype">void</span> UpdateGLSkinTextureObjects(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n, <span class="keywordtype">void</span> *textureObjects[]);</div>
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="comment">//OpenCL Ovrvision System</span></div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    OvrvisionProOpenCL* m_pOpenCL;</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    <span class="comment">//Frame buffer</span></div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>* m_pFrame;</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    <span class="comment">//Pixels</span></div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    byte*           m_pPixels[<a class="code" href="namespace_o_v_r.html#ae3636e1be07c3d74e8323c0657aeaa92a0132a3333f60fb4097b795989f22ddd0">OV_CAMNUM</a>];</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    <span class="comment">//Camera status data</span></div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    <span class="keywordtype">int</span>             m_width;</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    <span class="keywordtype">int</span>             m_height;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    <span class="keywordtype">int</span>             m_framerate;</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    <span class="keywordtype">float</span>           m_focalpoint;</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    <span class="keywordtype">float</span>           m_rightgap[3];  <span class="comment">//vector</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;<span class="preprocessor">#ifdef WIN32</span></div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    <span class="comment">//DirectShow</span></div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    OvrvisionDirectShow*    m_pODS;</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;<span class="preprocessor">#elif MACOSX</span></div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    OvrvisionAVFoundation*  m_pOAV;</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="preprocessor">#elif LINUX</span></div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    <span class="comment">//NONE</span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    <span class="comment">//OpenCL Ovrvision System</span></div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    OvrvisionProOpenCL* m_pOpenCL;</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    <span class="comment">//Frame buffer</span></div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>* m_pFrame;</div>
 <div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keywordtype">bool</span>            m_isOpen;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="keywordtype">bool</span>            m_isCameraSync;</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="comment">//Pixels</span></div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    byte*           m_pPixels[<a class="code" href="namespace_o_v_r.html#ae3636e1be07c3d74e8323c0657aeaa92a0132a3333f60fb4097b795989f22ddd0">OV_CAMNUM</a>];</div>
 <div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    <span class="comment">//initialize setting</span></div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    <span class="keywordtype">void</span> InitCameraSetting();</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;};</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;};</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*__OVRVISION_PRO__*/</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    <span class="comment">//Camera status data</span></div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    <span class="keywordtype">int</span>             m_width;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keywordtype">int</span>             m_height;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    <span class="keywordtype">int</span>             m_framerate;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    <span class="keywordtype">float</span>           m_focalpoint;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="keywordtype">float</span>           m_rightgap[3];  <span class="comment">//vector</span></div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    <span class="keywordtype">bool</span>            m_isOpen;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    <span class="keywordtype">bool</span>            m_isCameraSync;</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="comment">//initialize setting</span></div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    <span class="keywordtype">void</span> InitCameraSetting();</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;};</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;};</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*__OVRVISION_PRO__*/</span><span class="preprocessor"></span></div>
 <div class="ttc" id="namespace_o_v_r_html_ad19df067fe4851191cbe8dc864bc0cc0a2c78c7b471633dd39b401526836901e5"><div class="ttname"><a href="namespace_o_v_r.html#ad19df067fe4851191cbe8dc864bc0cc0a2c78c7b471633dd39b401526836901e5">OVR::OV_CAMVR_FULL</a></div><div class="ttdoc">1280x960 @45fps x2 </div><div class="ttdef"><b>Definition:</b> ovrvision_pro.h:99</div></div>
 <div class="ttc" id="namespace_o_v_r_html_a375db1007efd3225fcc6b2a8d8723c13a132642bb4927e5aead8a8e0efc68e4f8"><div class="ttname"><a href="namespace_o_v_r.html#a375db1007efd3225fcc6b2a8d8723c13a132642bb4927e5aead8a8e0efc68e4f8">OVR::OV_CAMQT_NONE</a></div><div class="ttdoc">Demosaic. </div><div class="ttdef"><b>Definition:</b> ovrvision_pro.h:112</div></div>
 <div class="ttc" id="class_o_v_r_1_1_ovrvision_pro_html"><div class="ttname"><a href="class_o_v_r_1_1_ovrvision_pro.html">OVR::OvrvisionPro</a></div><div class="ttdoc">OvrvisionPro class. </div><div class="ttdef"><b>Definition:</b> ovrvision_pro.h:130</div></div>

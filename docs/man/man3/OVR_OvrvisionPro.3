@@ -1,4 +1,4 @@
-.TH "OVR::OvrvisionPro" 3 "Mon Dec 7 2015" "Version 1.0" "OvrvisionSDK" \" -*- nroff -*-
+.TH "OVR::OvrvisionPro" 3 "Thu Dec 10 2015" "Version 1.2" "OvrvisionSDK" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -198,6 +198,11 @@ OVR::OvrvisionPro \- \fBOvrvisionPro\fP class\&.
 .ti -1c
 .RI "void * \fBCreateGLTexture2D\fP (unsigned int texture, int width, int height)"
 .br
+.RI "\fICreate OpenGL sharing texture object\&. \fP"
+.ti -1c
+.RI "void \fBUpdateGLSkinTextureObjects\fP (unsigned int n, void *textureObjects[])"
+.br
+.RI "\fIUpdate skin texture objects\&. \fP"
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -228,6 +233,26 @@ Get color histgram in HSV space\&.
 \fBReturns:\fP
 .RS 4
 scale (2, 4) 
+.RE
+.PP
+
+.SS "void* OVR::OvrvisionPro::CreateGLTexture2D (unsigned int texture, int width, int height)"
+
+.PP
+Create OpenGL sharing texture object\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItexture\fP identifier 
+.br
+\fIwidth\fP of texture 
+.br
+\fIheight\fP of texture 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+ptr of texture object 
 .RE
 .PP
 
@@ -584,6 +609,19 @@ Get skin color region\&.
 \fBReturns:\fP
 .RS 4
 scale (2, 4) 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::UpdateGLSkinTextureObjects (unsigned int n, void * textureObjects[])"
+
+.PP
+Update skin texture objects\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIn\fP count of onjects 
+.br
+\fItextureObjects\fP 
 .RE
 .PP
 
