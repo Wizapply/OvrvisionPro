@@ -223,8 +223,8 @@ namespace OVR
 			clReleaseMemObject(_my[0]);
 			clReleaseMemObject(_mx[1]);
 			clReleaseMemObject(_my[1]);
-			clReleaseMemObject(_resizedL);
-			clReleaseMemObject(_resizedR);
+			//clReleaseMemObject(_resizedL);
+			//clReleaseMemObject(_resizedR);
 
 			if (_deviceExtensions != NULL)
 			{
