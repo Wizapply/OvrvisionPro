@@ -171,14 +171,12 @@ int main(int argc, char* argv[])
 
 		Mat histgram(180, 256, CV_8UC1);
 
-		std::vector<std::vector<Point>> contours;
-		std::vector<Vec4i> hierarchy;
 
 		//Sync
 		ovrvision->SetCameraSyncMode(true);
 
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
-		bool show = false;
+		bool show = true;
 		bool useHistgram = false;
 
 		// Read histgram
@@ -219,9 +217,8 @@ int main(int argc, char* argv[])
 				ovrvision->Capture(mode);
 
 				// Retrieve frame data
-				ovrvision->Read(images[0].data, images[1].data);
-				
-				//ovrvision.SkinRegion(hsv[1].data, hsv[1].data);
+				ovrvision->Read(images[0].data, images[1].data);				
+				ovrvision->GetStereoImageHSV(hsv[0].data, hsv[1].data);
 
 				// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
 				if (0 < ksize)
@@ -244,14 +241,12 @@ int main(int argc, char* argv[])
 						break;
 					}
 					
-					results[0].setTo(Scalar(0, 0, 0, 255));
-					results[1].setTo(Scalar(0, 0, 0, 255));
-					bilevel[0].setTo(Scalar::all(0));
-					bilevel[1].setTo(Scalar::all(0));
-
 #					pragma omp parallel for
 					for (int i = 0; i < 2; i++)
 					{
+						results[i].setTo(Scalar(0, 0, 0, 255));
+						bilevel[i].setTo(Scalar::all(0));
+
 						for (int y = 0; y < height; y++)
 						{
 							Vec4b *l = HSV[i].ptr<Vec4b>(y);
@@ -265,7 +260,7 @@ int main(int argc, char* argv[])
 								{
 									if (1 < histgram.at<uchar>(h, s))
 									{
-										Lpixel[x] = images[0].at<Vec4b>(y, x);
+										Lpixel[x] = images[i].at<Vec4b>(y, x);
 										b_l[x] = 255;
 									}
 								}
@@ -273,7 +268,7 @@ int main(int argc, char* argv[])
 								{
 									if (10 <= h && h <= 26 && 55 < s && s < 150)
 									{
-										Lpixel[x] = images[0].at<Vec4b>(y, x);
+										Lpixel[x] = images[i].at<Vec4b>(y, x);
 										b_l[x] = 255;
 									}
 								}
@@ -287,19 +282,17 @@ int main(int argc, char* argv[])
 #					pragma omp parallel for
 					for (int eyes = 0; eyes < 2; eyes++)
 					{
+						std::vector<std::vector<Point>> contours;
+						std::vector<Vec4i> hierarchy;
+
+						findContours(bilevel[eyes], contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
+						for (uint i = 0; i < contours.size(); i++)
+						{
+							if (200 < contours[i].size())
+								drawContours(results[eyes], contours, i, Scalar(255, 255, 255), 1, 8);
+						}
 					}
-					findContours(bilevel[0], contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
-					for (uint i = 0; i < contours.size(); i++)
-					{
-						if (200 < contours[i].size())
-							drawContours(results[0], contours, i, Scalar(255, 255, 255), 1, 8);
-					}
-					findContours(bilevel[1], contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
-					for (uint i = 0; i < contours.size(); i++)
-					{
-						if (200 < contours[i].size())
-							drawContours(results[1], contours, i, Scalar(255, 255, 255), 1, 8);
-					}
+
 					// Ç±Ç±Ç‹Ç≈OpenCVÇ≈èàóùÇµÇƒGPUÇ…ñﬂÇ∑
 
 					// Show frame data

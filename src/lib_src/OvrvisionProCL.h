@@ -137,10 +137,10 @@ namespace OVR
 			@param left ptr for left HSV image
 			@param right ptr for right HSV image
 			@param scale (HALF, FOURTH, EIGHTH) */
-			void SkinColor(uchar *left, uchar *right, SCALING scale);
+			void GetHSV(uchar *left, uchar *right, SCALING scale);
 			/*! @brief Get HSV images for skin color detection */
-			void SkinColor(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r);
-			void SkinColorBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
+			void GetHSV(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r);
+			void GetHSVBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
 			void ColorHistgram(uchar *histgram, SCALING scaling);
 
 			// 縮小したグレースケール画像を取得

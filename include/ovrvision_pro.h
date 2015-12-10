@@ -165,6 +165,9 @@ public:
 		@param roi ROI */
 	void GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRight, ROI roi);
 
+	/*! @brief UNDER CONSTRUCTION */
+	void GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight);
+
 	/*! @brief Get skin color region 
 		@param left image 
 		@param right image 
