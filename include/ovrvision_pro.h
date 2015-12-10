@@ -159,6 +159,7 @@ public:
 	/*!	@brief Capture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc.)
 		@param qt Set an image processing method. */
 	void Capture(OVR::Camqt qt);
+
 	/*!	@brief Get camera image region of interest
 		@param pLeft Image buffer pointer for left eye
 		@param pRight Image buffer pointer for right eye
@@ -167,6 +168,11 @@ public:
 
 	/*! @brief UNDER CONSTRUCTION */
 	void GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight);
+
+	/*! @brief Get Skin images
+		@param pLeft Image buffer pointer for left eye
+		@param pRight Image buffer pointer for right eye */
+	void GetSkinImage(unsigned char* pLeft, unsigned char* pRight);
 
 	/*! @brief Get skin color region 
 		@param left image 

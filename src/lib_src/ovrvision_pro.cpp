@@ -293,6 +293,12 @@ void OvrvisionPro::GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight
 	m_pOpenCL->GetHSV(pLeft, pRight, SCALING::HALF);
 }
 
+// Get Skin image
+void OvrvisionPro::GetSkinImage(unsigned char* pLeft, unsigned char* pRight)
+{
+	m_pOpenCL->SkinImages(pLeft, pRight, HALF);
+}
+
 // Get skin region mask
 int OvrvisionPro::SkinRegion(unsigned char* left, unsigned char* right)
 {
