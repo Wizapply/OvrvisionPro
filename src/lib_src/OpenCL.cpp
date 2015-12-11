@@ -1366,7 +1366,7 @@ namespace OVR
 		DemosaicRemap(src, _l, _r, execute);
 #else
 		cl_event wait, wait2;
-		Demosaic(src, _l, _r, &wait);
+		DemosaicRemap(src, _l, _r, &wait);
 
 		// Resize
 		int scale;
