@@ -264,9 +264,10 @@ namespace OVR
 			cl_kernel		_invertMask;
 
 		private:
-			cl_event _execute;
+			//cl_event _execute;
 			cl_mem	_src;
-			cl_mem	_l, _r, _L, _R;
+			cl_mem	_l, _r;			// demosaic and remapped image
+			cl_mem	_L, _R;			// work image
 			cl_mem	_mx[2], _my[2]; // map for remap in GPU
 			cl_mem	_reducedL, _reducedR;	// reduced image
 		};

@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 		//_h_high = 21;
 		//_s_low = 88;
 		//_s_high = 136;
-		ovrvision->SetSkinHSV(9, 21, 80, 143);
+		ovrvision->SetSkinHSV(9, 21, 80, 135);
 
 		for (bool loop = true; loop;)
 		{

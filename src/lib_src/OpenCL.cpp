@@ -621,6 +621,10 @@ namespace OVR
 		// Read result
 		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
 		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
+
+		// Release temporary images
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
 	}
 
 	//
@@ -809,47 +813,11 @@ namespace OVR
 	//
 	void OvrvisionProOpenCL::Read(uchar *left, uchar *right, SCALING scaling)
 	{
-#if 0
-		cl_mem l, r;
-		uint width = _width, height = _height;
-		switch (scaling)
-		{
-		case OVR::HALF:
-			width /= 2;
-			height /= 2;
-			break;
-		case OVR::FOURTH:
-			width /= 4;
-			height /= 4;
-			break;
-		case OVR::EIGHTH:
-			width /= 8;
-			height /= 8;
-			break;
-		}
-		size_t origin[3] = { 0, 0, 0 };
-		size_t region[3] = { width, height, 1 };
-
-		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_event event[2];
-		Resize(_l, l, scaling, &event[0]);
-		Resize(_r, r, scaling, &event[1]);
-		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		clReleaseMemObject(l);
-		clReleaseMemObject(r);
-#else
 		size_t origin[3] = { 0, 0, 0 };
 		_errorCode = clEnqueueReadImage(_commandQueue, _reducedL, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		_errorCode = clEnqueueReadImage(_commandQueue, _reducedR, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-#endif
 	}
 
 	//
@@ -966,56 +934,6 @@ namespace OVR
 	// Get HSV images
 	void OvrvisionProOpenCL::GetHSV(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
 	{
-#if 0
-		cl_mem l, r;
-		uint width = _width, height = _height;
-		switch (scaling)
-		{
-		case OVR::HALF:
-			width /= 2;
-			height /= 2;
-			break;
-		case OVR::FOURTH:
-			width /= 4;
-			height /= 4;
-			break;
-		case OVR::EIGHTH:
-			width /= 8;
-			height /= 8;
-			break;
-		}
-		size_t origin[3] = { 0, 0, 0 };
-		size_t region[3] = { width, height, 1 };
-		size_t size[] = { width, height };
-
-		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-
-		// Resize
-		cl_event event[2];
-		Resize(_l, l, scaling, &event[0]);
-		Resize(_r, r, scaling, &event[1]);
-
-		// Convert to HSV
-		//__kernel void convertHSV( 
-		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
-		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8 x 4
-
-		clSetKernelArg(_convertHSV, 0, sizeof(cl_mem), &l);
-		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &left);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 1, &event[0], event_l);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		clSetKernelArg(_convertHSV, 0, sizeof(cl_mem), &r);
-		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &right);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 1, &event[1], event_r);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-
-		// Release temporary images
-		clReleaseMemObject(l);
-		clReleaseMemObject(r);
-#else
 		size_t size[] = { _scaledRegion[0], _scaledRegion[1] };
 
 		// Convert to HSV
@@ -1031,7 +949,6 @@ namespace OVR
 		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &right);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 0, NULL, event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-#endif
 	}
 
 	//
@@ -1137,6 +1054,8 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporary images
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
 	}
