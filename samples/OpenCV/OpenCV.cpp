@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 		int height = ovrvision->GetCamHeight() / 2;
 		ROI roi = { 0, 0, width, height };
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
-		bool show = true;
+		bool show = false;
 		bool useHistgram = false;
 
 		Mat images[2];
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 		//_h_high = 21;
 		//_s_low = 88;
 		//_s_high = 136;
-		ovrvision->SetSkinHSV(9, 22, 80, 143);
+		ovrvision->SetSkinHSV(9, 21, 80, 143);
 
 		for (bool loop = true; loop;)
 		{
@@ -168,9 +168,11 @@ int main(int argc, char* argv[])
 			else
 			{
 				ovrvision->GetSkinImage(results[0].data, results[1].data);
+				//ovrvision->GrayscaleFourth(bilevel[0].data, bilevel[1].data);
+				
 				//ovrvision->SkinRegion(bilevel[0].data, bilevel[1].data);
 				//imshow("bilevel(L)", bilevel[0]);
-				//imshow("bilevel(R)", bilevel[1]);
+				// imshow("bilevel(R)", bilevel[1]);
 				//imshow("Left", images[0]);
 				//imshow("Right", images[1]);
 				imshow("L", results[0]);
@@ -249,12 +251,17 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					//imwrite("LEFT.tiff", images[0]);
-					//imwrite("RIGHT.tiff", images[1]);
+					ovrvision->Read(images[0].data, images[1].data);
+					ovrvision->GetStereoImageHSV(hsv[0].data, hsv[1].data);
+					ovrvision->SkinRegion(bilevel[0].data, bilevel[1].data);
+					imwrite("hsv_l.tiff", hsv[0]);
+					imwrite("hsv_r.tiff", hsv[1]);
+					imwrite("left.tiff", images[0]);
+					imwrite("right.tiff", images[1]);
 					imwrite("result_l.tiff", results[0]);
 					imwrite("result_r.tiff", results[1]);
-					//imwrite("bilevel_l.png", bilevel[0]);
-					//imwrite("bilevel_r.png", bilevel[1]);
+					imwrite("bilevel_l.tiff", bilevel[0]);
+					imwrite("bilevel_r.tiff", bilevel[1]);
 				}
 				break;
 
