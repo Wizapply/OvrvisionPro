@@ -32,6 +32,8 @@ namespace ovrvision_calibration
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern int ovClose();
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        static extern int ovRelease();
+        [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern void ovPreStoreCamData(int qt);
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern void ovGetCamImageBGRA(System.IntPtr img, int eye);
@@ -173,6 +175,11 @@ namespace ovrvision_calibration
         {
             //Awake
             imageSizeW = imageSizeH = 0;
+        }
+
+        ~COvrvision()
+        {
+            ovRelease();
         }
 
         //Open Ovrvision

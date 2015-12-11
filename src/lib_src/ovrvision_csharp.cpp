@@ -122,6 +122,27 @@ CSHARP_EXPORT int ovClose(void)
 		g_ovOvrvisionAR = NULL;
 	}
 
+	//Close
+	if (g_ovOvrvision)
+		g_ovOvrvision->Close();
+
+	return 0;	//OK
+}
+
+// int ovRelease(void) -> Exit
+CSHARP_EXPORT int ovRelease(void)
+{
+	//Delete
+	if (g_ovOvrvisionTrack) {
+		delete g_ovOvrvisionTrack;
+		g_ovOvrvisionTrack = NULL;
+	}
+
+	if (g_ovOvrvisionAR) {
+		delete g_ovOvrvisionAR;
+		g_ovOvrvisionAR = NULL;
+	}
+
 	if (g_ovOvrvision) {
 		delete g_ovOvrvision;
 		g_ovOvrvision = NULL;

@@ -120,7 +120,7 @@ OvrvisionAR::OvrvisionAR(float markersize, int w, int h, float focalPoint)
 				break;
 			}else{
 				count++;
-				if(count > 10)
+				if(count > 30)
 					return;
 			}
 			Sleep(1000);
