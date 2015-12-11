@@ -1,4 +1,4 @@
-.TH "OVR::OvrvisionPro" 3 "Thu Dec 10 2015" "Version 1.2" "OvrvisionSDK" \" -*- nroff -*-
+.TH "OVR::OvrvisionPro" 3 "Fri Dec 11 2015" "Version 1.2" "OvrvisionSDK" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -48,6 +48,14 @@ OVR::OvrvisionPro \- \fBOvrvisionPro\fP class\&.
 .RI "void \fBGetStereoImageBGRA\fP (unsigned char *pLeft, unsigned char *pRight, \fBROI\fP roi)"
 .br
 .RI "\fIGet camera image region of interest\&. \fP"
+.ti -1c
+.RI "void \fBGetStereoImageHSV\fP (unsigned char *pLeft, unsigned char *pRight)"
+.br
+.RI "\fIUNDER CONSTRUCTION\&. \fP"
+.ti -1c
+.RI "void \fBGetSkinImage\fP (unsigned char *pLeft, unsigned char *pRight)"
+.br
+.RI "\fIGet Skin images\&. \fP"
 .ti -1c
 .RI "int \fBSkinRegion\fP (unsigned char *left, unsigned char *right)"
 .br
@@ -431,6 +439,19 @@ Get the gap between images for HMD\&.
 \fBReturns:\fP
 .RS 4
 value 
+.RE
+.PP
+
+.SS "void OVR::OvrvisionPro::GetSkinImage (unsigned char * pLeft, unsigned char * pRight)"
+
+.PP
+Get Skin images\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpLeft\fP Image buffer pointer for left eye 
+.br
+\fIpRight\fP Image buffer pointer for right eye 
 .RE
 .PP
 

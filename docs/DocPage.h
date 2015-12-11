@@ -169,6 +169,17 @@ The usage should confirm the following video. <br />
 - Coming Soon
 */
 
+/*! @page page32 How to remove lens dust
+How to remove when dust has adhered to the image sensor.<br />
+イメージセンサーにゴミが付着している場合の除去方法<br />
+@image html lens_sow1.jpg
+@image html lens_sow2.jpg
+@image html lens_sow3.jpg
+@image html lens_sow4.jpg
+@image html lens_sow5.jpg
+@image html lens_sow6.jpg
+*/
+
 /*! @page page4 Release Notes
 @tableofcontents
 @section sdk4 Ovrvision SDK v1.2
