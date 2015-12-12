@@ -745,16 +745,17 @@ namespace OVR
 
 		switch (scaling)
 		{
-		case HALF:
-			scale = 2;
+		case EIGHTH:
+			scale = 8;
 			break;
 
 		case FOURTH:
 			scale = 4;
 			break;
 
-		case EIGHTH:
-			scale = 8;
+		case HALF:
+		default:
+			scale = 2;
 			break;
 		}
 		_scaledRegion[0] = _width / scale;
@@ -1387,7 +1388,7 @@ namespace OVR
 		char *buffer = new char[size];
 		if (binary)
 		{
-			if ((file = fopen(filename, "rb")) == 0)
+			if ((file = fopen(filename, "rb")) != NULL)
 			{
 				cl_int status;
 				fread(buffer, st.st_size, 1, file);
@@ -1398,7 +1399,7 @@ namespace OVR
 		}
 		else
 		{
-			if ((file = fopen(filename, "r")) == 0)
+			if ((file = fopen(filename, "r")) != NULL)
 			{
 				fread(buffer, st.st_size, 1, file);
 				fclose(file);
@@ -1435,7 +1436,7 @@ namespace OVR
 	int OvrvisionProOpenCL::saveBinary(const char *filename)
 	{
 		FILE *file;
-		if ((file = fopen(filename, "w")) == 0)
+		if ((file = fopen(filename, "w")) != NULL)
 		{
 			size_t kernel_bin_size;
 			clGetProgramInfo(_program, CL_PROGRAM_BINARY_SIZES, sizeof(size_t), &kernel_bin_size, NULL);
