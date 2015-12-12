@@ -151,7 +151,7 @@ namespace OVR
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
-			// UMat seems extra overhead of data transfer, so WE USE NATIVE OPENCL IMAGE2D
+			// UMat seems to have extra overhead of data transfer, so WE USE NATIVE OPENCL IMAGE2D
 			_src = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_format16UC1, _width, _height, 0, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
@@ -176,7 +176,7 @@ namespace OVR
 			CreateProgram();
 			Prepare4Sharing();
 			SetScale(HALF);
-			// Skin region
+			// Skin default region
 			_h_low = 13;
 			_h_high = 21;
 			_s_low = 88;
@@ -312,6 +312,8 @@ namespace OVR
 		cl_uint maxUnits = 0;
 		bool device_found = false;
 		vector<cl_device_id> devices;
+
+		// Search GPU
 		for (cl_uint i = 0; i < num_of_platforms; i++)
 		{
 			cl_uint num_of_devices = 0;
@@ -603,7 +605,9 @@ namespace OVR
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
-		// Release temporary images
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 		clReleaseMemObject(hsv[0]);
 		clReleaseMemObject(hsv[1]);
 	}
@@ -627,7 +631,9 @@ namespace OVR
 		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
 		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
 
-		// Release temporary images
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
 	}
@@ -691,7 +697,9 @@ namespace OVR
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
-		// Release temporary images
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
 	}
@@ -731,6 +739,10 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event[1], NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
 	}
@@ -892,7 +904,9 @@ namespace OVR
 			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertGrayscale, 2, NULL, size, NULL, 1, &event[1], event_r);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
-			// Release temporary images
+			// Release temporaries
+			clReleaseEvent(event[0]);
+			clReleaseEvent(event[1]);
 			clReleaseMemObject(l);
 			clReleaseMemObject(r);
 		}
@@ -933,6 +947,10 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event[1], NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
 	}
@@ -1021,7 +1039,9 @@ namespace OVR
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _medianBlur5x5, 2, NULL, size, NULL, 1, &event[1], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #endif
-		// Release temporary images
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
 	}
@@ -1062,7 +1082,9 @@ namespace OVR
 		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
-		// Release temporary images
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
 	}
@@ -1154,6 +1176,9 @@ namespace OVR
 		clSetKernelArg(_demosaic, 2, sizeof(cl_mem), &right);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _demosaic, 2, NULL, demosaicSize, 0, 1, &writeEvent, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporaries
+		clReleaseEvent(writeEvent);
 	}
 
 	// 
@@ -1193,6 +1218,10 @@ namespace OVR
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporaries
+		clReleaseEvent(wait);
+		clReleaseEvent(wait2);
 	}
 
 	//
@@ -1207,6 +1236,9 @@ namespace OVR
 		// Read result
 		_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left, 1, &execute, NULL);
 		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right, 1, &execute, NULL);
+
+		// Release temporaries
+		clReleaseEvent(execute);
 	}
 
 	//
@@ -1221,6 +1253,9 @@ namespace OVR
 		// Read result
 		_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left.ptr(0), 1, &execute, NULL);
 		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right.ptr(0), 1, &execute, NULL);
+
+		// Release temporaries
+		clReleaseEvent(execute);
 	}
 
 	//
@@ -1300,6 +1335,8 @@ namespace OVR
 			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, &writeEvent, execute);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
+		// Release temporaries
+		clReleaseEvent(writeEvent);
 	}
 
 	// 
@@ -1339,6 +1376,10 @@ namespace OVR
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporaries
+		clReleaseEvent(wait);
+		clReleaseEvent(wait2);
 	}
 
 	//
@@ -1353,6 +1394,9 @@ namespace OVR
 		_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left, 1, &execute, NULL);
 		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right, 1, &execute, NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporaries
+		clReleaseEvent(execute);
 	}
 
 	//
@@ -1367,6 +1411,10 @@ namespace OVR
 		_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left.ptr(0), 1, &execute, NULL);
 		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right.ptr(0), 1, &execute, NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporaries
+		clReleaseEvent(execute);
+
 	}
 
 	//
