@@ -149,7 +149,7 @@ namespace OVR
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
-			// UMatを使うとパフォーマンスが落ちるので、ocl::Image2Dは使わない
+			// UMat seems extra overhead of data transfer, so WE USE NATIVE OPENCL IMAGE2D
 			_src = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_format16UC1, _width, _height, 0, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
@@ -384,7 +384,7 @@ namespace OVR
 			0
 		};
 #endif
-		// ここで連携するOpenGL/D3Dのプロパティを設定してコンテキストを取得する
+		// TODO: Prepare for sharing texture
 		switch (_sharing)
 		{
 #ifdef WIN32
@@ -484,7 +484,7 @@ namespace OVR
 #pragma endregion
 
 #pragma region TEXTURE_SHARING
-	// OpenGL/D3D連携準備
+	// Prepare for OpenGL/D3D texture sharing
 	bool OvrvisionProOpenCL::Prepare4Sharing()
 	{
 		DeviceExtensions();
@@ -519,7 +519,7 @@ namespace OVR
 #endif
 	}
 
-	// OpenGL連携テクスチャー
+	// OpenGL shared texture
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
 	{
@@ -547,7 +547,7 @@ namespace OVR
 	}
 
 #ifdef _WIN32
-	// TODO: Direct3D連携用のテクスチャーを生成
+	// TODO: Direct3D shared texture
 	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height)
 	{
 		if (_vendorD3D11 == NVIDIA)
@@ -580,7 +580,7 @@ namespace OVR
 
 		SkinRegion(hsv[0], hsv[1], scaling, &event[0], &event[1]);
 
-		// TODO: ここでさらにHSVとMASKでノイズ除去を行う
+		// TODO: Noise reduction filtering here on mask image
 
 		//__kernel void mask( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
@@ -782,7 +782,7 @@ namespace OVR
 		size_t region[3] = { width / scale, height / scale, 1 };
 		size_t origin[3] = { 0, 0, 0 };
 
-		//__kernel void resize( // TODO UNDER CONSTRUCTION
+		//__kernel void resize(
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
 		//		__read_only int scale)		// 2, 4, 8
@@ -892,7 +892,7 @@ namespace OVR
 		}
 	}
 
-	// 縮小グレースケール画像を取得
+	// Get resized grayscvale images
 	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling)
 	{
 		cl_mem l, r;
@@ -983,6 +983,7 @@ namespace OVR
 		cl_event event[2];
 		GetHSV(l, r, scaling, &event[0], &event[1]);
 
+		// TODO: Choice most effective filter
 		//__kernel void gaussian( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8 x 4
@@ -1103,7 +1104,7 @@ namespace OVR
 		normalize(hist, h, 0, 255, NORM_MINMAX, h.type());
 	}
 
-	// UNDER CONSTRUCTION
+	// Depricate?
 	void OvrvisionProOpenCL::ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter, cl_event *execute)
 	{
 		size_t width, height;
@@ -1113,7 +1114,7 @@ namespace OVR
 		size_t region[3] = { width, height, 1 };
 		size_t size[] = { width, height };
 
-		//__kernel void convertHSV( // TODO UNDER CONSTRUCTION
+		//__kernel void convertHSV( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst)	// CL_UNSIGNED_INT8 x 4
 
@@ -1152,9 +1153,6 @@ namespace OVR
 	// 
 	void OvrvisionProOpenCL::Demosaic(const ushort* src, cl_event *execute)
 	{
-#if 0
-		Demosaic(src, _l, _r, execute);
-#else
 		cl_event wait, wait2;
 		Demosaic(src, _l, _r, &wait);
 
@@ -1174,7 +1172,7 @@ namespace OVR
 		}
 		size_t origin[3] = { 0, 0, 0 };
 
-		//__kernel void resize( // TODO UNDER CONSTRUCTION
+		//__kernel void resize( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
 		//		__read_only int scale)		// 2, 4, 8
@@ -1189,7 +1187,6 @@ namespace OVR
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-#endif
 	}
 
 	//
@@ -1255,9 +1252,7 @@ namespace OVR
 		size_t region[3] = { _width, _height, 1 };
 		size_t demosaicSize[] = { _width / 2, _height / 2 };
 		cl_event writeEvent;
-#if 0
-		Demosaic(src, _L, _R, &writeEvent);
-#else
+
 		_errorCode = clEnqueueWriteImage(_commandQueue, _src, CL_TRUE, origin, region, _width * sizeof(ushort), 0, src, 0, NULL, &writeEvent);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
@@ -1273,7 +1268,6 @@ namespace OVR
 		clSetKernelArg(_demosaic, 2, sizeof(cl_mem), &_R);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _demosaic, 2, NULL, demosaicSize, 0, 1, &writeEvent, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-#endif
 
 		if (_remapAvailable)
 		{
@@ -1305,9 +1299,6 @@ namespace OVR
 	// 
 	void OvrvisionProOpenCL::DemosaicRemap(const ushort* src, cl_event *execute)
 	{
-#if 0
-		DemosaicRemap(src, _l, _r, execute);
-#else
 		cl_event wait, wait2;
 		DemosaicRemap(src, _l, _r, &wait);
 
@@ -1327,7 +1318,7 @@ namespace OVR
 		}
 		size_t origin[3] = { 0, 0, 0 };
 
-		//__kernel void resize( // TODO UNDER CONSTRUCTION
+		//__kernel void resize( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
 		//		__read_only int scale)		// 2, 4, 8
@@ -1342,7 +1333,6 @@ namespace OVR
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-#endif
 	}
 
 	//
@@ -1381,7 +1371,7 @@ namespace OVR
 	}
 #pragma endregion
 
-#pragma region UNUSED
+#pragma region DEPRICATED
 	// CreateProgram from file
 	void OvrvisionProOpenCL::createProgram(const char *filename, bool binary)
 	{
