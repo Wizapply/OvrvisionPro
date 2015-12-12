@@ -1414,7 +1414,6 @@ namespace OVR
 
 		// Release temporaries
 		clReleaseEvent(execute);
-
 	}
 
 	//
