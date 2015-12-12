@@ -159,7 +159,7 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
     challenge = 0;
 	if([m_pOAV createDevice:OV_USB_VENDERID pid:OV_USB_PRODUCTID
 		cam_w:cam_width cam_h:cam_height rate:cam_framerate locate:locationID] == 0) {
-		openobj++;
+		objs++;
 		[NSThread sleepForTimeInterval:0.150];	//150ms wait
 	}
 #elif LINUX
@@ -241,19 +241,19 @@ int OvrvisionPro::OpenCLExtensions(EXTENSION_CALLBACK callback, void *item)
 	return m_pOpenCL->DeviceExtensions(callback, item);
 }
 
-#ifdef _WIN32
+#ifdef WIN32
 // Create D3D11 texture
 void* OvrvisionPro::CreateD3DTexture2D(void *texture, int width, int height)
 {
 	return m_pOpenCL->CreateD3DTexture2D((ID3D11Texture2D*)texture, width, height);
 }
-#endif
 
 // Create OpenGL Texture
 void* OvrvisionPro::CreateGLTexture2D(unsigned int texture, int width, int height)
 {
 	return m_pOpenCL->CreateGLTexture2D(texture, width, height);
 }
+#endif
 
 // Update OpenGL texture objects
 void OvrvisionPro::UpdateGLSkinTextureObjects(unsigned int n, void *textureObjects[])
@@ -291,7 +291,7 @@ void OvrvisionPro::Capture(OVR::Camqt qt)
 #ifdef WIN32
 	if (m_pODS->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK) {
 #elif MACOSX
-	if([m_pOAV getBayer16Image:(uchar *)m_pFrame blocking:!m_isCameraSync]==OV_RESULT_OK)
+    if([m_pOAV getBayer16Image:(uchar *)m_pFrame blocking:!m_isCameraSync]==RESULT_OK) {
 #elif LINUX
 	if()
 #endif
@@ -357,7 +357,7 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 #ifdef WIN32
 	if (m_pODS->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK) {
 #elif MACOSX
-	if ([m_pOAV getBayer16Image : (uchar *)m_pFrame blocking : !m_isCameraSync] == OV_RESULT_OK)
+    if ([m_pOAV getBayer16Image : (uchar *)m_pFrame blocking : !m_isCameraSync] == RESULT_OK) {
 #elif LINUX
 	if ()
 #endif
@@ -526,7 +526,13 @@ int OvrvisionPro::GetCameraWhiteBalanceR(){
 	if (!m_isOpen)
 		return (-1);
 
-	m_pODS->GetCameraSetting(OV_CAMSET_WHITEBALANCER, &value, &automode);
+#ifdef WIN32
+    m_pODS->GetCameraSetting(OV_CAMSET_WHITEBALANCER, &value, &automode);
+#elif MACOSX
+    [m_pOAV getCameraSetting: OV_CAMSET_WHITEBALANCER value: &value automode: &automode];
+#elif LINUX
+    //NONE
+#endif
 	return value;
 }
 void OvrvisionPro::SetCameraWhiteBalanceR(int value){

@@ -157,7 +157,7 @@ typedef enum ov_camseet {
 //Set camera setting
 -(int)setCameraSetting:(CamSetting)proc value:(int)value automode:(bool)automode;
 //Get camera setting
--(int)getCameraSetting:(CamSetting)proc valueout:(int*)value automodeout:(bool*)automode;
+-(int)getCameraSetting:(CamSetting)proc value:(int*)value automode:(bool*)automode;
 
 //private
 

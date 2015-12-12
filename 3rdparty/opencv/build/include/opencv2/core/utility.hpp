@@ -726,7 +726,7 @@ public:
     Returns true if error occured while accessing the parameters (bad conversion, missing arguments,
     etc.). Call @ref printErrors to print error messages list.
      */
-    bool check() const;
+    //bool check() const;
 
     /** @brief Set the about message
 

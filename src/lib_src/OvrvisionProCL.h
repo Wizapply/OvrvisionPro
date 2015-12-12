@@ -28,6 +28,7 @@
 // OpenCL header
 #include <OpenCL/cl.h>// OpenCL and its extensions
 #include <OpenGL/gl.h>
+#include <sys/stat.h>
 
 #endif
 
@@ -56,7 +57,7 @@ namespace OVR
 	// Extension vendor 
 	enum VENDOR {
 		KHRONOS,	// Khronos specific extension
-		INTEL,		// Intel specific extension
+		INTELGPU,	// Intel specific extension
 		AMD,		// AMD specific extension
 		NVIDIA		// NVIDIA specific extension
 	};
@@ -224,7 +225,7 @@ namespace OVR
 #endif
 			char	*_deviceExtensions;
 			Mat		*_mapX[2], *_mapY[2]; // camera parameter
-			int		_width, _height;
+			uint	_width, _height;
 			// HSV color region 
 			int		_h_low, _h_high;
 			int		_s_low, _s_high;

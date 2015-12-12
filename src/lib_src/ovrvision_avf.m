@@ -532,7 +532,7 @@ const uvc_controls_t uvc_controls = {
     return RESULT_OK;
 }
 //Get camera setting
--(int)getCameraSetting:(CamSetting)proc valueout:(int*)value automodeout:(bool*)automode {
+-(int)getCameraSetting:(CamSetting)proc value:(int*)value automode:(bool*)automode {
     
     if(m_devstatus != OV_DEVRUNNING)
         return RESULT_FAILED;

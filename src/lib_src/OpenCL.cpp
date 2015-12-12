@@ -76,7 +76,9 @@ string opencl_error_to_str(cl_int error)
 			CASE_CL_CONSTANT(CL_INVALID_MIP_LEVEL)
 			CASE_CL_CONSTANT(CL_INVALID_GLOBAL_WORK_SIZE)
 			CASE_CL_CONSTANT(CL_INVALID_PROPERTY)
+#ifdef WIN32
 			CASE_CL_CONSTANT(CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR)
+#endif
 	default:
 		return "UNKNOWN ERROR CODE ";// +to_str(error);
 	}
@@ -91,7 +93,7 @@ string opencl_error_to_str(cl_int error)
 #define SAMPLE_CHECK_ERRORS(ERR)						\
     if(ERR != CL_SUCCESS)								\
 		{													\
-        throw std::exception(							\
+        throw std::runtime_error(							\
             "OpenCL error " +							\
             opencl_error_to_str(ERR) +					\
             " happened in file " + std::to_str(__FILE__) +	\
@@ -103,7 +105,7 @@ string opencl_error_to_str(cl_int error)
 #define SAMPLE_CHECK_ERRORS(ERR)  \
 	if (ERR != CL_SUCCESS) { \
 		printf("%s %d\n", __FILE__, __LINE__); \
-		throw std::exception(opencl_error_to_str(ERR).c_str()); \
+		throw std::runtime_error(opencl_error_to_str(ERR).c_str()); \
 	}
 #endif
 
@@ -144,7 +146,7 @@ namespace OVR
 
 			if (SelectGPU("", "OpenCL C 1.2") == NULL) // Find OpenCL(version 1.2 and above) device 
 			{
-				throw exception("Insufficient OpenCL version");
+                throw std::runtime_error("Insufficient OpenCL version");
 			}
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
@@ -343,7 +345,7 @@ namespace OVR
 						clGetDeviceInfo(id[j], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint), &units, &length);
 						clGetDeviceInfo(id[j], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
 						printf("%s %d Compute units %dMHz : %s\n", devicename, units, freq, buffer);
-						if (_strcmpi(buffer, version) >= 0)
+						if (strcmp(buffer, version) >= 0)
 						{
 							if ((maxFreq * maxUnits) < (freq * units))
 							{
@@ -366,7 +368,7 @@ namespace OVR
 		}
 		if (!device_found)
 		{
-			throw(exception("GPU NOT FOUND.\nRequired OpenCL 1.2 or above.\n"));
+            throw std::runtime_error("GPU NOT FOUND.\nRequired OpenCL 1.2 or above.\n");
 		}
 #ifdef WIN32
 		// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
@@ -488,7 +490,7 @@ namespace OVR
 	bool OvrvisionProOpenCL::Prepare4Sharing()
 	{
 		DeviceExtensions();
-#ifdef _WIN32
+#ifdef WIN32
 		if (strstr(_deviceExtensions, "cl_nv_d3d11_sharing"))
 		{
 			_vendorD3D11 = NVIDIA;
@@ -519,6 +521,7 @@ namespace OVR
 #endif
 	}
 
+#ifdef WIN32
 	// OpenGL shared texture
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
@@ -536,17 +539,19 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		return object;
 	}
+#endif
 
 	void OvrvisionProOpenCL::UpdateSkinTextureObjects(uint n, void *textures[], enum SCALING scaling)
 	{
+#ifdef WIN32
 		cl_event event[2];
 		clEnqueueAcquireGLObjects(_commandQueue, n, (cl_mem *)textures, 0, NULL, NULL);
 		SkinImages((cl_mem)(textures[0]), (cl_mem)(textures[1]), scaling, &event[0], &event[1]);
 		clEnqueueReleaseGLObjects(_commandQueue, n, (cl_mem *)textures, 2, event, NULL);
 		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+#endif
 	}
-
-#ifdef _WIN32
+#ifdef WIN32
 	// TODO: Direct3D shared texture
 	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height)
 	{
@@ -797,7 +802,7 @@ namespace OVR
 	// Read images region of interest
 	void OvrvisionProOpenCL::Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height)
 	{
-		size_t origin[3] = { offsetX, offsetY, 0 };
+		size_t origin[3] = { static_cast<size_t>(offsetX), static_cast<size_t>(offsetY), 0 };
 		size_t region[3] = { width, height, 1 };
 		//cl_event execute;
 		if (left != NULL)
@@ -1376,13 +1381,13 @@ namespace OVR
 	void OvrvisionProOpenCL::createProgram(const char *filename, bool binary)
 	{
 		FILE *file;
-		struct _stat st;
-		_stat(filename, &st);
+		struct stat st;
+		stat(filename, &st);
 		size_t size = st.st_size;
 		char *buffer = new char[size];
 		if (binary)
 		{
-			if (fopen_s(&file, filename, "rb") == 0)
+			if ((file = fopen(filename, "rb")) == 0)
 			{
 				cl_int status;
 				fread(buffer, st.st_size, 1, file);
@@ -1393,7 +1398,7 @@ namespace OVR
 		}
 		else
 		{
-			if (fopen_s(&file, filename, "r") == 0)
+			if ((file = fopen(filename, "r")) == 0)
 			{
 				fread(buffer, st.st_size, 1, file);
 				fclose(file);
@@ -1430,7 +1435,7 @@ namespace OVR
 	int OvrvisionProOpenCL::saveBinary(const char *filename)
 	{
 		FILE *file;
-		if (fopen_s(&file, filename, "w") == 0)
+		if ((file = fopen(filename, "w")) == 0)
 		{
 			size_t kernel_bin_size;
 			clGetProgramInfo(_program, CL_PROGRAM_BINARY_SIZES, sizeof(size_t), &kernel_bin_size, NULL);
@@ -1451,7 +1456,7 @@ namespace OVR
 	//
 	void OvrvisionProOpenCL::Download(const cl_mem image, uchar *ptr, int offsetX, int offsetY, uint width, uint height)
 	{
-		size_t origin[3] = { offsetX, offsetY, 0 };
+		size_t origin[3] = { static_cast<size_t>(offsetX), static_cast<size_t>(offsetY), 0 };
 		size_t region[3] = { width, height, 1 };
 		size_t size;
 		cl_image_format format;
