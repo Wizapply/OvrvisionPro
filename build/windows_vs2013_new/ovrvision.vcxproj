@@ -346,10 +346,14 @@
     <ClInclude Include="..\..\include\ovrvision_tracking.h" />
     <ClInclude Include="..\..\src\lib_src\OpenCL_kernel.h" />
     <ClInclude Include="..\..\src\lib_src\OvrvisionProCL.h" />
+    <ClInclude Include="..\..\src\lib_src\ovrvision_avf.h" />
     <ClInclude Include="..\..\src\lib_src\ovrvision_calibration.h" />
     <ClInclude Include="..\..\src\lib_src\ovrvision_ds.h" />
     <ClInclude Include="..\..\src\lib_src\ovrvision_linux.h" />
     <ClInclude Include="..\..\src\lib_src\ovrvision_setting.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\lib_src\ovrvision_avf.m" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

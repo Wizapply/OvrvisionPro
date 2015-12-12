@@ -150,5 +150,13 @@
     <ClInclude Include="..\..\include\ovrvision_tracking.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\lib_src\ovrvision_avf.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\lib_src\ovrvision_avf.m">
+      <Filter>ソース ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>

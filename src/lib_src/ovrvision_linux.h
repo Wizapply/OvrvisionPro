@@ -11,3 +11,13 @@
 //
 // Oculus Rift : TM & Copyright Oculus VR, Inc. All Rights Reserved
 // Unity : TM & Copyright Unity Technologies. All Rights Reserved
+
+//Linux only
+#ifdef LINUX
+
+#ifndef __OVRVISION_LINUX__
+#define __OVRVISION_LINUX__
+
+#endif /*__OVRVISION_LINUX__*/
+
+#endif

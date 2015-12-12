@@ -26,7 +26,6 @@
 #import <IOKit/usb/IOUSBLib.h>
 
 #import <mach/mach_time.h>
-#import "jpeglib.h"
 
 /////////// VARS AND DEFS ///////////
 
@@ -66,15 +65,14 @@ typedef struct {
 } uvc_control_info_t;
 
 typedef struct {
-	uvc_control_info_t autoExposure;
 	uvc_control_info_t exposure;
-	uvc_control_info_t brightness;
-	uvc_control_info_t contrast;
-	uvc_control_info_t saturation;
-	uvc_control_info_t sharpness;
-    uvc_control_info_t gamma;
-	uvc_control_info_t whiteBalance;
-	uvc_control_info_t autoWhiteBalance;
+	uvc_control_info_t gain;
+	uvc_control_info_t whitebalance_r;
+	uvc_control_info_t whitebalance_g;
+	uvc_control_info_t whitebalance_b;
+	uvc_control_info_t whitebalance_auto;
+	uvc_control_info_t blc;
+    uvc_control_info_t data;
 } uvc_controls_t ;
 
 //ID
@@ -90,17 +88,14 @@ typedef enum ov_devstatus {
 
 //Camera Setting enum
 typedef enum ov_camseet {
-	OV_CAMSET_EXPOSURE = 0,	//Exposure
-	OV_CAMSET_CONTRAST,		//Contrast
-	OV_CAMSET_SATURATION,	//Saturation
-	OV_CAMSET_BRIGHTNESS,	//Brightness
-	OV_CAMSET_SHARPNESS,	//Sharpness
-	OV_CAMSET_GAMMA,		//Gamma
-	OV_CAMSET_WHITEBALANCE,	//White balance
+    OV_CAMSET_EXPOSURE = 0,		//Exposure
+    OV_CAMSET_GAIN,				//Gain
+    OV_CAMSET_WHITEBALANCER,	//Saturation
+    OV_CAMSET_WHITEBALANCEG,	//Brightness
+    OV_CAMSET_WHITEBALANCEB,	//Sharpness
+    OV_CAMSET_BLC,				//Backlight Compensation
+    OV_CAMSET_DATA,				//EEPROM Data Access
 } CamSetting;
-
-//JmpBuffer
-//static jmp_buf g_ov_jmpbuf;
 
 //PixelBufferQueue Array Num
 #define PBQARRAY_MAX    (64)
@@ -115,7 +110,6 @@ typedef enum ov_camseet {
     
 	//Pixel Data
 	unsigned char*	m_pPixels;
-    unsigned char*  m_pPixelsQueue; //Queue
     
 	//Pixel Size
 	int				m_width;
@@ -137,11 +131,6 @@ typedef enum ov_camseet {
     
     //Thread wait object
     NSCondition*    m_cond;
-    uint64_t        m_captureOutputTime;
-    mach_timebase_info_data_t m_timebase;
-    
-    NSThread*       m_queueThread;
-    uint64_t        m_queueThreadPreTime;
 }
 
 //initialize
@@ -158,11 +147,7 @@ typedef enum ov_camseet {
 
 //Get pixel data
 //In non blocking, when data cannot be acquired, RESULT_FAILED returns.
--(int) getRGBImage:(unsigned char*)image blocking:(bool)nonblocking;
--(int) getMJPEGImage:(unsigned char*)image blocking:(bool)nonblocking;
-
-//MJPEG -> RGB(24bit) Decoder
-- (int)MJPEGToR8G8B8:(unsigned char*)pImageDest imageSrc:(unsigned char*)pImageSrc imagesize:(int)srcSize;
+-(int) getBayer16Image:(unsigned char*)image blocking:(bool)nonblocking;
 
 //Property
 -(DevStatus)getDeviceStatus;

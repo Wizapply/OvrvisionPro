@@ -19,50 +19,40 @@
 
 //UVC Control
 const uvc_controls_t uvc_controls = {
-	.autoExposure = {
-		.unit = UVC_INPUT_TERMINAL_ID,
-		.selector = 0x02,
-		.size = 1,
-	},
 	.exposure = {
-		.unit = UVC_INPUT_TERMINAL_ID,
+		.unit = UVC_INPUT_TERMINAL_ID,  //brightness
 		.selector = 0x04,
 		.size = 4,
 	},
-	.brightness = {
-		.unit = UVC_PROCESSING_UNIT_ID,
+	.gain = {
+		.unit = UVC_PROCESSING_UNIT_ID, //gain
 		.selector = 0x02,
 		.size = 2,
 	},
-	.contrast = {
-		.unit = UVC_PROCESSING_UNIT_ID,
+	.whitebalance_r = {
+		.unit = UVC_PROCESSING_UNIT_ID, //
 		.selector = 0x03,
 		.size = 2,
 	},
-	.saturation = {
+	.whitebalance_g = {
 		.unit = UVC_PROCESSING_UNIT_ID,
 		.selector = 0x07,
 		.size = 2,
 	},
-	.sharpness = {
+	.whitebalance_b = {
 		.unit = UVC_PROCESSING_UNIT_ID,
 		.selector = 0x08,
 		.size = 2,
 	},
-    .gamma = {
-        .unit = UVC_PROCESSING_UNIT_ID,
+    .blc = {
+        .unit = UVC_PROCESSING_UNIT_ID, //blc
 		.selector = 0x09,
 		.size = 2,
     },
-	.whiteBalance = {
-		.unit = UVC_PROCESSING_UNIT_ID,
+	.data = {
+		.unit = UVC_PROCESSING_UNIT_ID, //contrast
 		.selector = 0x0A,
 		.size = 2,
-	},
-	.autoWhiteBalance = {
-		.unit = UVC_PROCESSING_UNIT_ID,
-		.selector = 0x0B,
-		.size = 1,
 	},
 };
 
@@ -79,7 +69,6 @@ const uvc_controls_t uvc_controls = {
         
         //Pixel Data
         m_pPixels = NULL;
-        m_pPixelsQueue = NULL;
         
         //Pixel Size
         m_width = 0;
@@ -96,8 +85,6 @@ const uvc_controls_t uvc_controls = {
         
         //waitforsignal
         m_cond = [[NSCondition alloc] init];
-        m_captureOutputTime = mach_absolute_time();
-        mach_timebase_info(&m_timebase);
         
         iodataBuffer = 0;
         interface = nil;
@@ -171,7 +158,8 @@ const uvc_controls_t uvc_controls = {
 	io_service_t usbInterface;
 	HRESULT result;
 	
-	if( usbInterface = IOIteratorNext(interfaceIterator) ) {
+    usbInterface = IOIteratorNext(interfaceIterator);
+	if( usbInterface ) {
 		IOCFPlugInInterface **plugInInterface = NULL;
 		
 		//Create an intermediate plug-in
@@ -304,7 +292,7 @@ const uvc_controls_t uvc_controls = {
         CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(desc);
         
         for(AVFrameRateRange* range in format.videoSupportedFrameRateRanges) {
-            if(kCMVideoCodecType_JPEG_OpenDML == code && dimensions.width == m_width && dimensions.height == m_height) {
+            if(kCMVideoCodecType_422YpCbCr8 == code && dimensions.width == m_width && dimensions.height == m_height) {
                 selectedFormat = format;
                 frameRateRange = range;
                 break;
@@ -315,7 +303,8 @@ const uvc_controls_t uvc_controls = {
     if(selectedFormat) {
         if([m_device lockForConfiguration:nil]) {
             m_device.activeFormat = selectedFormat;
-            m_device.activeVideoMinFrameDuration = CMTimeMake(1000000, 30000030);
+            m_device.activeVideoMinFrameDuration = CMTimeMake(1, 10000000 / rate);
+            m_device.activeVideoMaxFrameDuration = CMTimeMake(1, 10000000 / rate);
             [m_device unlockForConfiguration];
         }
     }
@@ -333,7 +322,7 @@ const uvc_controls_t uvc_controls = {
     NSDictionary* outputSettings = [NSDictionary dictionaryWithObjectsAndKeys:
                                     [NSNumber numberWithDouble:m_width], (id)kCVPixelBufferWidthKey,
                                     [NSNumber numberWithDouble:m_height], (id)kCVPixelBufferHeightKey,
-                                    [NSNumber numberWithInt:'dmb1'], (id)kCVPixelBufferPixelFormatTypeKey,
+                                    [NSNumber numberWithInt:kCMPixelFormat_422YpCbCr8], (id)kCVPixelBufferPixelFormatTypeKey,
                                     nil];
     [m_output setVideoSettings:outputSettings];
     
@@ -350,14 +339,9 @@ const uvc_controls_t uvc_controls = {
     
     m_latestPixelDataSize = m_maxPixelDataSize =  m_width * m_height * OV_RGB_COLOR;
     m_pPixels = (unsigned char*)malloc(sizeof(unsigned char) * m_maxPixelDataSize);
-    m_pPixelsQueue = (unsigned char*)malloc(sizeof(unsigned char) * m_maxPixelDataSize);
     
     //USBIO
     [self createUSBInterface:vid pid:pid];
-    
-    //time restart
-    m_captureOutputTime = mach_absolute_time();
-    mach_timebase_info(&m_timebase);
     
     //start
     [m_session startRunning];
@@ -400,7 +384,6 @@ const uvc_controls_t uvc_controls = {
     m_maxPixelDataSize = 0;
     memset(m_nDeviceName,0x00,sizeof(m_nDeviceName));
     free(m_pPixels);
-    free(m_pPixelsQueue);
 
     if(interface) {
 		(*interface)->USBInterfaceClose(interface);
@@ -448,7 +431,7 @@ const uvc_controls_t uvc_controls = {
 
 //Get pixel data
 //In non blocking, when data cannot be acquired, RESULT_FAILED returns.
--(int) getRGBImage:(unsigned char*)image blocking:(bool)nonblocking {
+-(int) getBayer16Image:(unsigned char*)image blocking:(bool)nonblocking {
 
     if(m_devstatus != OV_DEVRUNNING)
         return RESULT_FAILED;
@@ -461,35 +444,12 @@ const uvc_controls_t uvc_controls = {
             return RESULT_FAILED;
     }
 
-    if(image && m_pPixels[0] != 0x00)
+    if(image)
     {
         m_latestPixelDataSize = m_datasize;
-        [self MJPEGToR8G8B8:image imageSrc:m_pPixels imagesize:m_latestPixelDataSize];
+        memcpy(image, m_pPixels, m_latestPixelDataSize);
     }
 
-    [m_cond unlock];
-    
-    return RESULT_OK;
-}
-       
--(int) getMJPEGImage:(unsigned char*)image blocking:(bool)nonblocking {
-    
-    if(m_devstatus != OV_DEVRUNNING)
-        return RESULT_FAILED;
-    
-    //sync
-    [m_cond lock];
-    
-    if(!nonblocking) {
-        if([m_cond waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:OV_BLOCKTIMEOUT]]==NO)
-            return RESULT_FAILED;
-    }
-    
-    if(image && m_pPixels[0] != 0x00)
-    {
-        m_latestPixelDataSize = m_datasize;
-        memcpy(image, m_pPixels, m_latestPixelDataSize);    //raw
-    }
     [m_cond unlock];
     
     return RESULT_OK;
@@ -515,65 +475,59 @@ const uvc_controls_t uvc_controls = {
     switch(proc)
     {
         case OV_CAMSET_EXPOSURE:
-            [self setData:(automode ? 0x08 : 0x01)
-               withLength:uvc_controls.autoExposure.size
-              forSelector:uvc_controls.autoExposure.selector
-                       at:uvc_controls.autoExposure.unit];  //Automode
-            if(!automode) {
-                //manual
-                [self setData:value
-                    withLength:uvc_controls.exposure.size
-                   forSelector:uvc_controls.exposure.selector
-                            at:uvc_controls.exposure.unit];
-            }
+            [self setData:value
+               withLength:uvc_controls.exposure.size
+              forSelector:uvc_controls.exposure.selector
+                       at:uvc_controls.exposure.unit];
             break;
-        case OV_CAMSET_WHITEBALANCE:
+        case OV_CAMSET_GAIN:
+            [self setData:value
+               withLength:uvc_controls.gain.size
+              forSelector:uvc_controls.gain.selector
+                       at:uvc_controls.gain.unit];
+            break;
+        case OV_CAMSET_WHITEBALANCER:
+            [self setData:value
+               withLength:uvc_controls.whitebalance_r.size
+              forSelector:uvc_controls.whitebalance_r.selector
+                       at:uvc_controls.whitebalance_r.unit];
+            break;
+        case OV_CAMSET_WHITEBALANCEG:
+            [self setData:value
+               withLength:uvc_controls.whitebalance_g.size
+              forSelector:uvc_controls.whitebalance_g.selector
+                       at:uvc_controls.whitebalance_g.unit];
+            break;
+        case OV_CAMSET_WHITEBALANCEB:
             [self setData:(automode ? 0x01 : 0x00)
-               withLength:uvc_controls.autoWhiteBalance.size
-              forSelector:uvc_controls.autoWhiteBalance.selector
-                       at:uvc_controls.autoWhiteBalance.unit];  //Automode
-            if(!automode) {
-                //manual
+                withLength:uvc_controls.whitebalance_auto.size
+              forSelector:uvc_controls.whitebalance_auto.selector
+                       at:uvc_controls.whitebalance_auto.unit];
+            if(!automode) { //manual
                 [self setData:value
-                   withLength:uvc_controls.whiteBalance.size
-                  forSelector:uvc_controls.whiteBalance.selector
-                           at:uvc_controls.whiteBalance.unit];
+                   withLength:uvc_controls.whitebalance_g.size
+                  forSelector:uvc_controls.whitebalance_g.selector
+                           at:uvc_controls.whitebalance_g.unit];
             }
             break;
-        case OV_CAMSET_CONTRAST:
+        case OV_CAMSET_BLC:
             [self setData:value
-               withLength:uvc_controls.contrast.size
-              forSelector:uvc_controls.contrast.selector
-                       at:uvc_controls.contrast.unit];
+               withLength:uvc_controls.blc.size
+              forSelector:uvc_controls.blc.selector
+                       at:uvc_controls.blc.unit];
             break;
-        case OV_CAMSET_SATURATION:
+        case OV_CAMSET_DATA:
             [self setData:value
-               withLength:uvc_controls.saturation.size
-              forSelector:uvc_controls.saturation.selector
-                       at:uvc_controls.saturation.unit];
-            break;
-        case OV_CAMSET_BRIGHTNESS:
-            [self setData:value
-               withLength:uvc_controls.brightness.size
-              forSelector:uvc_controls.brightness.selector
-                       at:uvc_controls.brightness.unit];
-            break;
-        case OV_CAMSET_SHARPNESS:
-            [self setData:value
-               withLength:uvc_controls.sharpness.size
-              forSelector:uvc_controls.sharpness.selector
-                       at:uvc_controls.sharpness.unit];
-            break;
-        case OV_CAMSET_GAMMA:
-            [self setData:value
-               withLength:uvc_controls.gamma.size
-              forSelector:uvc_controls.gamma.selector
-                       at:uvc_controls.gamma.unit];
+               withLength:uvc_controls.data.size
+              forSelector:uvc_controls.data.selector
+                       at:uvc_controls.data.unit];
             break;
         default:
             return RESULT_FAILED;
             break;
     }
+
+	[NSThread sleepForTimeInterval:0.005];	//5ms
     
     return RESULT_OK;
 }
@@ -583,107 +537,71 @@ const uvc_controls_t uvc_controls = {
     if(m_devstatus != OV_DEVRUNNING)
         return RESULT_FAILED;
     
+    (*automode) = false;
+    
     switch(proc)
     {
         case OV_CAMSET_EXPOSURE:
+            (*value) = (int)[self getDataFor:UVC_GET_CUR
+                                  withLength:uvc_controls.exposure.size
+                                fromSelector:uvc_controls.exposure.selector
+                                          at:uvc_controls.exposure.unit];
+            break;
+        case OV_CAMSET_GAIN:
+            (*value) = (int)[self getDataFor:UVC_GET_CUR
+                                  withLength:uvc_controls.gain.size
+                                fromSelector:uvc_controls.gain.selector
+                                          at:uvc_controls.gain.unit];
+            break;
+        case OV_CAMSET_WHITEBALANCER:
+            (*value) = (int)[self getDataFor:UVC_GET_CUR
+                                  withLength:uvc_controls.whitebalance_r.size
+                                fromSelector:uvc_controls.whitebalance_r.selector
+                                          at:uvc_controls.whitebalance_r.unit];
+            break;
+        case OV_CAMSET_WHITEBALANCEG:
+            (*value) = (int)[self getDataFor:UVC_GET_CUR
+                                  withLength:uvc_controls.whitebalance_g.size
+                                fromSelector:uvc_controls.whitebalance_g.selector
+                                          at:uvc_controls.whitebalance_g.unit];
+            break;
+        case OV_CAMSET_WHITEBALANCEB:
             (*automode) = (bool)[self getDataFor:UVC_GET_CUR
-                                      withLength:uvc_controls.autoExposure.size
-                                    fromSelector:uvc_controls.autoExposure.selector
-                                              at:uvc_controls.autoExposure.unit];
-                //manual
+                                  withLength:uvc_controls.whitebalance_auto.size
+                                fromSelector:uvc_controls.whitebalance_auto.selector
+                                          at:uvc_controls.whitebalance_auto.unit];
             (*value) = (int)[self getDataFor:UVC_GET_CUR
-                                    withLength:uvc_controls.exposure.size
-                                    fromSelector:uvc_controls.exposure.selector
-                                    at:uvc_controls.exposure.unit];
+                                  withLength:uvc_controls.whitebalance_b.size
+                                fromSelector:uvc_controls.whitebalance_b.selector
+                                          at:uvc_controls.whitebalance_b.unit];
             break;
-        case OV_CAMSET_WHITEBALANCE:
-            (*automode) = (bool)[self getDataFor:UVC_GET_CUR
-                                      withLength:uvc_controls.autoWhiteBalance.size
-                                    fromSelector:uvc_controls.autoWhiteBalance.selector
-                                              at:uvc_controls.autoWhiteBalance.unit];
-            //manual
+        case OV_CAMSET_BLC:
             (*value) = (int)[self getDataFor:UVC_GET_CUR
-                                  withLength:uvc_controls.whiteBalance.size
-                                fromSelector:uvc_controls.whiteBalance.selector
-                                          at:uvc_controls.whiteBalance.unit];
+                                  withLength:uvc_controls.blc.size
+                                fromSelector:uvc_controls.blc.selector
+                                          at:uvc_controls.blc.unit];
             break;
-        case OV_CAMSET_CONTRAST:
+        case OV_CAMSET_DATA:
             (*value) = (int)[self getDataFor:UVC_GET_CUR
-                                  withLength:uvc_controls.contrast.size
-                                fromSelector:uvc_controls.contrast.selector
-                                          at:uvc_controls.contrast.unit];
-            break;
-        case OV_CAMSET_SATURATION:
-            (*value) = (int)[self getDataFor:UVC_GET_CUR
-                                  withLength:uvc_controls.saturation.size
-                                fromSelector:uvc_controls.saturation.selector
-                                          at:uvc_controls.saturation.unit];
-            break;
-        case OV_CAMSET_BRIGHTNESS:
-            (*value) = (int)[self getDataFor:UVC_GET_CUR
-                                  withLength:uvc_controls.brightness.size
-                                fromSelector:uvc_controls.brightness.selector
-                                          at:uvc_controls.brightness.unit];
-            break;
-        case OV_CAMSET_SHARPNESS:
-            (*value) = (int)[self getDataFor:UVC_GET_CUR
-                                  withLength:uvc_controls.sharpness.size
-                                fromSelector:uvc_controls.sharpness.selector
-                                          at:uvc_controls.sharpness.unit];
-            break;
-        case OV_CAMSET_GAMMA:
-            (*value) = (int)[self getDataFor:UVC_GET_CUR
-                                  withLength:uvc_controls.gamma.size
-                                fromSelector:uvc_controls.gamma.selector
-                                          at:uvc_controls.gamma.unit];
+                                  withLength:uvc_controls.data.size
+                                fromSelector:uvc_controls.data.selector
+                                          at:uvc_controls.data.unit];
             break;
         default:
             return RESULT_FAILED;
             break;
     }
+
+	[NSThread sleepForTimeInterval:0.005];	//5ms
+
     return RESULT_OK;
 }
 
 //Private
 
-//MJPEG -> RGB(24bit) Decoder
-- (int)MJPEGToR8G8B8:(unsigned char*)pImageDest imageSrc:(unsigned char*)pImageSrc imagesize:(int)srcSize
-{
-    struct jpeg_decompress_struct cinfo;
-    struct jpeg_error_mgr jerr;
-    int offset = 0;
-    
-    // Initialize JPEG Encoder
-    jpeg_std_error(&jerr);
-    cinfo.err = &jerr;
-    jpeg_create_decompress(&cinfo);
-    
-    jpeg_mem_src(&cinfo, (unsigned char*)pImageSrc, srcSize);
-    jpeg_read_header(&cinfo, TRUE);
-    jpeg_start_decompress(&cinfo);
-    
-    // Get all image datas.
-    while(cinfo.output_scanline < cinfo.output_height) {
-        JSAMPROW img_array = (JSAMPROW)malloc(sizeof(JSAMPLE) * OV_RGB_COLOR * cinfo.output_width);
-        jpeg_read_scanlines(&cinfo, (JSAMPARRAY)&img_array, 1);
-        
-        memcpy(&pImageDest[offset],img_array,(int)cinfo.output_width*OV_RGB_COLOR);
-        offset += (int)cinfo.output_width * OV_RGB_COLOR;
-        free(img_array);
-    }
-
-    jpeg_finish_decompress(&cinfo);
-    jpeg_destroy_decompress(&cinfo);
-    
-    return RESULT_OK;
-}
-
 //AVCaptureVideoDataOutputSampleBufferDelegate
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
-    uint64_t nsec = (mach_absolute_time() - m_captureOutputTime) * m_timebase.numer / m_timebase.denom;
-    m_captureOutputTime = mach_absolute_time();
-
     if( !CMSampleBufferDataIsReady(sampleBuffer) ) {
         NSLog(@"sample buffer is not ready. Skipping sample");
         return;
@@ -696,37 +614,11 @@ const uvc_controls_t uvc_controls = {
     
     CMBlockBufferGetDataPointer(imageBuffer,0,NULL,&datasize,&databuffer);
     
-    //16.6ms = 60fps
-    if(nsec > 16600000) {
-        [m_cond lock];  //LOCK!
-    
-        memcpy(m_pPixels,databuffer,(int)datasize / 3);
-        m_datasize = (int)datasize / 3;
-        
-        [m_cond signal];
-        [m_cond unlock];
-    } else {
-        memcpy(m_pPixelsQueue,databuffer,(int)datasize / 3);
-        //Create Thread
-        m_queueThreadPreTime = nsec;
-        m_queueThread = [[NSThread alloc] initWithTarget:self selector:@selector(queueImageGetThread:) object:nil];
-        [m_queueThread start];
-    }
-}
-
-- (void)queueImageGetThread:(id)object
-{
-    //60fps
-    double nsecf = 15666666.0 - (double)m_queueThreadPreTime;
-    if(nsecf < 100000.0)
-        return;
-    nsecf *= 0.000000001;
-    [NSThread sleepForTimeInterval:nsecf];  //Wait
-    
     [m_cond lock];  //LOCK!
     
-    memcpy(m_pPixels,m_pPixelsQueue,m_datasize);
-    
+    memcpy(m_pPixels,databuffer,(int)datasize);
+    m_datasize = (int)datasize;
+        
     [m_cond signal];
     [m_cond unlock];
 }
