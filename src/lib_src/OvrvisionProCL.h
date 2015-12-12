@@ -74,7 +74,7 @@ namespace OVR
 		MEDIAN_7,
 	};
 
-	// OpenCLの機能拡張情報を返すコールバック関数
+	// OpenCL extension callback function
 	typedef int(*EXTENSION_CALLBACK)(void *pItem, const char *extensions);
 
 	// OpenCL version
@@ -94,14 +94,14 @@ namespace OVR
 			bool LoadCameraParams(OvrvisionSetting* ovrset);
 
 			// Demosaicing
-			void Demosaic(const ushort* src, cl_event *execute);	// OpenGL/D3D連携で、CPUへの転送を行わない
+			void Demosaic(const ushort* src, cl_event *execute);	// for OpenGL/D3D sharing 
 			void Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
 			void Demosaic(const ushort* src, uchar *left, uchar *right);
 			void Demosaic(const ushort* src, Mat &left, Mat &right);
 			void Demosaic(const Mat src, Mat &left, Mat &right);
 
 			// Demosaic and Remap
-			void DemosaicRemap(const ushort* src, cl_event *execute);	// OpenGL/D3D連携で、CPUへの転送を行わない
+			void DemosaicRemap(const ushort* src, cl_event *execute);	// for OpenGL/D3D sharing
 			void DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
 			void DemosaicRemap(const ushort* src, uchar *left, uchar *right);
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
@@ -111,7 +111,6 @@ namespace OVR
 				@param scaling (HALF, FOURTH, EIGHTH) */
 			void SetScale(SCALING scaling);
 
-			// 縮小画像（1/2)
 			/*! @brief Get half scaled image
 			@param src
 			@param dst
@@ -147,8 +146,7 @@ namespace OVR
 			void GetHSVBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
 			void ColorHistgram(uchar *histgram, SCALING scaling);
 
-			// 縮小したグレースケール画像を取得
-			/*! @brief Get Scaled gray image
+			/*! @brief Get resized gray image
 			@param left ptr for left HSV image
 			@param right ptr for right HSV image
 			@param scale (HALF, FOURTH, EIGHTH) */
@@ -180,7 +178,7 @@ namespace OVR
 			@param filter */
 			void ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter = RAW, cl_event *execute = NULL);
 
-			// OpenGL連携用のテクスチャーを生成
+			// OpenGL shared textrue
 			// pixelFormat must be GL_RGBA
 			// dataType must be GL_UNSIGNED_BYTE
 			cl_mem CreateGLTexture2D(GLuint texture, int width, int height);
@@ -190,7 +188,7 @@ namespace OVR
 			void UpdateSkinTextureObjects(uint n, void *textures[], enum SCALING scaling = HALF);
 
 #ifdef _WIN32
-			// Direct3D連携用のテクスチャーを生成
+			// Direct3D shared texture
 			cl_mem CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height);
 #endif
 
@@ -203,10 +201,10 @@ namespace OVR
 
 		private:
 			bool CreateProgram();
-			bool Prepare4Sharing();		// OpenGL/D3D連携準備
+			bool Prepare4Sharing();		// Prepare for OpenGL/D3D sharing
 
 #ifdef _WIN32
-			enum VENDOR _vendorD3D11;	// D3D11の機能拡張
+			enum VENDOR _vendorD3D11;	// D3D11 sharing depends on vendor specific extensions
 
 			// Extension functions for NVIDIA 
 			clGetDeviceIDsFromD3D11NV_fn        clGetDeviceIDsFromD3D11NV = NULL;
