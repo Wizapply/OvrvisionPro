@@ -333,6 +333,12 @@ void OvrvisionPro::SetSkinHSV(int h_low, int h_high, int s_low, int s_high)
 	m_pOpenCL->SetHSV(h_low, h_high, s_low, s_high);
 }
 
+// Set skin threshold 
+int OvrvisionPro::SetSkinThreshold(int threshold)
+{
+	return m_pOpenCL->SetThreshold(threshold);
+}
+
 // Get color histrgam in HSV space
 int OvrvisionPro::ColorHistgram(unsigned char* histgram)
 {

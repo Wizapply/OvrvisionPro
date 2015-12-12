@@ -187,6 +187,11 @@ public:
 		@param s_high (s_low < s_high < 256) */
 	void SetSkinHSV(int h_low, int h_high, int s_low, int s_high);
 	
+	/*! @brief set skin threshold to extract region
+		@param threshold (0..255)
+		@return previous threshold */
+	int SetSkinThreshold(int threshold);
+
 	/*! @brief Get color histgram in HSV space
 		@param HSV histgram (256S x 180H)
 		@return scale (2, 4) */

@@ -161,6 +161,9 @@ namespace OVR
 			_mapY[0] = new Mat();
 			_mapX[1] = new Mat();
 			_mapY[1] = new Mat();
+			_skinmask[0] = new Mat(_height / 2, _width / 2, CV_8UC1);
+			_skinmask[1] = new Mat(_height / 2, _width / 2, CV_8UC1);
+
 			_l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
 			_r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
 			_L = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
@@ -176,12 +179,14 @@ namespace OVR
 			CreateProgram();
 			Prepare4Sharing();
 			SetScale(HALF);
-			// Skin default region
+			_released = false;
+
+			// Skin default values
 			_h_low = 13;
 			_h_high = 21;
 			_s_low = 88;
 			_s_high = 136;
-			_released = false;
+			_skinThreshold = 0;
 	}
 
 		// Destructor
@@ -199,10 +204,14 @@ namespace OVR
 			_mapY[0]->release();
 			_mapX[1]->release();
 			_mapY[1]->release();
+			_skinmask[0]->release();
+			_skinmask[1]->release();
 			delete _mapX[0];
 			delete _mapY[0];
 			delete _mapX[1];
 			delete _mapY[1];
+			delete _skinmask[0];
+			delete _skinmask[1];
 
 			clReleaseCommandQueue(_commandQueue);
 			clReleaseContext(_context);
@@ -570,6 +579,15 @@ namespace OVR
 #pragma endregion
 
 #pragma region SKIN_COLOR_EXTRACTION
+	// Set Threshold
+	int OvrvisionProOpenCL::SetThreshold(int threshold)
+	{
+		int previous = _skinThreshold;
+		if (threshold < 256)
+			_skinThreshold = threshold;
+		return previous;
+	}
+
 	// Get Skin images
 	void OvrvisionProOpenCL::SkinImages(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
 	{
@@ -585,23 +603,57 @@ namespace OVR
 		hsv[1] = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
+#if 1
 		SkinRegion(hsv[0], hsv[1], scaling, &event[0], &event[1]);
+#else
+		SkinRegion(_skinmask[0]->data, _skinmask[1]->data, scaling);
 
 		// TODO: Noise reduction filtering here on mask image
+#		pragma omp parallel for
+		for (int eyes = 0; eyes < 2; eyes++)
+		{
+			std::vector<std::vector<Point>> contours;
+			std::vector<Vec4i> hierarchy;
+
+			findContours(*_skinmask[eyes], contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
+			for (uint i = 0; i < contours.size(); i++)
+			{
+				try {
+					if (200 < contours[i].size())
+					{
+						//drawContours(results[eyes], contours, i, Scalar(255, 255, 255), 1, 8);
+					}
+					else
+					{
+						std::vector<std::vector<Point>> erase;
+						erase.push_back(contours.at(i));
+						fillPoly(*_skinmask[eyes], erase, Scalar::all(1), 4);
+					}
+				}
+				catch (std::exception ex)
+				{
+					puts(ex.what());
+				}
+			}
+		}
+#endif
 
 		//__kernel void mask( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
-		//		__read_only image2d_t mask)	// CL_UNSIGNED_INT8
+		//		__read_only image2d_t mask,	// CL_UNSIGNED_INT8
+		//		__read_only int threshold)	//
 
 		clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedL);
 		clSetKernelArg(_mask, 1, sizeof(cl_mem), &left);
 		clSetKernelArg(_mask, 2, sizeof(cl_mem), &hsv[0]);
+		clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask, 2, NULL, _scaledRegion, NULL, 1, &event[0], event_l);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedR);
 		clSetKernelArg(_mask, 1, sizeof(cl_mem), &right);
 		clSetKernelArg(_mask, 2, sizeof(cl_mem), &hsv[1]);
+		clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
@@ -1425,6 +1477,10 @@ namespace OVR
 #pragma endregion
 
 #pragma region DEPRICATED
+#ifdef WIN32
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
 	// CreateProgram from file
 	void OvrvisionProOpenCL::createProgram(const char *filename, bool binary)
 	{
@@ -1538,6 +1594,8 @@ namespace OVR
 		cl_event execute;
 		_errorCode = clEnqueueReadImage(_commandQueue, image, CL_TRUE, origin, region, width * size * channels, 0, ptr, 1, &execute, NULL);
 	}
-
+#ifdef WIN32
+#pragma warning(pop)
+#endif
 #pragma endregion
 }

@@ -128,6 +128,11 @@ namespace OVR
 			void SkinImages(uchar *left, uchar *right, SCALING scaling);
 			void SkinImages(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
 
+			/*! @brief set skin threshold to extract region 
+				@param threshold (0..255)
+				@return previous threshold */
+			int SetThreshold(int threshold);
+
 			// Skin color region 
 			/*! @brief Skin color region mask 
 			@param left ptr for left HSV image
@@ -224,7 +229,9 @@ namespace OVR
 			clEnqueueReleaseD3D11ObjectsKHR_fn	clEnqueueReleaseD3D11ObjectsKHR = NULL;
 #endif
 			char	*_deviceExtensions;
-			Mat		*_mapX[2], *_mapY[2]; // camera parameter
+			Mat		*_mapX[2], *_mapY[2];	// camera parameter
+			Mat		*_skinmask[2];				// skin mask
+			int		_skinThreshold;
 			uint	_width, _height;
 			// HSV color region 
 			int		_h_low, _h_high;

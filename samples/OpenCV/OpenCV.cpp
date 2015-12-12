@@ -150,8 +150,22 @@ int main(int argc, char* argv[])
 					findContours(bilevel[eyes], contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
 					for (uint i = 0; i < contours.size(); i++)
 					{
-						if (200 < contours[i].size())
-							drawContours(results[eyes], contours, i, Scalar(255, 255, 255), 1, 8);
+						try {
+							if (200 < contours[i].size())
+							{
+								//drawContours(results[eyes], contours, i, Scalar(255, 255, 255), 1, 8);
+							}
+							else
+							{
+								std::vector<std::vector<Point>> erase;
+								erase.push_back(contours.at(i));
+								fillPoly(results[eyes], erase, Scalar(0, 0, 64, 255), 4);
+							}
+						}
+						catch (std::exception ex)
+						{
+							puts(ex.what());
+						}
 					}
 				}
 
@@ -213,10 +227,13 @@ int main(int argc, char* argv[])
 				filter = NONE;
 				break;
 
-			//case '0':
-			//case '1':
-			//	ksize = 0;
-			//	break;
+			case '+':
+				ovrvision->SetSkinThreshold(1);
+				break;
+
+			case '-':
+				ovrvision->SetSkinThreshold(0);
+				break;
 
 			case '3':
 				ksize = 3;
