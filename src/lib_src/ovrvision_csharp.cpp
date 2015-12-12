@@ -254,9 +254,12 @@ CSHARP_EXPORT void ovGetCamImageForUnity(unsigned char* pImagePtr_Left, unsigned
 //for Unity extern
 extern float g_Time;
 extern int g_DeviceType;
+#if SUPPORT_D3D11
 extern ID3D11Device* g_D3D11Device;
+#endif
+#if SUPPORT_D3D9
 extern IDirect3DDevice9* g_D3D9Device;
-
+#endif
 // void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr_Right, int qt, int useAR)
 CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr_Right)
 {
@@ -271,6 +274,7 @@ CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr
 	int offsetlen = g_ovOvrvision->GetCamPixelsize();
 
 	if (g_DeviceType == 2) {	//Direct11
+#if SUPPORT_D3D11
 		ID3D11DeviceContext* ctx = NULL;
 		ID3D11Device* device = (ID3D11Device*)g_D3D11Device;
 		device->GetImmediateContext(&ctx);
@@ -286,8 +290,10 @@ CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr
 		ctx->UpdateSubresource(d3dtex_right, 0, NULL, pRight, g_ovOvrvision->GetCamWidth() * offsetlen, 0);
 
 		ctx->Release();
+#endif
 	}
 	else if (g_DeviceType == 1) {	//DirectX9
+#if SUPPORT_D3D9
 		IDirect3DTexture9* d3dtex_left = (IDirect3DTexture9*)pTexPtr_Left;
 		IDirect3DTexture9* d3dtex_right = (IDirect3DTexture9*)pTexPtr_Right;
 		D3DSURFACE_DESC desc_left, desc_right;
@@ -302,8 +308,10 @@ CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr
 		d3dtex_right->LockRect(0, &lr, NULL, 0);
 		memcpy((unsigned char*)lr.pBits, pRight, length);
 		d3dtex_right->UnlockRect(0);
+#endif
 	}
 	else if (g_DeviceType == 0) {	//OpenGL
+#if SUPPORT_OPENGL
 		GLuint gltex_left = (GLuint)(pTexPtr_Left);
 		GLuint gltex_right = (GLuint)(pTexPtr_Right);
 
@@ -311,6 +319,7 @@ CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_RGBA, GL_UNSIGNED_BYTE, pLeft);
 		glBindTexture(GL_TEXTURE_2D, gltex_right);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_RGBA, GL_UNSIGNED_BYTE, pRight);
+#endif
 	}
 }
 
