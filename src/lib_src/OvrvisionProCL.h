@@ -74,7 +74,7 @@ namespace OVR
 		MEDIAN_7,
 	};
 
-	// OpenCL‚Ì‹@”\Šg’£î•ñ‚ğ•Ô‚·ƒR[ƒ‹ƒoƒbƒNŠÖ”
+	// OpenCLã®æ©Ÿèƒ½æ‹¡å¼µæƒ…å ±ã‚’è¿”ã™ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 	typedef int(*EXTENSION_CALLBACK)(void *pItem, const char *extensions);
 
 	// OpenCL version
@@ -94,14 +94,14 @@ namespace OVR
 			bool LoadCameraParams(OvrvisionSetting* ovrset);
 
 			// Demosaicing
-			void Demosaic(const ushort* src, cl_event *execute);	// OpenGL/D3D˜AŒg‚ÅACPU‚Ö‚Ì“]‘—‚ğs‚í‚È‚¢
+			void Demosaic(const ushort* src, cl_event *execute);	// OpenGL/D3Dé€£æºã§ã€CPUã¸ã®è»¢é€ã‚’è¡Œã‚ãªã„
 			void Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
 			void Demosaic(const ushort* src, uchar *left, uchar *right);
 			void Demosaic(const ushort* src, Mat &left, Mat &right);
 			void Demosaic(const Mat src, Mat &left, Mat &right);
 
 			// Demosaic and Remap
-			void DemosaicRemap(const ushort* src, cl_event *execute);	// OpenGL/D3D˜AŒg‚ÅACPU‚Ö‚Ì“]‘—‚ğs‚í‚È‚¢
+			void DemosaicRemap(const ushort* src, cl_event *execute);	// OpenGL/D3Dé€£æºã§ã€CPUã¸ã®è»¢é€ã‚’è¡Œã‚ãªã„
 			void DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
 			void DemosaicRemap(const ushort* src, uchar *left, uchar *right);
 			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
@@ -111,7 +111,7 @@ namespace OVR
 				@param scaling (HALF, FOURTH, EIGHTH) */
 			void SetScale(SCALING scaling);
 
-			// k¬‰æ‘œi1/2)
+			// ç¸®å°ç”»åƒï¼ˆ1/2)
 			/*! @brief Get half scaled image
 			@param src
 			@param dst
@@ -147,7 +147,7 @@ namespace OVR
 			void GetHSVBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
 			void ColorHistgram(uchar *histgram, SCALING scaling);
 
-			// k¬‚µ‚½ƒOƒŒ[ƒXƒP[ƒ‹‰æ‘œ‚ğæ“¾
+			// ç¸®å°ã—ãŸã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«ç”»åƒã‚’å–å¾—
 			/*! @brief Get Scaled gray image
 			@param left ptr for left HSV image
 			@param right ptr for right HSV image
@@ -180,7 +180,7 @@ namespace OVR
 			@param filter */
 			void ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter = RAW, cl_event *execute = NULL);
 
-			// OpenGL˜AŒg—p‚ÌƒeƒNƒXƒ`ƒƒ[‚ğ¶¬
+			// OpenGLé€£æºç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’ç”Ÿæˆ
 			// pixelFormat must be GL_RGBA
 			// dataType must be GL_UNSIGNED_BYTE
 			cl_mem CreateGLTexture2D(GLuint texture, int width, int height);
@@ -190,7 +190,7 @@ namespace OVR
 			void UpdateSkinTextureObjects(uint n, void *textures[], enum SCALING scaling = HALF);
 
 #ifdef _WIN32
-			// Direct3D˜AŒg—p‚ÌƒeƒNƒXƒ`ƒƒ[‚ğ¶¬
+			// Direct3Dé€£æºç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’ç”Ÿæˆ
 			cl_mem CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height);
 #endif
 
@@ -203,10 +203,10 @@ namespace OVR
 
 		private:
 			bool CreateProgram();
-			bool Prepare4Sharing();		// OpenGL/D3D˜AŒg€”õ
+			bool Prepare4Sharing();		// OpenGL/D3Dé€£æºæº–å‚™
 
 #ifdef _WIN32
-			enum VENDOR _vendorD3D11;	// D3D11‚Ì‹@”\Šg’£
+			enum VENDOR _vendorD3D11;	// D3D11ã®æ©Ÿèƒ½æ‹¡å¼µ
 
 			// Extension functions for NVIDIA 
 			clGetDeviceIDsFromD3D11NV_fn        clGetDeviceIDsFromD3D11NV = NULL;

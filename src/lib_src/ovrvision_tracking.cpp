@@ -121,17 +121,17 @@ void OvrvisionTracking::Render(bool calib, bool point) {
 	cv::Mat pCamBGRAResize_R(cv::Size(m_width / 4, m_width / 4), CV_MAKETYPE(CV_8U, OV_RGB_DATASIZE));
 	cv::resize(pCamBGRAImg_R, pCamBGRAResize_R, cv::Size(m_width / 4, m_width / 4), cv::INTER_CUBIC);
 
-	//•ÏŠ·
+	//å¤‰æ›
 	cv::Mat pCamBGR_L(pCamBGRAResize_L.size(), CV_MAKETYPE(CV_8U, 3));
-	cv::cvtColor(pCamBGRAResize_L, pCamBGR_L, CV_BGRA2BGR);		// BGRA->BGR•ÏŠ·
-	cv::cvtColor(pCamBGR_L, pCamBGR_L, CV_BGR2HLS);				// BGR->HLS•ÏŠ·
+	cv::cvtColor(pCamBGRAResize_L, pCamBGR_L, CV_BGRA2BGR);		// BGRA->BGRå¤‰æ›
+	cv::cvtColor(pCamBGR_L, pCamBGR_L, CV_BGR2HLS);				// BGR->HLSå¤‰æ›
 
 	cv::Mat pCamBGR_R(pCamBGRAResize_R.size(), CV_MAKETYPE(CV_8U, 3));
-	cv::cvtColor(pCamBGRAResize_R, pCamBGR_R, CV_BGRA2BGR);		// BGRA->BGR•ÏŠ·
-	cv::cvtColor(pCamBGR_R, pCamBGR_R, CV_BGR2HLS);				// BGR->HLS•ÏŠ·
+	cv::cvtColor(pCamBGRAResize_R, pCamBGR_R, CV_BGRA2BGR);		// BGRA->BGRå¤‰æ›
+	cv::cvtColor(pCamBGR_R, pCamBGR_R, CV_BGR2HLS);				// BGR->HLSå¤‰æ›
 
 
-	//’ŠoÏ‚İ‚Ì‚Q’l
+	//æŠ½å‡ºæ¸ˆã¿ã®ï¼’å€¤
 	cv::Mat pCamExtractionImg_L(pCamBGR_L.size(), CV_MAKETYPE(CV_8U, 1));
 	cv::Mat pCamExtractionImg_R(pCamBGR_R.size(), CV_MAKETYPE(CV_8U, 1));
 	cv::Mat pCamExtractionImgFinger_L(pCamBGR_L.size(), CV_MAKETYPE(CV_8U, 1));
@@ -146,7 +146,7 @@ void OvrvisionTracking::Render(bool calib, bool point) {
 	unsigned char* thPointerFgL = (unsigned char*)pCamExtractionImgFinger_L.data;
 	unsigned char* thPointerFgR = (unsigned char*)pCamExtractionImgFinger_R.data;
 
-	//RGBƒ‚ƒmƒg[ƒ“AHSVF‹óŠÔ‚Å‚Ì’Šo
+	//RGBãƒ¢ãƒãƒˆãƒ¼ãƒ³ã€HSVè‰²ç©ºé–“ã§ã®æŠ½å‡º
 	int i, j;
 	for (i = 0; i < pCamBGR_L.rows; i++) {
 		for (j = 0; j < pCamBGR_L.cols; j++) {
@@ -157,7 +157,7 @@ void OvrvisionTracking::Render(bool calib, bool point) {
 			unsigned char sr = pCamBGR_R.data[(i*pCamBGR_R.cols + j) * 3 + 1];
 			unsigned char vr = pCamBGR_R.data[(i*pCamBGR_R.cols + j) * 3 + 2];
 
-			//œŠO
+			//é™¤å¤–
 			if ((t >= m_hue_min && t <= m_hue_max) && (s >= 10 && s <= 240) && (v >= 10 && v <= 240)) {
 				thPointerL[(i*pCamBGR_L.cols + j)] = pCamBGR_L.data[(i*pCamBGR_L.cols + j) * 3 + 1];					//A(FULL)
 			}
@@ -188,7 +188,7 @@ void OvrvisionTracking::Render(bool calib, bool point) {
 		m_set = false;
 	}
 
-	cv::cvtColor(pCamBGR_L, pCamBGR_L, CV_HLS2BGR);				// •ÏŠ·
+	cv::cvtColor(pCamBGR_L, pCamBGR_L, CV_HLS2BGR);				// å¤‰æ›
 
 	if (lpos.x != 0 && lpos.y != 0) {
 		if (rpos.x != 0 && rpos.y != 0) {
@@ -239,12 +239,12 @@ cv::Point2i FingerTracker(cv::Mat &image, cv::Mat &fgimage)
 	cv::erode(canny_image, canny_image, cv::Mat(), cv::Point(-1, -1), 1);
 	cv::Mat image_detect = image & canny_image;
 
-	// ƒ‰ƒxƒ‹—p‰æ‘œ¶¬(¦CV_32S or CV_16U‚É‚·‚é•K—v‚ ‚è)
+	// ãƒ©ãƒ™ãƒ«ç”¨ç”»åƒç”Ÿæˆ(â€»CV_32S or CV_16Uã«ã™ã‚‹å¿…è¦ã‚ã‚Š)
 	cv::Mat labelImage(image_detect.size(), CV_32S);
-	// ƒ‰ƒxƒŠƒ“ƒOÀsD–ß‚è’l‚ªƒ‰ƒxƒ‹”D‚Ü‚½C‚±‚ÌƒTƒ“ƒvƒ‹‚Å‚Í8‹ß–T‚Åƒ‰ƒxƒŠƒ“ƒO‚·‚éD
+	// ãƒ©ãƒ™ãƒªãƒ³ã‚°å®Ÿè¡Œï¼æˆ»ã‚Šå€¤ãŒãƒ©ãƒ™ãƒ«æ•°ï¼ã¾ãŸï¼Œã“ã®ã‚µãƒ³ãƒ—ãƒ«ã§ã¯8è¿‘å‚ã§ãƒ©ãƒ™ãƒªãƒ³ã‚°ã™ã‚‹ï¼
 	int nLabelsL = cv::connectedComponents(image_detect, labelImage, 8);
 
-	// ƒ‰ƒxƒŠƒ“ƒOŒ‹‰Ê‚Ì•`‰æF‚ğŒˆ’è
+	// ãƒ©ãƒ™ãƒªãƒ³ã‚°çµæœã®æç”»è‰²ã‚’æ±ºå®š
 	std::vector<unsigned int> colors(nLabelsL);
 	colors.clear();
 	for (int y = 0; y < labelImage.rows; ++y)

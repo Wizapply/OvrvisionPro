@@ -149,7 +149,7 @@ namespace OVR
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
-			// UMat‚ğg‚¤‚ÆƒpƒtƒH[ƒ}ƒ“ƒX‚ª—‚¿‚é‚Ì‚ÅAocl::Image2D‚Íg‚í‚È‚¢
+			// UMatã‚’ä½¿ã†ã¨ãƒ‘ãƒ•ã‚©ãƒ¼ãƒãƒ³ã‚¹ãŒè½ã¡ã‚‹ã®ã§ã€ocl::Image2Dã¯ä½¿ã‚ãªã„
 			_src = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_format16UC1, _width, _height, 0, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
@@ -384,7 +384,7 @@ namespace OVR
 			0
 		};
 #endif
-		// ‚±‚±‚Å˜AŒg‚·‚éOpenGL/D3D‚ÌƒvƒƒpƒeƒB‚ğİ’è‚µ‚ÄƒRƒ“ƒeƒLƒXƒg‚ğæ“¾‚·‚é
+		// ã“ã“ã§é€£æºã™ã‚‹OpenGL/D3Dã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’è¨­å®šã—ã¦ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 		switch (_sharing)
 		{
 #ifdef WIN32
@@ -484,7 +484,7 @@ namespace OVR
 #pragma endregion
 
 #pragma region TEXTURE_SHARING
-	// OpenGL/D3D˜AŒg€”õ
+	// OpenGL/D3Dé€£æºæº–å‚™
 	bool OvrvisionProOpenCL::Prepare4Sharing()
 	{
 		DeviceExtensions();
@@ -519,7 +519,7 @@ namespace OVR
 #endif
 	}
 
-	// OpenGL˜AŒgƒeƒNƒXƒ`ƒƒ[
+	// OpenGLé€£æºãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
 	{
@@ -547,7 +547,7 @@ namespace OVR
 	}
 
 #ifdef _WIN32
-	// TODO: Direct3D˜AŒg—p‚ÌƒeƒNƒXƒ`ƒƒ[‚ğ¶¬
+	// TODO: Direct3Dé€£æºç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’ç”Ÿæˆ
 	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height)
 	{
 		if (_vendorD3D11 == NVIDIA)
@@ -580,7 +580,7 @@ namespace OVR
 
 		SkinRegion(hsv[0], hsv[1], scaling, &event[0], &event[1]);
 
-		// TODO: ‚±‚±‚Å‚³‚ç‚ÉHSV‚ÆMASK‚ÅƒmƒCƒYœ‹‚ğs‚¤
+		// TODO: ã“ã“ã§ã•ã‚‰ã«HSVã¨MASKã§ãƒã‚¤ã‚ºé™¤å»ã‚’è¡Œã†
 
 		//__kernel void mask( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
@@ -892,7 +892,7 @@ namespace OVR
 		}
 	}
 
-	// k¬ƒOƒŒ[ƒXƒP[ƒ‹‰æ‘œ‚ğæ“¾
+	// ç¸®å°ã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«ç”»åƒã‚’å–å¾—
 	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling)
 	{
 		cl_mem l, r;
