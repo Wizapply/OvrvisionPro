@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 	if (ovrvision->Open(0, Camprop::OV_CAMHD_FULL))
 	{
 		int ksize = 5;
-		enum FILTER filter = GAUSSIAN;
+		enum FILTER filter = MEDIAN;
 		int width = ovrvision->GetCamWidth() / 2;
 		int height = ovrvision->GetCamHeight() / 2;
 		ROI roi = { 0, 0, width, height };
@@ -79,6 +79,7 @@ int main(int argc, char* argv[])
 
 			if (show)
 			{		
+				///////////////////// Simulation
 				// Retrieve frame data
 				ovrvision->Read(images[0].data, images[1].data);
 				ovrvision->GetStereoImageHSV(hsv[0].data, hsv[1].data);
@@ -128,7 +129,7 @@ int main(int argc, char* argv[])
 							}
 							else
 							{
-								if (10 <= h && h <= 26 && 55 < s && s < 150)
+								if (9 <= h && h <= 21 && 80 < s && s < 135)
 								{
 									Lpixel[x] = images[i].at<Vec4b>(y, x);
 									b_l[x] = 255;
@@ -147,19 +148,29 @@ int main(int argc, char* argv[])
 					std::vector<std::vector<Point>> contours;
 					std::vector<Vec4i> hierarchy;
 
-					findContours(bilevel[eyes], contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
+					findContours(bilevel[eyes], contours, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
 					for (uint i = 0; i < contours.size(); i++)
 					{
+						std::vector<Point> contour = contours[i];
 						try {
 							if (200 < contours[i].size())
 							{
+								std::vector<int> hull;
+								convexHull(contour, hull, true);
+								Point next, prev = contour[hull[hull.size() - 1]];
+								for (size_t j = 0; j < hull.size(); j++)
+								{
+									next = contour[hull[j]];
+									line(results[eyes], prev, next, Scalar::all(255));
+									prev = next;
+								}
 								//drawContours(results[eyes], contours, i, Scalar(255, 255, 255), 1, 8);
 							}
 							else
 							{
 								std::vector<std::vector<Point>> erase;
 								erase.push_back(contours.at(i));
-								fillPoly(results[eyes], erase, Scalar(0, 0, 64, 255), 4);
+								fillPoly(results[eyes], erase, Scalar(0, 0, 128, 255), 4);
 							}
 						}
 						catch (std::exception ex)
@@ -181,10 +192,17 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				ovrvision->GetSkinImage(results[0].data, results[1].data);
+				try {
+					ovrvision->GetSkinImage(results[0].data, results[1].data);
+				}
+				catch (Exception ex)
+				{
+					puts(ex.what());
+				}
 				//ovrvision->GrayscaleFourth(bilevel[0].data, bilevel[1].data);
-				
+
 				//ovrvision->SkinRegion(bilevel[0].data, bilevel[1].data);
+
 				//imshow("bilevel(L)", bilevel[0]);
 				// imshow("bilevel(R)", bilevel[1]);
 				//imshow("Left", images[0]);
@@ -228,7 +246,7 @@ int main(int argc, char* argv[])
 				break;
 
 			case '+':
-				ovrvision->SetSkinThreshold(1);
+				ovrvision->SetSkinThreshold(128);
 				break;
 
 			case '-':

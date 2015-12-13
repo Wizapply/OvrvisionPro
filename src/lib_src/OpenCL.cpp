@@ -594,17 +594,17 @@ namespace OVR
 		int width = _scaledRegion[0];
 		int height = _scaledRegion[1];
 		size_t origin[3] = { 0, 0, 0 };
-		cl_mem hsv[2];
+		cl_mem mask[2];
 		cl_event event[2];
 
 		// Allocate mask
-		hsv[0] = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		mask[0] = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		hsv[1] = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		mask[1] = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 #if 1
-		SkinRegion(hsv[0], hsv[1], scaling, &event[0], &event[1]);
+		SkinRegion(mask[0], mask[1], scaling, &event[0], &event[1]);
 #else
 		SkinRegion(_skinmask[0]->data, _skinmask[1]->data, scaling);
 
@@ -618,6 +618,7 @@ namespace OVR
 			findContours(*_skinmask[eyes], contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
 			for (uint i = 0; i < contours.size(); i++)
 			{
+				vector<Point> contour = contours[i];
 				try {
 					if (200 < contours[i].size())
 					{
@@ -626,8 +627,8 @@ namespace OVR
 					else
 					{
 						std::vector<std::vector<Point>> erase;
-						erase.push_back(contours.at(i));
-						fillPoly(*_skinmask[eyes], erase, Scalar::all(1), 4);
+						erase.push_back(contour);
+						fillPoly(*_skinmask[eyes], erase, Scalar::all(64), 4);
 					}
 				}
 				catch (std::exception ex)
@@ -636,6 +637,13 @@ namespace OVR
 				}
 			}
 		}
+
+		// write back to GPU
+		//cl_event writeEvent;
+		_errorCode = clEnqueueWriteImage(_commandQueue, mask[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar), 0, _skinmask[0]->data, 0, NULL, &event[0]);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clEnqueueWriteImage(_commandQueue, mask[1], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar), 0, _skinmask[1]->data, 0, NULL, &event[0]);
+		SAMPLE_CHECK_ERRORS(_errorCode);
 #endif
 
 		//__kernel void mask( 
@@ -646,13 +654,13 @@ namespace OVR
 
 		clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedL);
 		clSetKernelArg(_mask, 1, sizeof(cl_mem), &left);
-		clSetKernelArg(_mask, 2, sizeof(cl_mem), &hsv[0]);
+		clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[0]);
 		clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask, 2, NULL, _scaledRegion, NULL, 1, &event[0], event_l);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedR);
 		clSetKernelArg(_mask, 1, sizeof(cl_mem), &right);
-		clSetKernelArg(_mask, 2, sizeof(cl_mem), &hsv[1]);
+		clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[1]);
 		clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
@@ -660,8 +668,8 @@ namespace OVR
 		// Release temporaries
 		clReleaseEvent(event[0]);
 		clReleaseEvent(event[1]);
-		clReleaseMemObject(hsv[0]);
-		clReleaseMemObject(hsv[1]);
+		clReleaseMemObject(mask[0]);
+		clReleaseMemObject(mask[1]);
 	}
 
 	//
