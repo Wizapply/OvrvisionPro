@@ -146,31 +146,20 @@ int main(int argc, char* argv[])
 				for (int eyes = 0; eyes < 2; eyes++)
 				{
 					std::vector<std::vector<Point>> contours;
-					std::vector<Vec4i> hierarchy;
+					//std::vector<Vec4i> hierarchy;
 
+					// 1. Reduct small regions
 					findContours(bilevel[eyes], contours, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
 					for (uint i = 0; i < contours.size(); i++)
 					{
 						std::vector<Point> contour = contours[i];
+						size_t size = contour.size();
 						try {
-							if (200 < contours[i].size())
-							{
-								std::vector<int> hull;
-								convexHull(contour, hull, true);
-								Point next, prev = contour[hull[hull.size() - 1]];
-								for (size_t j = 0; j < hull.size(); j++)
-								{
-									next = contour[hull[j]];
-									line(results[eyes], prev, next, Scalar::all(255));
-									prev = next;
-								}
-								//drawContours(results[eyes], contours, i, Scalar(255, 255, 255), 1, 8);
-							}
-							else
+							if (size < 200)
 							{
 								std::vector<std::vector<Point>> erase;
 								erase.push_back(contours.at(i));
-								fillPoly(results[eyes], erase, Scalar(0, 0, 128, 255), 4);
+								fillPoly(results[eyes], erase, Scalar(size, size, size, 255), 4);
 							}
 						}
 						catch (std::exception ex)
@@ -178,6 +167,27 @@ int main(int argc, char* argv[])
 							puts(ex.what());
 						}
 					}
+					contours.clear();
+
+					// 2. 
+					findContours(bilevel[eyes], contours, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
+					for (uint i = 0; i < contours.size(); i++)
+					{
+						std::vector<Point> contour = contours[i];
+						if (200 < contour.size())
+						{
+							std::vector<int> hull;
+							convexHull(contour, hull, true);
+							Point next, prev = contour[hull[hull.size() - 1]];
+							for (size_t j = 0; j < hull.size(); j++)
+							{
+								next = contour[hull[j]];
+								line(results[eyes], prev, next, Scalar::all(255));
+								prev = next;
+							}
+							//drawContours(results[eyes], contours, i, Scalar(255, 255, 255), 1, 8);
+						}
+					}				
 				}
 
 				// ‚±‚±‚Ü‚ÅOpenCV‚Åˆ—‚µ‚ÄGPU‚É–ß‚·
