@@ -812,6 +812,7 @@ void OvrvisionPro::UserDataAccessCheckSumAddress(){
 
 bool OvrvisionPro::CameraParamSaveEEPROM(){
 	OvrvisionSetting ovrset(this);
+	bool rt;
 	
 	//Distort param is readed.
 	ovrset.m_propExposure = GetCameraExposure();
@@ -822,7 +823,19 @@ bool OvrvisionPro::CameraParamSaveEEPROM(){
 	ovrset.m_propWhiteBalanceB = GetCameraWhiteBalanceB();
 	ovrset.m_propWhiteBalanceAuto = (char)GetCameraWhiteBalanceAuto();
 
-	return ovrset.WriteEEPROM(WRITE_EEPROM_FLAG_CAMERASETWR);
+	//Write
+	rt = ovrset.WriteEEPROM(WRITE_EEPROM_FLAG_CAMERASETWR);
+
+	//50ms wait
+#ifdef WIN32
+	Sleep(50);
+#elif MACOSX
+	[NSThread sleepForTimeInterval : 0.05];
+#elif LINUX
+
+#endif
+
+	return rt;
 }
 
 /*

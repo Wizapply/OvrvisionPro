@@ -688,7 +688,7 @@ int OvrvisionDirectShow::GetCameraSetting(CamSetting proc, int* value, bool* aut
 		return RESULT_FAILED;
 
 	long autoflag;
-	(*automode) = true;
+	(*automode) = false;
 
 	//set
 	switch(proc) {

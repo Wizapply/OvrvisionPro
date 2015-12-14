@@ -264,6 +264,15 @@ void OvrvisionCalibration::SaveCalibrationParameter(OvrvisionPro* system)
 	//Write
 	ovrset.WriteEEPROM(WRITE_EEPROM_FLAG_ALLWR);	//WRITE_EEPROM_FLAG_LENSPARAMWR
 
+	//50ms wait
+#ifdef WIN32
+	Sleep(50);
+#elif MACOSX
+	[NSThread sleepForTimeInterval : 0.05];
+#elif LINUX
+
+#endif
+
 	// 
 	//FileStorage cvfs("epipolar.xml", CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
 	//write(cvfs, "P1", m_cameraCalibration[OV_CAMEYE_LEFT].P);
