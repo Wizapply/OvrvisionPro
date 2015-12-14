@@ -77,12 +77,16 @@ int main(int argc, char* argv[])
 
 		//Sync
 		ovrvision->SetCameraSyncMode(true);
-
-		//_h_low = 13;
-		//_h_high = 21;
-		//_s_low = 88;
-		//_s_high = 136;
-		ovrvision->SetSkinHSV(9, 21, 80, 135);
+	
+		int hsvRange[4] = {
+			9,	//_h_low = 13;
+			21,	//_h_high = 21;
+			80, //_s_low = 88;
+			135	//_s_high = 136;
+		};
+		int hMean = (hsvRange[0] + hsvRange[1]) / 2;
+		int sMean = (hsvRange[2] + hsvRange[3]) / 2;
+		ovrvision->SetSkinHSV(hsvRange);
 
 		for (bool loop = true; loop;)
 		{
@@ -146,7 +150,7 @@ int main(int argc, char* argv[])
 							}
 							else
 							{
-								if (9 <= h && h <= 21 && 80 < s && s < 135)
+								if (hsvRange[0] <= h && h <= hsvRange[1] && hsvRange[2] < s && s < hsvRange[3])
 								{
 									Lpixel[x] = images[i].at<Vec4b>(y, x);
 									b_l[x] = 255;
@@ -158,13 +162,11 @@ int main(int argc, char* argv[])
 #endif
 				// ここまでGPU（OpenCL）で
 
-				// ここはOpenMPで左右を並行処理する
-				// CPU側（OpenCV）
+				// CPU側で評価関数（OpenCV）
 #				pragma omp parallel for
 				for (int eyes = 0; eyes < 2; eyes++)
 				{
 					std::vector<std::vector<Point>> contours;
-					//std::vector<Vec4i> hierarchy;
 
 					// 1. Reduct small regions
 					findContours(bilevel[eyes], contours, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
@@ -172,49 +174,73 @@ int main(int argc, char* argv[])
 					{
 						std::vector<Point> contour = contours[i];
 						size_t size = contour.size();
-						try {
-							if (size < 200)
-							{
-								std::vector<std::vector<Point>> erase;
-								erase.push_back(contours.at(i));
-								fillPoly(results[eyes], erase, Scalar(size, size, size, 255), 4);
-							}
-						}
-						catch (std::exception ex)
+						if (size < 200)
 						{
-							puts(ex.what());
+							std::vector<std::vector<Point>> erase;
+							erase.push_back(contours.at(i));
+							fillPoly(results[eyes], erase, Scalar(size, size, size, 255), 4);
 						}
 					}
 					contours.clear();
 
-					// 2. Choice tracking candidate 
+					// 2. Choice tracking candidate 			
+					int minimum = 65535;
 					findContours(bilevel[eyes], contours, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
 					for (uint i = 0; i < contours.size(); i++)
 					{
 						std::vector<Point> contour = contours[i];
 						if (200 < contour.size())
 						{
-							// draw convex
-							std::vector<int> hull;
-							convexHull(contour, hull, true);
-							Point next, prev = contour[hull[hull.size() - 1]];
-							for (size_t j = 0; j < hull.size(); j++)
-							{
-								next = contour[hull[j]];
-								line(results[eyes], prev, next, Scalar::all(255));
-								prev = next;
-							}
+							// Mass center
 							Moments moment;
 							moment = moments(contour);
-							int my = (int)(moment.m01 / moment.m00);
-							int mx = (int)(moment.m10 / moment.m00);
-							//std::vector<std::vector<Point>> paint;
-							//paint.push_back(contour);
-							//fillPoly(results[eyes], paint, Scalar(95, 132, 163, 255), 4);
-							drawContours(results[eyes], contours, i, Scalar(0, 0, 255), 1, 8);
-							ellipse(results[eyes], Point(mx, my), Size(3, 3), 0, 0, 359, Scalar(0, 0, 255), 2);
+							double mc[2] = { (moment.m10 / moment.m00), (moment.m01 / moment.m00) };
+							Mat mass_center(2, 1, CV_64FC1, mc);
+							Vec4b center = HSV[eyes].at<Vec4b>((int)mc[1], (int)mc[0]);
+							int diff = (hMean - center[0]) * (hMean - center[0]) + (sMean - center[1]) * (sMean - center[1]);
+							if (diff < minimum)
+							{
+								minimum = diff;
+							}
 						}
-					}				
+					}
+					printf("%d\n", minimum);
+					// 3. Track candidate
+					for (uint i = 0; i < contours.size(); i++)
+					{
+						std::vector<Point> contour = contours[i];
+						if (200 < contour.size())
+						{
+							// Mass center
+							Moments moment;
+							moment = moments(contour);
+							double mc[2] = { (moment.m10 / moment.m00), (moment.m01 / moment.m00) };
+							Mat mass_center(2, 1, CV_64FC1, mc);
+							Vec4b center = HSV[eyes].at<Vec4b>((int)mc[1], (int)mc[0]);
+							int score = (hMean - center[0]) * (hMean - center[0]) + (sMean - center[1]) * (sMean - center[1]);
+							if (3 < score)
+							{
+								// draw convex
+								std::vector<int> hull;
+								convexHull(contour, hull, true);
+								Point next, prev = contour[hull[hull.size() - 1]];
+								for (size_t j = 0; j < hull.size(); j++)
+								{
+									next = contour[hull[j]];
+									//line(results[eyes], prev, next, Scalar::all(255));
+									prev = next;
+								}
+								//_kalman.correct(mass_center);
+								//Mat predict = _kalman.predict();
+
+								//std::vector<std::vector<Point>> paint;
+								//paint.push_back(contour);
+								//fillPoly(results[eyes], paint, Scalar(95, 132, 163, 255), 4);
+								drawContours(results[eyes], contours, i, Scalar(0, 0, 255), 1, 8);
+								circle(results[eyes], Point((int)mc[0], (int)mc[1]), 5, Scalar(0, 0, 255), 2);
+							}
+						}
+					}
 				}
 
 				// ここまでOpenCVで処理してGPUに戻す

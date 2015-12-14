@@ -333,6 +333,12 @@ void OvrvisionPro::SetSkinHSV(int h_low, int h_high, int s_low, int s_high)
 	m_pOpenCL->SetHSV(h_low, h_high, s_low, s_high);
 }
 
+// Set HSV region
+void OvrvisionPro::SetSkinHSV(int range[4])
+{
+	m_pOpenCL->SetHSV(range[0], range[1], range[2], range[3]);
+}
+
 // Set skin threshold 
 int OvrvisionPro::SetSkinThreshold(int threshold)
 {

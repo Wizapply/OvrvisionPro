@@ -186,7 +186,14 @@ public:
 		@param s_low (0 < s_low < s_high)
 		@param s_high (s_low < s_high < 256) */
 	void SetSkinHSV(int h_low, int h_high, int s_low, int s_high);
-	
+
+	/*! @brief set HSV region for SkinRegion
+		@param range[0]:h_low (0 < h_low < h_high)
+		@param range[1]:h_high (h_low < h_high < 180)
+		@param range[2]:s_low (0 < s_low < s_high)
+		@param range[3]:s_high (s_low < s_high < 256) */
+	void SetSkinHSV(int range[4]);
+
 	/*! @brief set skin threshold to extract region
 		@param threshold (0..255)
 		@return previous threshold */
