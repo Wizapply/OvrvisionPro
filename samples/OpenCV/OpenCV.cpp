@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 		int height = ovrvision->GetCamHeight() / 2;
 		ROI roi = { 0, 0, width, height };
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
-		bool show = false;
+		bool simulate = true;
 		bool useHistgram = false;
 
 		Mat images[2];
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 			// Capture frame
 			ovrvision->Capture(mode);
 
-			if (show)
+			if (simulate)
 			{		
 				///////////////////// Simulation
 				// Retrieve frame data
@@ -185,7 +185,10 @@ int main(int argc, char* argv[])
 								line(results[eyes], prev, next, Scalar::all(255));
 								prev = next;
 							}
-							//drawContours(results[eyes], contours, i, Scalar(255, 255, 255), 1, 8);
+							//std::vector<std::vector<Point>> paint;
+							//paint.push_back(contours.at(i));
+							//fillPoly(results[eyes], paint, Scalar::all(255), 4);
+							drawContours(results[eyes], contours, i, Scalar(0, 0, 255), 1, 8);
 						}
 					}				
 				}
@@ -240,7 +243,7 @@ int main(int argc, char* argv[])
 				break;
 
 			case 's':
-				show = !show;
+				simulate = !simulate;
 				break;
 
 			case 'g':
@@ -280,7 +283,7 @@ int main(int argc, char* argv[])
 				break;
 
 			case ' ':
-				if (show)
+				if (simulate)
 				{
 					imwrite("left.png", images[0]);
 					imwrite("right.png", images[1]);
