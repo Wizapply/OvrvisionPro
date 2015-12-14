@@ -37,6 +37,22 @@ enum FILTER {
 	NONE,
 };
 
+int hsvRange[4] = {
+	9,	//_h_low = 13;
+	21,	//_h_high = 21;
+	100, //_s_low = 88;
+	150	//_s_high = 136;
+};
+int hMean = (hsvRange[0] + hsvRange[1]) / 2;
+int sMean = (hsvRange[2] + hsvRange[3]) / 2;
+
+int evaluation(int h, int s)
+{
+	int hDiff = (hMean - h) * 10;
+	int sDiff = (sMean - s);
+	return (hDiff * hDiff) + (sDiff * sDiff);
+}
+
 int main(int argc, char* argv[])
 {
 	OvrvisionPro *ovrvision = new OvrvisionPro();
@@ -78,14 +94,6 @@ int main(int argc, char* argv[])
 		//Sync
 		ovrvision->SetCameraSyncMode(true);
 	
-		int hsvRange[4] = {
-			9,	//_h_low = 13;
-			21,	//_h_high = 21;
-			80, //_s_low = 88;
-			135	//_s_high = 136;
-		};
-		int hMean = (hsvRange[0] + hsvRange[1]) / 2;
-		int sMean = (hsvRange[2] + hsvRange[3]) / 2;
 		ovrvision->SetSkinHSV(hsvRange);
 
 		for (bool loop = true; loop;)
@@ -197,7 +205,7 @@ int main(int argc, char* argv[])
 							double mc[2] = { (moment.m10 / moment.m00), (moment.m01 / moment.m00) };
 							Mat mass_center(2, 1, CV_64FC1, mc);
 							Vec4b center = HSV[eyes].at<Vec4b>((int)mc[1], (int)mc[0]);
-							int diff = (hMean - center[0]) * (hMean - center[0]) + (sMean - center[1]) * (sMean - center[1]);
+							int diff = evaluation(center[0], center[1]);
 							if (diff < minimum)
 							{
 								minimum = diff;
@@ -217,8 +225,8 @@ int main(int argc, char* argv[])
 							double mc[2] = { (moment.m10 / moment.m00), (moment.m01 / moment.m00) };
 							Mat mass_center(2, 1, CV_64FC1, mc);
 							Vec4b center = HSV[eyes].at<Vec4b>((int)mc[1], (int)mc[0]);
-							int score = (hMean - center[0]) * (hMean - center[0]) + (sMean - center[1]) * (sMean - center[1]);
-							if (3 < score)
+							int score = evaluation(center[0], center[1]);
+							if (score - minimum < 100)
 							{
 								// draw convex
 								std::vector<int> hull;
