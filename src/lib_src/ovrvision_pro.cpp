@@ -612,7 +612,7 @@ int OvrvisionPro::GetCameraWhiteBalanceB(){
 #endif
 	return value;
 }
-void OvrvisionPro::SetCameraWhiteBalanceB(int value){
+void OvrvisionPro::SetCameraWhiteBalanceB(int value) {
 	if (!m_isOpen)
 		return;
 
@@ -622,11 +622,13 @@ void OvrvisionPro::SetCameraWhiteBalanceB(int value){
 	if (value > 4095)	//high
 		value = 4095;
 
+	bool curval = GetCameraWhiteBalanceAuto();
+
 	//set
 #ifdef WIN32
-	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEB, value, false);
+	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEB, value, curval);
 #elif MACOSX
-	[m_pOAV setCameraSetting: OV_CAMSET_WHITEBALANCEB value: value automode: false];
+	[m_pOAV setCameraSetting: OV_CAMSET_WHITEBALANCEB value: value automode: curval];
 #elif LINUX
 	//NONE
 #endif
