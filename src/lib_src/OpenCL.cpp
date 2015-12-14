@@ -187,6 +187,19 @@ namespace OVR
 			_s_low = 88;
 			_s_high = 136;
 			_skinThreshold = 0;
+
+			// Inter frame object tracking 
+			_kalman[0] = KalmanFilter(4, 2);
+			_kalman[1] = KalmanFilter(4, 2);
+			setIdentity(_kalman[0].measurementMatrix, cvRealScalar(1.0));
+			setIdentity(_kalman[0].processNoiseCov, cvRealScalar(1e-5));
+			setIdentity(_kalman[0].measurementNoiseCov, cvRealScalar(0.1));
+			setIdentity(_kalman[0].errorCovPost, cvRealScalar(1.0));
+			
+			//kalman->DynamMatr[0] = 1.0; kalman->DynamMatr[1] = 0.0; kalman->DynamMatr[2] = 1.0; kalman->DynamMatr[3] = 0.0;
+			//kalman->DynamMatr[4] = 0.0; kalman->DynamMatr[5] = 1.0; kalman->DynamMatr[6] = 0.0; kalman->DynamMatr[7] = 1.0;
+			//kalman->DynamMatr[8] = 0.0; kalman->DynamMatr[9] = 0.0; kalman->DynamMatr[10] = 1.0; kalman->DynamMatr[11] = 0.0;
+			//kalman->DynamMatr[12] = 0.0; kalman->DynamMatr[13] = 0.0; kalman->DynamMatr[14] = 0.0; kalman->DynamMatr[15] = 1.0;
 	}
 
 		// Destructor
@@ -245,6 +258,8 @@ namespace OVR
 			{
 				delete[] _deviceExtensions;
 			}
+			//cvReleaseKalman(&_kalman[0]);
+			//cvReleaseKalman(&_kalman[1]);
 			_released = true;
 		}
 	}

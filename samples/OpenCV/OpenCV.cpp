@@ -4,6 +4,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/video.hpp>
 
 #include "ovrvision_pro.h"
 
@@ -14,7 +15,11 @@
 using namespace cv;
 using namespace OVR;
 
-//static 	OvrvisionPro ovrvision;
+// Convex object
+typedef struct {
+	int mx, my;				// mass center
+	std::vector<Point> convex;	// convex contor
+} Convex;
 
 int callback(void *pItem, const char *extensions)
 {
@@ -45,6 +50,8 @@ int main(int argc, char* argv[])
 		Camqt mode = Camqt::OV_CAMQT_DMSRMP;
 		bool simulate = true;
 		bool useHistgram = false;
+		Convex	_convex[2];			// Assume to be both hands
+		KalmanFilter _kalman(4, 2);
 
 		Mat images[2];
 		Mat bilevel[2];
@@ -62,6 +69,11 @@ int main(int argc, char* argv[])
 		images[1].create(height, width, CV_8UC4);
 		bilevel[0].create(height, width, CV_8UC1);
 		bilevel[1].create(height, width, CV_8UC1);
+
+		setIdentity(_kalman.measurementMatrix, cvRealScalar(1.0));
+		setIdentity(_kalman.processNoiseCov, cvRealScalar(1e-5));
+		setIdentity(_kalman.measurementNoiseCov, cvRealScalar(0.1));
+		setIdentity(_kalman.errorCovPost, cvRealScalar(1.0));
 
 		//Sync
 		ovrvision->SetCameraSyncMode(true);
@@ -82,6 +94,11 @@ int main(int argc, char* argv[])
 				///////////////////// Simulation
 				// Retrieve frame data
 				ovrvision->Read(images[0].data, images[1].data);
+#if 0
+				results[0].setTo(Scalar(0, 0, 0, 255));
+				results[1].setTo(Scalar(0, 0, 0, 255));
+				ovrvision->SkinRegion(bilevel[0].data, bilevel[1].data);
+#else
 				ovrvision->GetStereoImageHSV(hsv[0].data, hsv[1].data);
 
 				// ここでOpenCVでの加工など
@@ -138,6 +155,7 @@ int main(int argc, char* argv[])
 						}
 					}
 				}
+#endif
 				// ここまでGPU（OpenCL）で
 
 				// ここはOpenMPで左右を並行処理する
@@ -169,13 +187,14 @@ int main(int argc, char* argv[])
 					}
 					contours.clear();
 
-					// 2. 
+					// 2. Choice tracking candidate 
 					findContours(bilevel[eyes], contours, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
 					for (uint i = 0; i < contours.size(); i++)
 					{
 						std::vector<Point> contour = contours[i];
 						if (200 < contour.size())
 						{
+							// draw convex
 							std::vector<int> hull;
 							convexHull(contour, hull, true);
 							Point next, prev = contour[hull[hull.size() - 1]];
@@ -185,10 +204,15 @@ int main(int argc, char* argv[])
 								line(results[eyes], prev, next, Scalar::all(255));
 								prev = next;
 							}
+							Moments moment;
+							moment = moments(contour);
+							int my = (int)(moment.m01 / moment.m00);
+							int mx = (int)(moment.m10 / moment.m00);
 							//std::vector<std::vector<Point>> paint;
-							//paint.push_back(contours.at(i));
-							//fillPoly(results[eyes], paint, Scalar::all(255), 4);
+							//paint.push_back(contour);
+							//fillPoly(results[eyes], paint, Scalar(95, 132, 163, 255), 4);
 							drawContours(results[eyes], contours, i, Scalar(0, 0, 255), 1, 8);
+							ellipse(results[eyes], Point(mx, my), Size(3, 3), 0, 0, 359, Scalar(0, 0, 255), 2);
 						}
 					}				
 				}

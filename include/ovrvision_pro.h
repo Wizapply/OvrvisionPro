@@ -170,13 +170,13 @@ public:
 	void GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight);
 
 	/*! @brief Get Skin images
-		@param pLeft Image buffer pointer for left eye
-		@param pRight Image buffer pointer for right eye */
+		@param pLeft Image buffer pointer (RGBA IMAGE)
+		@param pRight Image buffer pointer (RGBA IMAGE) */
 	void GetSkinImage(unsigned char* pLeft, unsigned char* pRight);
 
 	/*! @brief Get skin color region 
-		@param left image 
-		@param right image 
+		@param left image (MONOCHROME MASK)
+		@param right image (MONOCHROME MASK)
 		@return scale (2, 4) */
 	int SkinRegion(unsigned char* left, unsigned char* right);
 

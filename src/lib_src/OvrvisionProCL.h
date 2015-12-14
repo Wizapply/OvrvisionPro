@@ -75,6 +75,12 @@ namespace OVR
 		MEDIAN_7,
 	};
 
+	// Convex object
+	typedef struct {
+		int mx, my;				// mass center
+		std::vector<Point> convex;	// convex contor
+	} Convex;
+
 	// OpenCL extension callback function
 	typedef int(*EXTENSION_CALLBACK)(void *pItem, const char *extensions);
 
@@ -201,13 +207,12 @@ namespace OVR
 			// Enumerate OpenCL extensions
 			int DeviceExtensions(EXTENSION_CALLBACK callback = NULL, void *item = NULL);
 
-			void createProgram(const char *filename, bool binary = false);
-			int saveBinary(const char *filename);
-			//bool SaveSettings(const char *filename);
-
 		private:
 			bool CreateProgram();
 			bool Prepare4Sharing();		// Prepare for OpenGL/D3D sharing
+			void createProgram(const char *filename, bool binary = false);
+			int saveBinary(const char *filename);
+			//bool SaveSettings(const char *filename);
 
 #ifdef _WIN32
 			enum VENDOR _vendorD3D11;	// D3D11 sharing depends on vendor specific extensions
@@ -241,6 +246,8 @@ namespace OVR
 			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
 			enum SCALING	_scaling;	//
 			size_t	_scaledRegion[3];
+			Convex	_convex[2];			// Assume to be both hands
+			KalmanFilter _kalman[2];
 
 		protected:
 			// OpenCL variables
