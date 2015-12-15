@@ -311,19 +311,19 @@ void  OvrvisionPro::GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRig
 // Get HSV images
 void OvrvisionPro::GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight)
 {
-	m_pOpenCL->GetHSV(pLeft, pRight, SCALING::HALF);
+	m_pOpenCL->GetHSV(pLeft, pRight);
 }
 
 // Get Skin image
 void OvrvisionPro::GetSkinImage(unsigned char* pLeft, unsigned char* pRight)
 {
-	m_pOpenCL->SkinImages(pLeft, pRight, HALF);
+	m_pOpenCL->SkinImages(pLeft, pRight);
 }
 
 // Get skin region mask
 int OvrvisionPro::SkinRegion(unsigned char* left, unsigned char* right)
 {
-	m_pOpenCL->SkinRegion(left, right, SCALING::HALF);
+	m_pOpenCL->SkinRegion(left, right);
 	return 2;
 }
 
@@ -348,13 +348,13 @@ int OvrvisionPro::SetSkinThreshold(int threshold)
 // Get color histrgam in HSV space
 int OvrvisionPro::ColorHistgram(unsigned char* histgram)
 {
-	m_pOpenCL->ColorHistgram(histgram, SCALING::HALF);
+	m_pOpenCL->ColorHistgram(histgram);
 	return 2;
 }
 
 void OvrvisionPro::Read(unsigned char *left, unsigned char *right)
 {
-	m_pOpenCL->Read(left, right, SCALING::HALF);
+	m_pOpenCL->Read(left, right);
 }
 
 //Get Camera data pre-store.

@@ -129,10 +129,9 @@ namespace OVR
 
 			/*! @brief Get Skin images
 				@param left ptr of BGRA image
-				@param right ptr of BGRA image
-				@param scaling (HALF, FOURTH, EIGHTH) */
-			void SkinImages(uchar *left, uchar *right, SCALING scaling);
-			void SkinImages(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
+				@param right ptr of BGRA image */
+			void SkinImages(uchar *left, uchar *right);
+			void SkinImages(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r);
 
 			/*! @brief set skin threshold to extract region 
 				@param threshold (0..255)
@@ -142,21 +141,19 @@ namespace OVR
 			// Skin color region 
 			/*! @brief Skin color region mask 
 			@param left ptr for left HSV image
-			@param right ptr for right HSV image
-			@param scale (HALF, FOURTH, EIGHTH) */
-			void SkinRegion(uchar *left, uchar *right, SCALING scale);
+			@param right ptr for right HSV image */
+			void SkinRegion(uchar *left, uchar *right);
 			/*! @brief Skin color region mask */
-			void SkinRegion(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
+			void SkinRegion(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r);
 
 			/*! @brief Get HSV images for skin color detection
 			@param left ptr for left HSV image
-			@param right ptr for right HSV image
-			@param scale (HALF, FOURTH, EIGHTH) */
-			void GetHSV(uchar *left, uchar *right, SCALING scale);
+			@param right ptr for right HSV image */
+			void GetHSV(uchar *left, uchar *right);
 			/*! @brief Get HSV images for skin color detection */
-			void GetHSV(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r);
-			void GetHSVBlur(cl_mem left, cl_mem right, SCALING scale, cl_event *event_l, cl_event *event_r);
-			void ColorHistgram(uchar *histgram, SCALING scaling);
+			void GetHSV(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r);
+			void GetHSVBlur(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r);
+			void ColorHistgram(uchar *histgram);
 
 			/*! @brief Get resized gray image
 			@param left ptr for left HSV image
@@ -168,7 +165,7 @@ namespace OVR
 			// Read images region of interest
 			void Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height);
 
-			void Read(uchar *left, uchar *right, SCALING scaling = HALF);
+			void Read(uchar *left, uchar *right);
 
 			/*! @brief Download from GPU
 				@param image 
@@ -197,7 +194,7 @@ namespace OVR
 
 			/*! @brief Update skin textures for drawing
 				@param textures textures[0]:left textures[1]:right */
-			void UpdateSkinTextureObjects(uint n, void *textures[], enum SCALING scaling = HALF);
+			void UpdateSkinTextureObjects(uint n, void *textures[]);
 
 #ifdef _WIN32
 			// Direct3D shared texture
@@ -247,7 +244,7 @@ namespace OVR
 			enum SCALING	_scaling;	//
 			size_t	_scaledRegion[3];
 			Convex	_convex[2];			// Assume to be both hands
-			KalmanFilter _kalman[2];
+			//KalmanFilter _kalman[2];
 
 		protected:
 			// OpenCL variables

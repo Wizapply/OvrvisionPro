@@ -189,12 +189,12 @@ namespace OVR
 			_skinThreshold = 0;
 
 			// Inter frame object tracking 
-			_kalman[0] = KalmanFilter(4, 2);
-			_kalman[1] = KalmanFilter(4, 2);
-			setIdentity(_kalman[0].measurementMatrix, cvRealScalar(1.0));
-			setIdentity(_kalman[0].processNoiseCov, cvRealScalar(1e-5));
-			setIdentity(_kalman[0].measurementNoiseCov, cvRealScalar(0.1));
-			setIdentity(_kalman[0].errorCovPost, cvRealScalar(1.0));
+			//_kalman[0] = KalmanFilter(4, 2);
+			//_kalman[1] = KalmanFilter(4, 2);
+			//setIdentity(_kalman[0].measurementMatrix, cvRealScalar(1.0));
+			//setIdentity(_kalman[0].processNoiseCov, cvRealScalar(1e-5));
+			//setIdentity(_kalman[0].measurementNoiseCov, cvRealScalar(0.1));
+			//setIdentity(_kalman[0].errorCovPost, cvRealScalar(1.0));
 			
 			//kalman->DynamMatr[0] = 1.0; kalman->DynamMatr[1] = 0.0; kalman->DynamMatr[2] = 1.0; kalman->DynamMatr[3] = 0.0;
 			//kalman->DynamMatr[4] = 0.0; kalman->DynamMatr[5] = 1.0; kalman->DynamMatr[6] = 0.0; kalman->DynamMatr[7] = 1.0;
@@ -567,12 +567,12 @@ namespace OVR
 	}
 #endif
 
-	void OvrvisionProOpenCL::UpdateSkinTextureObjects(uint n, void *textures[], enum SCALING scaling)
+	void OvrvisionProOpenCL::UpdateSkinTextureObjects(uint n, void *textures[])
 	{
 #ifdef WIN32
 		cl_event event[2];
 		clEnqueueAcquireGLObjects(_commandQueue, n, (cl_mem *)textures, 0, NULL, NULL);
-		SkinImages((cl_mem)(textures[0]), (cl_mem)(textures[1]), scaling, &event[0], &event[1]);
+		SkinImages((cl_mem)(textures[0]), (cl_mem)(textures[1]), &event[0], &event[1]);
 		clEnqueueReleaseGLObjects(_commandQueue, n, (cl_mem *)textures, 2, event, NULL);
 		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
 #endif
@@ -604,7 +604,7 @@ namespace OVR
 	}
 
 	// Get Skin images
-	void OvrvisionProOpenCL::SkinImages(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	void OvrvisionProOpenCL::SkinImages(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
 		int width = _scaledRegion[0];
 		int height = _scaledRegion[1];
@@ -619,7 +619,7 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 #if 1
-		SkinRegion(mask[0], mask[1], scaling, &event[0], &event[1]);
+		SkinRegion(mask[0], mask[1], &event[0], &event[1]);
 #else
 		SkinRegion(_skinmask[0]->data, _skinmask[1]->data, scaling);
 
@@ -688,7 +688,7 @@ namespace OVR
 	}
 
 	//
-	void OvrvisionProOpenCL::SkinImages(uchar *left, uchar *right, SCALING scaling)
+	void OvrvisionProOpenCL::SkinImages(uchar *left, uchar *right)
 	{
 		int width = _scaledRegion[0];
 		int height = _scaledRegion[1];
@@ -700,7 +700,7 @@ namespace OVR
 		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
-		SkinImages(l, r, scaling, &event[0], &event[1]);
+		SkinImages(l, r, &event[0], &event[1]);
 
 		// Read result
 		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
@@ -714,10 +714,10 @@ namespace OVR
 	}
 
 	//
-	void OvrvisionProOpenCL::SkinRegion(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	void OvrvisionProOpenCL::SkinRegion(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
 		uint width = _width, height = _height;
-		switch (scaling)
+		switch (_scaling)
 		{
 		case OVR::HALF:
 			width /= 2;
@@ -743,7 +743,7 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		cl_event event[2];
-		GetHSVBlur(l, r, scaling, &event[0], &event[1]);
+		GetHSVBlur(l, r, &event[0], &event[1]);
 
 		//int h_low = 13, h_high = 21;
 		//int s_low = 88, s_high = 136;
@@ -780,11 +780,11 @@ namespace OVR
 	}
 
 	//
-	void OvrvisionProOpenCL::SkinRegion(uchar *left, uchar *right, SCALING scaling)
+	void OvrvisionProOpenCL::SkinRegion(uchar *left, uchar *right)
 	{
 		cl_mem l, r;
 		uint width = _width, height = _height;
-		switch (scaling)
+		switch (_scaling)
 		{
 		case OVR::HALF:
 			width /= 2;
@@ -808,7 +808,7 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_event event[2];
 
-		SkinRegion(l, r, scaling, &event[0], &event[1]);
+		SkinRegion(l, r, &event[0], &event[1]);
 
 		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar), 0, left, 1, &event[0], NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
@@ -904,7 +904,7 @@ namespace OVR
 	}
 
 	//
-	void OvrvisionProOpenCL::Read(uchar *left, uchar *right, SCALING scaling)
+	void OvrvisionProOpenCL::Read(uchar *left, uchar *right)
 	{
 		size_t origin[3] = { 0, 0, 0 };
 		_errorCode = clEnqueueReadImage(_commandQueue, _reducedL, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
@@ -1031,7 +1031,7 @@ namespace OVR
 	}
 
 	// Get HSV images
-	void OvrvisionProOpenCL::GetHSV(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	void OvrvisionProOpenCL::GetHSV(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
 		size_t size[] = { _scaledRegion[0], _scaledRegion[1] };
 
@@ -1051,10 +1051,10 @@ namespace OVR
 	}
 
 	//
-	void OvrvisionProOpenCL::GetHSVBlur(cl_mem left, cl_mem right, SCALING scaling, cl_event *event_l, cl_event *event_r)
+	void OvrvisionProOpenCL::GetHSVBlur(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
 		uint width = _width, height = _height;
-		switch (scaling)
+		switch (_scaling)
 		{
 		case OVR::HALF:
 			width /= 2;
@@ -1080,7 +1080,7 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		cl_event event[2];
-		GetHSV(l, r, scaling, &event[0], &event[1]);
+		GetHSV(l, r, &event[0], &event[1]);
 
 		// TODO: Choice most effective filter
 		//__kernel void gaussian( 
@@ -1122,11 +1122,11 @@ namespace OVR
 	}
 
 	// Get HSV images
-	void OvrvisionProOpenCL::GetHSV(uchar *left, uchar *right, SCALING scaling)
+	void OvrvisionProOpenCL::GetHSV(uchar *left, uchar *right)
 	{
 		cl_mem l, r;
 		uint width = _width, height = _height;
-		switch (scaling)
+		switch (_scaling)
 		{
 		case OVR::HALF:
 			width /= 2;
@@ -1150,7 +1150,7 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_event event[2];
 
-		GetHSV(l, r, scaling, &event[0], &event[1]);
+		GetHSV(l, r, &event[0], &event[1]);
 
 		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
@@ -1165,10 +1165,10 @@ namespace OVR
 	}
 
 	// 
-	void OvrvisionProOpenCL::ColorHistgram(uchar *histgram, SCALING scaling)
+	void OvrvisionProOpenCL::ColorHistgram(uchar *histgram)
 	{
 		uint width = _width, height = _height;
-		switch (scaling)
+		switch (_scaling)
 		{
 		case OVR::HALF:
 			width /= 2;
@@ -1189,7 +1189,7 @@ namespace OVR
 		hist.setTo(Scalar::all(0));
 
 		// Get HSV images
-		GetHSV(left.data, right.data, scaling);
+		GetHSV(left.data, right.data);
 
 		for (uint y = 0; y < height; y++)
 		{
