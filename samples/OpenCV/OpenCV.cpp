@@ -63,178 +63,8 @@ int evaluation(int h, int s)
 	int sDiff = (sMean - s);
 	return (hDiff * hDiff) + (sDiff * sDiff);
 }
-/*
-int DetectHand()
-{
-	Mat separate[2][4];
-	Mat histgram[2];
-	Mat sum(256, 256, CV_32SC1);
-	Mat normalized(256, 256, CV_8UC1);
-	histgram[0].create(256, 256, CV_32SC1);
-	histgram[1].create(256, 256, CV_32SC1);
 
-
-	for (bool loop = true; loop;)
-	{
-		// Capture frame
-		ovrvision->Capture(mode);
-		ovrvision->GetStereoImageHSV(hsv[0].data, hsv[1].data);
-		switch (filter)
-		{
-		case GAUSSIAN:
-			GaussianBlur(hsv[0], HSV[0], Size(ksize, ksize), 0);
-			GaussianBlur(hsv[1], HSV[1], Size(ksize, ksize), 0);
-			break;
-
-		case MEDIAN:
-			medianBlur(hsv[0], HSV[0], ksize);
-			medianBlur(hsv[1], HSV[1], ksize);
-			break;
-
-		default:
-			hsv[0].copyTo(HSV[0]);
-			hsv[1].copyTo(HSV[1]);
-			break;
-		}
-
-#		pragma omp parallel for
-		for (int eye = 0; eye < 2; eye++)
-		{
-			std::vector<Vec4i> hierarchy;
-			std::vector<std::vector<Point>> contours;
-
-			histgram[eye].setTo(Scalar(0));
-
-			split(HSV[eye], separate[eye]);
-			//threshold(separate[eye][1], bilevel[eye], 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
-			threshold(separate[eye][1], bilevel[eye], 80, 255, CV_THRESH_TOZERO);
-			Canny(bilevel[eye], bilevel[eye], 60, 200);
-			findContours(bilevel[eye], contours, hierarchy, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
-			// Detect fingers
-			for (uint i = 0; i < contours.size(); i++)
-			{
-				std::vector<Point> contour = contours[i];
-				if (200 < contour.size() && hierarchy[i][3] == -1)
-				{
-					Rect bound = boundingRect(contour);
-					// Make histgram of HS values
-					for (int y = bound.y; y < bound.y + bound.height; y++)
-					{
-						Vec4b *row = HSV[eye].ptr<Vec4b>(y);
-						for (int x = bound.x; x < bound.x + bound.width; x++)
-						{
-							// Check inside contour
-							//if (0 < pointPolygonTest(contour, Point2f(x, y), false))
-							{
-								int h, s, *hs;
-								try {
-									h = row[x][0];
-									s = row[x][1];
-									if (0 < h && h < 30 && 0 < s)
-									{
-										hs = histgram[eye].ptr<int>(h);
-										hs[s]++;
-									}
-								}
-								catch (Exception ex)
-								{
-									puts(ex.msg.c_str());
-								}
-							}
-						}
-					}
-					
-					std::vector<int> convex;
-					std::vector<Vec4i> defects;
-					convexHull(contour, convex, true);
-					convexityDefects(contour, convex, defects);
-					for (uint defect = 0; defect < defects.size(); defect++)
-					{
-						int startIdx = defects[defect][0];
-						int endIdx = defects[defect][1];
-						int farIdx = defects[defect][2];
-						int e = defects[defect][3] & 0xFF;
-						float depth = (float)(defects[defect][3] / 256);
-						line(HSV[eye], contour[startIdx], contour[farIdx], Scalar(0, 0, 255), 1);
-						line(HSV[eye], contour[endIdx], contour[farIdx], Scalar(0, 0, 255), 1);
-					}
-					drawContours(HSV[eye], contours, i, Scalar::all(255));
-
-				}
-			}
-		}
-		add(histgram[0], histgram[1], sum);
-		normalize(sum, normalized, 0, 255, NORM_MINMAX, normalized.type());
-		medianBlur(normalized, normalized, 3);
-
-		// Estimate color range in HS space
-		double maxVal;
-		Point maxLoc;
-		minMaxLoc(normalized, NULL, &maxVal, NULL, &maxLoc);
-		printf("H:%d S:%d count %f\n", maxLoc.y, maxLoc.x, maxVal);
-		// H range
-		for (int h = maxLoc.y; 0 < h; h--)
-		{
-			uchar hLow = normalized.at<uchar>(h, maxLoc.x);
-			if (hLow < 2)
-			{
-				hsvRange[0] = hLow;
-				break;
-			}
-		}
-		for (int h = maxLoc.y; h < 180; h++)
-		{
-			uchar hHigh = normalized.at<uchar>(h, maxLoc.x);
-			if (hHigh < 2)
-			{
-				hsvRange[1] = hHigh;
-				break;
-			}
-		}
-		// S range
-		for (int i = maxLoc.x; 0 < i; i--)
-		{
-			uchar s = normalized.at<uchar>(maxLoc.y, i);
-			if (s < 2)
-			{
-				hsvRange[2] = s;
-				break;
-			}
-		}
-		for (int i = maxLoc.x; i < 256; i++)
-		{
-			uchar s = normalized.at<uchar>(maxLoc.y, i);
-			if (s < 2)
-			{
-				hsvRange[3] = s;
-				break;
-			}
-		}
-		rectangle(normalized, Point(hsvRange[2], hsvRange[0]), Point(hsvRange[3], hsvRange[1]), Scalar(255));
-		imshow("normalized", normalized);
-		imshow("HSV(L)", HSV[0]);
-		//imshow("HSV(R)", HSV[1]);
-		imshow("S(L)", separate[0][1]);
-		//imshow("S(R)", separate[1][1]);
-		imshow("bilevel(L)", bilevel[0]);
-		//imshow("bilevel(R)", bilevel[1]);
-
-		switch (waitKey(10))
-		{
-		case ' ':
-			loop = false;
-			break;
-
-		case 's':
-			imwrite("S.png", separate[0][1]);
-			imwrite("bilevel.png", bilevel[0]);
-			imwrite("histgram.png", normalized);
-			break;
-		}
-	}
-	return 0;
-}
-*/
+int DetectHand();
 
 int main(int argc, char* argv[])
 {
@@ -272,7 +102,7 @@ int main(int argc, char* argv[])
 		//Sync
 		ovrvision->SetCameraSyncMode(true);
 	
-		//DetectHand();
+		DetectHand();
 
 		ovrvision->SetSkinHSV(hsvRange);
 
@@ -338,7 +168,7 @@ int main(int argc, char* argv[])
 							}
 							else
 							{
-								if (hsvRange[0] <= h && h <= hsvRange[1] && hsvRange[2] < s && s < hsvRange[3])
+								if (hsvRange[0] <= h && h <= hsvRange[1] && hsvRange[2] <= s && s <= hsvRange[3])
 								{
 									Lpixel[x] = images[i].at<Vec4b>(y, x);
 									b_l[x] = 255;
@@ -571,5 +401,175 @@ int main(int argc, char* argv[])
 	delete ovrvision;
 	return 0;
 }
+
+int DetectHand()
+{
+	Mat separate[2][4];
+	Mat histgram[2];
+	Mat bilevel[2];
+	Mat HSV[2];
+	Mat sum(256, 256, CV_32SC1);
+	Mat normalized(256, 256, CV_8UC1);
+
+	HSV[0].create(height, width, CV_8UC4);
+	HSV[1].create(height, width, CV_8UC4);
+	bilevel[0].create(height, width, CV_8UC1);
+	bilevel[1].create(height, width, CV_8UC1);
+	histgram[0].create(256, 256, CV_32SC1);
+	histgram[1].create(256, 256, CV_32SC1);
+	histgram[0].setTo(Scalar(0));
+	histgram[1].setTo(Scalar(0));
+
+	for (bool loop = true; loop;)
+	{
+		// Capture frame
+		ovrvision->Capture(mode);
+		ovrvision->GetStereoImageHSV(HSV[0].data, HSV[1].data);
+
+#		pragma omp parallel for
+		for (int eye = 0; eye < 2; eye++)
+		{
+			std::vector<Vec4i> hierarchy;
+			std::vector<std::vector<Point>> contours;
+
+			split(HSV[eye], separate[eye]);
+			//threshold(separate[eye][1], bilevel[eye], 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
+			threshold(separate[eye][1], bilevel[eye], 80, 255, CV_THRESH_TOZERO);
+			Canny(bilevel[eye], bilevel[eye], 60, 200);
+			findContours(bilevel[eye], contours, hierarchy, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
+			// Detect fingers
+			for (uint i = 0; i < contours.size(); i++)
+			{
+				std::vector<Point> contour = contours[i];
+				if (200 < contour.size() && hierarchy[i][3] == -1)
+				{
+					Rect bound = boundingRect(contour);
+					// Make histgram of HS values
+					for (int y = bound.y; y < bound.y + bound.height; y++)
+					{
+						Vec4b *row = HSV[eye].ptr<Vec4b>(y);
+						for (int x = bound.x; x < bound.x + bound.width; x++)
+						{
+							// Check inside contour
+							//if (0 < pointPolygonTest(contour, Point2f(x, y), false))
+							{
+								int h, s, *hs;
+								try {
+									h = row[x][0];
+									s = row[x][1];
+									if (0 < h && h < 30 && 0 < s)
+									{
+										hs = histgram[eye].ptr<int>(h);
+										hs[s]++;
+									}
+								}
+								catch (Exception ex)
+								{
+									puts(ex.msg.c_str());
+								}
+							}
+						}
+					}
+
+					std::vector<int> convex;
+					std::vector<Vec4i> defects;
+					convexHull(contour, convex, true);
+					convexityDefects(contour, convex, defects);
+					for (uint defect = 0; defect < defects.size(); defect++)
+					{
+						int startIdx = defects[defect][0];
+						int endIdx = defects[defect][1];
+						int farIdx = defects[defect][2];
+						int e = defects[defect][3] & 0xFF;
+						float depth = (float)(defects[defect][3] / 256);
+						line(HSV[eye], contour[startIdx], contour[farIdx], Scalar(0, 0, 255), 1);
+						line(HSV[eye], contour[endIdx], contour[farIdx], Scalar(0, 0, 255), 1);
+					}
+					drawContours(HSV[eye], contours, i, Scalar::all(255));
+
+				}
+			}
+		}
+
+		cv::imshow("HSV(L)", HSV[0]);
+		//imshow("HSV(R)", HSV[1]);
+		cv::imshow("S(L)", separate[0][1]);
+		//imshow("S(R)", separate[1][1]);
+		imshow("bilevel(L)", bilevel[0]);
+		//imshow("bilevel(R)", bilevel[1]);
+
+		switch (waitKey(10))
+		{
+		case ' ':
+			loop = false;
+			break;
+
+		case 's':
+			imwrite("S.png", separate[0][1]);
+			imwrite("bilevel.png", bilevel[0]);
+			imwrite("histgram.png", normalized);
+			break;
+		}
+	}
+
+	add(histgram[0], histgram[1], sum);
+	cv::normalize(sum, normalized, 0, 255, NORM_MINMAX, normalized.type());
+	cv::medianBlur(normalized, normalized, 3);
+
+	// Estimate color range in HS space
+	double maxVal;
+	Point maxLoc;
+	cv::minMaxLoc(normalized, NULL, &maxVal, NULL, &maxLoc);
+	int hLow, hHigh, sLow, sHigh;
+	// H range
+	for (int i = maxLoc.y; 0 < i; i--)
+	{
+		uchar h = normalized.at<uchar>(i, maxLoc.x);
+		if (h < 8) // 5 %
+		{
+			hLow = i;
+			break;
+		}
+	}
+	for (int i = maxLoc.y; i < 180; i++)
+	{
+		uchar h = normalized.at<uchar>(i, maxLoc.x);
+		if (h < 8)
+		{
+			hHigh = i;
+			break;
+		}
+	}
+	// S range
+	for (int i = maxLoc.x; 0 < i; i--)
+	{
+		uchar s = normalized.at<uchar>(maxLoc.y, i);
+		if (s < 8)
+		{
+			sLow = i;
+			break;
+		}
+	}
+	for (int i = maxLoc.x; i < 256; i++)
+	{
+		uchar s = normalized.at<uchar>(maxLoc.y, i);
+		if (s < 8)
+		{
+			sHigh = i;
+			break;
+		}
+	}
+	printf("H:%d S:%d count %f H{%d - %d} S{%d - %d}\n",
+		maxLoc.y, maxLoc.x, maxVal, hLow, hHigh, sLow, sHigh);
+	hsvRange[0] = hLow;
+	hsvRange[1] = hHigh;
+	hsvRange[2] = sLow;
+	hsvRange[3] = sHigh;
+	//rectangle(normalized, Point(hsvRange[2], hsvRange[0]), Point(hsvRange[3], hsvRange[1]), Scalar(255));
+	cv::imshow("normalized", normalized);
+	imwrite("histgram.png", normalized);
+	return 0;
+}
+
 
 
