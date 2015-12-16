@@ -123,20 +123,6 @@ namespace OVR
 				@return size */
 			Size GetScaledSize();
 
-			/*! @brief Start skin color calibration
-				@param frames for calibration */
-			void StartCalibration(int frames);
-
-			/*! @brief enumerate pixels 
-				@param left histgram 
-				@param right histgram
-				@return true if hand detected */
-			bool EnumHS(Mat &result_l, Mat &result_r);
-
-			/*! @brief Estimate skin color range
-				@param histgram */
-			void EstimateColorRange();
-
 			/*! @brief Get half scaled image
 			@param src
 			@param dst
@@ -156,6 +142,10 @@ namespace OVR
 				@param threshold (0..255)
 				@return previous threshold */
 			int SetThreshold(int threshold);
+
+			/*! @brief Start skin color calibration
+			@param frames for calibration */
+			void StartCalibration(int frames);
 
 			// Skin color region 
 			/*! @brief Skin color region mask 
@@ -222,6 +212,17 @@ namespace OVR
 
 			// Enumerate OpenCL extensions
 			int DeviceExtensions(EXTENSION_CALLBACK callback = NULL, void *item = NULL);
+
+		protected:
+			/*! @brief enumerate pixels
+			@param left histgram
+			@param right histgram
+			@return true if hand detected */
+			bool EnumHS(Mat &result_l, Mat &result_r);
+
+			/*! @brief Estimate skin color range
+			@param histgram */
+			void EstimateColorRange();
 
 		private:
 			bool CreateProgram();

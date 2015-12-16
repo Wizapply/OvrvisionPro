@@ -713,6 +713,7 @@ namespace OVR
 		Mat separate[2][4];
 		Mat bilevel[2];
 		Mat HSV[2];
+		Mat *result[2] = { &result_l, &result_r };
 		HSV[0].create(height, width, CV_8UC4);
 		HSV[1].create(height, width, CV_8UC4);
 		bilevel[0].create(height, width, CV_8UC1);
@@ -730,21 +731,53 @@ namespace OVR
 			threshold(separate[eye][1], bilevel[eye], 80, 255, CV_THRESH_TOZERO);
 			Canny(bilevel[eye], bilevel[eye], 60, 200);
 			findContours(bilevel[eye], contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+
 			// Detect fingers
 			for (uint i = 0; i < contours.size(); i++)
 			{
+				int finger = 0; // number of finger
 				std::vector<Point> contour = contours[i];
 				if (200 < contour.size() && hierarchy[i][3] == -1)
 				{
 					Rect bound = boundingRect(contour);
-					// Make histgram of HS values
-					for (int y = bound.y; y < bound.y + bound.height; y++)
+					// ConvexHull
+					std::vector<int> convex;
+					std::vector<Vec4i> defects;
+					convexHull(contour, convex, true);
+
+					// Mass center
+					Moments moment;
+					moment = moments(contour);
+					double mc[2] = { (moment.m10 / moment.m00), (moment.m01 / moment.m00) };
+					Vec4b center = HSV[eye].at<Vec4b>((int)mc[1], (int)mc[0]);
+					if (0 <= center[0] && center[0] <= 30 && _s_low <= center[1] && center[1] <= _s_high)
 					{
-						Vec4b *row = HSV[eye].ptr<Vec4b>(y);
-						for (int x = bound.x; x < bound.x + bound.width; x++)
+						finger++;
+					}
+
+					convexityDefects(contour, convex, defects);
+					for (uint defect = 0; defect < defects.size(); defect++)
+					{
+						int startIdx = defects[defect][0];
+						int endIdx = defects[defect][1];
+						int farIdx = defects[defect][2];
+						int tmp = defects[defect][3];
+						float depth = (float)(defects[defect][3] / 256);
+						int e = defects[defect][3] & 0xFF;
+						if (80 < depth)
 						{
-							// Check inside contour
-							//if (0 < pointPolygonTest(contour, Point2f(x, y), false))
+							finger++;
+						}
+					}
+					
+					// Make histgram of HS values
+					if (4 < finger)
+					{
+						detect = true;
+						for (int y = bound.y; y < bound.y + bound.height; y++)
+						{
+							Vec4b *row = HSV[eye].ptr<Vec4b>(y);
+							for (int x = bound.x; x < bound.x + bound.width; x++)
 							{
 								int h, s, *hs;
 								try {
@@ -762,27 +795,31 @@ namespace OVR
 								}
 							}
 						}
+
+						drawContours(*result[eye], contours, i, Scalar::all(255), 2);
+						Point next, prev = contour[convex[convex.size() - 1]];
+						for (size_t j = 0; j < convex.size(); j++)
+						{
+							next = contour[convex[j]];
+							line(*result[eye], prev, next, Scalar::all(255), 1);
+							prev = next;
+						}
+						for (uint defect = 0; defect < defects.size(); defect++)
+						{
+							int startIdx = defects[defect][0];
+							int endIdx = defects[defect][1];
+							int farIdx = defects[defect][2];
+							int tmp = defects[defect][3];
+							float depth = (float)(defects[defect][3] / 256);
+							int e = defects[defect][3] & 0xFF;
+							if (80 < depth)
+							{
+								//line(*result[eye], contour[startIdx], contour[farIdx], Scalar(0, 0, 255), 1);
+								//line(*result[eye], contour[endIdx], contour[farIdx], Scalar(0, 0, 255), 1);
+								//circle(*result[eye], contour[startIdx], 3, Scalar(0, 0, 255), 1);
+							}
+						}
 					}
-					/*
-					std::vector<int> convex;
-					std::vector<Vec4i> defects;
-					convexHull(contour, convex, true);
-					convexityDefects(contour, convex, defects);
-					for (uint defect = 0; defect < defects.size(); defect++)
-					{
-						int startIdx = defects[defect][0];
-						int endIdx = defects[defect][1];
-						int farIdx = defects[defect][2];
-						int e = defects[defect][3] & 0xFF;
-						float depth = (float)(defects[defect][3] / 256);
-						//line(HSV[eye], contour[startIdx], contour[farIdx], Scalar(0, 0, 255), 1);
-						//line(HSV[eye], contour[endIdx], contour[farIdx], Scalar(0, 0, 255), 1);
-					}
-					*/
-					if (eye == 0)
-						drawContours(result_l, contours, i, Scalar::all(255));
-					else
-						drawContours(result_r, contours, i, Scalar::all(255));
 				}
 			}
 		}
@@ -869,10 +906,13 @@ namespace OVR
 		if (0 < _frameCounter)
 		{
 			char buffer[30];
-			_frameCounter--;
+
 			if (_calibration)
 			{
-				EnumHS(_left, _right);
+				if (EnumHS(_left, _right))
+				{
+					_frameCounter--;
+				}
 
 				sprintf(buffer, "Calibrating.. %d", _frameCounter);
 				putText(_left, buffer, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255), 1, CV_AA);
@@ -887,6 +927,7 @@ namespace OVR
 			}
 			else
 			{
+				_frameCounter--;
 				sprintf(buffer, "H:%d - %d S:%d - %d", _h_low, _h_high, _s_low, _s_high);
 				putText(_left, buffer, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));
 				putText(_right, "Calibrated", Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));

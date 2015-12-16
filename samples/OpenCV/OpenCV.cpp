@@ -89,9 +89,10 @@ int main(int argc, char* argv[])
 		images[0].create(height, width, CV_8UC4);
 		images[1].create(height, width, CV_8UC4);
 
+		detect:
 		// Estimate skin color range with 60 frames
 		ovrvision->DetectHand(60);
-		for (bool done = false; done == false;)
+		for (bool done = false; done == false; )
 		{
 			ovrvision->Capture(mode);
 			done = ovrvision->GetScaledImageRGBA(images[0].data, images[1].data);
@@ -99,7 +100,7 @@ int main(int argc, char* argv[])
 			imshow("Left", images[0]);
 			imshow("Right", images[1]);
 		}
-		for (bool loop = true; loop;)
+		for (bool loop = true; loop; )
 		{
 			ovrvision->Capture(mode);
 			ovrvision->GetSkinImage(images[0].data, images[1].data);
@@ -111,6 +112,12 @@ int main(int argc, char* argv[])
 			case 'q':
 				loop = false;
 				break;
+			case ' ':
+				imwrite("result_l.png", images[0]);
+				imwrite("result_r.png", images[1]);
+				break;
+			case 'd':
+				goto detect;
 			}
 		}
 #else
