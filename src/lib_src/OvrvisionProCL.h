@@ -252,7 +252,7 @@ namespace OVR
 			char	*_deviceExtensions;
 			Mat		*_mapX[2], *_mapY[2];	// camera parameter
 			Mat		*_skinmask[2];				// skin mask
-			Mat		_histgram[2];
+			Mat		*_histgram[2];
 			int		_skinThreshold;
 			uint	_width, _height;
 			// HSV color region 

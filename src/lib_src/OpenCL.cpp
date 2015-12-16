@@ -189,8 +189,8 @@ namespace OVR
 			_s_low = 88;
 			_s_high = 136;
 			_skinThreshold = 0;
-			_histgram[0].create(256, 256, CV_32SC1);
-			_histgram[1].create(256, 256, CV_32SC1);
+			_histgram[0] = new Mat(256, 256, CV_32SC1);
+			_histgram[1] = new Mat(256, 256, CV_32SC1);
 
 			// Inter frame object tracking 
 			//_kalman[0] = KalmanFilter(4, 2);
@@ -223,12 +223,16 @@ namespace OVR
 			_mapY[1]->release();
 			_skinmask[0]->release();
 			_skinmask[1]->release();
+			_histgram[0]->release();
+			_histgram[1]->release();
 			delete _mapX[0];
 			delete _mapY[0];
 			delete _mapX[1];
 			delete _mapY[1];
 			delete _skinmask[0];
 			delete _skinmask[1];
+			delete _histgram[0];
+			delete _histgram[1];
 
 			clReleaseCommandQueue(_commandQueue);
 			clReleaseContext(_context);
@@ -696,8 +700,8 @@ namespace OVR
 	{
 		_calibration = true;
 		_frameCounter = frames;
-		_histgram[0].setTo(Scalar(0));
-		_histgram[1].setTo(Scalar(0));
+		_histgram[0]->setTo(Scalar(0));
+		_histgram[1]->setTo(Scalar(0));
 	}
 
 	// 
@@ -748,7 +752,7 @@ namespace OVR
 									s = row[x][1];
 									if (0 < h && h < 30 && 0 < s)
 									{
-										hs = _histgram[eye].ptr<int>(h);
+										hs = _histgram[eye]->ptr<int>(h);
 										hs[s]++;
 									}
 								}
@@ -791,7 +795,7 @@ namespace OVR
 		Mat sum(256, 256, CV_32SC1);
 		Mat normalized(256, 256, CV_8UC1);
 
-		add(_histgram[0], _histgram[1], sum);
+		add(*_histgram[0], *_histgram[1], sum);
 		normalize(sum, normalized, 0, 255, NORM_MINMAX, normalized.type());
 		medianBlur(normalized, normalized, 3);
 
@@ -858,29 +862,34 @@ namespace OVR
 		Mat _left(height, width, CV_8UC4, left);
 		Mat _right(height, width, CV_8UC4, right);
 
+#ifdef WIN32
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
 		if (0 < _frameCounter)
 		{
-
+			char buffer[30];
 			_frameCounter--;
 			if (_calibration)
 			{
 				EnumHS(_left, _right);
 
-				char buffer[10];
-				sprintf(buffer, "%d", _frameCounter);
+				sprintf(buffer, "Calibrating.. %d", _frameCounter);
 				putText(_left, buffer, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255), 1, CV_AA);
+				putText(_right, buffer, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255), 1, CV_AA);
 
 				if (_frameCounter == 0)
 				{
-					_frameCounter = 60;
+					_frameCounter = 30;
 					_calibration = false;
 					//EstimateColorRange();
 				}
 			}
 			else
 			{
-				putText(_left, "Calibrated", Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));
-				putText(_right, "RIGHT", Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));
+				sprintf(buffer, "H:%d - %d S:%d - %d", _h_low, _h_high, _s_low, _s_high);
+				putText(_left, buffer, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));
+				putText(_right, "Calibrated", Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));
 			}
 			return false;
 		}
@@ -888,6 +897,9 @@ namespace OVR
 		{
 			return true;
 		}
+#ifdef WIN32
+#pragma warning(pop)
+#endif
 	}
 
 	//
