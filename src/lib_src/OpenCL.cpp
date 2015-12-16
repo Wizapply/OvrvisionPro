@@ -847,7 +847,7 @@ namespace OVR
 		SetHSV(hLow, hHigh, sLow, sHigh);
 	}
 
-	//
+	// Calibration
 	bool OvrvisionProOpenCL::Read(uchar *left, uchar *right)
 	{
 		size_t origin[3] = { 0, 0, 0 };
@@ -882,7 +882,7 @@ namespace OVR
 				{
 					_frameCounter = 30;
 					_calibration = false;
-					//EstimateColorRange();
+					EstimateColorRange();
 				}
 			}
 			else
@@ -1040,7 +1040,7 @@ namespace OVR
 
 #pragma region FILTERS
 	// Set scaling 
-	SCALING OvrvisionProOpenCL::SetScale(SCALING scaling)
+	Size OvrvisionProOpenCL::SetScale(SCALING scaling)
 	{
 		int scale;
 
@@ -1062,9 +1062,9 @@ namespace OVR
 		_scaledRegion[0] = _width / scale;
 		_scaledRegion[1] = _height / scale;
 		_scaledRegion[2] = 1;
-		SCALING prev = _scaling;
+		//SCALING prev = _scaling;
 		_scaling = scaling;
-		return prev;
+		return Size(_scaledRegion[0], _scaledRegion[1]);
 	}
 
 	// Get size

@@ -169,6 +169,11 @@ public:
 	/*! @brief UNDER CONSTRUCTION */
 	void GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight);
 
+	/*! @brief Set Skin image scale
+		@param scale (2, 4, 8) of scale dominant
+		@return size of scaled image */
+	ROI SetSkinScale(unsigned int scale);
+
 	/*! @brief Get Skin images
 		@param pLeft Image buffer pointer (RGBA IMAGE)
 		@param pRight Image buffer pointer (RGBA IMAGE) */

@@ -79,26 +79,17 @@ int main(int argc, char* argv[])
 		width = ovrvision->GetCamWidth();
 		height = ovrvision->GetCamHeight();
 
-		Convex	_convex[2];			// Assume to be both hands
-		//KalmanFilter _kalman(4, 2);
-		//setIdentity(_kalman.measurementMatrix, cvRealScalar(1.0));
-		//setIdentity(_kalman.processNoiseCov, cvRealScalar(1e-5));
-		//setIdentity(_kalman.measurementNoiseCov, cvRealScalar(0.1));
-		//setIdentity(_kalman.errorCovPost, cvRealScalar(1.0));
-
 		//Sync
 		ovrvision->SetCameraSyncMode(true);
 #if 1
-		width /= 2;
-		height /= 2;
+		// Set scaling and size of scaled image
+		ROI roi = ovrvision->SetSkinScale(2);
+		width = roi.width;
+		height = roi.height;
 		images[0].create(height, width, CV_8UC4);
 		images[1].create(height, width, CV_8UC4);
 
-		//uchar *left = ovrvision->GetCamImageBGRA(Cameye::OV_CAMEYE_LEFT);
-		//uchar *right = ovrvision->GetCamImageBGRA(Cameye::OV_CAMEYE_RIGHT);
-		//Mat l(height, width, CV_8UC4, left);
-		//Mat r(height, width, CV_8UC4, right);
-
+		// Estimate skin color range with 60 frames
 		ovrvision->DetectHand(60);
 		for (bool done = false; done == false;)
 		{

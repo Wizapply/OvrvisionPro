@@ -116,8 +116,8 @@ namespace OVR
 
 			/*! @brief set scaling (1/2, 1/4, 1/8) 
 				@param scaling (HALF, FOURTH, EIGHTH)
-				@return previous scalling */
-			SCALING SetScale(SCALING scaling);
+				@return size of scaled image */
+			Size SetScale(SCALING scaling);
 
 			/*! @brief Get size of scaled image 
 				@return size */

@@ -314,6 +314,30 @@ void OvrvisionPro::GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight
 	m_pOpenCL->GetHSV(pLeft, pRight);
 }
 
+// Set Scaling
+ROI OvrvisionPro::SetSkinScale(unsigned int scale)
+{
+	ROI roi = { 0, 0 };
+	SCALING scaling;
+	switch (scale)
+	{
+	case 4:
+		scaling = FOURTH;
+		break;
+	case 8:
+		scaling = EIGHTH;
+		break;
+	case 2:
+	default:
+		scaling = HALF;
+		break;
+	}
+	Size size = m_pOpenCL->SetScale(scaling);
+	roi.width = size.width;
+	roi.height = size.height;
+	return roi;
+}
+
 // Get Skin image
 void OvrvisionPro::GetSkinImage(unsigned char* pLeft, unsigned char* pRight)
 {
