@@ -52,7 +52,7 @@ enum FILTER filter = MEDIAN;
 int width;
 int height;
 int ksize = 5;
-bool simulate = false;
+bool simulate = true;
 bool useHistgram = false;
 
 
@@ -133,6 +133,7 @@ int main(int argc, char* argv[])
 		images[1].create(height, width, CV_8UC4);
 		bilevel[0].create(height, width, CV_8UC1);
 		bilevel[1].create(height, width, CV_8UC1);
+		Mat multi(height, width, CV_8UC1);
 
 		ovrvision->SetSkinHSV(hsvRange);
 
@@ -146,11 +147,13 @@ int main(int argc, char* argv[])
 				///////////////////// Simulation
 				// Retrieve frame data
 				ovrvision->GetScaledImageRGBA(images[0].data, images[1].data);
-#if 1
+#if 0
 				results[0].setTo(Scalar(0, 0, 0, 255));
 				results[1].setTo(Scalar(0, 0, 0, 255));
 				ovrvision->SkinRegion(bilevel[0].data, bilevel[1].data);
 #else
+				Mat separate[4];
+
 				ovrvision->GetStereoImageHSV(hsv[0].data, hsv[1].data);
 
 				// Ç±Ç±Ç≈OpenCVÇ≈ÇÃâ¡çHÇ»Ç«
@@ -172,7 +175,14 @@ int main(int argc, char* argv[])
 					hsv[1].copyTo(HSV[1]);
 					break;
 				}
-					
+				split(HSV[0], separate);
+				threshold(separate[0], bilevel[0], 30, 255, CV_THRESH_BINARY_INV);
+				imshow("H:CV_THRESH_BINARY_INV", bilevel[0]);
+				threshold(separate[1], bilevel[1], 80, 255, CV_THRESH_BINARY);
+				imshow("S:CV_THRESH_BINARY", bilevel[1]);
+				multiply(bilevel[0], bilevel[1], bilevel[1]);
+				imshow("S x H", bilevel[1]);
+
 #				pragma omp parallel for
 				for (int i = 0; i < 2; i++)
 				{

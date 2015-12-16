@@ -711,13 +711,15 @@ namespace OVR
 		int width = _scaledRegion[0];
 		int height = _scaledRegion[1];
 		Mat separate[2][4];
-		Mat bilevel[2];
+		Mat bilevel[2], work[2];
 		Mat HSV[2];
 		Mat *result[2] = { &result_l, &result_r };
 		HSV[0].create(height, width, CV_8UC4);
 		HSV[1].create(height, width, CV_8UC4);
 		bilevel[0].create(height, width, CV_8UC1);
 		bilevel[1].create(height, width, CV_8UC1);
+		work[0].create(height, width, CV_8UC1);
+		work[1].create(height, width, CV_8UC1);
 		GetHSV(HSV[0].data, HSV[1].data);
 
 #		pragma omp parallel for
@@ -727,8 +729,9 @@ namespace OVR
 			std::vector<std::vector<Point>> contours;
 
 			split(HSV[eye], separate[eye]);
-			//threshold(separate[eye][1], bilevel[eye], 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
-			threshold(separate[eye][1], bilevel[eye], 80, 255, CV_THRESH_TOZERO);
+			threshold(separate[eye][0], bilevel[eye], 30, 255, CV_THRESH_BINARY_INV);	// Red part
+			threshold(separate[eye][1], work[eye], 80, 255, CV_THRESH_BINARY);		// High saturation part
+			multiply(bilevel[eye], work[eye], bilevel[eye]);
 			Canny(bilevel[eye], bilevel[eye], 60, 200);
 			findContours(bilevel[eye], contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
 
