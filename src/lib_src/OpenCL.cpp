@@ -180,6 +180,8 @@ namespace OVR
 			Prepare4Sharing();
 			SetScale(HALF);
 			_released = false;
+			_calibration = false;
+			_frameCounter = 0;
 
 			// Skin default values
 			_h_low = 13;
@@ -187,6 +189,8 @@ namespace OVR
 			_s_low = 88;
 			_s_high = 136;
 			_skinThreshold = 0;
+			_histgram[0].create(256, 256, CV_32SC1);
+			_histgram[1].create(256, 256, CV_32SC1);
 
 			// Inter frame object tracking 
 			//_kalman[0] = KalmanFilter(4, 2);
@@ -687,6 +691,205 @@ namespace OVR
 		clReleaseMemObject(mask[1]);
 	}
 
+	// 
+	void OvrvisionProOpenCL::StartCalibration(int frames)
+	{
+		_calibration = true;
+		_frameCounter = frames;
+		_histgram[0].setTo(Scalar(0));
+		_histgram[1].setTo(Scalar(0));
+	}
+
+	// 
+	bool OvrvisionProOpenCL::EnumHS(Mat &result_l, Mat &result_r)
+	{
+		bool detect = false;
+		int width = _scaledRegion[0];
+		int height = _scaledRegion[1];
+		Mat separate[2][4];
+		Mat bilevel[2];
+		Mat HSV[2];
+		HSV[0].create(height, width, CV_8UC4);
+		HSV[1].create(height, width, CV_8UC4);
+		bilevel[0].create(height, width, CV_8UC1);
+		bilevel[1].create(height, width, CV_8UC1);
+		GetHSV(HSV[0].data, HSV[1].data);
+
+#		pragma omp parallel for
+		for (int eye = 0; eye < 2; eye++)
+		{
+			std::vector<Vec4i> hierarchy;
+			std::vector<std::vector<Point>> contours;
+
+			split(HSV[eye], separate[eye]);
+			//threshold(separate[eye][1], bilevel[eye], 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
+			threshold(separate[eye][1], bilevel[eye], 80, 255, CV_THRESH_TOZERO);
+			Canny(bilevel[eye], bilevel[eye], 60, 200);
+			findContours(bilevel[eye], contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+			// Detect fingers
+			for (uint i = 0; i < contours.size(); i++)
+			{
+				std::vector<Point> contour = contours[i];
+				if (200 < contour.size() && hierarchy[i][3] == -1)
+				{
+					Rect bound = boundingRect(contour);
+					// Make histgram of HS values
+					for (int y = bound.y; y < bound.y + bound.height; y++)
+					{
+						Vec4b *row = HSV[eye].ptr<Vec4b>(y);
+						for (int x = bound.x; x < bound.x + bound.width; x++)
+						{
+							// Check inside contour
+							//if (0 < pointPolygonTest(contour, Point2f(x, y), false))
+							{
+								int h, s, *hs;
+								try {
+									h = row[x][0];
+									s = row[x][1];
+									if (0 < h && h < 30 && 0 < s)
+									{
+										hs = _histgram[eye].ptr<int>(h);
+										hs[s]++;
+									}
+								}
+								catch (Exception ex)
+								{
+									puts(ex.msg.c_str());
+								}
+							}
+						}
+					}
+					/*
+					std::vector<int> convex;
+					std::vector<Vec4i> defects;
+					convexHull(contour, convex, true);
+					convexityDefects(contour, convex, defects);
+					for (uint defect = 0; defect < defects.size(); defect++)
+					{
+						int startIdx = defects[defect][0];
+						int endIdx = defects[defect][1];
+						int farIdx = defects[defect][2];
+						int e = defects[defect][3] & 0xFF;
+						float depth = (float)(defects[defect][3] / 256);
+						//line(HSV[eye], contour[startIdx], contour[farIdx], Scalar(0, 0, 255), 1);
+						//line(HSV[eye], contour[endIdx], contour[farIdx], Scalar(0, 0, 255), 1);
+					}
+					*/
+					if (eye == 0)
+						drawContours(result_l, contours, i, Scalar::all(255));
+					else
+						drawContours(result_r, contours, i, Scalar::all(255));
+				}
+			}
+		}
+		return detect;
+	}
+
+	//
+	void OvrvisionProOpenCL::EstimateColorRange()
+	{
+		Mat sum(256, 256, CV_32SC1);
+		Mat normalized(256, 256, CV_8UC1);
+
+		add(_histgram[0], _histgram[1], sum);
+		normalize(sum, normalized, 0, 255, NORM_MINMAX, normalized.type());
+		medianBlur(normalized, normalized, 3);
+
+		// Estimate color range in HS space
+		double maxVal;
+		Point maxLoc;
+		cv::minMaxLoc(normalized, NULL, &maxVal, NULL, &maxLoc);
+		int hLow, hHigh, sLow, sHigh;
+		// H range
+		for (int i = maxLoc.y; 0 < i; i--)
+		{
+			uchar h = normalized.at<uchar>(i, maxLoc.x);
+			if (h < 8) // 5 %
+			{
+				hLow = i;
+				break;
+			}
+		}
+		for (int i = maxLoc.y; i < 180; i++)
+		{
+			uchar h = normalized.at<uchar>(i, maxLoc.x);
+			if (h < 8)
+			{
+				hHigh = i;
+				break;
+			}
+		}
+		// S range
+		for (int i = maxLoc.x; 0 < i; i--)
+		{
+			uchar s = normalized.at<uchar>(maxLoc.y, i);
+			if (s < 8)
+			{
+				sLow = i;
+				break;
+			}
+		}
+		for (int i = maxLoc.x; i < 256; i++)
+		{
+			uchar s = normalized.at<uchar>(maxLoc.y, i);
+			if (s < 8)
+			{
+				sHigh = i;
+				break;
+			}
+		}
+		//printf("H:%d S:%d count %f H{%d - %d} S{%d - %d}\n",
+		//	maxLoc.y, maxLoc.x, maxVal, hLow, hHigh, sLow, sHigh);
+		SetHSV(hLow, hHigh, sLow, sHigh);
+	}
+
+	//
+	bool OvrvisionProOpenCL::Read(uchar *left, uchar *right)
+	{
+		size_t origin[3] = { 0, 0, 0 };
+		_errorCode = clEnqueueReadImage(_commandQueue, _reducedL, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clEnqueueReadImage(_commandQueue, _reducedR, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Skin color calibration
+		int width = _scaledRegion[0];
+		int height = _scaledRegion[1];
+		Mat _left(height, width, CV_8UC4, left);
+		Mat _right(height, width, CV_8UC4, right);
+
+		if (0 < _frameCounter)
+		{
+
+			_frameCounter--;
+			if (_calibration)
+			{
+				EnumHS(_left, _right);
+
+				char buffer[10];
+				sprintf(buffer, "%d", _frameCounter);
+				putText(_left, buffer, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255), 1, CV_AA);
+
+				if (_frameCounter == 0)
+				{
+					_frameCounter = 60;
+					_calibration = false;
+					//EstimateColorRange();
+				}
+			}
+			else
+			{
+				putText(_left, "Calibrated", Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));
+				putText(_right, "RIGHT", Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));
+			}
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
 	//
 	void OvrvisionProOpenCL::SkinImages(uchar *left, uchar *right)
 	{
@@ -825,10 +1028,9 @@ namespace OVR
 
 #pragma region FILTERS
 	// Set scaling 
-	void OvrvisionProOpenCL::SetScale(SCALING scaling)
+	SCALING OvrvisionProOpenCL::SetScale(SCALING scaling)
 	{
 		int scale;
-		_scaling = scaling;
 
 		switch (scaling)
 		{
@@ -848,6 +1050,15 @@ namespace OVR
 		_scaledRegion[0] = _width / scale;
 		_scaledRegion[1] = _height / scale;
 		_scaledRegion[2] = 1;
+		SCALING prev = _scaling;
+		_scaling = scaling;
+		return prev;
+	}
+
+	// Get size
+	Size OvrvisionProOpenCL::GetScaledSize()
+	{
+		return Size(_scaledRegion[0], _scaledRegion[1]);
 	}
 
 	// Resize
@@ -901,16 +1112,6 @@ namespace OVR
 		{
 			_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
 		}
-	}
-
-	//
-	void OvrvisionProOpenCL::Read(uchar *left, uchar *right)
-	{
-		size_t origin[3] = { 0, 0, 0 };
-		_errorCode = clEnqueueReadImage(_commandQueue, _reducedL, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clEnqueueReadImage(_commandQueue, _reducedR, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
 	}
 
 	//
@@ -1316,7 +1517,7 @@ namespace OVR
 		clReleaseEvent(execute);
 	}
 
-	//
+	/*
 	void OvrvisionProOpenCL::Demosaic(const ushort *src, Mat &left, Mat &right)
 	{
 		size_t origin[3] = { 0, 0, 0 };
@@ -1339,6 +1540,7 @@ namespace OVR
 		const uchar *ptr = src.ptr(0);
 		Demosaic((const ushort *)ptr, left, right);
 	}
+	*/
 
 	// Remap
 	void OvrvisionProOpenCL::Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute)
@@ -1474,7 +1676,7 @@ namespace OVR
 		clReleaseEvent(execute);
 	}
 
-	//
+	/*
 	void OvrvisionProOpenCL::DemosaicRemap(const ushort *src, Mat &left, Mat &right)
 	{
 		size_t origin[3] = { 0, 0, 0 };
@@ -1497,6 +1699,7 @@ namespace OVR
 		const uchar *ptr = src.ptr(0);
 		DemosaicRemap((const ushort *)ptr, left, right);
 	}
+	*/
 #pragma endregion
 
 #pragma region DEPRICATED

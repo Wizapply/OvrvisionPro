@@ -52,7 +52,7 @@ enum FILTER filter = MEDIAN;
 int width;
 int height;
 int ksize = 5;
-bool simulate = true;
+bool simulate = false;
 bool useHistgram = false;
 
 
@@ -64,7 +64,7 @@ int evaluation(int h, int s)
 	return (hDiff * hDiff) + (sDiff * sDiff);
 }
 
-int DetectHand();
+int DetectHand(int frames);
 
 int main(int argc, char* argv[])
 {
@@ -76,13 +76,55 @@ int main(int argc, char* argv[])
 
 	if (ovrvision->Open(0, Camprop::OV_CAMHD_FULL))
 	{
-		width = ovrvision->GetCamWidth() / 2;
-		height = ovrvision->GetCamHeight() / 2;
-		//ROI roi = { 0, 0, width, height };
+		width = ovrvision->GetCamWidth();
+		height = ovrvision->GetCamHeight();
 
 		Convex	_convex[2];			// Assume to be both hands
 		//KalmanFilter _kalman(4, 2);
+		//setIdentity(_kalman.measurementMatrix, cvRealScalar(1.0));
+		//setIdentity(_kalman.processNoiseCov, cvRealScalar(1e-5));
+		//setIdentity(_kalman.measurementNoiseCov, cvRealScalar(0.1));
+		//setIdentity(_kalman.errorCovPost, cvRealScalar(1.0));
 
+		//Sync
+		ovrvision->SetCameraSyncMode(true);
+#if 1
+		width /= 2;
+		height /= 2;
+		images[0].create(height, width, CV_8UC4);
+		images[1].create(height, width, CV_8UC4);
+
+		//uchar *left = ovrvision->GetCamImageBGRA(Cameye::OV_CAMEYE_LEFT);
+		//uchar *right = ovrvision->GetCamImageBGRA(Cameye::OV_CAMEYE_RIGHT);
+		//Mat l(height, width, CV_8UC4, left);
+		//Mat r(height, width, CV_8UC4, right);
+
+		ovrvision->DetectHand(60);
+		for (bool done = false; done == false;)
+		{
+			ovrvision->Capture(mode);
+			done = ovrvision->GetScaledImageRGBA(images[0].data, images[1].data);
+			waitKey(1);
+			imshow("Left", images[0]);
+			imshow("Right", images[1]);
+		}
+		for (bool loop = true; loop;)
+		{
+			ovrvision->Capture(mode);
+			ovrvision->GetSkinImage(images[0].data, images[1].data);
+			imshow("Left", images[0]);
+			imshow("Right", images[1]);
+
+			switch (waitKey(1))
+			{
+			case 'q':
+				loop = false;
+				break;
+			}
+		}
+#else
+		width /= 2;
+		height /= 2;
 		results[0].create(height, width, CV_8UC4);
 		results[1].create(height, width, CV_8UC4);
 		hsv[0].create(height, width, CV_8UC4);
@@ -93,16 +135,6 @@ int main(int argc, char* argv[])
 		images[1].create(height, width, CV_8UC4);
 		bilevel[0].create(height, width, CV_8UC1);
 		bilevel[1].create(height, width, CV_8UC1);
-
-		//setIdentity(_kalman.measurementMatrix, cvRealScalar(1.0));
-		//setIdentity(_kalman.processNoiseCov, cvRealScalar(1e-5));
-		//setIdentity(_kalman.measurementNoiseCov, cvRealScalar(0.1));
-		//setIdentity(_kalman.errorCovPost, cvRealScalar(1.0));
-
-		//Sync
-		ovrvision->SetCameraSyncMode(true);
-	
-		DetectHand();
 
 		ovrvision->SetSkinHSV(hsvRange);
 
@@ -115,8 +147,8 @@ int main(int argc, char* argv[])
 			{		
 				///////////////////// Simulation
 				// Retrieve frame data
-				ovrvision->Read(images[0].data, images[1].data);
-#if 0
+				ovrvision->GetScaledImageRGBA(images[0].data, images[1].data);
+#if 1
 				results[0].setTo(Scalar(0, 0, 0, 255));
 				results[1].setTo(Scalar(0, 0, 0, 255));
 				ovrvision->SkinRegion(bilevel[0].data, bilevel[1].data);
@@ -188,7 +220,7 @@ int main(int argc, char* argv[])
 					std::vector<std::vector<Point>> contours;
 
 					// 1. Reduct small regions
-					findContours(bilevel[eyes], contours, hierarchy, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
+					findContours(bilevel[eyes], contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
 					for (uint i = 0; i < contours.size(); i++)
 					{
 						std::vector<Point> contour = contours[i];
@@ -205,7 +237,7 @@ int main(int argc, char* argv[])
 
 					// 2. Choice tracking candidate 			
 					int minimum = 65535;
-					findContours(bilevel[eyes], contours, hierarchy, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
+					findContours(bilevel[eyes], contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
 					for (uint i = 0; i < contours.size(); i++)
 					{
 						std::vector<Point> contour = contours[i];
@@ -369,7 +401,7 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					ovrvision->Read(images[0].data, images[1].data);
+					ovrvision->GetScaledImageRGBA(images[0].data, images[1].data);
 					ovrvision->GetStereoImageHSV(hsv[0].data, hsv[1].data);
 					ovrvision->SkinRegion(bilevel[0].data, bilevel[1].data);
 					imwrite("hsv_l.tiff", hsv[0]);
@@ -392,6 +424,7 @@ int main(int argc, char* argv[])
 				break;
 			}
 		}
+#endif
 	}
 	//else
 	//{
@@ -402,7 +435,7 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-int DetectHand()
+int DetectHand(int frames)
 {
 	Mat separate[2][4];
 	Mat histgram[2];
@@ -420,7 +453,7 @@ int DetectHand()
 	histgram[0].setTo(Scalar(0));
 	histgram[1].setTo(Scalar(0));
 
-	for (bool loop = true; loop;)
+	for (int frame = 0; frame < frames; frame++)
 	{
 		// Capture frame
 		ovrvision->Capture(mode);
@@ -436,7 +469,7 @@ int DetectHand()
 			//threshold(separate[eye][1], bilevel[eye], 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
 			threshold(separate[eye][1], bilevel[eye], 80, 255, CV_THRESH_TOZERO);
 			Canny(bilevel[eye], bilevel[eye], 60, 200);
-			findContours(bilevel[eye], contours, hierarchy, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
+			cv::findContours(bilevel[eye], contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
 			// Detect fingers
 			for (uint i = 0; i < contours.size(); i++)
 			{
@@ -495,13 +528,13 @@ int DetectHand()
 		//imshow("HSV(R)", HSV[1]);
 		cv::imshow("S(L)", separate[0][1]);
 		//imshow("S(R)", separate[1][1]);
-		imshow("bilevel(L)", bilevel[0]);
+		cv::imshow("bilevel(L)", bilevel[0]);
 		//imshow("bilevel(R)", bilevel[1]);
 
 		switch (waitKey(10))
 		{
 		case ' ':
-			loop = false;
+			//loop = false;
 			break;
 
 		case 's':

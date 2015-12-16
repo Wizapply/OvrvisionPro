@@ -174,6 +174,10 @@ public:
 		@param pRight Image buffer pointer (RGBA IMAGE) */
 	void GetSkinImage(unsigned char* pLeft, unsigned char* pRight);
 
+	/*! @brief Detect color range
+	@param frames sampling frame */
+	void DetectHand(int frames);
+
 	/*! @brief Get skin color region 
 		@param left image (MONOCHROME MASK)
 		@param right image (MONOCHROME MASK)
@@ -291,8 +295,11 @@ public:
 	/*!	@brief Grayscaled image of 1/8 scaled */
 	void GrayscaleEighth(unsigned char *left, unsigned char *right);	// 1/8 scaled
 
-	// Temporary function
-	void Read(unsigned char *left, unsigned char *right);
+	/*! @brief Get scaled images while calibration
+		@param left ptr to buffer
+		@param right ptr to buffer
+		@return true when calibration done */
+	bool GetScaledImageRGBA(unsigned char *left, unsigned char *right);
 
 	//Parameter EEPROM (Don't touch)
 	void UserDataAccessUnlock();

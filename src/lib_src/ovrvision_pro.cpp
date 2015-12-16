@@ -345,6 +345,12 @@ int OvrvisionPro::SetSkinThreshold(int threshold)
 	return m_pOpenCL->SetThreshold(threshold);
 }
 
+void OvrvisionPro::DetectHand(int frames)
+{
+	m_pOpenCL->StartCalibration(frames);
+}
+
+
 // Get color histrgam in HSV space
 int OvrvisionPro::ColorHistgram(unsigned char* histgram)
 {
@@ -352,9 +358,9 @@ int OvrvisionPro::ColorHistgram(unsigned char* histgram)
 	return 2;
 }
 
-void OvrvisionPro::Read(unsigned char *left, unsigned char *right)
+bool OvrvisionPro::GetScaledImageRGBA(unsigned char *left, unsigned char *right)
 {
-	m_pOpenCL->Read(left, right);
+	return m_pOpenCL->Read(left, right);
 }
 
 //Get Camera data pre-store.

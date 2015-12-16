@@ -104,19 +104,38 @@ namespace OVR
 			void Demosaic(const ushort* src, cl_event *execute);	// for OpenGL/D3D sharing 
 			void Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
 			void Demosaic(const ushort* src, uchar *left, uchar *right);
-			void Demosaic(const ushort* src, Mat &left, Mat &right);
-			void Demosaic(const Mat src, Mat &left, Mat &right);
+			//void Demosaic(const ushort* src, Mat &left, Mat &right);
+			//void Demosaic(const Mat src, Mat &left, Mat &right);
 
 			// Demosaic and Remap
 			void DemosaicRemap(const ushort* src, cl_event *execute);	// for OpenGL/D3D sharing
 			void DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
 			void DemosaicRemap(const ushort* src, uchar *left, uchar *right);
-			void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
+			//void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
 			/*! @brief set scaling (1/2, 1/4, 1/8) 
-				@param scaling (HALF, FOURTH, EIGHTH) */
-			void SetScale(SCALING scaling);
+				@param scaling (HALF, FOURTH, EIGHTH)
+				@return previous scalling */
+			SCALING SetScale(SCALING scaling);
+
+			/*! @brief Get size of scaled image 
+				@return size */
+			Size GetScaledSize();
+
+			/*! @brief Start skin color calibration
+				@param frames for calibration */
+			void StartCalibration(int frames);
+
+			/*! @brief enumerate pixels 
+				@param left histgram 
+				@param right histgram
+				@return true if hand detected */
+			bool EnumHS(Mat &result_l, Mat &result_r);
+
+			/*! @brief Estimate skin color range
+				@param histgram */
+			void EstimateColorRange();
 
 			/*! @brief Get half scaled image
 			@param src
@@ -165,7 +184,7 @@ namespace OVR
 			// Read images region of interest
 			void Read(uchar *left, uchar *right, int offsetX, int offsetY, uint width, uint height);
 
-			void Read(uchar *left, uchar *right);
+			bool Read(uchar *left, uchar *right);
 
 			/*! @brief Download from GPU
 				@param image 
@@ -233,6 +252,7 @@ namespace OVR
 			char	*_deviceExtensions;
 			Mat		*_mapX[2], *_mapY[2];	// camera parameter
 			Mat		*_skinmask[2];				// skin mask
+			Mat		_histgram[2];
 			int		_skinThreshold;
 			uint	_width, _height;
 			// HSV color region 
@@ -240,6 +260,8 @@ namespace OVR
 			int		_s_low, _s_high;
 			bool	_remapAvailable;
 			bool	_released;
+			bool	_calibration;
+			int		_frameCounter;
 			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
 			enum SCALING	_scaling;	//
 			size_t	_scaledRegion[3];
