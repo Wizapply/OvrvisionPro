@@ -752,7 +752,7 @@ namespace OVR
 		for (int eye = 0; eye < 2; eye++)
 		{
 			std::vector<Vec4i> hierarchy;
-			std::vector<std::vector<Point>> contours;
+			std::vector<std::vector<Point> > contours;
 
 			split(HSV[eye], separate[eye]);
 			threshold(separate[eye][0], bilevel[eye], 30, 255, CV_THRESH_BINARY_INV);	// Red part

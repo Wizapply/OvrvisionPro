@@ -156,12 +156,12 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 		}
 		Sleep(150);	//150ms wait
 #elif MACOSX
-    challenge = 0;
 	if([m_pOAV createDevice:OV_USB_VENDERID pid:OV_USB_PRODUCTID
 		cam_w:cam_width cam_h:cam_height rate:cam_framerate locate:locationID] == 0) {
 		objs++;
-		[NSThread sleepForTimeInterval:0.150];	//150ms wait
+        break;
 	}
+    [NSThread sleepForTimeInterval:0.150];	//150ms wait
 #elif LINUX
 
 #endif

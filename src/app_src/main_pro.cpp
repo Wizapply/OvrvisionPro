@@ -82,7 +82,7 @@ int Initialize()
 	}
 
 	//g_pOvrvision->SetCameraExposure(12960);
-	g_pOvrvision->SetCameraSyncMode(false);
+	//g_pOvrvision->SetCameraSyncMode(false);
 
 	//OculusRightGap
 	g_hmdGap.x = g_pOvrvision->GetHMDRightGap(0) * -0.01f;
@@ -129,7 +129,7 @@ void DrawLoop(void)
 	wzSetDepthTest(TRUE);		//Depth off
 	wzSetCullFace(WZ_CLF_NONE);	//Culling off
 	wzVector2 half_pos = { APPSCREEN_WIDTH / 2 / 2, APPSCREEN_HEIGHT / 2 };
-
+    
 	if (wzGetKeyStateTrigger(WZ_KEY_P))
 	{
 		if (g_processMode == OVR::Camqt::OV_CAMQT_DMS)
@@ -141,7 +141,8 @@ void DrawLoop(void)
 	if (g_pOvrvision->isOpen())
 	{
 		//Full Draw
-		g_pOvrvision->PreStoreCamData(g_processMode);
+        
+        g_pOvrvision->PreStoreCamData(g_processMode);
 		unsigned char* p = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 		unsigned char* p2 = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
