@@ -49,7 +49,7 @@ namespace OVR
 		NONE = 0,
 		OPENGL,
 		D3D11,
-		//D3D10
+		//D3D9
 	};
 
 	// Scaling
@@ -92,7 +92,12 @@ namespace OVR
 	// OpenCL version
 	class OVRVISIONPRODLL_API OvrvisionProOpenCL {
 		public:
-			OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode = NONE);
+			/*! @brief Constructor 
+                @param width of image
+                @param height of image
+                @param mode of sharing with D3D11 or OpenGL 
+                @param pDevice for D3D11 */
+			OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode = NONE, void *pDevice = NULL);
 			~OvrvisionProOpenCL();
 
 			/*! @brief release resources */
@@ -136,6 +141,17 @@ namespace OVR
 
 			/*! @brief set HSV region for SkinRegion */
 			void SetHSV(int h_low, int h_high, int s_low, int s_high) { _h_low = h_low; _h_high = h_high; _s_low = s_low; _s_high = s_high; }
+
+			/*! @brief Get D3D11 Skin image for Unity Native 
+                @param pDevice
+                @param left texture
+                @param right texture */
+			void SkinImageForUnityNativeD3D11(ID3D11Device* pDevice, ID3D11Texture2D *pLeft, ID3D11Texture2D* pRight);
+
+			/*! @brief Get OpenGL skin image for Unity Native
+                @param left texture
+                @param right texture */
+			void SkinImageForUnityNativeGL(GLuint left, GLuint right);
 
 			/*! @brief Get Skin images
 				@param left ptr of BGRA image
@@ -219,6 +235,11 @@ namespace OVR
 			int DeviceExtensions(EXTENSION_CALLBACK callback = NULL, void *item = NULL);
 
 		protected:
+			/*! @brief Create context with sharing with D3D!! or OpenGL 
+                @param mode shareing 
+                @param pDevice to share texture */
+			void CreateContext(SHARING_MODE mode, void *pDevice);
+
 			/*! @brief enumerate pixels
 			@param left histgram
 			@param right histgram

@@ -177,11 +177,12 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 
 	//Initialize OpenCL system
 	try {
+        //m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, , SHARING_MODE::D3D11, g_pD3D11Device); // When use D3D11 sharing texture
+        //m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, , SHARING_MODE::OPENGL);    // When use OpenGL sharing texture
 		m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height);
 	}
 	catch (std::exception ex)
 	{
-		//ex.what();
 #ifdef WIN32
 		::MessageBox(NULL, TEXT("This OvrvisionSDK is the GPU necessity which is supporting OpenCL1.2 or more."), TEXT("OpenCL Error!"), MB_ICONERROR | MB_OK);
 #elif MACOSX

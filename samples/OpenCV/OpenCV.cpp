@@ -269,40 +269,44 @@ int main(int argc, char* argv[])
 					for (uint i = 0; i < contours.size(); i++)
 					{
 						std::vector<Point> contour = contours[i];
-						if (200 < contour.size() && hierarchy[i][3] == -1)
+						if (hierarchy[i][3] == -1)
 						{
 							// Mass center
 							Moments moment;
 							moment = moments(contour);
 							double mc[2] = { (moment.m10 / moment.m00), (moment.m01 / moment.m00) };
-							Mat mass_center(2, 1, CV_64FC1, mc);
-							Vec4b center = HSV[eyes].at<Vec4b>((int)mc[1], (int)mc[0]);
-							int score = evaluation(center[0], center[1]);
-							if (score - minimum < 100)
-							{
-								// draw convex
-								std::vector<int> hull;
-								convexHull(contour, hull, true);
-								Point next, prev = contour[hull[hull.size() - 1]];
-								for (size_t j = 0; j < hull.size(); j++)
-								{
-									next = contour[hull[j]];
-									//line(results[eyes], prev, next, Scalar::all(255));
-									prev = next;
-								}
-								//_kalman.correct(mass_center);
-								//Mat predict = _kalman.predict();
-
-								//std::vector<std::vector<Point>> paint;
-								//paint.push_back(contour);
-								//fillPoly(results[eyes], paint, Scalar(95, 132, 163, 255), 4);
-								drawContours(results[eyes], contours, i, Scalar(0, 0, 255), 1, 8);
-								circle(results[eyes], Point((int)mc[0], (int)mc[1]), 5, Scalar(0, 0, 255), 2);
-							}
 							double area = contourArea(contour);
-							char buffer[30];
-							sprintf(buffer, "%d", (int)area);
-							putText(results[eyes], buffer, Point((int)mc[0], (int)mc[1]), CV_FONT_HERSHEY_TRIPLEX, 0.5, Scalar(255, 255, 255));
+
+							if (2000 < area)
+							{
+								Mat mass_center(2, 1, CV_64FC1, mc);
+								Vec4b center = HSV[eyes].at<Vec4b>((int)mc[1], (int)mc[0]);
+								int score = evaluation(center[0], center[1]);
+								if (score - minimum < 100)
+								{
+									// draw convex
+									std::vector<int> hull;
+									convexHull(contour, hull, true);
+									Point next, prev = contour[hull[hull.size() - 1]];
+									for (size_t j = 0; j < hull.size(); j++)
+									{
+										next = contour[hull[j]];
+										//line(results[eyes], prev, next, Scalar::all(255));
+										prev = next;
+									}
+									//_kalman.correct(mass_center);
+									//Mat predict = _kalman.predict();
+
+									//std::vector<std::vector<Point>> paint;
+									//paint.push_back(contour);
+									//fillPoly(results[eyes], paint, Scalar(95, 132, 163, 255), 4);
+									drawContours(results[eyes], contours, i, Scalar(0, 0, 255), 1, 8);
+									circle(results[eyes], Point((int)mc[0], (int)mc[1]), 5, Scalar(0, 0, 255), 2);
+								}
+								char buffer[30];
+								sprintf(buffer, "%d", (int)area);
+								putText(results[eyes], buffer, Point((int)mc[0], (int)mc[1]), CV_FONT_HERSHEY_TRIPLEX, 0.5, Scalar(255, 255, 255));
+							}
 						}
 					}
 				}

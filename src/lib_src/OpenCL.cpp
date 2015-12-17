@@ -129,7 +129,7 @@ namespace OVR
 	//{
 #pragma region CONSTRUCTOR_DESTRUCTOR
 		// Constructor
-	OvrvisionProOpenCL::OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode)
+	OvrvisionProOpenCL::OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode, void *pDevice)
 		{
 			_width = width;
 			_height = height;
@@ -148,6 +148,7 @@ namespace OVR
 			{
                 throw std::runtime_error("Insufficient OpenCL version");
 			}
+			CreateContext(mode, pDevice);
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
@@ -404,6 +405,12 @@ namespace OVR
 		{
             throw std::runtime_error("GPU NOT FOUND.\nRequired OpenCL 1.2 or above.\n");
 		}
+		return _deviceId;
+	}
+
+	// Create device context
+	void OvrvisionProOpenCL::CreateContext(SHARING_MODE mode, void *pDevice)
+	{
 #ifdef WIN32
 		// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
 		cl_context_properties opengl_props[] = {
@@ -416,12 +423,12 @@ namespace OVR
 		cl_context_properties d3d11_props[] =
 		{
 			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
-			//CL_CONTEXT_D3D11_DEVICE_KHR, (cl_context_properties)g_pD3DDevice,
+			CL_CONTEXT_D3D11_DEVICE_KHR, (cl_context_properties)pDevice,
 			0
 		};
 #endif
-		// TODO: Prepare for sharing texture
-		switch (_sharing)
+		// Prepare for sharing texture
+		switch (mode)
 		{
 #ifdef WIN32
 		case OPENGL:
@@ -442,7 +449,6 @@ namespace OVR
 		clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
 		printf("DEVICE: %s\n", buffer);
 #endif
-		return _deviceId;
 	}
 
 	// Enumerate OpenCL extensions
@@ -602,6 +608,17 @@ namespace OVR
 #pragma endregion
 
 #pragma region SKIN_COLOR_EXTRACTION
+	// D3D11 GPU texture
+	void OvrvisionProOpenCL::SkinImageForUnityNativeD3D11(ID3D11Device* pDevice, ID3D11Texture2D *pLeft, ID3D11Texture2D* pRight)
+	{
+	}
+
+	// OpenGL GPU texture
+	void OvrvisionProOpenCL::SkinImageForUnityNativeGL(GLuint left, GLuint right)
+	{
+
+	}
+
 	// Set Threshold
 	int OvrvisionProOpenCL::SetThreshold(int threshold)
 	{
