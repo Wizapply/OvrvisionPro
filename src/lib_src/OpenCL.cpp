@@ -432,11 +432,11 @@ namespace OVR
 		{
 #ifdef WIN32
 		case OPENGL:
-			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
+			_context = clCreateContext(opengl_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
 			break;
 
 		case D3D11:
-			_context = clCreateContext(d3d11_props, 1, &_deviceId, NULL, NULL, &_errorCode);
+			_context = clCreateContext(d3d11_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
 			break;
 #endif
 		default:

@@ -57,7 +57,7 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 	latinc = 6.0F;
 	longinc = 2.5F;
 
-	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL) == 0)
+	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL, 0) == 0)
 		puts("Can't open OvrvisionPro");
 
 	createObjects();
@@ -83,8 +83,9 @@ GLvoid createObjects()
 
 	// Create textures
 	glGenTextures(2, textureIDs);
-	textureObjects[0] = ovrvision.CreateGLTexture2D(textureIDs[0], 100, 100);
-	textureObjects[1] = ovrvision.CreateGLTexture2D(textureIDs[1], 100, 100);
+	OVR::ROI size = ovrvision.SetSkinScale(2);
+	textureObjects[0] = ovrvision.CreateGLTexture2D(textureIDs[0], size.width, size.height);
+	textureObjects[1] = ovrvision.CreateGLTexture2D(textureIDs[1], size.width, size.height);
 
 	glNewList(GLOBE, GL_COMPILE);
 	quadObj = gluNewQuadric();

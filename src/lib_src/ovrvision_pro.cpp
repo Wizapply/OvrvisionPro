@@ -85,7 +85,7 @@ OvrvisionPro::~OvrvisionPro()
 
 //Initialize
 //Open the Ovrvision
-int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
+int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *pDevice)
 {
 	int objs = 0;
 	int challenge;
@@ -177,10 +177,19 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop)
 
 	//Initialize OpenCL system
 	try {
-        //m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, , SHARING_MODE::D3D11, g_pD3D11Device); // When use D3D11 sharing texture
-        //m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, , SHARING_MODE::OPENGL);    // When use OpenGL sharing texture
-		m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height);
-	}
+		if (deviceType == 2 && pDevice != NULL)
+		{
+			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, SHARING_MODE::D3D11, pDevice); // When use D3D11 sharing texture
+		}
+		else if (deviceType == 0)
+		{
+			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, SHARING_MODE::OPENGL);    // When use OpenGL sharing texture
+		}
+		else
+		{
+			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height);
+		}
+    }
 	catch (std::exception ex)
 	{
 #ifdef WIN32

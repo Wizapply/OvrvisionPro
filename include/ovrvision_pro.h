@@ -139,8 +139,9 @@ public:
 	/*!	@brief Open the Ovrvision Pro
 		@param locationID Connection number
 		@param prop Camera property
+        @param deviceType (2:D3D11, 0:OpenGL, -1:Dont share)
 		@return If successful, the return value is 0< */
-	int Open(int locationID, OVR::Camprop prop);
+	int Open(int locationID, OVR::Camprop prop, int deviceType = -1, void *pDevice = NULL);
 	/*!	@brief Close the Ovrvision Pro */
 	void Close();
 
