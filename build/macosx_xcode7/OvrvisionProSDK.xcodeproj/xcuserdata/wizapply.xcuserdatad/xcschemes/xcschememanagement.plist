@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>ovrvision_app.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
@@ -18,6 +23,16 @@
 			<true/>
 		</dict>
 		<key>9FB69D3A1C12D9FF0085BB68</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9FE303E81C1E60A000C69CBF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9FE303FD1C1E60A000C69CBF</key>
 		<dict>
 			<key>primary</key>
 			<true/>

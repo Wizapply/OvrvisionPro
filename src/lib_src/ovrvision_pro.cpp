@@ -332,7 +332,7 @@ ROI OvrvisionPro::SetSkinScale(unsigned int scale)
 		scaling = HALF;
 		break;
 	}
-	Size size = m_pOpenCL->SetScale(scaling);
+    cv::Size size = m_pOpenCL->SetScale(scaling);
 	roi.width = size.width;
 	roi.height = size.height;
 	return roi;

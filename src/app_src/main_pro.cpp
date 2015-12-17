@@ -51,8 +51,9 @@ void UpdateFunc(void);	//!<Func
 int Initialize()
 {
 	int locationID = 0;
-	OVR::Camprop cameraMode = OVR::OV_CAMVR_FULL;
+    OVR::Camprop cameraMode = OVR::OV_CAMVR_FULL;
 
+#ifdef WIN32
 	AllocConsole();
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONIN$", "r", stdin);
@@ -63,7 +64,7 @@ int Initialize()
 		locationID = atoi(__argv[1]);
 		cameraMode = (OVR::Camprop)atoi(__argv[2]);
 	}
-
+#endif
 	//Initialize Wizapply library 
 	wzInitCreateWizapply("Ovrvision", APPSCREEN_WIDTH, APPSCREEN_HEIGHT, WZ_CM_NOVSYNC);//|WZ_CM_FULLSCREEN|WZ_CM_FS_DEVICE
 

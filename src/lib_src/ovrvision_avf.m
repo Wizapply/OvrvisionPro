@@ -290,9 +290,8 @@ const uvc_controls_t uvc_controls = {
         CMFormatDescriptionRef desc = format.formatDescription;
         FourCharCode code = CMFormatDescriptionGetMediaSubType(desc);
         CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(desc);
-        
         for(AVFrameRateRange* range in format.videoSupportedFrameRateRanges) {
-            if(kCMVideoCodecType_422YpCbCr8 == code && dimensions.width == m_width && dimensions.height == m_height) {
+            if(kCMPixelFormat_422YpCbCr8_yuvs == code && dimensions.width == m_width && dimensions.height == m_height) {
                 selectedFormat = format;
                 frameRateRange = range;
                 break;
@@ -300,18 +299,23 @@ const uvc_controls_t uvc_controls = {
         }
     }
     
-    if(selectedFormat) {
-        if([m_device lockForConfiguration:nil]) {
-            m_device.activeFormat = selectedFormat;
-            m_device.activeVideoMinFrameDuration = CMTimeMake(1, 10000000 / rate);
-            m_device.activeVideoMaxFrameDuration = CMTimeMake(1, 10000000 / rate);
-            [m_device unlockForConfiguration];
-        }
+    //ERROR
+    if(selectedFormat == nil) {
+        m_devstatus = OV_DEVNONE;
+        return RESULT_FAILED;
     }
+    
+    if([m_device lockForConfiguration:nil]) {
+        m_device.activeFormat = selectedFormat;
+        m_device.activeVideoMinFrameDuration = frameRateRange.minFrameDuration;
+        m_device.activeVideoMaxFrameDuration = frameRateRange.maxFrameDuration;
+        [m_device unlockForConfiguration];
+    }
+
     
     //input session
     m_deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:m_device error:&error];
-    
+
     //output session
     m_output = [[AVCaptureVideoDataOutput alloc] init];
     dispatch_queue_t queue = dispatch_queue_create([[m_device uniqueID] UTF8String], NULL);
@@ -322,7 +326,7 @@ const uvc_controls_t uvc_controls = {
     NSDictionary* outputSettings = [NSDictionary dictionaryWithObjectsAndKeys:
                                     [NSNumber numberWithDouble:m_width], (id)kCVPixelBufferWidthKey,
                                     [NSNumber numberWithDouble:m_height], (id)kCVPixelBufferHeightKey,
-                                    [NSNumber numberWithInt:kCMPixelFormat_422YpCbCr8], (id)kCVPixelBufferPixelFormatTypeKey,
+                                    [NSNumber numberWithInt:'yuvs'], (id)kCVPixelBufferPixelFormatTypeKey,
                                     nil];
     [m_output setVideoSettings:outputSettings];
     
@@ -338,7 +342,7 @@ const uvc_controls_t uvc_controls = {
     }
     
     m_latestPixelDataSize = m_maxPixelDataSize =  m_width * m_height * OV_RGB_COLOR;
-    m_pPixels = (unsigned char*)malloc(sizeof(unsigned char) * m_maxPixelDataSize);
+    m_pPixels = (unsigned char*)malloc(sizeof(unsigned char) * m_maxPixelDataSize + 10000000);
     
     //USBIO
     [self createUSBInterface:vid pid:pid];
@@ -347,12 +351,10 @@ const uvc_controls_t uvc_controls = {
     [m_session startRunning];
     
     //Running wait
-    while(m_pPixels == NULL) {
-        [m_cond lock];
-        [m_cond wait];
-        [m_cond unlock];
-    }
-    
+    [m_cond lock];
+    [m_cond wait];
+    [m_cond unlock];
+
     m_devstatus = OV_DEVRUNNING;    //running
     
     return RESULT_OK;
@@ -607,20 +609,22 @@ const uvc_controls_t uvc_controls = {
         return;
     }
     
-    CMBlockBufferRef imageBuffer = CMSampleBufferGetDataBuffer(sampleBuffer);
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    CVPixelBufferLockBaseAddress(imageBuffer, 0);
     
-    size_t datasize;
-    char* databuffer;
+    size_t datasize = CVPixelBufferGetDataSize(imageBuffer);
+    //size_t datasize = CVPixelBufferGetBytesPerRow(imageBuffer);
+    unsigned char* databuffer = (unsigned char*)CVPixelBufferGetBaseAddress(imageBuffer);
     
-    CMBlockBufferGetDataPointer(imageBuffer,0,NULL,&datasize,&databuffer);
+    //NSLog(@"%d",CMBlockBufferGetDataPointer(imageBuffer,0,NULL,&datasize,&databuffer));
     
     [m_cond lock];  //LOCK!
-    
-    memcpy(m_pPixels,databuffer,(int)datasize);
-    m_datasize = (int)datasize;
-        
+        memcpy(m_pPixels,databuffer,(int)datasize);
+        m_datasize = (int)datasize;
     [m_cond signal];
     [m_cond unlock];
+    
+    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
 }
 
 

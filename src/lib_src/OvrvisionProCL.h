@@ -4,10 +4,15 @@
 // that uses this DLL. This way any other project whose source files include this file see 
 // OVRVISIONPRODLL_API functions as being imported from a DLL, whereas this DLL sees symbols
 // defined with this macro as being exported.
+
+#ifdef WIN32
 #ifdef _OVRVISION_EXPORTS
 #define OVRVISIONPRODLL_API __declspec(dllexport)
 #else
 #define OVRVISIONPRODLL_API __declspec(dllimport)
+#endif
+#else
+#define OVRVISIONPRODLL_API
 #endif
 
 
@@ -78,7 +83,7 @@ namespace OVR
 	// Convex object
 	typedef struct {
 		int mx, my;				// mass center
-		std::vector<Point> convex;	// convex contor
+        std::vector<cv::Point> convexs;	// convex contor
 	} Convex;
 
 	// OpenCL extension callback function
@@ -117,11 +122,11 @@ namespace OVR
 			/*! @brief set scaling (1/2, 1/4, 1/8) 
 				@param scaling (HALF, FOURTH, EIGHTH)
 				@return size of scaled image */
-			Size SetScale(SCALING scaling);
+            cv::Size SetScale(SCALING scaling);
 
 			/*! @brief Get size of scaled image 
-				@return size */
-			Size GetScaledSize();
+            @return size */
+            cv::Size GetScaledSize();
 
 			/*! @brief Get half scaled image
 			@param src
