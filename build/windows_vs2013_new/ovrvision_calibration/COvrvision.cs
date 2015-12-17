@@ -177,7 +177,7 @@ namespace ovrvision_calibration
             imageSizeW = imageSizeH = 0;
         }
 
-        ~COvrvision()
+        public void Release()
         {
             ovRelease();
         }

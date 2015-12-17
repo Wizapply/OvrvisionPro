@@ -177,7 +177,8 @@ namespace ovrvision_app
             imageSizeW = imageSizeH = 0;
         }
 
-        ~COvrvision(){
+        public void Release()
+        {
             ovRelease();
         }
 

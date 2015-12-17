@@ -35,6 +35,7 @@ OVR::OvrvisionTracking* g_pOvrTrack;
 wzTexture g_screen_texture;
 int g_camWidth;
 int g_camHeight;
+OVR::Camqt g_processMode = OVR::Camqt::OV_CAMQT_DMS;
 
 wzVector3  g_hmdGap;
 
@@ -128,10 +129,18 @@ void DrawLoop(void)
 	wzSetCullFace(WZ_CLF_NONE);	//Culling off
 	wzVector2 half_pos = { APPSCREEN_WIDTH / 2 / 2, APPSCREEN_HEIGHT / 2 };
 
+	if (wzGetKeyStateTrigger(WZ_KEY_P))
+	{
+		if (g_processMode == OVR::Camqt::OV_CAMQT_DMS)
+			g_processMode = OVR::Camqt::OV_CAMQT_DMSRMP;
+		else
+			g_processMode = OVR::Camqt::OV_CAMQT_DMS;
+	}
+
 	if (g_pOvrvision->isOpen())
 	{
 		//Full Draw
-		g_pOvrvision->PreStoreCamData(OVR::Camqt::OV_CAMQT_DMS);
+		g_pOvrvision->PreStoreCamData(g_processMode);
 		unsigned char* p = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 		unsigned char* p2 = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 

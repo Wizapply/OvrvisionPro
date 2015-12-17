@@ -90,6 +90,8 @@ namespace ovrvision_calibration
                     cabliButton.Enabled = false;
 				}
 			}
+
+            Ovrvision.Release();
 		}
 
 		private volatile bool UPDATE_LEFTDATA = false;

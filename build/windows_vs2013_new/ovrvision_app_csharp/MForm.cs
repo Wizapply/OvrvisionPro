@@ -96,6 +96,8 @@ namespace ovrvision_app
                     UpdateThread = null;
                 }
             }
+
+            Ovrvision.Release();
         }
 
 		private volatile bool UPDATE_LEFTDATA = false;
