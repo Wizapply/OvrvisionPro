@@ -15,6 +15,9 @@
 
 #import "ovrvision_avf.h"
 
+//Buffer max size
+#define OV_MAX_BUFFERNUMBYTE	(10240000)	//10MB
+
 /////////// VARS AND DEFS ///////////
 
 //UVC Control
@@ -75,7 +78,6 @@ const uvc_controls_t uvc_controls = {
         m_height = 0;
         m_rate = 0;
         m_latestPixelDataSize = 0;
-        m_maxPixelDataSize = 0;
         
         //Mac OSX AVFoundation
         m_device = nil;
@@ -311,7 +313,6 @@ const uvc_controls_t uvc_controls = {
         m_device.activeVideoMaxFrameDuration = frameRateRange.maxFrameDuration;
         [m_device unlockForConfiguration];
     }
-
     
     //input session
     m_deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:m_device error:&error];
@@ -319,14 +320,14 @@ const uvc_controls_t uvc_controls = {
     //output session
     m_output = [[AVCaptureVideoDataOutput alloc] init];
     dispatch_queue_t queue = dispatch_queue_create([[m_device uniqueID] UTF8String], NULL);
-    [m_output setAlwaysDiscardsLateVideoFrames:NO];
-    [m_output setSampleBufferDelegate:self queue:queue];
+    [m_output setAlwaysDiscardsLateVideoFrames:YES];
+    [m_output setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
     dispatch_release(queue);
     
     NSDictionary* outputSettings = [NSDictionary dictionaryWithObjectsAndKeys:
                                     [NSNumber numberWithDouble:m_width], (id)kCVPixelBufferWidthKey,
                                     [NSNumber numberWithDouble:m_height], (id)kCVPixelBufferHeightKey,
-                                    [NSNumber numberWithInt:'yuvs'], (id)kCVPixelBufferPixelFormatTypeKey,
+                                    [NSNumber numberWithInt:kCMPixelFormat_422YpCbCr8_yuvs], (id)kCVPixelBufferPixelFormatTypeKey,
                                     nil];
     [m_output setVideoSettings:outputSettings];
     
@@ -341,20 +342,15 @@ const uvc_controls_t uvc_controls = {
         [m_session addOutput:m_output];
     }
     
-    m_latestPixelDataSize = m_maxPixelDataSize =  m_width * m_height * OV_RGB_COLOR;
-    m_pPixels = (unsigned char*)malloc(sizeof(unsigned char) * m_maxPixelDataSize + 10000000);
+    m_latestPixelDataSize =  m_width * 2 * m_height;
+    m_pPixels = (unsigned char*)malloc(OV_MAX_BUFFERNUMBYTE);
     
     //USBIO
     [self createUSBInterface:vid pid:pid];
-    
+
     //start
     [m_session startRunning];
     
-    //Running wait
-    [m_cond lock];
-    [m_cond wait];
-    [m_cond unlock];
-
     m_devstatus = OV_DEVRUNNING;    //running
     
     return RESULT_OK;
@@ -369,7 +365,7 @@ const uvc_controls_t uvc_controls = {
     
     [self stopTransfer];
     
-    //[m_session release];
+    [m_session release];
     [m_deviceInput release];
     [m_device release];
     [m_output release];
@@ -383,7 +379,7 @@ const uvc_controls_t uvc_controls = {
     m_height = 0;
     m_rate = 0;
     m_latestPixelDataSize = 0;
-    m_maxPixelDataSize = 0;
+
     memset(m_nDeviceName,0x00,sizeof(m_nDeviceName));
     free(m_pPixels);
 
@@ -464,13 +460,10 @@ const uvc_controls_t uvc_controls = {
 -(int)getLatestPixelDataSize {
     return m_latestPixelDataSize;
 }
--(int)getMaxPixelDataSize {
-    return m_maxPixelDataSize;
-}
 
 //Set camera setting
 -(int)setCameraSetting:(CamSetting)proc value:(int)value automode:(bool)automode {
-    
+
     if(m_devstatus != OV_DEVRUNNING)
         return RESULT_FAILED;
 
@@ -535,7 +528,7 @@ const uvc_controls_t uvc_controls = {
 }
 //Get camera setting
 -(int)getCameraSetting:(CamSetting)proc value:(int*)value automode:(bool*)automode {
-    
+
     if(m_devstatus != OV_DEVRUNNING)
         return RESULT_FAILED;
     
@@ -609,22 +602,22 @@ const uvc_controls_t uvc_controls = {
         return;
     }
     
-    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    CVPixelBufferLockBaseAddress(imageBuffer, 0);
+    CVPixelBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    if(CVPixelBufferLockBaseAddress(imageBuffer, 0) == kCVReturnSuccess) {
     
-    size_t datasize = CVPixelBufferGetDataSize(imageBuffer);
-    //size_t datasize = CVPixelBufferGetBytesPerRow(imageBuffer);
-    unsigned char* databuffer = (unsigned char*)CVPixelBufferGetBaseAddress(imageBuffer);
+        size_t datasize = CVPixelBufferGetDataSize(imageBuffer);
+        unsigned char* databuffer = (unsigned char*)CVPixelBufferGetBaseAddress(imageBuffer);
     
-    //NSLog(@"%d",CMBlockBufferGetDataPointer(imageBuffer,0,NULL,&datasize,&databuffer));
+        [m_cond lock];  //LOCK!
+            memcpy(m_pPixels, databuffer ,(int)datasize);
+            m_datasize = (int)datasize;
+        [m_cond signal];
+        [m_cond unlock];
     
-    [m_cond lock];  //LOCK!
-        memcpy(m_pPixels,databuffer,(int)datasize);
-        m_datasize = (int)datasize;
-    [m_cond signal];
-    [m_cond unlock];
+        NSLog(@"dasda");
     
-    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+        CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+    }
 }
 
 

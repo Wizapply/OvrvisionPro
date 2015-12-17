@@ -116,7 +116,6 @@ typedef enum ov_camseet {
 	int				m_height;
 	int				m_rate;
 	int				m_latestPixelDataSize;
-	int				m_maxPixelDataSize;
     
     //Mac OSX AVFoundation
     AVCaptureDevice* m_device;
@@ -152,7 +151,6 @@ typedef enum ov_camseet {
 //Property
 -(DevStatus)getDeviceStatus;
 -(int)getLatestPixelDataSize;
--(int)getMaxPixelDataSize;
 
 //Set camera setting
 -(int)setCameraSetting:(CamSetting)proc value:(int)value automode:(bool)automode;
