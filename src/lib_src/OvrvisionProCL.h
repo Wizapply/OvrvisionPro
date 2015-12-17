@@ -142,16 +142,16 @@ namespace OVR
 			/*! @brief set HSV region for SkinRegion */
 			void SetHSV(int h_low, int h_high, int s_low, int s_high) { _h_low = h_low; _h_high = h_high; _s_low = s_low; _s_high = s_high; }
 
-			/*! @brief Get D3D11 Skin image for Unity Native 
-                @param pDevice
-                @param left texture
-                @param right texture */
-			void SkinImageForUnityNativeD3D11(ID3D11Device* pDevice, ID3D11Texture2D *pLeft, ID3D11Texture2D* pRight);
+#ifdef WIN32
+			/*! @brief Get D3D11 Skin image for Unity Native
+			@param pTexture
+			@param pDevice */
+			void SkinImageForUnityNativeD3D11(ID3D11Texture2D *pTexture[2], ID3D11Device* pDevice);
+#endif // WIN32
 
 			/*! @brief Get OpenGL skin image for Unity Native
-                @param left texture
-                @param right texture */
-			void SkinImageForUnityNativeGL(GLuint left, GLuint right);
+                @param texture */
+			void SkinImageForUnityNativeGL(GLuint texture[2]);
 
 			/*! @brief Get Skin images
 				@param left ptr of BGRA image

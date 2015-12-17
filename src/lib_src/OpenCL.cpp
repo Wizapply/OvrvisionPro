@@ -608,15 +608,69 @@ namespace OVR
 #pragma endregion
 
 #pragma region SKIN_COLOR_EXTRACTION
+#ifdef WIN32
 	// D3D11 GPU texture
-	void OvrvisionProOpenCL::SkinImageForUnityNativeD3D11(ID3D11Device* pDevice, ID3D11Texture2D *pLeft, ID3D11Texture2D* pRight)
+	void OvrvisionProOpenCL::SkinImageForUnityNativeD3D11(ID3D11Texture2D *pTexture[2], ID3D11Device* pDevice)
 	{
+		cl_mem image[2];
+		cl_event event[2];
+
+		D3D11_TEXTURE2D_DESC desc_left, desc_right;
+		pTexture[0]->GetDesc(&desc_left);
+		pTexture[1]->GetDesc(&desc_right);
+
+		if (_vendorD3D11 == NVIDIA)
+		{
+			image[0] = clCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, pTexture[0], 0, &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			image[1] = clCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, pTexture[1], 0, &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clEnqueueAcquireD3D11ObjectsNV(_commandQueue, 2, image, 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			SkinImages(image[0], image[1], &event[0], &event[1]);
+			_errorCode = clEnqueueReleaseD3D11ObjectsNV(_commandQueue, 2, image, 2, event, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+		else
+		{
+			image[0] = clCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, pTexture[0], 0, &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			image[1] = clCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, pTexture[1], 0, &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clEnqueueAcquireD3D11ObjectsKHR(_commandQueue, 2, image, 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			SkinImages(image[0], image[1], &event[0], &event[1]);
+			_errorCode = clEnqueueReleaseD3D11ObjectsKHR(_commandQueue, 2, image, 2, event, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+		clReleaseMemObject(image[0]);
+		clReleaseMemObject(image[1]);
 	}
+#endif
 
 	// OpenGL GPU texture
-	void OvrvisionProOpenCL::SkinImageForUnityNativeGL(GLuint left, GLuint right)
+	void OvrvisionProOpenCL::SkinImageForUnityNativeGL(GLuint texture[2])
 	{
+		cl_mem image[2];
+		cl_event event[2];
 
+		image[0] = clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture[0], &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		image[1] = clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture[01], &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		glBindTexture(GL_TEXTURE_2D, texture[0]);
+		glBindTexture(GL_TEXTURE_2D, texture[1]); // 
+		_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, image, 0, NULL, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		SkinImages(image[0], image[1], &event[0], &event[1]);
+		_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, image, 2, event, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+		clReleaseMemObject(image[0]);
+		clReleaseMemObject(image[1]);
 	}
 
 	// Set Threshold
