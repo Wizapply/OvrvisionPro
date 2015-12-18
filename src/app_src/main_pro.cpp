@@ -82,7 +82,7 @@ int Initialize()
 	}
 
 	//g_pOvrvision->SetCameraExposure(12960);
-	//g_pOvrvision->SetCameraSyncMode(false);
+	g_pOvrvision->SetCameraSyncMode(false);
 
 	//OculusRightGap
 	g_hmdGap.x = g_pOvrvision->GetHMDRightGap(0) * -0.01f;
