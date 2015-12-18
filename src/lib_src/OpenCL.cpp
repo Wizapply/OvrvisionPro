@@ -695,6 +695,32 @@ namespace OVR
 		clReleaseMemObject(mask[1]);
 	}
 
+	//
+	void OvrvisionProOpenCL::SkinImages(uchar *left, uchar *right)
+	{
+		int width = _scaledRegion[0];
+		int height = _scaledRegion[1];
+		size_t origin[3] = { 0, 0, 0 };
+		cl_event event[2];
+
+		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		SkinImages(l, r, &event[0], &event[1]);
+
+		// Read result
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
+
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
+		clReleaseMemObject(l);
+		clReleaseMemObject(r);
+	}
+
 	// 
 	void OvrvisionProOpenCL::StartCalibration(int frames)
 	{
@@ -944,32 +970,6 @@ namespace OVR
 #ifdef WIN32
 #pragma warning(pop)
 #endif
-	}
-
-	//
-	void OvrvisionProOpenCL::SkinImages(uchar *left, uchar *right)
-	{
-		int width = _scaledRegion[0];
-		int height = _scaledRegion[1];
-		size_t origin[3] = { 0, 0, 0 };
-		cl_event event[2];
-
-		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-
-		SkinImages(l, r, &event[0], &event[1]);
-
-		// Read result
-		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
-		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
-
-		// Release temporaries
-		clReleaseEvent(event[0]);
-		clReleaseEvent(event[1]);
-		clReleaseMemObject(l);
-		clReleaseMemObject(r);
 	}
 
 	//

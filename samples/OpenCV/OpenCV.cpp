@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 
 		//Sync
 		ovrvision->SetCameraSyncMode(true);
-#if 1
+#if 0
 		// Set scaling and size of scaled image
 		ROI roi = ovrvision->SetSkinScale(2);
 		width = roi.width;
@@ -177,9 +177,9 @@ int main(int argc, char* argv[])
 				}
 				split(HSV[0], separate);
 				threshold(separate[0], bilevel[0], 30, 255, CV_THRESH_BINARY_INV);
-				imshow("H:CV_THRESH_BINARY_INV", bilevel[0]);
+				//imshow("H:CV_THRESH_BINARY_INV", bilevel[0]);
 				threshold(separate[1], bilevel[1], 80, 255, CV_THRESH_BINARY);
-				imshow("S:CV_THRESH_BINARY", bilevel[1]);
+				//imshow("S:CV_THRESH_BINARY", bilevel[1]);
 				multiply(bilevel[0], bilevel[1], bilevel[1]);
 				imshow("S x H", bilevel[1]);
 
@@ -299,6 +299,10 @@ int main(int argc, char* argv[])
 								drawContours(results[eyes], contours, i, Scalar(0, 0, 255), 1, 8);
 								circle(results[eyes], Point((int)mc[0], (int)mc[1]), 5, Scalar(0, 0, 255), 2);
 							}
+							double area = contourArea(contour);
+							char buffer[30];
+							sprintf(buffer, "%d", (int)area);
+							putText(results[eyes], buffer, Point((int)mc[0], (int)mc[1]), CV_FONT_HERSHEY_TRIPLEX, 0.5, Scalar(255, 255, 255));
 						}
 					}
 				}
@@ -433,12 +437,12 @@ int main(int argc, char* argv[])
 			}
 		}
 #endif
+		ovrvision->Close();
 	}
-	//else
-	//{
-	//	puts("FAILED TO OPEN CAMERA");
-	//}
-	//ovrvision->Close();
+	else
+	{
+		puts("FAILED TO OPEN CAMERA");
+	}
 	delete ovrvision;
 	return 0;
 }
