@@ -23,38 +23,38 @@
 //UVC Control
 const uvc_controls_t uvc_controls = {
 	.exposure = {
-		.unit = UVC_INPUT_TERMINAL_ID,  //brightness
-		.selector = 0x04,
-		.size = 4,
-	},
-	.gain = {
-		.unit = UVC_PROCESSING_UNIT_ID, //gain
+		.unit = UVC_PROCESSING_UNIT_ID,  //brightness
 		.selector = 0x02,
 		.size = 2,
 	},
+	.gain = {
+		.unit = UVC_PROCESSING_UNIT_ID, //gain
+		.selector = 0x04,
+		.size = 2,
+	},
 	.whitebalance_r = {
-		.unit = UVC_PROCESSING_UNIT_ID, //
-		.selector = 0x03,
+		.unit = UVC_PROCESSING_UNIT_ID, //sharpness
+		.selector = 0x08,
 		.size = 2,
 	},
 	.whitebalance_g = {
-		.unit = UVC_PROCESSING_UNIT_ID,
-		.selector = 0x07,
+		.unit = UVC_PROCESSING_UNIT_ID, //gamma
+		.selector = 0x09,
 		.size = 2,
 	},
 	.whitebalance_b = {
-		.unit = UVC_PROCESSING_UNIT_ID,
-		.selector = 0x08,
+		.unit = UVC_PROCESSING_UNIT_ID, //whitebalance
+		.selector = 0x0A,
 		.size = 2,
 	},
     .blc = {
         .unit = UVC_PROCESSING_UNIT_ID, //blc
-		.selector = 0x09,
+		.selector = 0x0C,
 		.size = 2,
     },
 	.data = {
 		.unit = UVC_PROCESSING_UNIT_ID, //contrast
-		.selector = 0x0A,
+		.selector = 0x03,
 		.size = 2,
 	},
 };
@@ -463,7 +463,7 @@ const uvc_controls_t uvc_controls = {
 
 //Set camera setting
 -(int)setCameraSetting:(CamSetting)proc value:(int)value automode:(bool)automode {
-
+    return 0;
     if(m_devstatus != OV_DEVRUNNING)
         return RESULT_FAILED;
 
@@ -528,7 +528,7 @@ const uvc_controls_t uvc_controls = {
 }
 //Get camera setting
 -(int)getCameraSetting:(CamSetting)proc value:(int*)value automode:(bool*)automode {
-
+   return 0;
     if(m_devstatus != OV_DEVRUNNING)
         return RESULT_FAILED;
     

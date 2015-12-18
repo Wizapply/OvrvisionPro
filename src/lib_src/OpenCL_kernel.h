@@ -236,7 +236,7 @@ const char *kernel =
 "			+ p[1][1].z * 4) / 16;\n"
 "	uint4 hsv = (uint4)(0, 0, 0, 255);\n"
 "	int hue;\n"
-"	int v = max(max(pixel.x, pixel.y), pixel.z);\n"
+"	uint v = max(max(pixel.x, pixel.y), pixel.z);\n"
 "	int delta = v - min(min(pixel.x, pixel.y), pixel.z);\n"
 "	if (v != 0) {\n"
 "		hsv.z = v;\n"
