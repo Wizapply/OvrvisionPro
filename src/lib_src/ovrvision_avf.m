@@ -321,7 +321,8 @@ const uvc_controls_t uvc_controls = {
     m_output = [[AVCaptureVideoDataOutput alloc] init];
     dispatch_queue_t queue = dispatch_queue_create([[m_device uniqueID] UTF8String], NULL);
     [m_output setAlwaysDiscardsLateVideoFrames:YES];
-    [m_output setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+    [m_output setSampleBufferDelegate:self queue:queue];
+    [[m_output connectionWithMediaType:AVMediaTypeVideo] setEnabled:YES];
     dispatch_release(queue);
     
     NSDictionary* outputSettings = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -334,6 +335,7 @@ const uvc_controls_t uvc_controls = {
     //session
     if(m_session) [m_session release];
     m_session = [[AVCaptureSession alloc] init];
+    [m_session beginConfiguration];
     if([m_session canAddInput:m_deviceInput]) {
         [m_session addInput:m_deviceInput];
     }
@@ -341,6 +343,7 @@ const uvc_controls_t uvc_controls = {
     if([m_session canAddOutput:m_output]) {
         [m_session addOutput:m_output];
     }
+    [m_session commitConfiguration];
     
     m_latestPixelDataSize =  m_width * 2 * m_height;
     m_pPixels = (unsigned char*)malloc(OV_MAX_BUFFERNUMBYTE);
@@ -463,7 +466,7 @@ const uvc_controls_t uvc_controls = {
 
 //Set camera setting
 -(int)setCameraSetting:(CamSetting)proc value:(int)value automode:(bool)automode {
-    return 0;
+
     if(m_devstatus != OV_DEVRUNNING)
         return RESULT_FAILED;
 
@@ -528,7 +531,7 @@ const uvc_controls_t uvc_controls = {
 }
 //Get camera setting
 -(int)getCameraSetting:(CamSetting)proc value:(int*)value automode:(bool*)automode {
-   return 0;
+
     if(m_devstatus != OV_DEVRUNNING)
         return RESULT_FAILED;
     
@@ -601,23 +604,22 @@ const uvc_controls_t uvc_controls = {
         NSLog(@"sample buffer is not ready. Skipping sample");
         return;
     }
-    
-    CVPixelBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     if(CVPixelBufferLockBaseAddress(imageBuffer, 0) == kCVReturnSuccess) {
     
         size_t datasize = CVPixelBufferGetDataSize(imageBuffer);
         unsigned char* databuffer = (unsigned char*)CVPixelBufferGetBaseAddress(imageBuffer);
     
         [m_cond lock];  //LOCK!
-            memcpy(m_pPixels, databuffer ,(int)datasize);
-            m_datasize = (int)datasize;
+            m_datasize = (int)datasize - (m_width*2);
+            memcpy(m_pPixels, databuffer ,m_datasize);
         [m_cond signal];
         [m_cond unlock];
-    
-        NSLog(@"dasda");
-    
+
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     }
+    
 }
 
 

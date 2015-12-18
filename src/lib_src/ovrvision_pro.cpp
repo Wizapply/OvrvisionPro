@@ -247,13 +247,15 @@ void* OvrvisionPro::CreateD3DTexture2D(void *texture, int width, int height)
 {
 	return m_pOpenCL->CreateD3DTexture2D((ID3D11Texture2D*)texture, width, height);
 }
-
+#endif
+    
 // Create OpenGL Texture
 void* OvrvisionPro::CreateGLTexture2D(unsigned int texture, int width, int height)
 {
-	return m_pOpenCL->CreateGLTexture2D(texture, width, height);
+    return NULL;
+	//return m_pOpenCL->CreateGLTexture2D(texture, width, height);
 }
-#endif
+
 
 // Update OpenGL texture objects
 void OvrvisionPro::UpdateGLSkinTextureObjects(unsigned int n, void *textureObjects[])
@@ -399,7 +401,7 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 #ifdef WIN32
 	if (m_pODS->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK) {
 #elif MACOSX
-    if ([m_pOAV getBayer16Image : (uchar *)m_pFrame blocking : !m_isCameraSync] == RESULT_OK) {
+    if ([m_pOAV getBayer16Image: (uchar *)m_pFrame blocking: !m_isCameraSync] == RESULT_OK) {
 #elif LINUX
 	if ()
 #endif
