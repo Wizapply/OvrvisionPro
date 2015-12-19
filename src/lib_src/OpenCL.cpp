@@ -435,6 +435,14 @@ namespace OVR
 			CL_CONTEXT_D3D11_DEVICE_KHR, (cl_context_properties)pDevice,
 			0
 		};
+#elif defined(MACOSX)
+		CGLContextObj kCGLContext = CGLGetCurrentContext();
+		CGlShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGContext);
+
+		cl_context_properties opengl_props[] = {
+			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
+			0
+		};
 #endif
 		// Prepare for sharing texture
 		switch (mode)
@@ -446,6 +454,10 @@ namespace OVR
 
 		case D3D11:
 			_context = clCreateContext(d3d11_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			break;
+#elif defined(MACOSX)
+		case OPENGL:
+			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
 			break;
 #endif
 		default:
@@ -599,7 +611,7 @@ namespace OVR
 		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
 	}
 
-#ifdef WIN32
+#if defined(WIN32) || defined(MACOSX)
 	// OpenGL shared texture
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
