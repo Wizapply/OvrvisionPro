@@ -134,9 +134,9 @@ namespace OVR
             cv::Size GetScaledSize();
 
 			/*! @brief Get half scaled image
-			@param src
-			@param dst
-			@param scale */
+				@param src
+				@param dst
+				@param scale */
 			void Resize(const cl_mem src, cl_mem dst, enum SCALING scale, cl_event *execute);
 
 			/*! @brief set HSV region for SkinRegion */
@@ -156,8 +156,8 @@ namespace OVR
 
 #ifdef WIN32
 			/*! @brief Get D3D11 Skin image for Unity Native
-			@param pTexture
-			@param pDevice */
+				@param pTexture
+				@param pDevice */
 			void SkinImageForUnityNativeD3D11(ID3D11Texture2D *pTexture[2], ID3D11Device* pDevice);
 #endif // WIN32
 
@@ -222,10 +222,6 @@ namespace OVR
 			// pixelFormat must be GL_RGBA
 			// dataType must be GL_UNSIGNED_BYTE
 			cl_mem CreateGLTexture2D(GLuint texture, int width, int height);
-
-			/*! @brief Update skin textures for drawing
-			@param textures textures[0]:left textures[1]:right */
-			//void UpdateSkinTextureObjects(uint n, void *textures[]);
 
 #ifdef _WIN32
 			// Direct3D shared texture

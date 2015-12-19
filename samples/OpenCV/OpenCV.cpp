@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 
 		//Sync
 		ovrvision->SetCameraSyncMode(true);
-#if 0
+#if 1
 		// Set scaling and size of scaled image
 		ROI roi = ovrvision->SetSkinScale(2);
 		width = roi.width;
