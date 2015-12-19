@@ -318,23 +318,29 @@ public:
 	//Save the present setup to EEPROM. (Don't touch)
 	bool CameraParamSaveEEPROM();
 
+	/*! @brief Create Skin textures
+		@param width of texture
+		@param height of texture
+		@param left texture
+		@param right texure */
+	void CreateSkinTextures(int width, int height, void *left, void *right);
+	void CreateSkinTextures(int width, int height, unsigned int left, unsigned int right);
+
+	/*! @brief Update skin textures
+		@param n count of onjects
+		@param textureObjects */
+	void UpdateSkinTextures(void *left, void *right);
+	void UpdateSkinTextures(unsigned int left, unsigned int right);
+
+	/*
 #ifdef _WIN32
 	// Create D3D11 texture
 	void* CreateD3DTexture2D(void *texture, int width, int height);
 #endif
 
 	// Create OpenGL Texture
-	/*! @brief Create OpenGL sharing texture object
-		@param texture identifier
-		@param width of texture
-		@param height of texture
-		@return ptr of texture object */
 	void* CreateGLTexture2D(unsigned int texture, int width, int height);
-
-	/*! @brief Update skin texture objects
-		@param n count of onjects
-		@param textureObjects */
-	void UpdateGLSkinTextureObjects(unsigned int n, void *textureObjects[]);
+	*/
 
 private:
 #ifdef WIN32

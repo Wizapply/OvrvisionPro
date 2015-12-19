@@ -149,6 +149,11 @@ namespace OVR
 				@param right texure */
 			void CreateSkinTextures(int width, int height, void *left, void *right);
 
+			/*! @brief Update skin textures 
+				@param left texture
+				@param right texure */
+			void UpdateSkinTextures(void *left, void *right);
+
 #ifdef WIN32
 			/*! @brief Get D3D11 Skin image for Unity Native
 			@param pTexture
@@ -231,7 +236,7 @@ namespace OVR
 
 			/*! @brief Update skin textures for drawing
 				@param textures textures[0]:left textures[1]:right */
-			void UpdateSkinTextureObjects(uint n, void *textures[]);
+			//void UpdateSkinTextureObjects(uint n, void *textures[]);
 
 #ifdef _WIN32
 			// Direct3D shared texture

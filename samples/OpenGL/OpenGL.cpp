@@ -18,7 +18,7 @@ void SWAPBUFFERS();	// platform depend function
 GLfloat latitude, longitude, latinc, longinc; 
 GLdouble radius; 
 GLuint textureIDs[2];
-void *textureObjects[2];
+//void *textureObjects[2];
 
 OVR::OvrvisionPro ovrvision;	// OvrvisionPro camera
 //VideoCapture camera; // dummy camera
@@ -84,8 +84,9 @@ GLvoid createObjects()
 	// Create textures
 	glGenTextures(2, textureIDs);
 	OVR::ROI size = ovrvision.SetSkinScale(2);
-	textureObjects[0] = ovrvision.CreateGLTexture2D(textureIDs[0], size.width, size.height);
-	textureObjects[1] = ovrvision.CreateGLTexture2D(textureIDs[1], size.width, size.height);
+	//textureObjects[0] = ovrvision.CreateGLTexture2D(textureIDs[0], size.width, size.height);
+	//textureObjects[1] = ovrvision.CreateGLTexture2D(textureIDs[1], size.width, size.height);
+	ovrvision.CreateSkinTextures(size.width, size.height, (void *)textureIDs[0], (void *)textureIDs[1]);
 
 	glNewList(GLOBE, GL_COMPILE);
 	quadObj = gluNewQuadric();
@@ -143,7 +144,7 @@ GLvoid drawScene(GLvoid)
 	glTexCoordPointer(2, GL_FLOAT, 0, texuv);
 
 	// Step6. テクスチャの画像指定
-	ovrvision.UpdateGLSkinTextureObjects(2, textureObjects);
+	ovrvision.UpdateSkinTextures((void *)textureIDs[0], (void *)textureIDs[1]);
 	glBindTexture(GL_TEXTURE_2D, textureIDs[0]); // texture of left hand 
 
 	// Step7. テクスチャの描画

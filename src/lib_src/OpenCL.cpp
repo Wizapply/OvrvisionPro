@@ -588,6 +588,17 @@ namespace OVR
 		}
 	}
 
+	// Update textures
+	void OvrvisionProOpenCL::UpdateSkinTextures(void *left, void *right)
+	{
+		cl_event event[2];
+
+		clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
+		clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
+		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+	}
+
 #ifdef WIN32
 	// OpenGL shared texture
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
@@ -608,6 +619,7 @@ namespace OVR
 	}
 #endif
 
+	/*
 	void OvrvisionProOpenCL::UpdateSkinTextureObjects(uint n, void *textures[])
 	{
 #ifdef WIN32
@@ -618,6 +630,8 @@ namespace OVR
 		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
 #endif
 	}
+	*/
+
 #ifdef WIN32
 	// TODO: Direct3D shared texture
 	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height)
