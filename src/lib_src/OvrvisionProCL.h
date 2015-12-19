@@ -209,40 +209,6 @@ namespace OVR
 
 			bool Read(uchar *left, uchar *right);
 
-			/*! @brief Download from GPU
-				@param image 
-				@param ptr for read buffer 
-				@param offsetX
-				@param offsetY
-				@param width
-				@param height */
-			void Download(const cl_mem image, uchar *ptr, int offsetX, int offsetY, uint width, uint height);
-
-			// Remap
-			void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);
-			
-
-			// Convert to HSV color space
-			/*! @brief Convert image to HSV color space
-			@param src image
-			@param dst image
-			@param filter */
-			void ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter = RAW, cl_event *execute = NULL);
-
-			// OpenGL shared textrue
-			// pixelFormat must be GL_RGBA
-			// dataType must be GL_UNSIGNED_BYTE
-			cl_mem CreateGLTexture2D(GLuint texture, int width, int height);
-
-			/*! @brief Update skin textures for drawing
-				@param textures textures[0]:left textures[1]:right */
-			//void UpdateSkinTextureObjects(uint n, void *textures[]);
-
-#ifdef _WIN32
-			// Direct3D shared texture
-			cl_mem CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height);
-#endif
-
 			// Enumerate OpenCL extensions
 			int DeviceExtensions(EXTENSION_CALLBACK callback = NULL, void *item = NULL);
 
@@ -251,6 +217,20 @@ namespace OVR
                 @param mode shareing 
                 @param pDevice to share texture */
 			void CreateContext(SHARING_MODE mode, void *pDevice);
+
+			// OpenGL shared textrue
+			// pixelFormat must be GL_RGBA
+			// dataType must be GL_UNSIGNED_BYTE
+			cl_mem CreateGLTexture2D(GLuint texture, int width, int height);
+
+			/*! @brief Update skin textures for drawing
+			@param textures textures[0]:left textures[1]:right */
+			//void UpdateSkinTextureObjects(uint n, void *textures[]);
+
+#ifdef _WIN32
+			// Direct3D shared texture
+			cl_mem CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height);
+#endif
 
 			/*! @brief enumerate pixels
 			@param left histgram
@@ -263,6 +243,26 @@ namespace OVR
 			void EstimateColorRange();
 
 		private:
+			/*! @brief Download from GPU
+			@param image
+			@param ptr for read buffer
+			@param offsetX
+			@param offsetY
+			@param width
+			@param height */
+			void Download(const cl_mem image, uchar *ptr, int offsetX, int offsetY, uint width, uint height);
+
+			// Remap
+			void Remap(const cl_mem src, uint width, uint height, const cl_mem mapX, const cl_mem mapY, cl_mem dst, cl_event *execute = NULL);
+
+
+			// Convert to HSV color space
+			/*! @brief Convert image to HSV color space
+			@param src image
+			@param dst image
+			@param filter */
+			void ConvertHSV(cl_mem src, cl_mem dst, enum FILTER filter = RAW, cl_event *execute = NULL);
+
 			bool CreateProgram();
 			bool Prepare4Sharing();		// Prepare for OpenGL/D3D sharing
 			void createProgram(const char *filename, bool binary = false);
