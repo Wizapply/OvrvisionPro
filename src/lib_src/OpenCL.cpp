@@ -638,6 +638,7 @@ namespace OVR
 #pragma endregion
 
 #pragma region SKIN_COLOR_EXTRACTION
+#if 0
 #ifdef WIN32
 	// D3D11 GPU texture
 	void OvrvisionProOpenCL::SkinImageForUnityNativeD3D11(ID3D11Texture2D *pTexture[2], ID3D11Device* pDevice)
@@ -702,6 +703,7 @@ namespace OVR
 		clReleaseMemObject(image[0]);
 		clReleaseMemObject(image[1]);
 	}
+#endif
 
 	// Set Threshold
 	int OvrvisionProOpenCL::SetThreshold(int threshold)

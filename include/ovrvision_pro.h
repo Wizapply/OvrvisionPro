@@ -167,53 +167,6 @@ public:
 		@param roi ROI */
 	void GetStereoImageBGRA(unsigned char* pLeft, unsigned char* pRight, ROI roi);
 
-	/*! @brief UNDER CONSTRUCTION */
-	void GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight);
-
-	/*! @brief Set Skin image scale
-		@param scale (2, 4, 8) of scale dominant
-		@return size of scaled image */
-	ROI SetSkinScale(unsigned int scale);
-
-	/*! @brief Get Skin images
-		@param pLeft Image buffer pointer (RGBA IMAGE)
-		@param pRight Image buffer pointer (RGBA IMAGE) */
-	void GetSkinImage(unsigned char* pLeft, unsigned char* pRight);
-
-	/*! @brief Detect color range
-	@param frames sampling frame */
-	void DetectHand(int frames);
-
-	/*! @brief Get skin color region 
-		@param left image (MONOCHROME MASK)
-		@param right image (MONOCHROME MASK)
-		@return scale (2, 4) */
-	int SkinRegion(unsigned char* left, unsigned char* right);
-
-	/*! @brief set HSV region for SkinRegion
-		@param h_low (0 < h_low < h_high)
-		@param h_high (h_low < h_high < 180)
-		@param s_low (0 < s_low < s_high)
-		@param s_high (s_low < s_high < 256) */
-	void SetSkinHSV(int h_low, int h_high, int s_low, int s_high);
-
-	/*! @brief set HSV region for SkinRegion
-		@param range[0]:h_low (0 < h_low < h_high)
-		@param range[1]:h_high (h_low < h_high < 180)
-		@param range[2]:s_low (0 < s_low < s_high)
-		@param range[3]:s_high (s_low < s_high < 256) */
-	void SetSkinHSV(int range[4]);
-
-	/*! @brief set skin threshold to extract region
-		@param threshold (0..255)
-		@return previous threshold */
-	int SetSkinThreshold(int threshold);
-
-	/*! @brief Get color histgram in HSV space
-		@param HSV histgram (256S x 180H)
-		@return scale (2, 4) */
-	int ColorHistgram(unsigned char* histgram);
-
 	/*!	@brief Check whether OvrvisionPro is open. 
 		@return If open, It is true */
 	bool isOpen();
@@ -294,18 +247,13 @@ public:
 	/*!	@brief Get OpenCL extensions of GPU */
 	int OpenCLExtensions(int(*callback)(void *, const char *), void *item);
 
+	// Grayscale image
 	/*!	@brief Grayscaled image of 1/2 scaled */
 	void GrayscaleHalf(unsigned char *left, unsigned char *right);		// 1/2 scaled
 	/*!	@brief Grayscaled image of 1/4 scaled */
 	void GrayscaleFourth(unsigned char *left, unsigned char *right);	// 1/4 scaled
 	/*!	@brief Grayscaled image of 1/8 scaled */
 	void GrayscaleEighth(unsigned char *left, unsigned char *right);	// 1/8 scaled
-
-	/*! @brief Get scaled images while calibration
-		@param left ptr to buffer
-		@param right ptr to buffer
-		@return true when calibration done */
-	bool GetScaledImageRGBA(unsigned char *left, unsigned char *right);
 
 	//Parameter EEPROM (Don't touch)
 	void UserDataAccessUnlock();
@@ -318,7 +266,8 @@ public:
 	//Save the present setup to EEPROM. (Don't touch)
 	bool CameraParamSaveEEPROM();
 
-	/*! @brief Create Skin textures
+	// GPU texture
+	/*! @brief Create Skin textures, UNDER CONSTRUCTION
 		@param width of texture
 		@param height of texture
 		@param left texture
@@ -326,21 +275,65 @@ public:
 	void CreateSkinTextures(int width, int height, void *left, void *right);
 	void CreateSkinTextures(int width, int height, unsigned int left, unsigned int right);
 
-	/*! @brief Update skin textures
+	/*! @brief Update skin textures, UNDER CONSTRUCTION
 		@param n count of onjects
 		@param textureObjects */
 	void UpdateSkinTextures(void *left, void *right);
 	void UpdateSkinTextures(unsigned int left, unsigned int right);
 
-	/*
-#ifdef _WIN32
-	// Create D3D11 texture
-	void* CreateD3DTexture2D(void *texture, int width, int height);
-#endif
+	// Skin property
+	/*! @brief Set Skin image scale
+		@param scale (2, 4, 8) of scale dominant
+		@return size of scaled image */
+	ROI SetSkinScale(unsigned int scale);
 
-	// Create OpenGL Texture
-	void* CreateGLTexture2D(unsigned int texture, int width, int height);
-	*/
+	/*! @brief Get scaled images while calibration
+		@param left ptr to buffer
+		@param right ptr to buffer
+		@return true when calibration done */
+	bool GetScaledImageRGBA(unsigned char *left, unsigned char *right);
+
+	/*! @brief Get Skin images
+		@param pLeft Image buffer pointer (RGBA IMAGE)
+		@param pRight Image buffer pointer (RGBA IMAGE) */
+	void GetSkinImage(unsigned char* pLeft, unsigned char* pRight);
+
+	/*! @brief Detect color range
+		@param frames sampling frame */
+	void DetectHand(int frames);
+
+	/*! @brief Get skin color region
+		@param left image (MONOCHROME MASK)
+		@param right image (MONOCHROME MASK)
+		@return scale (2, 4) */
+	int SkinRegion(unsigned char* left, unsigned char* right);
+
+	/*! @brief set HSV region for SkinRegion
+		@param h_low (0 < h_low < h_high)
+		@param h_high (h_low < h_high < 180)
+		@param s_low (0 < s_low < s_high)
+		@param s_high (s_low < s_high < 256) */
+	void SetSkinHSV(int h_low, int h_high, int s_low, int s_high);
+
+	/*! @brief set HSV region for SkinRegion
+		@param range[0]:h_low (0 < h_low < h_high)
+		@param range[1]:h_high (h_low < h_high < 180)
+		@param range[2]:s_low (0 < s_low < s_high)
+		@param range[3]:s_high (s_low < s_high < 256) */
+	void SetSkinHSV(int range[4]);
+
+	/*! @brief set skin threshold to extract region
+		@param threshold (0..255)
+		@return previous threshold */
+	int SetSkinThreshold(int threshold);
+
+	/*! @brief Get color histgram in HSV space
+		@param HSV histgram (256S x 180H)
+		@return scale (2, 4) */
+	int ColorHistgram(unsigned char* histgram);
+
+	/*! @brief UNDER CONSTRUCTION */
+	void GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight);
 
 private:
 #ifdef WIN32

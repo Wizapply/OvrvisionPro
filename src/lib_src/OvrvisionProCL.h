@@ -158,12 +158,12 @@ namespace OVR
 			/*! @brief Get D3D11 Skin image for Unity Native
 				@param pTexture
 				@param pDevice */
-			void SkinImageForUnityNativeD3D11(ID3D11Texture2D *pTexture[2], ID3D11Device* pDevice);
+			//void SkinImageForUnityNativeD3D11(ID3D11Texture2D *pTexture[2], ID3D11Device* pDevice);
 #endif // WIN32
 
 			/*! @brief Get OpenGL skin image for Unity Native
                 @param texture */
-			void SkinImageForUnityNativeGL(GLuint texture[2]);
+			//void SkinImageForUnityNativeGL(GLuint texture[2]);
 
 			/*! @brief Get Skin images
 				@param left ptr of BGRA image
