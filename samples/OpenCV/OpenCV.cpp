@@ -97,15 +97,15 @@ int main(int argc, char* argv[])
 			ovrvision->Capture(mode);
 			done = ovrvision->GetScaledImageRGBA(images[0].data, images[1].data);
 			waitKey(1);
-			imshow("Left", images[0]);
-			imshow("Right", images[1]);
+			imshow("L", images[0]);
+			imshow("R", images[1]);
 		}
 		for (bool loop = true; loop; )
 		{
 			ovrvision->Capture(mode);
 			ovrvision->GetSkinImage(images[0].data, images[1].data);
-			imshow("Left", images[0]);
-			imshow("Right", images[1]);
+			imshow("L", images[0]);
+			imshow("R", images[1]);
 
 			switch (waitKey(1))
 			{

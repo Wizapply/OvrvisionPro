@@ -142,6 +142,13 @@ namespace OVR
 			/*! @brief set HSV region for SkinRegion */
 			void SetHSV(int h_low, int h_high, int s_low, int s_high) { _h_low = h_low; _h_high = h_high; _s_low = s_low; _s_high = s_high; }
 
+			/*! @brief Create Skin textures 
+				@param width of texture
+				@param height of texture
+				@param left texture 
+				@param right texure */
+			void CreateSkinTextures(int width, int height, void *left, void *right);
+
 #ifdef WIN32
 			/*! @brief Get D3D11 Skin image for Unity Native
 			@param pTexture
@@ -329,6 +336,7 @@ namespace OVR
 			cl_mem	_L, _R;			// work image
 			cl_mem	_mx[2], _my[2]; // map for remap in GPU
 			cl_mem	_reducedL, _reducedR;	// reduced image
+			cl_mem	_texture[2];	// Texture sharing
 		};
 
 	/*

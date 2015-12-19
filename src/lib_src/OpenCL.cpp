@@ -175,6 +175,8 @@ namespace OVR
 			_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
 			_reducedL = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width / 2, _height / 2, 0, 0, &_errorCode);
 			_reducedR = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width / 2, _height / 2, 0, 0, &_errorCode);
+			_texture[0] = NULL;
+			_texture[1] = NULL;
 
 			_deviceExtensions = NULL;
 			CreateProgram();
@@ -262,7 +264,14 @@ namespace OVR
 			clReleaseMemObject(_my[1]);
 			clReleaseMemObject(_reducedL);
 			clReleaseMemObject(_reducedR);
-
+			if (_texture[0] != NULL)
+			{
+				clReleaseMemObject(_texture[0]);
+			}
+			if (_texture[1] != NULL)
+			{
+				clReleaseMemObject(_texture[1]);
+			}
 			if (_deviceExtensions != NULL)
 			{
 				delete[] _deviceExtensions;
@@ -561,6 +570,24 @@ namespace OVR
 #endif
 	}
 
+	// Create textures
+	void OvrvisionProOpenCL::CreateSkinTextures(int width, int height, void *left, void *right)
+	{
+		switch (_sharing)
+		{
+		case OPENGL:
+			_texture[0] = CreateGLTexture2D((GLuint)left, width, height);
+			_texture[1] = CreateGLTexture2D((GLuint)right, width, height);
+			break;
+#ifdef WIN32
+		case D3D11:
+			_texture[0] = CreateD3DTexture2D((ID3D11Texture2D *)left, width, height);
+			_texture[1] = CreateD3DTexture2D((ID3D11Texture2D *)right, width, height);
+			break;
+#endif
+		}
+	}
+
 #ifdef WIN32
 	// OpenGL shared texture
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
@@ -574,7 +601,7 @@ namespace OVR
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 		glBindTexture(GL_TEXTURE_2D, 0);
-		glEnable(GL_TEXTURE_2D);
+		//glEnable(GL_TEXTURE_2D);
 		cl_mem object = clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		return object;
