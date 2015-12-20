@@ -92,13 +92,14 @@ void D3D11::Init()
 	vp.TopLeftY = 0.0f;
 	_context->RSSetViewports(1, &vp);
 
-	cl_mem mem = (cl_mem)_ovrvision->CreateD3DTexture2D(_texture, clientWidth, clientHeight);
 	// OvrvisionPro
 	_ovrvision = new OVR::OvrvisionPro();
 	if (_ovrvision->Open(0, OVR::Camprop::OV_CAMVR_WIDE) == 0)
 	{ 
 		MessageBox(_hWnd, L"FAILED TO OPEN", L"OvrvisionPro", IDOK);
 	}
+	OVR::ROI size = _ovrvision->SetSkinScale(2);	// Set scale 1/2
+	_ovrvision->CreateSkinTextures(size.width, size.height, _textureL, _textureR);	// Create textures 
 }
 
 void D3D11::Release()
@@ -113,6 +114,8 @@ void D3D11::Release()
 void D3D11::Render()
 {
 	float clearcolor[4] = { 0.0f, 0.341f, 0.588f, 1.0f };
+	_ovrvision->Capture(OVR::Camqt::OV_CAMQT_DMSRMP);		// Capture image
+	_ovrvision->UpdateSkinTextures(_textureL, _textureR);	// Update texture
 	_context->ClearRenderTargetView(_backbufferRTV, clearcolor);
 	_context->Draw(0, 0);
 	_swapChain->Present(0, 0);

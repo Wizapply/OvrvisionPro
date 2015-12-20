@@ -7,7 +7,11 @@
 #include <CL/opencl.h>
 #include "ovrvision_pro.h"
 
+#ifdef _DEBUG
+#pragma comment(lib, "ovrvisiond.lib")
+#else
 #pragma comment(lib, "ovrvision.lib")
+#endif
 
 class D3D11
 {
@@ -18,7 +22,8 @@ protected:
 	IDXGISwapChain*         _swapChain;
 	// Resource View
 	ID3D11RenderTargetView* _backbufferRTV;
-	ID3D11Texture2D* _texture;
+	ID3D11Texture2D* _textureL;
+	ID3D11Texture2D* _textureR;
 	OVR::OvrvisionPro* _ovrvision;
 	cl_mem _left, _right;
 
