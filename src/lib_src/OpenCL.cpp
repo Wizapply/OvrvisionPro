@@ -604,7 +604,7 @@ namespace OVR
 	void OvrvisionProOpenCL::UpdateSkinTextures(void *left, void *right)
 	{
 		cl_event event[2];
-		clFinish(_commandQueue);
+		glFinish();
 		clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
 		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
 		clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
@@ -622,12 +622,20 @@ namespace OVR
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		//glBindTexture(GL_TEXTURE_2D, 0);
+		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 		//glEnable(GL_TEXTURE_2D);
-		cl_mem object = clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture, &_errorCode);
+		cl_mem object = clCreateFromGLTexture2D(_context, CL_MEM_WRITE_ONLY, GL_TEXTURE_2D, 0, texture, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+#ifdef _DEBUG
+		size_t w, h, s;
+		cl_image_format format;
+		clGetImageInfo(object, CL_IMAGE_WIDTH, sizeof(w), &w, NULL);
+		clGetImageInfo(object, CL_IMAGE_HEIGHT, sizeof(h), &h, NULL);
+		clGetImageInfo(object, CL_IMAGE_ELEMENT_SIZE, sizeof(s), &s, NULL);
+		clGetImageInfo(object, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
+#endif
 		return object;
 	}
 #endif

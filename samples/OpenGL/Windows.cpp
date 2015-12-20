@@ -136,6 +136,8 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case VK_DOWN:
 //			latinc -= 0.5F;
 			break;
+		case 'q':
+			PostMessage(hWnd, WM_CLOSE, 0, 0);
 		}
 
 	default:
