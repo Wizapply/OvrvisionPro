@@ -261,4 +261,4 @@ void OvrvisionAR::SetInstantTraking(bool value)
 
 };
 
-#endif __OVRVISION_METAIO_AR_
+#endif //__OVRVISION_METAIO_AR_

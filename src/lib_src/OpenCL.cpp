@@ -586,6 +586,9 @@ namespace OVR
 	// Create textures
 	void OvrvisionProOpenCL::CreateSkinTextures(int width, int height, TEXTURE left, TEXTURE right)
 	{
+#ifdef MACOSX
+        // Can't create clCreateFromGLTexture2D on Xcode7
+#else
 		switch (_sharing)
 		{
 		case OPENGL:
@@ -599,6 +602,7 @@ namespace OVR
 			break;
 #endif
 		}
+#endif
 	}
 
 	// Update textures
@@ -619,7 +623,7 @@ namespace OVR
 #endif
 	}
 
-#if defined(WIN32)// || defined(MACOSX)
+#if defined(WIN32) //|| defined(MACOSX)
 	// OpenGL shared texture
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)

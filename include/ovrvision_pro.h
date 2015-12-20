@@ -272,15 +272,13 @@ public:
 		@param height of texture
 		@param left texture
 		@param right texure */
-	void CreateSkinTextures(int width, int height, void *left, void *right);
-	void CreateSkinTextures(int width, int height, unsigned int left, unsigned int right);
-
+	void CreateSkinTextures(int width, int height, TEXTURE left, TEXTURE right);
+	
 	/*! @brief Update skin textures, UNDER CONSTRUCTION
 		@param n count of onjects
 		@param textureObjects */
-	void UpdateSkinTextures(void *left, void *right);
-	void UpdateSkinTextures(unsigned int left, unsigned int right);
-
+	void UpdateSkinTextures(TEXTURE left, TEXTURE right);
+	
 	// Skin property
 	/*! @brief Set Skin image scale
 		@param scale (2, 4, 8) of scale dominant
