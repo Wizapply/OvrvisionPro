@@ -256,24 +256,28 @@ void OvrvisionPro::CreateSkinTextures(int width, int height, unsigned int left, 
 {
 	m_pOpenCL->CreateSkinTextures(width, height, (TEXTURE)left, (TEXTURE)right);
 }
-
+    
+#ifdef WIN32
 // Create textures(D3D11)
 void OvrvisionPro::CreateSkinTextures(int width, int height, void* left, void* right)
 {
 	m_pOpenCL->CreateSkinTextures(width, height, (TEXTURE)left, (TEXTURE)right);
 }
-
+#endif
+    
 // Update textures(OpenGL)
 void OvrvisionPro::UpdateSkinTextures(unsigned int left, unsigned int right)
 {
 	m_pOpenCL->UpdateSkinTextures((TEXTURE)left, (TEXTURE)right);
 }
 
+#ifdef WIN32
 // Update textures(D3D11)
 void OvrvisionPro::UpdateSkinTextures(void* left, void* right)
 {
 	m_pOpenCL->UpdateSkinTextures((TEXTURE)left, (TEXTURE)right);
 }
+#endif
 
 // Grayscaled images 1/2 scaled
 void OvrvisionPro::GrayscaleHalf(unsigned char *left, unsigned char *right)
