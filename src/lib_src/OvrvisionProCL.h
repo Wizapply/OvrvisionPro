@@ -154,6 +154,8 @@ namespace OVR
 				@param right texure */
 			void UpdateSkinTextures(TEXTURE left, TEXTURE right);
 
+			void InspectTextures(uchar* left, uchar *right, uint type = 0);
+
 #ifdef WIN32
 			/*! @brief Get D3D11 Skin image for Unity Native
 				@param pTexture

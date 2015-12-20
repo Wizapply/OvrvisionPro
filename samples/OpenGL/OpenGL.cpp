@@ -5,6 +5,8 @@
 
 #include <GL/gl.h> 
 #include <GL/glu.h> 
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
 
 void SWAPBUFFERS();	// platform depend function
 
@@ -49,6 +51,7 @@ GLuint textureIDs[2];
 
 
 OVR::OvrvisionPro ovrvision;	// OvrvisionPro camera
+OVR::ROI size;
 
 GLvoid createObjects();
 
@@ -73,7 +76,7 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 	GL_API_CHECK(glDisable(GL_LIGHTING));
 	GL_API_CHECK(glEnable(GL_TEXTURE_2D));
 
-	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL, 0) == 0)
+	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL, 0) == 0) // Open with OpenGL sharing mode
 		puts("Can't open OvrvisionPro");
 
 	createObjects();
@@ -83,22 +86,22 @@ GLvoid resize(GLsizei width, GLsizei height)
 {
 	GLfloat aspect;
 
-	glViewport(0, 0, width, height);
+	//glViewport(0, 0, width, height);
 
 	aspect = (GLfloat)width / height;
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45.0, aspect, 3.0, 7.0);
-	glMatrixMode(GL_MODELVIEW);
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+	//gluPerspective(45.0, aspect, 3.0, 7.0);
+	//glMatrixMode(GL_MODELVIEW);
 }
 
 GLvoid createObjects()
 {
 	// Create textures
 	glGenTextures(2, textureIDs);
-	OVR::ROI size = ovrvision.SetSkinScale(2);
-	ovrvision.CreateSkinTextures(size.width, size.height, (void *)textureIDs[0], (void *)textureIDs[1]);
+	size = ovrvision.SetSkinScale(2);
+	ovrvision.CreateSkinTextures(size.width, size.height, textureIDs[0], textureIDs[1]);
 }
 
 
@@ -108,10 +111,18 @@ GLvoid drawScene(GLvoid)
 
 	// Step6. テクスチャの画像指定
 	ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMSRMP);
-	ovrvision.UpdateSkinTextures((void *)textureIDs[0], (void *)textureIDs[1]);
+	glFinish();
+	ovrvision.UpdateSkinTextures(textureIDs[0], textureIDs[1]);
+#ifdef _DEBUG
+	cv::Mat left(size.height, size.width, CV_8UC4);
+	cv::Mat right(size.height, size.width, CV_8UC4);
+	ovrvision.InspectTextures(left.data, right.data, 2); // Get HSV images
+	cv::imshow("Left", left);
+	cv::imshow("Right", right);
+#endif
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textureIDs[0]); // texture of left hand 
+	// render using quad and the g_texture
+	glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex3f(-1.0f, -1.0f, 0.1f);
@@ -125,7 +136,6 @@ GLvoid drawScene(GLvoid)
 	glTexCoord2f(0.0f, 1.0f);
 	glVertex3f(-1.0f, 1.0f, 0.1f);
 	glEnd();
-	glDisable(GL_TEXTURE_2D);
 
 	SWAPBUFFERS();
 }

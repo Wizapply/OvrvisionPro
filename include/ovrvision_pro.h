@@ -340,6 +340,7 @@ public:
 	/*! @brief UNDER CONSTRUCTION */
 	void GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight);
 
+	void InspectTextures(unsigned char *left, unsigned char *right, unsigned int type = 0);
 private:
 #ifdef WIN32
 	//DirectShow

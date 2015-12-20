@@ -405,6 +405,11 @@ bool OvrvisionPro::GetScaledImageRGBA(unsigned char *left, unsigned char *right)
 	return m_pOpenCL->Read(left, right);
 }
 
+void OvrvisionPro::InspectTextures(unsigned char *left, unsigned char *right, unsigned int type)
+{
+	m_pOpenCL->InspectTextures(left, right, type);
+}
+
 //Get Camera data pre-store.
 void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 {

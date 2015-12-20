@@ -611,16 +611,44 @@ namespace OVR
 		cl_event event[2];
 
 #ifdef MACOSX
-		glFlushRenderAPPLE();
+		//glFlushRenderAPPLE();// depend on mode
 		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
 		clFinish(_commandQueue);
 #else
-		glFinish();
-		clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+		//glFinish(); // depend on mode
+		_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
 		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
-		clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
-		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+		_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+		SAMPLE_CHECK_ERRORS(_errorCode);
 #endif
+	}
+
+	// Inspact textures
+	void OvrvisionProOpenCL::InspectTextures(uchar* left, uchar *right, uint type)
+	{
+		int width = _scaledRegion[0];
+		int height = _scaledRegion[1];
+		size_t origin[3] = { 0, 0, 0 };
+		if (type == 2)
+		{
+			// Read result
+			_errorCode = clEnqueueReadImage(_commandQueue, _L, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
+			_errorCode = clEnqueueReadImage(_commandQueue, _R, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
+		}
+		else if (type == 1)
+		{
+			// Read result
+			_errorCode = clEnqueueReadImage(_commandQueue, _reducedL, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
+			_errorCode = clEnqueueReadImage(_commandQueue, _reducedR, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
+		}
+		else
+		{
+			_errorCode = clEnqueueReadImage(_commandQueue, _texture[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
+			_errorCode = clEnqueueReadImage(_commandQueue, _texture[1], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
+		}
 	}
 
 #if defined(WIN32) //|| defined(MACOSX)
@@ -628,14 +656,24 @@ namespace OVR
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
 	{
+		//glGenTextures(1, &g_texture));
+		//GL_API_CHECK(glBindTexture(GL_TEXTURE_2D, g_texture));
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		//glBindTexture(GL_TEXTURE_2D, 0);
+		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
 		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		//glBindTexture(GL_TEXTURE_2D, 0);
-		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 		//glEnable(GL_TEXTURE_2D);
 		cl_mem object = clCreateFromGLTexture2D(_context, CL_MEM_WRITE_ONLY, GL_TEXTURE_2D, 0, texture, &_errorCode);
@@ -670,73 +708,6 @@ namespace OVR
 #pragma endregion
 
 #pragma region SKIN_COLOR_EXTRACTION
-#if 0
-#ifdef WIN32
-	// D3D11 GPU texture
-	void OvrvisionProOpenCL::SkinImageForUnityNativeD3D11(ID3D11Texture2D *pTexture[2], ID3D11Device* pDevice)
-	{
-		cl_mem image[2];
-		cl_event event[2];
-
-		D3D11_TEXTURE2D_DESC desc_left, desc_right;
-		pTexture[0]->GetDesc(&desc_left);
-		pTexture[1]->GetDesc(&desc_right);
-
-		if (_vendorD3D11 == NVIDIA)
-		{
-			image[0] = clCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, pTexture[0], 0, &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			image[1] = clCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, pTexture[1], 0, &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			_errorCode = clEnqueueAcquireD3D11ObjectsNV(_commandQueue, 2, image, 0, NULL, NULL);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			SkinImages(image[0], image[1], &event[0], &event[1]);
-			_errorCode = clEnqueueReleaseD3D11ObjectsNV(_commandQueue, 2, image, 2, event, NULL);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-		}
-		else
-		{
-			image[0] = clCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, pTexture[0], 0, &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			image[1] = clCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, pTexture[1], 0, &_errorCode);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			_errorCode = clEnqueueAcquireD3D11ObjectsKHR(_commandQueue, 2, image, 0, NULL, NULL);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			SkinImages(image[0], image[1], &event[0], &event[1]);
-			_errorCode = clEnqueueReleaseD3D11ObjectsKHR(_commandQueue, 2, image, 2, event, NULL);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-		}
-		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
-		clReleaseMemObject(image[0]);
-		clReleaseMemObject(image[1]);
-	}
-#endif
-
-	// OpenGL GPU texture
-	void OvrvisionProOpenCL::SkinImageForUnityNativeGL(GLuint texture[2])
-	{
-		cl_mem image[2];
-		cl_event event[2];
-
-		image[0] = clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture[0], &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		image[1] = clCreateFromGLTexture2D(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture[01], &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-
-		glBindTexture(GL_TEXTURE_2D, texture[0]);
-		glBindTexture(GL_TEXTURE_2D, texture[1]); // 
-		_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, image, 0, NULL, NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		SkinImages(image[0], image[1], &event[0], &event[1]);
-		_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, image, 2, event, NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-
-		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
-		clReleaseMemObject(image[0]);
-		clReleaseMemObject(image[1]);
-	}
-#endif
-
 	// Set Threshold
 	int OvrvisionProOpenCL::SetThreshold(int threshold)
 	{
@@ -1129,7 +1100,41 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 		size_t size[] = { width, height };
+#if 1
+		cl_event event[2];
+		GetHSVBlur(_L, _R, &event[0], &event[1]);
 
+		//int h_low = 13, h_high = 21;
+		//int s_low = 88, s_high = 136;
+
+		//__kernel void skincolor( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t mask,// CL_UNSIGNED_INT8
+		//		__read_only int h_low,		// 
+		//		__read_only int h_hight,	// 
+		//		__read_only int s_low,		// 
+		//		__read_only int s_hight)	// 
+		clSetKernelArg(_skincolor, 0, sizeof(cl_mem), &_L);
+		clSetKernelArg(_skincolor, 1, sizeof(cl_mem), &left);
+		clSetKernelArg(_skincolor, 2, sizeof(int), &_h_low);
+		clSetKernelArg(_skincolor, 3, sizeof(int), &_h_high);
+		clSetKernelArg(_skincolor, 4, sizeof(int), &_s_low);
+		clSetKernelArg(_skincolor, 5, sizeof(int), &_s_high);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_skincolor, 0, sizeof(cl_mem), &_R);
+		clSetKernelArg(_skincolor, 1, sizeof(cl_mem), &right);
+		clSetKernelArg(_skincolor, 2, sizeof(int), &_h_low);
+		clSetKernelArg(_skincolor, 3, sizeof(int), &_h_high);
+		clSetKernelArg(_skincolor, 4, sizeof(int), &_s_low);
+		clSetKernelArg(_skincolor, 5, sizeof(int), &_s_high);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
+#else
 		// Get HSV images
 		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
@@ -1171,6 +1176,7 @@ namespace OVR
 		clReleaseEvent(event[1]);
 		clReleaseMemObject(l);
 		clReleaseMemObject(r);
+#endif
 	}
 
 	//
@@ -1516,7 +1522,6 @@ namespace OVR
 	// Get HSV images
 	void OvrvisionProOpenCL::GetHSV(uchar *left, uchar *right)
 	{
-		cl_mem l, r;
 		uint width = _width, height = _height;
 		switch (_scaling)
 		{
@@ -1536,9 +1541,9 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 
-		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_event event[2];
 
