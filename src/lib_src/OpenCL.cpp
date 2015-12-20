@@ -436,6 +436,7 @@ namespace OVR
 			0
 		};
 #elif defined(MACOSX)
+		// Reference https://developer.apple.com/library/mac/documentation/Performance/Conceptual/OpenCL_MacProgGuide/shareGroups/shareGroups.html#//apple_ref/doc/uid/TP40008312-CH20-SW1
 //		CGLContextObj kCGLContext = CGLGetCurrentContext();
 //		CGlShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGContext);
 //
@@ -583,7 +584,7 @@ namespace OVR
 	}
 
 	// Create textures
-	void OvrvisionProOpenCL::CreateSkinTextures(int width, int height, void *left, void *right)
+	void OvrvisionProOpenCL::CreateSkinTextures(int width, int height, TEXTURE left, TEXTURE right)
 	{
 		switch (_sharing)
 		{
@@ -601,14 +602,21 @@ namespace OVR
 	}
 
 	// Update textures
-	void OvrvisionProOpenCL::UpdateSkinTextures(void *left, void *right)
+	void OvrvisionProOpenCL::UpdateSkinTextures(TEXTURE left, TEXTURE right)
 	{
 		cl_event event[2];
+
+#ifdef MACOSX
+		glFlushRenderAPPLE();
+		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
+		clFinish(_commandQueue);
+#else
 		glFinish();
 		clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
 		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
 		clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
 		clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+#endif
 	}
 
 #if defined(WIN32)// || defined(MACOSX)

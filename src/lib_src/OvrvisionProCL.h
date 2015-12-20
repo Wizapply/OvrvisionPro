@@ -27,6 +27,7 @@
 #include <d3d11.h>
 #include <GL/gl.h> 
 #include <CL/cl_d3d11_ext.h>	// for OpenCL and Direct3D11 interoperability (NV and KHR are equivalent)
+typedef void *TEXTURE;
 #endif
 
 #ifdef MACOSX
@@ -34,7 +35,7 @@
 #include <OpenCL/cl.h>// OpenCL and its extensions
 #include <OpenGL/gl.h>
 #include <sys/stat.h>
-
+typedef unsigned int TEXTURE;
 #endif
 
 //ovrvision setting
@@ -147,12 +148,12 @@ namespace OVR
 				@param height of texture
 				@param left texture 
 				@param right texure */
-			void CreateSkinTextures(int width, int height, void *left, void *right);
+			void CreateSkinTextures(int width, int height, TEXTURE left, TEXTURE right);
 
 			/*! @brief Update skin textures 
 				@param left texture
 				@param right texure */
-			void UpdateSkinTextures(void *left, void *right);
+			void UpdateSkinTextures(TEXTURE left, TEXTURE right);
 
 #ifdef WIN32
 			/*! @brief Get D3D11 Skin image for Unity Native
