@@ -252,33 +252,27 @@ int OvrvisionPro::OpenCLExtensions(EXTENSION_CALLBACK callback, void *item)
 }
 
 // Create textures(OpenGL)
-void OvrvisionPro::CreateSkinTextures(int width, int height, TEXTURE left, TEXTURE right)
+void OvrvisionPro::CreateSkinTextures(int width, int height, unsigned int left, unsigned int right)
 {
-	m_pOpenCL->CreateSkinTextures(width, height, left, right);
+	m_pOpenCL->CreateSkinTextures(width, height, (TEXTURE)left, (TEXTURE)right);
 }
 
-/*
-#ifdef WIN32
-// Create D3D11 texture
-void* OvrvisionPro::CreateD3DTexture2D(void *texture, int width, int height)
+// Create textures(D3D11)
+void OvrvisionPro::CreateSkinTextures(int width, int height, void* left, void* right)
 {
-	return m_pOpenCL->CreateD3DTexture2D((ID3D11Texture2D*)texture, width, height);
+	m_pOpenCL->CreateSkinTextures(width, height, (TEXTURE)left, (TEXTURE)right);
 }
-#endif
-    
-// Create OpenGL Texture
-void* OvrvisionPro::CreateGLTexture2D(unsigned int texture, int width, int height)
-{
-    return NULL;
-	//return m_pOpenCL->CreateGLTexture2D(texture, width, height);
-}
-*/
-
 
 // Update textures(OpenGL)
-void OvrvisionPro::UpdateSkinTextures(TEXTURE left, TEXTURE right)
+void OvrvisionPro::UpdateSkinTextures(unsigned int left, unsigned int right)
 {
-	m_pOpenCL->UpdateSkinTextures(left, right);
+	m_pOpenCL->UpdateSkinTextures((TEXTURE)left, (TEXTURE)right);
+}
+
+// Update textures(D3D11)
+void OvrvisionPro::UpdateSkinTextures(void* left, void* right)
+{
+	m_pOpenCL->UpdateSkinTextures((TEXTURE)left, (TEXTURE)right);
 }
 
 // Grayscaled images 1/2 scaled

@@ -21,7 +21,6 @@
 #ifdef WIN32
 // OpenCL header
 #include <CL/opencl.h>// OpenCL and its extensions
-
 #include <windows.h>
 #include <dxgi.h>
 #include <d3d11.h>

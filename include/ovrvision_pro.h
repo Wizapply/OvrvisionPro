@@ -24,6 +24,7 @@
 #define _WIN32_WINNT 0x400
 #endif
 #include <windows.h>
+
 #endif /*WIN32*/
 
 #ifdef MACOSX
@@ -272,12 +273,14 @@ public:
 		@param height of texture
 		@param left texture
 		@param right texure */
-	void CreateSkinTextures(int width, int height, TEXTURE left, TEXTURE right);
+	void CreateSkinTextures(int width, int height, unsigned int left, unsigned int right);
+	void CreateSkinTextures(int width, int height, void* left, void* right);
 	
 	/*! @brief Update skin textures, UNDER CONSTRUCTION
 		@param n count of onjects
 		@param textureObjects */
-	void UpdateSkinTextures(TEXTURE left, TEXTURE right);
+	void UpdateSkinTextures(unsigned int left, unsigned int right);
+	void UpdateSkinTextures(void* left, void* right);
 	
 	// Skin property
 	/*! @brief Set Skin image scale
