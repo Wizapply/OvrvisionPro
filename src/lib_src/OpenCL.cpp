@@ -109,8 +109,8 @@ string opencl_error_to_str(cl_int error)
 	}
 #endif
 
-#define INITPFN(platform, x) \
-    x = (x ## _fn)clGetExtensionFunctionAddressForPlatform(platform, #x); if(!x) { printf("failed getting %s\n", #x); }
+#define GETFUNCTION(platform, x) \
+    (x ## _fn)clGetExtensionFunctionAddressForPlatform(platform, #x);
 #pragma endregion
 
 namespace OVR
@@ -149,7 +149,7 @@ namespace OVR
                 throw std::runtime_error("Insufficient OpenCL version");
 			}
 #ifndef MACOSX
-            INITPFN(_platformId, clGetGLContextInfoKHR);
+			pclGetGLContextInfoKHR = GETFUNCTION(_platformId, clGetGLContextInfoKHR);
 #endif
 			CreateContext(mode, pDevice);
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
@@ -442,8 +442,8 @@ namespace OVR
 			char devicename[80];
 			clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, sizeof(devicename), devicename, NULL);
 			printf("PLATFORM: %s\n", devicename);
-			clGetGLContextInfoKHR_fn			clGetGLContextInfoKHR = NULL;
-			INITPFN(platforms[i], clGetGLContextInfoKHR);
+			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
+			pclGetGLContextInfoKHR = GETFUNCTION(platforms[i], clGetGLContextInfoKHR);
 //#ifdef WIN32
 			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
 			cl_context_properties opengl_props[] = {
@@ -461,12 +461,12 @@ namespace OVR
 //			};
 //#endif
 			size_t devSizeInBytes = 0;
-			clGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, NULL, &devSizeInBytes);
+			pclGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, NULL, &devSizeInBytes);
 			const size_t devNum = devSizeInBytes / sizeof(cl_device_id);
 			if (devNum)
 			{
 				std::vector<cl_device_id> devices(devNum);
-				clGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, devSizeInBytes, &devices[0], NULL);
+				pclGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, devSizeInBytes, &devices[0], NULL);
 				for (size_t k = 0; k < devNum; k++)
 				{
 					cl_device_type t;
@@ -488,7 +488,7 @@ namespace OVR
 	void OvrvisionProOpenCL::CreateContext(SHARING_MODE mode, void *pDevice)
 	{
 #ifdef WIN32
-		// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
+		// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 		cl_context_properties opengl_props[] = {
 			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
 			CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
@@ -524,7 +524,15 @@ namespace OVR
 		{
 #ifdef WIN32
 		case OPENGL:
-			_context = clCreateContext(opengl_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			if (opengl_props[3] != NULL && opengl_props[5] != NULL)
+			{
+				_context = clCreateContext(opengl_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			}
+			else
+			{
+				_sharing = mode = NONE;
+				_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			}
 			break;
 
 		case D3D11:
@@ -634,25 +642,25 @@ namespace OVR
 		if (strstr(_deviceExtensions, "cl_nv_d3d11_sharing"))
 		{
 			_vendorD3D11 = NVIDIA;
-			INITPFN(_platformId, clGetDeviceIDsFromD3D11NV);
-			INITPFN(_platformId, clCreateFromD3D11BufferNV);
-			INITPFN(_platformId, clCreateFromD3D11Texture2DNV);
-			INITPFN(_platformId, clCreateFromD3D11Texture3DNV);
-			INITPFN(_platformId, clEnqueueAcquireD3D11ObjectsNV);
-			INITPFN(_platformId, clEnqueueReleaseD3D11ObjectsNV);
-			if (clCreateFromD3D11Texture2DNV != NULL)
+			pclGetDeviceIDsFromD3D11NV = GETFUNCTION(_platformId, clGetDeviceIDsFromD3D11NV);
+			pclCreateFromD3D11BufferNV = GETFUNCTION(_platformId, clCreateFromD3D11BufferNV);
+			pclCreateFromD3D11Texture2DNV = GETFUNCTION(_platformId, clCreateFromD3D11Texture2DNV);
+			pclCreateFromD3D11Texture3DNV = GETFUNCTION(_platformId, clCreateFromD3D11Texture3DNV);
+			pclEnqueueAcquireD3D11ObjectsNV = GETFUNCTION(_platformId, clEnqueueAcquireD3D11ObjectsNV);
+			pclEnqueueReleaseD3D11ObjectsNV = GETFUNCTION(_platformId, clEnqueueReleaseD3D11ObjectsNV);
+			if (pclCreateFromD3D11Texture2DNV != NULL)
 				return true;
 		}
 		else if (strstr(_deviceExtensions, "cl_khr_d3d11_sharing"))
 		{
 			_vendorD3D11 = KHRONOS;
-			INITPFN(_platformId, clGetDeviceIDsFromD3D11KHR);
-			INITPFN(_platformId, clCreateFromD3D11BufferKHR);
-			INITPFN(_platformId, clCreateFromD3D11Texture2DKHR);
-			INITPFN(_platformId, clCreateFromD3D11Texture3DKHR);
-			INITPFN(_platformId, clEnqueueAcquireD3D11ObjectsKHR);
-			INITPFN(_platformId, clEnqueueReleaseD3D11ObjectsKHR);
-			if (clCreateFromD3D11Texture2DKHR != NULL)
+			pclGetDeviceIDsFromD3D11KHR = GETFUNCTION(_platformId, clGetDeviceIDsFromD3D11KHR);
+			pclCreateFromD3D11BufferKHR = GETFUNCTION(_platformId, clCreateFromD3D11BufferKHR);
+			pclCreateFromD3D11Texture2DKHR = GETFUNCTION(_platformId, clCreateFromD3D11Texture2DKHR);
+			pclCreateFromD3D11Texture3DKHR = GETFUNCTION(_platformId, clCreateFromD3D11Texture3DKHR);
+			pclEnqueueAcquireD3D11ObjectsKHR = GETFUNCTION(_platformId, clEnqueueAcquireD3D11ObjectsKHR);
+			pclEnqueueReleaseD3D11ObjectsKHR = GETFUNCTION(_platformId, clEnqueueReleaseD3D11ObjectsKHR);
+			if (pclCreateFromD3D11Texture2DKHR != NULL)
 				return true;
 		}
 		return false;
@@ -792,11 +800,11 @@ namespace OVR
 	{
 		if (_vendorD3D11 == NVIDIA)
 		{
-			return clCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+			return pclCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
 		}
 		else
 		{
-			return clCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+			return pclCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
 		}
 	}
 #endif

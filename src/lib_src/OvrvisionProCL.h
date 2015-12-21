@@ -274,22 +274,22 @@ namespace OVR
 			// D3D11 sharing depends on vendor specific extensions
 			enum VENDOR _vendorD3D11;	
 			// Extension functions for NVIDIA 
-			clGetDeviceIDsFromD3D11NV_fn        clGetDeviceIDsFromD3D11NV = NULL;
-			clCreateFromD3D11BufferNV_fn		clCreateFromD3D11BufferNV = NULL;
-			clCreateFromD3D11Texture2DNV_fn		clCreateFromD3D11Texture2DNV = NULL;
-			clCreateFromD3D11Texture3DNV_fn     clCreateFromD3D11Texture3DNV = NULL;
-			clEnqueueAcquireD3D11ObjectsNV_fn	clEnqueueAcquireD3D11ObjectsNV = NULL;
-			clEnqueueReleaseD3D11ObjectsNV_fn	clEnqueueReleaseD3D11ObjectsNV = NULL;
+			clGetDeviceIDsFromD3D11NV_fn        pclGetDeviceIDsFromD3D11NV = NULL;
+			clCreateFromD3D11BufferNV_fn		pclCreateFromD3D11BufferNV = NULL;
+			clCreateFromD3D11Texture2DNV_fn		pclCreateFromD3D11Texture2DNV = NULL;
+			clCreateFromD3D11Texture3DNV_fn     pclCreateFromD3D11Texture3DNV = NULL;
+			clEnqueueAcquireD3D11ObjectsNV_fn	pclEnqueueAcquireD3D11ObjectsNV = NULL;
+			clEnqueueReleaseD3D11ObjectsNV_fn	pclEnqueueReleaseD3D11ObjectsNV = NULL;
 
 			// Extension functions for Khronos
-			clGetDeviceIDsFromD3D11KHR_fn       clGetDeviceIDsFromD3D11KHR = NULL;
-			clCreateFromD3D11BufferKHR_fn		clCreateFromD3D11BufferKHR = NULL;
-			clCreateFromD3D11Texture2DKHR_fn	clCreateFromD3D11Texture2DKHR = NULL;
-			clCreateFromD3D11Texture3DKHR_fn    clCreateFromD3D11Texture3DKHR = NULL;
-			clEnqueueAcquireD3D11ObjectsKHR_fn	clEnqueueAcquireD3D11ObjectsKHR = NULL;
-			clEnqueueReleaseD3D11ObjectsKHR_fn	clEnqueueReleaseD3D11ObjectsKHR = NULL;
+			clGetDeviceIDsFromD3D11KHR_fn       pclGetDeviceIDsFromD3D11KHR = NULL;
+			clCreateFromD3D11BufferKHR_fn		pclCreateFromD3D11BufferKHR = NULL;
+			clCreateFromD3D11Texture2DKHR_fn	pclCreateFromD3D11Texture2DKHR = NULL;
+			clCreateFromD3D11Texture3DKHR_fn    pclCreateFromD3D11Texture3DKHR = NULL;
+			clEnqueueAcquireD3D11ObjectsKHR_fn	pclEnqueueAcquireD3D11ObjectsKHR = NULL;
+			clEnqueueReleaseD3D11ObjectsKHR_fn	pclEnqueueReleaseD3D11ObjectsKHR = NULL;
 
-			clGetGLContextInfoKHR_fn			clGetGLContextInfoKHR = NULL;
+			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 #endif
 			char	*_deviceExtensions;
 			Mat		*_mapX[2], *_mapY[2];	// camera parameter

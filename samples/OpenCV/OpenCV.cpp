@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
 	Mat histgram(180, 256, CV_8UC1);
 
 	ovrvision->CheckGPU();
-	if (ovrvision->Open(0, Camprop::OV_CAMHD_FULL))
+	if (ovrvision->Open(0, Camprop::OV_CAMHD_FULL, 0))
 	{
 		width = ovrvision->GetCamWidth();
 		height = ovrvision->GetCamHeight();
