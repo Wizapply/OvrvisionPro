@@ -156,6 +156,7 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// UMat seems to have extra overhead of data transfer, so WE USE NATIVE OPENCL IMAGE2D
+			memset(&_desc_scaled, 0, sizeof(_desc_scaled));
 			_desc_scaled.image_type = CL_MEM_OBJECT_IMAGE2D;
 			cl_image_desc desc = { CL_MEM_OBJECT_IMAGE2D, _width, _height };
 			cl_image_desc desc_half = { CL_MEM_OBJECT_IMAGE2D, _width / 2, _height / 2 };
