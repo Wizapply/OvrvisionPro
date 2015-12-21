@@ -709,6 +709,8 @@ namespace OVR
 	{
 		int width = _scaledRegion[0];
 		int height = _scaledRegion[1];
+		cl_int status;
+		cl_event event[2];
 		size_t origin[3] = { 0, 0, 0 };
 		if (type == 2)
 		{
@@ -724,8 +726,14 @@ namespace OVR
 		}
 		else if (type == 3)
 		{
-			_errorCode = clEnqueueReadImage(_commandQueue, _texture[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
-			_errorCode = clEnqueueReadImage(_commandQueue, _texture[1], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
+			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clEnqueueReadImage(_commandQueue, _texture[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, &event[0]);
+			clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
+			_errorCode = clEnqueueReadImage(_commandQueue, _texture[1], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, &event[1]);
+			clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
+			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
 		else
 		{
@@ -741,6 +749,7 @@ namespace OVR
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
 	{
+		cl_mem image;
 		//glGenTextures(1, &g_texture));
 		//GL_API_CHECK(glBindTexture(GL_TEXTURE_2D, g_texture));
 		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -761,17 +770,18 @@ namespace OVR
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 		//glEnable(GL_TEXTURE_2D);
-		cl_mem object = clCreateFromGLTexture(_context, CL_MEM_WRITE_ONLY, GL_TEXTURE_2D, 0, texture, &_errorCode);
+		image = clCreateFromGLTexture(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture, &_errorCode);
+		//image = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #ifdef _DEBUG
 		size_t w, h, s;
 		cl_image_format format;
-		clGetImageInfo(object, CL_IMAGE_WIDTH, sizeof(w), &w, NULL);
-		clGetImageInfo(object, CL_IMAGE_HEIGHT, sizeof(h), &h, NULL);
-		clGetImageInfo(object, CL_IMAGE_ELEMENT_SIZE, sizeof(s), &s, NULL);
-		clGetImageInfo(object, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
+		clGetImageInfo(image, CL_IMAGE_WIDTH, sizeof(w), &w, NULL);
+		clGetImageInfo(image, CL_IMAGE_HEIGHT, sizeof(h), &h, NULL);
+		clGetImageInfo(image, CL_IMAGE_ELEMENT_SIZE, sizeof(s), &s, NULL);
+		clGetImageInfo(image, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
 #endif
-		return object;
+		return image;
 	}
 #endif
 

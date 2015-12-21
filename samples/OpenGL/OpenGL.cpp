@@ -118,7 +118,7 @@ GLvoid drawScene(GLvoid)
 #ifdef _DEBUG
 	cv::Mat left(size.height, size.width, CV_8UC4);
 	cv::Mat right(size.height, size.width, CV_8UC4);
-	ovrvision.InspectTextures(left.data, right.data, 2); // Get HSV images
+	ovrvision.InspectTextures(left.data, right.data, 3); // Get HSV images
 	cv::imshow("Left", left);
 	cv::imshow("Right", right);
 #endif
