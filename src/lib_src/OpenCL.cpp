@@ -734,6 +734,7 @@ namespace OVR
 		}
 		else if (type == 3)
 		{
+#ifndef MACOSX
 			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_errorCode = clEnqueueReadImage(_commandQueue, _texture[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, &event[0]);
@@ -742,6 +743,7 @@ namespace OVR
 			clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
 			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
 			SAMPLE_CHECK_ERRORS(_errorCode);
+#endif
 		}
 		else
 		{
