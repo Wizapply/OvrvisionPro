@@ -47,9 +47,14 @@ const uvc_controls_t uvc_controls = {
 		.selector = 0x0A,
 		.size = 2,
 	},
+    .whitebalance_auto = {
+        .unit = UVC_PROCESSING_UNIT_ID, //whitebalance auto
+        .selector = 0x0B,
+        .size = 1,
+    },
     .blc = {
         .unit = UVC_PROCESSING_UNIT_ID, //blc
-		.selector = 0x0C,
+		.selector = 0x01,
 		.size = 2,
     },
 	.data = {
@@ -186,6 +191,7 @@ const uvc_controls_t uvc_controls = {
 			return;
 		}
     }
+
     interface = controlInterface;
 }
 
@@ -469,7 +475,7 @@ const uvc_controls_t uvc_controls = {
 
     if(m_devstatus != OV_DEVRUNNING)
         return RESULT_FAILED;
-
+    
     switch(proc)
     {
         case OV_CAMSET_EXPOSURE:
@@ -503,9 +509,9 @@ const uvc_controls_t uvc_controls = {
                        at:uvc_controls.whitebalance_auto.unit];
             if(!automode) { //manual
                 [self setData:value
-                   withLength:uvc_controls.whitebalance_g.size
-                  forSelector:uvc_controls.whitebalance_g.selector
-                           at:uvc_controls.whitebalance_g.unit];
+                   withLength:uvc_controls.whitebalance_b.size
+                  forSelector:uvc_controls.whitebalance_b.selector
+                           at:uvc_controls.whitebalance_b.unit];
             }
             break;
         case OV_CAMSET_BLC:
@@ -536,7 +542,7 @@ const uvc_controls_t uvc_controls = {
         return RESULT_FAILED;
     
     (*automode) = false;
-    
+
     switch(proc)
     {
         case OV_CAMSET_EXPOSURE:

@@ -92,7 +92,7 @@ int Initialize()
 	g_camWidth = g_pOvrvision->GetCamWidth();
 	g_camHeight = g_pOvrvision->GetCamHeight();
 
-	g_pOvrvision->SetCameraWhiteBalanceAuto(false);
+	//g_pOvrvision->SetCameraWhiteBalanceAuto(false);
 	g_pOvrTrack = new OVR::OvrvisionTracking(g_camWidth, g_camHeight, g_pOvrvision->GetCamFocalPoint());
 
 	//Create texture
