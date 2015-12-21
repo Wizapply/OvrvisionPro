@@ -288,9 +288,9 @@ namespace OVR
 			clCreateFromD3D11Texture3DKHR_fn    clCreateFromD3D11Texture3DKHR = NULL;
 			clEnqueueAcquireD3D11ObjectsKHR_fn	clEnqueueAcquireD3D11ObjectsKHR = NULL;
 			clEnqueueReleaseD3D11ObjectsKHR_fn	clEnqueueReleaseD3D11ObjectsKHR = NULL;
-#endif // WIN32
-			clGetGLContextInfoKHR_fn			clGetGLContextInfoKHR = NULL;
 
+			clGetGLContextInfoKHR_fn			clGetGLContextInfoKHR = NULL;
+#endif
 			char	*_deviceExtensions;
 			Mat		*_mapX[2], *_mapY[2];	// camera parameter
 			Mat		*_skinmask[2];				// skin mask

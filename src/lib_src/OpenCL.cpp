@@ -148,14 +148,15 @@ namespace OVR
 			{
                 throw std::runtime_error("Insufficient OpenCL version");
 			}
-			INITPFN(_platformId, clGetGLContextInfoKHR);
-
+#ifndef MACOSX
+            INITPFN(_platformId, clGetGLContextInfoKHR);
+#endif
 			CreateContext(mode, pDevice);
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// UMat seems to have extra overhead of data transfer, so WE USE NATIVE OPENCL IMAGE2D
-			_desc_scaled = { CL_MEM_OBJECT_IMAGE2D };
+			_desc_scaled.image_type = CL_MEM_OBJECT_IMAGE2D;
 			cl_image_desc desc = { CL_MEM_OBJECT_IMAGE2D, _width, _height };
 			cl_image_desc desc_half = { CL_MEM_OBJECT_IMAGE2D, _width / 2, _height / 2 };
 
@@ -425,6 +426,7 @@ namespace OVR
 
 	void OvrvisionProOpenCL::CheckGLContext()
 	{
+#ifndef MACOSX
 		cl_uint num_of_platforms = 0;
 		// get total number of available platforms:
 		cl_int err = clGetPlatformIDs(0, 0, &num_of_platforms);
@@ -441,8 +443,7 @@ namespace OVR
 			printf("PLATFORM: %s\n", devicename);
 			clGetGLContextInfoKHR_fn			clGetGLContextInfoKHR = NULL;
 			INITPFN(platforms[i], clGetGLContextInfoKHR);
-
-#ifdef WIN32
+//#ifdef WIN32
 			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
 			cl_context_properties opengl_props[] = {
 				CL_CONTEXT_PLATFORM, (cl_context_properties)platforms[i],
@@ -450,23 +451,14 @@ namespace OVR
 				CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
 				0
 			};
-#elif defined(LINUX)
-			cl_context_properties opengl_props[] = {
-				CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
-				CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
-				CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
-				0
-			};
-#elif defined(MACOSX)
-			// Reference https://developer.apple.com/library/mac/documentation/Performance/Conceptual/OpenCL_MacProgGuide/shareGroups/shareGroups.html#//apple_ref/doc/uid/TP40008312-CH20-SW1
-			//		CGLContextObj kCGLContext = CGLGetCurrentContext();
-			//		CGlShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGContext);
-			//
-			//		cl_context_properties opengl_props[] = {
-			//			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
-			//			0
-			//		};
-#endif
+//#elif defined(LINUX)
+//			cl_context_properties opengl_props[] = {
+//				CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+//				CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
+//				CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
+//				0
+//			};
+//#endif
 			size_t devSizeInBytes = 0;
 			clGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, NULL, &devSizeInBytes);
 			const size_t devNum = devSizeInBytes / sizeof(cl_device_id);
@@ -488,6 +480,7 @@ namespace OVR
 				}
 			}
 		}
+#endif
 	}
 
 	// Create device context
@@ -662,6 +655,8 @@ namespace OVR
 				return true;
 		}
 		return false;
+#else
+        return false;
 #endif
 	}
 
