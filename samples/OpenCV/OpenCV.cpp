@@ -74,6 +74,7 @@ int main(int argc, char* argv[])
 	Mat results[2];
 	Mat histgram(180, 256, CV_8UC1);
 
+	ovrvision->CheckGLContext();
 	if (ovrvision->Open(0, Camprop::OV_CAMHD_FULL))
 	{
 		width = ovrvision->GetCamWidth();

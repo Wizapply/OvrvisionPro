@@ -144,6 +144,8 @@ namespace OVR
 			_formatMap.image_channel_data_type = CL_FLOAT;
 			_formatMap.image_channel_order = CL_R;
 
+			INITPFN(clGetGLContextInfoKHR);
+
 			if (SelectGPU("", "OpenCL C 1.2") == NULL) // Find OpenCL(version 1.2 and above) device 
 			{
                 throw std::runtime_error("Insufficient OpenCL version");
@@ -336,7 +338,7 @@ namespace OVR
 			return true;
 		}
 	}
-
+	 
 	// Select GPU device
 	cl_device_id OvrvisionProOpenCL::SelectGPU(const char *platform, const char *version)
 	{
@@ -417,6 +419,67 @@ namespace OVR
 		return _deviceId;
 	}
 
+	void OvrvisionProOpenCL::CheckGLContext()
+	{
+		clGetGLContextInfoKHR_fn			clGetGLContextInfoKHR = NULL;
+		INITPFN(clGetGLContextInfoKHR);
+		cl_uint num_of_platforms = 0;
+		// get total number of available platforms:
+		cl_int err = clGetPlatformIDs(0, 0, &num_of_platforms);
+		SAMPLE_CHECK_ERRORS(err);
+
+		vector<cl_platform_id> platforms(num_of_platforms);
+		// get IDs for all platforms:
+		err = clGetPlatformIDs(num_of_platforms, &platforms[0], 0);
+		SAMPLE_CHECK_ERRORS(err);
+		for (cl_uint i = 0; i < num_of_platforms; i++)
+		{
+#ifdef WIN32
+			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
+			cl_context_properties opengl_props[] = {
+				CL_CONTEXT_PLATFORM, (cl_context_properties)platforms[i],
+				CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
+				CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
+				0
+			};
+#elif defined(LINUX)
+			cl_context_properties opengl_props[] = {
+				CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+				CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
+				CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
+				0
+			};
+#elif defined(MACOSX)
+			// Reference https://developer.apple.com/library/mac/documentation/Performance/Conceptual/OpenCL_MacProgGuide/shareGroups/shareGroups.html#//apple_ref/doc/uid/TP40008312-CH20-SW1
+			//		CGLContextObj kCGLContext = CGLGetCurrentContext();
+			//		CGlShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGContext);
+			//
+			//		cl_context_properties opengl_props[] = {
+			//			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
+			//			0
+			//		};
+#endif
+			size_t devSizeInBytes = 0;
+			clGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, NULL, &devSizeInBytes);
+			const size_t devNum = devSizeInBytes / sizeof(cl_device_id);
+			if (devNum)
+			{
+				std::vector<cl_device_id> devices(devNum);
+				clGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, devSizeInBytes, &devices[0], NULL);
+				for (size_t k = 0; k < devNum; k++)
+				{
+					cl_device_type t;
+					clGetDeviceInfo(devices[k], CL_DEVICE_TYPE, sizeof(t), &t, NULL);
+					char devicename[80];
+					clGetDeviceInfo(devices[k], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
+					char buffer[32];
+					clGetDeviceInfo(devices[k], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, NULL);
+					printf("%s %s\n", devicename, buffer);
+				}
+			}
+		}
+	}
+
 	// Create device context
 	void OvrvisionProOpenCL::CreateContext(SHARING_MODE mode, void *pDevice)
 	{
@@ -444,6 +507,13 @@ namespace OVR
 //			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
 //			0
 //		};
+#elif defined(LINUX)
+		cl_context_properties opengl_props[] = {
+			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+			CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
+			CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
+			0
+		};
 #endif
 		// Prepare for sharing texture
 		switch (mode)
@@ -460,6 +530,10 @@ namespace OVR
 //		case OPENGL:
 //			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
 //			break;
+#elif defined(LINUX)
+		case OPENGL:
+			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
+			break
 #endif
 		default:
 			_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
@@ -578,8 +652,6 @@ namespace OVR
 				return true;
 		}
 		return false;
-#else
-		return true;
 #endif
 	}
 
@@ -588,7 +660,7 @@ namespace OVR
 	{
 #ifdef MACOSX
         // Can't create clCreateFromGLTexture2D on Xcode7
-#else
+#else	// WIN32 | LINUX
 		switch (_sharing)
 		{
 		case OPENGL:
@@ -614,7 +686,7 @@ namespace OVR
 		//glFlushRenderAPPLE();// depend on mode
 		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
 		clFinish(_commandQueue);
-#else
+#else	// WIN32 || LINUX
 		//glFinish(); // depend on mode
 		_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
@@ -644,14 +716,21 @@ namespace OVR
 			_errorCode = clEnqueueReadImage(_commandQueue, _reducedL, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
 			_errorCode = clEnqueueReadImage(_commandQueue, _reducedR, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
 		}
-		else
+		else if (type == 3)
 		{
 			_errorCode = clEnqueueReadImage(_commandQueue, _texture[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
 			_errorCode = clEnqueueReadImage(_commandQueue, _texture[1], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
 		}
+		else
+		{
+			origin[0] += _width / 4;
+			origin[1] += _height / 4;
+			_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
+			_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
+		}
 	}
 
-#if defined(WIN32) //|| defined(MACOSX)
+#if defined(WIN32) || defined(LINUX) //|| defined(MACOSX)
 	// OpenGL shared texture
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)

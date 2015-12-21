@@ -4,7 +4,10 @@
 #pragma once
 
 #include <d3d11.h>
-#include <CL/opencl.h>
+//#include <CL/opencl.h>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+
 #include "ovrvision_pro.h"
 
 #ifdef _DEBUG
@@ -25,7 +28,9 @@ protected:
 	ID3D11Texture2D* _textureL;
 	ID3D11Texture2D* _textureR;
 	OVR::OvrvisionPro* _ovrvision;
-	cl_mem _left, _right;
+	OVR::ROI _size;
+	//cl_mem _left, _right;
+	cv::Mat _left, _right;
 
 public:
 	D3D11(HWND hwnd);

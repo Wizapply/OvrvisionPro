@@ -410,6 +410,11 @@ void OvrvisionPro::InspectTextures(unsigned char *left, unsigned char *right, un
 	m_pOpenCL->InspectTextures(left, right, type);
 }
 
+void OvrvisionPro::CheckGLContext()
+{
+	m_pOpenCL->CheckGLContext();
+}
+
 //Get Camera data pre-store.
 void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 {

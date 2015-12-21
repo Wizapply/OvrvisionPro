@@ -155,6 +155,7 @@ namespace OVR
 			void UpdateSkinTextures(TEXTURE left, TEXTURE right);
 
 			void InspectTextures(uchar* left, uchar *right, uint type = 0);
+			static void CheckGLContext();
 
 #ifdef WIN32
 			/*! @brief Get D3D11 Skin image for Unity Native
@@ -267,9 +268,9 @@ namespace OVR
 			int saveBinary(const char *filename);
 			//bool SaveSettings(const char *filename);
 
-#ifdef _WIN32
-			enum VENDOR _vendorD3D11;	// D3D11 sharing depends on vendor specific extensions
-
+#ifdef WIN32
+			// D3D11 sharing depends on vendor specific extensions
+			enum VENDOR _vendorD3D11;	
 			// Extension functions for NVIDIA 
 			clGetDeviceIDsFromD3D11NV_fn        clGetDeviceIDsFromD3D11NV = NULL;
 			clCreateFromD3D11BufferNV_fn		clCreateFromD3D11BufferNV = NULL;
@@ -285,7 +286,9 @@ namespace OVR
 			clCreateFromD3D11Texture3DKHR_fn    clCreateFromD3D11Texture3DKHR = NULL;
 			clEnqueueAcquireD3D11ObjectsKHR_fn	clEnqueueAcquireD3D11ObjectsKHR = NULL;
 			clEnqueueReleaseD3D11ObjectsKHR_fn	clEnqueueReleaseD3D11ObjectsKHR = NULL;
-#endif
+#endif // WIN32
+			clGetGLContextInfoKHR_fn			clGetGLContextInfoKHR = NULL;
+
 			char	*_deviceExtensions;
 			Mat		*_mapX[2], *_mapY[2];	// camera parameter
 			Mat		*_skinmask[2];				// skin mask
