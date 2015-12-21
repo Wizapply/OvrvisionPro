@@ -76,7 +76,7 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 	GL_API_CHECK(glDisable(GL_LIGHTING));
 	GL_API_CHECK(glEnable(GL_TEXTURE_2D));
 
-	ovrvision.CheckGLContext();
+	ovrvision.CheckGPU();
 
 	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL, 0) == 0) // Open with OpenGL sharing mode
 		puts("Can't open OvrvisionPro");

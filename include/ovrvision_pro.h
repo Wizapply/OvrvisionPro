@@ -341,7 +341,7 @@ public:
 	void GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight);
 
 	void InspectTextures(unsigned char *left, unsigned char *right, unsigned int type = 0);
-	void CheckGLContext();
+	void CheckGPU();
 
 private:
 #ifdef WIN32

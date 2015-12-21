@@ -109,8 +109,8 @@ string opencl_error_to_str(cl_int error)
 	}
 #endif
 
-#define INITPFN(x) \
-    x = (x ## _fn)clGetExtensionFunctionAddress(#x); if(!x) { printf("failed getting %s\n", #x); }
+#define INITPFN(platform, x) \
+    x = (x ## _fn)clGetExtensionFunctionAddressForPlatform(platform, #x); if(!x) { printf("failed getting %s\n", #x); }
 #pragma endregion
 
 namespace OVR
@@ -144,18 +144,22 @@ namespace OVR
 			_formatMap.image_channel_data_type = CL_FLOAT;
 			_formatMap.image_channel_order = CL_R;
 
-			INITPFN(clGetGLContextInfoKHR);
-
 			if (SelectGPU("", "OpenCL C 1.2") == NULL) // Find OpenCL(version 1.2 and above) device 
 			{
                 throw std::runtime_error("Insufficient OpenCL version");
 			}
+			INITPFN(_platformId, clGetGLContextInfoKHR);
+
 			CreateContext(mode, pDevice);
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// UMat seems to have extra overhead of data transfer, so WE USE NATIVE OPENCL IMAGE2D
-			_src = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_format16UC1, _width, _height, 0, 0, &_errorCode);
+			_desc_scaled = { CL_MEM_OBJECT_IMAGE2D };
+			cl_image_desc desc = { CL_MEM_OBJECT_IMAGE2D, _width, _height };
+			cl_image_desc desc_half = { CL_MEM_OBJECT_IMAGE2D, _width / 2, _height / 2 };
+
+			_src = clCreateImage(_context, CL_MEM_READ_ONLY, &_format16UC1, &desc, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			_remapAvailable = false;
@@ -167,16 +171,16 @@ namespace OVR
 			_skinmask[0] = new Mat(_height / 2, _width / 2, CV_8UC1);
 			_skinmask[1] = new Mat(_height / 2, _width / 2, CV_8UC1);
 
-			_l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
-			_r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
-			_L = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
-			_R = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
-			_mx[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
-			_my[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
-			_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
-			_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
-			_reducedL = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width / 2, _height / 2, 0, 0, &_errorCode);
-			_reducedR = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width / 2, _height / 2, 0, 0, &_errorCode);
+			_l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
+			_r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
+			_L = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
+			_R = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
+			_mx[0] = clCreateImage(_context, CL_MEM_READ_ONLY, &_formatMap, &desc, 0, &_errorCode);
+			_my[0] = clCreateImage(_context, CL_MEM_READ_ONLY, &_formatMap, &desc, 0, &_errorCode);
+			_mx[1] = clCreateImage(_context, CL_MEM_READ_ONLY, &_formatMap, &desc, 0, &_errorCode);
+			_my[1] = clCreateImage(_context, CL_MEM_READ_ONLY, &_formatMap, &desc, 0, &_errorCode);
+			_reducedL = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc_half, 0, &_errorCode);
+			_reducedR = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc_half, 0, &_errorCode);
 			_texture[0] = NULL;
 			_texture[1] = NULL;
 
@@ -421,8 +425,6 @@ namespace OVR
 
 	void OvrvisionProOpenCL::CheckGLContext()
 	{
-		clGetGLContextInfoKHR_fn			clGetGLContextInfoKHR = NULL;
-		INITPFN(clGetGLContextInfoKHR);
 		cl_uint num_of_platforms = 0;
 		// get total number of available platforms:
 		cl_int err = clGetPlatformIDs(0, 0, &num_of_platforms);
@@ -434,6 +436,12 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(err);
 		for (cl_uint i = 0; i < num_of_platforms; i++)
 		{
+			char devicename[80];
+			clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, sizeof(devicename), devicename, NULL);
+			printf("PLATFORM: %s\n", devicename);
+			clGetGLContextInfoKHR_fn			clGetGLContextInfoKHR = NULL;
+			INITPFN(platforms[i], clGetGLContextInfoKHR);
+
 #ifdef WIN32
 			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
 			cl_context_properties opengl_props[] = {
@@ -470,11 +478,13 @@ namespace OVR
 				{
 					cl_device_type t;
 					clGetDeviceInfo(devices[k], CL_DEVICE_TYPE, sizeof(t), &t, NULL);
-					char devicename[80];
-					clGetDeviceInfo(devices[k], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
-					char buffer[32];
-					clGetDeviceInfo(devices[k], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, NULL);
-					printf("%s %s\n", devicename, buffer);
+					//if (t == CL_DEVICE_TYPE_GPU)
+					{
+						clGetDeviceInfo(devices[k], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
+						char buffer[32];
+						clGetDeviceInfo(devices[k], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, NULL);
+						printf("\t%s %s\n", devicename, buffer);
+					}
 				}
 			}
 		}
@@ -630,24 +640,24 @@ namespace OVR
 		if (strstr(_deviceExtensions, "cl_nv_d3d11_sharing"))
 		{
 			_vendorD3D11 = NVIDIA;
-			INITPFN(clGetDeviceIDsFromD3D11NV);
-			INITPFN(clCreateFromD3D11BufferNV);
-			INITPFN(clCreateFromD3D11Texture2DNV);
-			INITPFN(clCreateFromD3D11Texture3DNV);
-			INITPFN(clEnqueueAcquireD3D11ObjectsNV);
-			INITPFN(clEnqueueReleaseD3D11ObjectsNV);
+			INITPFN(_platformId, clGetDeviceIDsFromD3D11NV);
+			INITPFN(_platformId, clCreateFromD3D11BufferNV);
+			INITPFN(_platformId, clCreateFromD3D11Texture2DNV);
+			INITPFN(_platformId, clCreateFromD3D11Texture3DNV);
+			INITPFN(_platformId, clEnqueueAcquireD3D11ObjectsNV);
+			INITPFN(_platformId, clEnqueueReleaseD3D11ObjectsNV);
 			if (clCreateFromD3D11Texture2DNV != NULL)
 				return true;
 		}
 		else if (strstr(_deviceExtensions, "cl_khr_d3d11_sharing"))
 		{
 			_vendorD3D11 = KHRONOS;
-			INITPFN(clGetDeviceIDsFromD3D11KHR);
-			INITPFN(clCreateFromD3D11BufferKHR);
-			INITPFN(clCreateFromD3D11Texture2DKHR);
-			INITPFN(clCreateFromD3D11Texture3DKHR);
-			INITPFN(clEnqueueAcquireD3D11ObjectsKHR);
-			INITPFN(clEnqueueReleaseD3D11ObjectsKHR);
+			INITPFN(_platformId, clGetDeviceIDsFromD3D11KHR);
+			INITPFN(_platformId, clCreateFromD3D11BufferKHR);
+			INITPFN(_platformId, clCreateFromD3D11Texture2DKHR);
+			INITPFN(_platformId, clCreateFromD3D11Texture3DKHR);
+			INITPFN(_platformId, clEnqueueAcquireD3D11ObjectsKHR);
+			INITPFN(_platformId, clEnqueueReleaseD3D11ObjectsKHR);
 			if (clCreateFromD3D11Texture2DKHR != NULL)
 				return true;
 		}
@@ -755,7 +765,7 @@ namespace OVR
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 		//glEnable(GL_TEXTURE_2D);
-		cl_mem object = clCreateFromGLTexture2D(_context, CL_MEM_WRITE_ONLY, GL_TEXTURE_2D, 0, texture, &_errorCode);
+		cl_mem object = clCreateFromGLTexture(_context, CL_MEM_WRITE_ONLY, GL_TEXTURE_2D, 0, texture, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #ifdef _DEBUG
 		size_t w, h, s;
@@ -799,16 +809,16 @@ namespace OVR
 	// Get Skin images
 	void OvrvisionProOpenCL::SkinImages(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
-		int width = _scaledRegion[0];
-		int height = _scaledRegion[1];
+		//int width = _scaledRegion[0];
+		//int height = _scaledRegion[1];
 		size_t origin[3] = { 0, 0, 0 };
 		cl_mem mask[2];
 		cl_event event[2];
 
 		// Allocate mask
-		mask[0] = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		mask[0] = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		mask[1] = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		mask[1] = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 #if 1
@@ -888,9 +898,9 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 		cl_event event[2];
 
-		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		SkinImages(l, r, &event[0], &event[1]);
@@ -1281,9 +1291,9 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 
-		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_event event[2];
 
@@ -1328,6 +1338,9 @@ namespace OVR
 		_scaledRegion[2] = 1;
 		//SCALING prev = _scaling;
 		_scaling = scaling;
+		_desc_scaled.image_type = CL_MEM_OBJECT_IMAGE2D;
+		_desc_scaled.image_width = _scaledRegion[0];
+		_desc_scaled.image_height = _scaledRegion[1];
 		return Size(_scaledRegion[0], _scaledRegion[1]);
 	}
 
@@ -1411,7 +1424,6 @@ namespace OVR
 		}
 		else 
 		{
-			cl_mem l, r;
 			uint width = _width, height = _height;
 			switch (scaling)
 			{
@@ -1432,9 +1444,10 @@ namespace OVR
 			size_t region[3] = { width, height, 1 };
 			size_t size[] = { width, height };
 
-			l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+			cl_image_desc desc = { CL_MEM_OBJECT_IMAGE2D, width, height };
+			cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
-			r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+			cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// Resize
@@ -1467,7 +1480,6 @@ namespace OVR
 	// Get resized grayscvale images
 	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling)
 	{
-		cl_mem l, r;
 		uint width = _width, height = _height;
 		switch (scaling)
 		{
@@ -1486,10 +1498,11 @@ namespace OVR
 		}
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
+		cl_image_desc desc = { CL_MEM_OBJECT_IMAGE2D, width, height };
 
-		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &desc, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &desc, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_event event[2];
 
@@ -1551,9 +1564,9 @@ namespace OVR
 		size_t size[] = { width, height };
 
 		// Get HSV images
-		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		cl_event event[2];
@@ -1620,9 +1633,9 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 
-		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_event event[2];
 

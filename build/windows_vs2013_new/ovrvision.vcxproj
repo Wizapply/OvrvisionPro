@@ -183,7 +183,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\..\..\include;.\..\..\3rdparty\aruco;.\..\..\3rdparty\opencv\build\include;.\..\..\3rdparty;.\..\..\3rdparty\opencl\1.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\..\..\include;.\..\..\3rdparty\aruco;.\..\..\3rdparty\opencv\build\include;.\..\..\3rdparty;.\..\..\3rdparty\opencl\amd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_OVRVISION_EXPORTS;OPENCV_VERSION_3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -196,7 +196,7 @@
     <Link>
       <AdditionalDependencies>OpenGL32.lib;strmiids.lib;ippicvmt.lib;opencv_calib3d300.lib;opencv_core300.lib;opencv_hal300.lib;opencv_features2d300.lib;opencv_flann300.lib;opencv_highgui300.lib;opencv_imgcodecs300.lib;opencv_imgproc300.lib;opencv_ml300.lib;opencv_objdetect300.lib;opencv_photo300.lib;opencv_shape300.lib;opencv_stitching300.lib;opencv_superres300.lib;opencv_video300.lib;opencv_videoio300.lib;opencv_videostab300.lib;zlib.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ovrvision.dll</OutputFile>
-      <AdditionalLibraryDirectories>.\..\..\3rdparty\opencv\build\x86\vc12\staticlib;.\..\..\3rdparty\opencl\1.2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\..\..\3rdparty\opencv\build\x86\vc12\staticlib;.\..\..\3rdparty\opencl\amd\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
