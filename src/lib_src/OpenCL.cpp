@@ -495,7 +495,7 @@ namespace OVR
 				for (cl_uint j = 0; j < num_of_devices; j++)
 				{
 					clGetDeviceInfo(id[j], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
-					printf("\t%s\n", devicename);
+					printf("\tGPU: %s\n", devicename);
 
 					// Check version
 					char buffer[32];
@@ -505,6 +505,7 @@ namespace OVR
 						{
 							version = true;
 						}
+						printf("\tOpenCL: %s\n", buffer);
 					}
 
 					// Check memory capacity
