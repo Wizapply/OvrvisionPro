@@ -23,6 +23,7 @@
 #elif MACOSX
 //config gdata class
 #include "ovrvision_setting.h"
+#include "ovrvision_tracking.h"
 #include "ovrvision_calibration.h"
 #undef _OVRVISION_EXPORTS
 #include "ovrvision_pro.h"

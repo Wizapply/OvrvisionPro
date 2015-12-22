@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9FE303E81C1E60A000C69CBF"
-               BuildableName = "ovrvision_app.app"
-               BlueprintName = "ovrvision_app"
+               BlueprintIdentifier = "9F35D41A1C28E94B005F48E6"
+               BuildableName = "ovrvision_calibration.app"
+               BlueprintName = "ovrvision_calibration"
                ReferencedContainer = "container:OvrvisionProSDK.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9FE303E81C1E60A000C69CBF"
-            BuildableName = "ovrvision_app.app"
-            BlueprintName = "ovrvision_app"
+            BlueprintIdentifier = "9F35D41A1C28E94B005F48E6"
+            BuildableName = "ovrvision_calibration.app"
+            BlueprintName = "ovrvision_calibration"
             ReferencedContainer = "container:OvrvisionProSDK.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -48,16 +48,16 @@
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
-      debugDocumentVersioning = "NO"
+      debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9FE303E81C1E60A000C69CBF"
-            BuildableName = "ovrvision_app.app"
-            BlueprintName = "ovrvision_app"
+            BlueprintIdentifier = "9F35D41A1C28E94B005F48E6"
+            BuildableName = "ovrvision_calibration.app"
+            BlueprintName = "ovrvision_calibration"
             ReferencedContainer = "container:OvrvisionProSDK.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -69,14 +69,14 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      debugDocumentVersioning = "NO">
+      debugDocumentVersioning = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9FE303E81C1E60A000C69CBF"
-            BuildableName = "ovrvision_app.app"
-            BlueprintName = "ovrvision_app"
+            BlueprintIdentifier = "9F35D41A1C28E94B005F48E6"
+            BuildableName = "ovrvision_calibration.app"
+            BlueprintName = "ovrvision_calibration"
             ReferencedContainer = "container:OvrvisionProSDK.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

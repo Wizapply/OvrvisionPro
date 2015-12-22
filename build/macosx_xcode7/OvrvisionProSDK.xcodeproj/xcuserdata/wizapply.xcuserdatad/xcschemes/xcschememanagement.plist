@@ -9,14 +9,34 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>ovrvision.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
 		<key>ovrvision_app.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
+		<key>ovrvision_calibration.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>9F35D41A1C28E94B005F48E6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9F35D45C1C28EB05005F48E6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>9FB69CC61C12B69A0085BB68</key>
 		<dict>
 			<key>primary</key>

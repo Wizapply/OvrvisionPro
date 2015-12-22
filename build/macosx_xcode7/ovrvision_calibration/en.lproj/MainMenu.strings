@@ -1,0 +1,39 @@
+
+/* Class = "NSMenuItem"; title = "Calibration Tool"; ObjectID = "1Xt-HY-uBw"; */
+"1Xt-HY-uBw.title" = "Calibration Tool";
+
+/* Class = "NSMenuItem"; title = "HMD: Rift DK1"; ObjectID = "97t-Pj-qAW"; */
+"97t-Pj-qAW.title" = "HMD: Rift DK1";
+
+/* Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6"; */
+"AYu-sK-qS6.title" = "Main Menu";
+
+/* Class = "NSTextFieldCell"; title = "Output :"; ObjectID = "HyY-YN-2eW"; */
+"HyY-YN-2eW.title" = "Output :";
+
+/* Class = "NSMenuItem"; title = "HMD: Other"; ObjectID = "Qk4-oz-h4I"; */
+"Qk4-oz-h4I.title" = "HMD: Other";
+
+/* Class = "NSWindow"; title = "Ovrvision Calibration Tool"; ObjectID = "QvC-M9-y7g"; */
+"QvC-M9-y7g.title" = "Ovrvision Calibration Tool";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "TbX-sj-rNb"; */
+"TbX-sj-rNb.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "Quit Tool"; ObjectID = "U2L-he-NRN"; */
+"U2L-he-NRN.title" = "Quit Tool";
+
+/* Class = "NSTextFieldCell"; title = "Camera Monitor :"; ObjectID = "asS-EI-7EB"; */
+"asS-EI-7EB.title" = "Camera Monitor :";
+
+/* Class = "NSMenuItem"; title = "HMD: Rift DK2"; ObjectID = "cbu-2L-mqD"; */
+"cbu-2L-mqD.title" = "HMD: Rift DK2";
+
+/* Class = "NSMenu"; title = "Calibration Tool"; ObjectID = "ghH-P1-O21"; */
+"ghH-P1-O21.title" = "Calibration Tool";
+
+/* Class = "NSButtonCell"; title = "Start Calibration"; ObjectID = "sfw-Gn-qmh"; */
+"sfw-Gn-qmh.title" = "Start Calibration";
+
+/* Class = "NSButtonCell"; title = "Open Ovrvision"; ObjectID = "stz-Wr-g73"; */
+"stz-Wr-g73.title" = "Open Ovrvision";

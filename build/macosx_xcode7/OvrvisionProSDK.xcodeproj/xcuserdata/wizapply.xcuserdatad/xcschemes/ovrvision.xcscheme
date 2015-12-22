@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9FE303E81C1E60A000C69CBF"
-               BuildableName = "ovrvision_app.app"
-               BlueprintName = "ovrvision_app"
+               BlueprintIdentifier = "9F35D45C1C28EB05005F48E6"
+               BuildableName = "ovrvision.bundle"
+               BlueprintName = "ovrvision"
                ReferencedContainer = "container:OvrvisionProSDK.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,15 +29,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9FE303E81C1E60A000C69CBF"
-            BuildableName = "ovrvision_app.app"
-            BlueprintName = "ovrvision_app"
-            ReferencedContainer = "container:OvrvisionProSDK.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -48,19 +39,18 @@
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
-      debugDocumentVersioning = "NO"
+      debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9FE303E81C1E60A000C69CBF"
-            BuildableName = "ovrvision_app.app"
-            BlueprintName = "ovrvision_app"
+            BlueprintIdentifier = "9F35D45C1C28EB05005F48E6"
+            BuildableName = "ovrvision.bundle"
+            BlueprintName = "ovrvision"
             ReferencedContainer = "container:OvrvisionProSDK.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -69,17 +59,16 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      debugDocumentVersioning = "NO">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      debugDocumentVersioning = "YES">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9FE303E81C1E60A000C69CBF"
-            BuildableName = "ovrvision_app.app"
-            BlueprintName = "ovrvision_app"
+            BlueprintIdentifier = "9F35D45C1C28EB05005F48E6"
+            BuildableName = "ovrvision.bundle"
+            BlueprintName = "ovrvision"
             ReferencedContainer = "container:OvrvisionProSDK.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

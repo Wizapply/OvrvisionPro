@@ -7,12 +7,89 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9F35D4401C28E98C005F48E6 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F35D42E1C28E98C005F48E6 /* AppDelegate.mm */; };
+		9F35D4411C28E98C005F48E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D42F1C28E98C005F48E6 /* Assets.xcassets */; };
+		9F35D4431C28E98C005F48E6 /* chess_size.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D4311C28E98C005F48E6 /* chess_size.bmp */; };
+		9F35D4441C28E98C005F48E6 /* chess4x7.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D4321C28E98C005F48E6 /* chess4x7.bmp */; };
+		9F35D4451C28E98C005F48E6 /* ChessSizeForm.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D4331C28E98C005F48E6 /* ChessSizeForm.xib */; };
+		9F35D4461C28E98C005F48E6 /* ChessSizeFormDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F35D4351C28E98C005F48E6 /* ChessSizeFormDelegate.m */; };
+		9F35D4481C28E98C005F48E6 /* howtouse.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D4371C28E98C005F48E6 /* howtouse.bmp */; };
+		9F35D4491C28E98C005F48E6 /* HowToUse.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D4381C28E98C005F48E6 /* HowToUse.xib */; };
+		9F35D44A1C28E98C005F48E6 /* HowToUseDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F35D43A1C28E98C005F48E6 /* HowToUseDelegate.m */; };
+		9F35D44C1C28E98C005F48E6 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D43C1C28E98C005F48E6 /* Info.plist */; };
+		9F35D44D1C28E98C005F48E6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F35D43D1C28E98C005F48E6 /* main.m */; };
+		9F35D44E1C28E98C005F48E6 /* sample.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D43E1C28E98C005F48E6 /* sample.bmp */; };
+		9F35D44F1C28E9C4005F48E6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB69CFE1C12B7850085BB68 /* Foundation.framework */; };
+		9F35D4511C28E9CC005F48E6 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F35D4501C28E9CC005F48E6 /* Cocoa.framework */; };
+		9F35D4521C28E9DE005F48E6 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C791C1C0E930054DC39 /* AppKit.framework */; };
+		9F35D4541C28E9E7005F48E6 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F35D4531C28E9E7005F48E6 /* CoreData.framework */; };
+		9F35D4581C28EABC005F48E6 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D4561C28EABC005F48E6 /* MainMenu.xib */; };
+		9F35D4651C28EB49005F48E6 /* ovrvision_ar_metaio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F791C14073500CE8782 /* ovrvision_ar_metaio.cpp */; };
+		9F35D4671C28EB4F005F48E6 /* ovrvision_ar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F7A1C14073500CE8782 /* ovrvision_ar.cpp */; };
+		9F35D4681C28EB68005F48E6 /* ovrvision_avf.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F7C1C14073500CE8782 /* ovrvision_avf.m */; };
+		9F35D4691C28EB69005F48E6 /* ovrvision_calibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F7D1C14073500CE8782 /* ovrvision_calibration.cpp */; };
+		9F35D46A1C28EB6E005F48E6 /* ovrvision_pro.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F851C14073500CE8782 /* ovrvision_pro.cpp */; };
+		9F35D46B1C28EB72005F48E6 /* ovrvision_ds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F811C14073500CE8782 /* ovrvision_ds.cpp */; };
+		9F35D46C1C28EB74005F48E6 /* ovrvision_linux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F831C14073500CE8782 /* ovrvision_linux.cpp */; };
+		9F35D46D1C28EB76005F48E6 /* ovrvision_setting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F861C14073500CE8782 /* ovrvision_setting.cpp */; };
+		9F35D46E1C28EB79005F48E6 /* ovrvision_tracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F881C14073500CE8782 /* ovrvision_tracking.cpp */; };
+		9F35D46F1C28EB8D005F48E6 /* ar_omp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C011C1C090C0054DC39 /* ar_omp.cpp */; };
+		9F35D4701C28EB8E005F48E6 /* arucofidmarkers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C041C1C090C0054DC39 /* arucofidmarkers.cpp */; };
+		9F35D4711C28EB8F005F48E6 /* board.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C061C1C090C0054DC39 /* board.cpp */; };
+		9F35D4721C28EB90005F48E6 /* boarddetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C081C1C090C0054DC39 /* boarddetector.cpp */; };
+		9F35D4731C28EB91005F48E6 /* cameraparameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C0A1C1C090C0054DC39 /* cameraparameters.cpp */; };
+		9F35D4741C28EB92005F48E6 /* chromaticmask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C0C1C1C090C0054DC39 /* chromaticmask.cpp */; };
+		9F35D4751C28EB93005F48E6 /* cvdrawingutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C0E1C1C090C0054DC39 /* cvdrawingutils.cpp */; };
+		9F35D4761C28EB94005F48E6 /* highlyreliablemarkers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C111C1C090C0054DC39 /* highlyreliablemarkers.cpp */; };
+		9F35D4771C28EB95005F48E6 /* marker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C131C1C090C0054DC39 /* marker.cpp */; };
+		9F35D4781C28EB96005F48E6 /* markerdetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C151C1C090C0054DC39 /* markerdetector.cpp */; };
+		9F35D4791C28EB97005F48E6 /* subpixelcorner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C171C1C090C0054DC39 /* subpixelcorner.cpp */; };
+		9F35D47A1C28EB9B005F48E6 /* OpenCL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F781C14073500CE8782 /* OpenCL.cpp */; };
+		9F35D47B1C28EB9F005F48E6 /* ovrvision_csharp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F801C14073500CE8782 /* ovrvision_csharp.cpp */; };
+		9F35D47C1C28EBA0005F48E6 /* ovrvision_csharp_unity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F7F1C14073500CE8782 /* ovrvision_csharp_unity.cpp */; };
+		9F35D47D1C28EBD4005F48E6 /* libIlmImf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C831C1C141D0054DC39 /* libIlmImf.a */; };
+		9F35D47E1C28EBD4005F48E6 /* liblibjasper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C841C1C141D0054DC39 /* liblibjasper.a */; };
+		9F35D47F1C28EBD4005F48E6 /* liblibjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C851C1C141D0054DC39 /* liblibjpeg.a */; };
+		9F35D4801C28EBD4005F48E6 /* liblibpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C861C1C141D0054DC39 /* liblibpng.a */; };
+		9F35D4811C28EBD4005F48E6 /* liblibtiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C871C1C141D0054DC39 /* liblibtiff.a */; };
+		9F35D4821C28EBD4005F48E6 /* liblibwebp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C881C1C141D0054DC39 /* liblibwebp.a */; };
+		9F35D4831C28EBD4005F48E6 /* libopencv_calib3d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C891C1C141D0054DC39 /* libopencv_calib3d.a */; };
+		9F35D4841C28EBD4005F48E6 /* libopencv_core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C8A1C1C141D0054DC39 /* libopencv_core.a */; };
+		9F35D4851C28EBD4005F48E6 /* libopencv_features2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C8B1C1C141D0054DC39 /* libopencv_features2d.a */; };
+		9F35D4861C28EBD4005F48E6 /* libopencv_flann.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C8C1C1C141D0054DC39 /* libopencv_flann.a */; };
+		9F35D4871C28EBD4005F48E6 /* libopencv_hal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C8D1C1C141D0054DC39 /* libopencv_hal.a */; };
+		9F35D4881C28EBD4005F48E6 /* libopencv_highgui.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C8E1C1C141D0054DC39 /* libopencv_highgui.a */; };
+		9F35D4891C28EBD4005F48E6 /* libopencv_imgcodecs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C8F1C1C141D0054DC39 /* libopencv_imgcodecs.a */; };
+		9F35D48A1C28EBD4005F48E6 /* libopencv_imgproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C901C1C141D0054DC39 /* libopencv_imgproc.a */; };
+		9F35D48B1C28EBD4005F48E6 /* libopencv_ml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C911C1C141D0054DC39 /* libopencv_ml.a */; };
+		9F35D48C1C28EBD4005F48E6 /* libopencv_objdetect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C921C1C141D0054DC39 /* libopencv_objdetect.a */; };
+		9F35D48D1C28EBD4005F48E6 /* libopencv_photo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C931C1C141D0054DC39 /* libopencv_photo.a */; };
+		9F35D48E1C28EBD4005F48E6 /* libopencv_shape.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C941C1C141D0054DC39 /* libopencv_shape.a */; };
+		9F35D48F1C28EBD4005F48E6 /* libopencv_stitching.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C951C1C141D0054DC39 /* libopencv_stitching.a */; };
+		9F35D4901C28EBD4005F48E6 /* libopencv_superres.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C961C1C141D0054DC39 /* libopencv_superres.a */; };
+		9F35D4911C28EBD4005F48E6 /* libopencv_ts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C971C1C141D0054DC39 /* libopencv_ts.a */; };
+		9F35D4921C28EBD4005F48E6 /* libopencv_video.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C981C1C141D0054DC39 /* libopencv_video.a */; };
+		9F35D4931C28EBD4005F48E6 /* libopencv_videoio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C991C1C141D0054DC39 /* libopencv_videoio.a */; };
+		9F35D4941C28EBD4005F48E6 /* libopencv_videostab.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C9A1C1C141D0054DC39 /* libopencv_videostab.a */; };
+		9F35D4951C28EBD4005F48E6 /* libzlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C9B1C1C141D0054DC39 /* libzlib.a */; };
+		9F35D4961C28EBE4005F48E6 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C811C1C11E20054DC39 /* QTKit.framework */; };
+		9F35D4971C28EBE4005F48E6 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F748C791C1C0E930054DC39 /* AppKit.framework */; };
+		9F35D4981C28EBE4005F48E6 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F36FCB21C1572B100A809B9 /* OpenGL.framework */; };
+		9F35D4991C28EBE4005F48E6 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB69D111C12D9A30085BB68 /* OpenCL.framework */; };
+		9F35D49A1C28EBE4005F48E6 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB69D081C12B7BA0085BB68 /* CoreFoundation.framework */; };
+		9F35D49B1C28EBE4005F48E6 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB69D061C12B7B20085BB68 /* IOKit.framework */; };
+		9F35D49C1C28EBE4005F48E6 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB69D041C12B7A20085BB68 /* CoreVideo.framework */; };
+		9F35D49D1C28EBE4005F48E6 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB69D021C12B7980085BB68 /* CoreMedia.framework */; };
+		9F35D49E1C28EBE4005F48E6 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB69D001C12B7900085BB68 /* AVFoundation.framework */; };
+		9F35D49F1C28EBE4005F48E6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB69CFE1C12B7850085BB68 /* Foundation.framework */; };
+		9F35D4A01C28ECC1005F48E6 /* OvrvisionProSDK.framework in Resources */ = {isa = PBXBuildFile; fileRef = 9FB69CC71C12B69A0085BB68 /* OvrvisionProSDK.framework */; };
+		9F35D4A21C28EDD8005F48E6 /* ovrvision.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D45D1C28EB05005F48E6 /* ovrvision.bundle */; };
+		9F35D4A51C290029005F48E6 /* OvrvisionProSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB69CC71C12B69A0085BB68 /* OvrvisionProSDK.framework */; };
 		9F36FCB31C1572B100A809B9 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F36FCB21C1572B100A809B9 /* OpenGL.framework */; };
 		9F508F8C1C14073500CE8782 /* ovrvision_ar_metaio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F791C14073500CE8782 /* ovrvision_ar_metaio.cpp */; };
 		9F508F8D1C14073500CE8782 /* ovrvision_ar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F7A1C14073500CE8782 /* ovrvision_ar.cpp */; };
 		9F508F901C14073500CE8782 /* ovrvision_calibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F7D1C14073500CE8782 /* ovrvision_calibration.cpp */; };
 		9F508F911C14073500CE8782 /* ovrvision_calibration.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F508F7E1C14073500CE8782 /* ovrvision_calibration.h */; };
-		9F508F921C14073500CE8782 /* ovrvision_csharp_unity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F7F1C14073500CE8782 /* ovrvision_csharp_unity.cpp */; };
 		9F508F941C14073500CE8782 /* ovrvision_ds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F811C14073500CE8782 /* ovrvision_ds.cpp */; };
 		9F508F951C14073500CE8782 /* ovrvision_ds.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F508F821C14073500CE8782 /* ovrvision_ds.h */; };
 		9F508F961C14073500CE8782 /* ovrvision_linux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F831C14073500CE8782 /* ovrvision_linux.cpp */; };
@@ -102,10 +179,31 @@
 		9FB69D0F1C12B8330085BB68 /* ovrvision_pro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9FB69D0C1C12B8330085BB68 /* ovrvision_pro.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9FB69D101C12B8330085BB68 /* ovrvision_tracking.h in Headers */ = {isa = PBXBuildFile; fileRef = 9FB69D0D1C12B8330085BB68 /* ovrvision_tracking.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9FB69D121C12D9A30085BB68 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB69D111C12D9A30085BB68 /* OpenCL.framework */; };
-		9FE3040B1C1E60EE00C69CBF /* OvrvisionProSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB69CC71C12B69A0085BB68 /* OvrvisionProSDK.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9F35D41B1C28E94B005F48E6 /* ovrvision_calibration.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ovrvision_calibration.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F35D42C1C28E98C005F48E6 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		9F35D42E1C28E98C005F48E6 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
+		9F35D42F1C28E98C005F48E6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9F35D4311C28E98C005F48E6 /* chess_size.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = chess_size.bmp; sourceTree = "<group>"; };
+		9F35D4321C28E98C005F48E6 /* chess4x7.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = chess4x7.bmp; sourceTree = "<group>"; };
+		9F35D4331C28E98C005F48E6 /* ChessSizeForm.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChessSizeForm.xib; sourceTree = "<group>"; };
+		9F35D4341C28E98C005F48E6 /* ChessSizeFormDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChessSizeFormDelegate.h; sourceTree = "<group>"; };
+		9F35D4351C28E98C005F48E6 /* ChessSizeFormDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChessSizeFormDelegate.m; sourceTree = "<group>"; };
+		9F35D4371C28E98C005F48E6 /* howtouse.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = howtouse.bmp; sourceTree = "<group>"; };
+		9F35D4381C28E98C005F48E6 /* HowToUse.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HowToUse.xib; sourceTree = "<group>"; };
+		9F35D4391C28E98C005F48E6 /* HowToUseDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HowToUseDelegate.h; sourceTree = "<group>"; };
+		9F35D43A1C28E98C005F48E6 /* HowToUseDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HowToUseDelegate.m; sourceTree = "<group>"; };
+		9F35D43C1C28E98C005F48E6 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9F35D43D1C28E98C005F48E6 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		9F35D43E1C28E98C005F48E6 /* sample.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = sample.bmp; sourceTree = "<group>"; };
+		9F35D4501C28E9CC005F48E6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		9F35D4531C28E9E7005F48E6 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		9F35D4571C28EABC005F48E6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		9F35D45D1C28EB05005F48E6 /* ovrvision.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ovrvision.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F35D45F1C28EB05005F48E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9F35D4A41C28F115005F48E6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		9F36FCB21C1572B100A809B9 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		9F508F771C14073500CE8782 /* OpenCL_kernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 2; name = OpenCL_kernel.h; path = ../../../src/lib_src/OpenCL_kernel.h; sourceTree = "<group>"; };
 		9F508F781C14073500CE8782 /* OpenCL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; lineEnding = 2; name = OpenCL.cpp; path = ../../../src/lib_src/OpenCL.cpp; sourceTree = "<group>"; };
@@ -201,6 +299,59 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		9F35D4181C28E94B005F48E6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F35D4541C28E9E7005F48E6 /* CoreData.framework in Frameworks */,
+				9F35D4511C28E9CC005F48E6 /* Cocoa.framework in Frameworks */,
+				9F35D44F1C28E9C4005F48E6 /* Foundation.framework in Frameworks */,
+				9F35D4521C28E9DE005F48E6 /* AppKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9F35D45A1C28EB05005F48E6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F35D47D1C28EBD4005F48E6 /* libIlmImf.a in Frameworks */,
+				9F35D47E1C28EBD4005F48E6 /* liblibjasper.a in Frameworks */,
+				9F35D47F1C28EBD4005F48E6 /* liblibjpeg.a in Frameworks */,
+				9F35D4801C28EBD4005F48E6 /* liblibpng.a in Frameworks */,
+				9F35D4811C28EBD4005F48E6 /* liblibtiff.a in Frameworks */,
+				9F35D4821C28EBD4005F48E6 /* liblibwebp.a in Frameworks */,
+				9F35D4831C28EBD4005F48E6 /* libopencv_calib3d.a in Frameworks */,
+				9F35D4841C28EBD4005F48E6 /* libopencv_core.a in Frameworks */,
+				9F35D4851C28EBD4005F48E6 /* libopencv_features2d.a in Frameworks */,
+				9F35D4861C28EBD4005F48E6 /* libopencv_flann.a in Frameworks */,
+				9F35D4871C28EBD4005F48E6 /* libopencv_hal.a in Frameworks */,
+				9F35D4881C28EBD4005F48E6 /* libopencv_highgui.a in Frameworks */,
+				9F35D4891C28EBD4005F48E6 /* libopencv_imgcodecs.a in Frameworks */,
+				9F35D48A1C28EBD4005F48E6 /* libopencv_imgproc.a in Frameworks */,
+				9F35D48B1C28EBD4005F48E6 /* libopencv_ml.a in Frameworks */,
+				9F35D48C1C28EBD4005F48E6 /* libopencv_objdetect.a in Frameworks */,
+				9F35D48D1C28EBD4005F48E6 /* libopencv_photo.a in Frameworks */,
+				9F35D48E1C28EBD4005F48E6 /* libopencv_shape.a in Frameworks */,
+				9F35D4961C28EBE4005F48E6 /* QTKit.framework in Frameworks */,
+				9F35D4971C28EBE4005F48E6 /* AppKit.framework in Frameworks */,
+				9F35D4981C28EBE4005F48E6 /* OpenGL.framework in Frameworks */,
+				9F35D4991C28EBE4005F48E6 /* OpenCL.framework in Frameworks */,
+				9F35D49A1C28EBE4005F48E6 /* CoreFoundation.framework in Frameworks */,
+				9F35D49B1C28EBE4005F48E6 /* IOKit.framework in Frameworks */,
+				9F35D49C1C28EBE4005F48E6 /* CoreVideo.framework in Frameworks */,
+				9F35D49D1C28EBE4005F48E6 /* CoreMedia.framework in Frameworks */,
+				9F35D49E1C28EBE4005F48E6 /* AVFoundation.framework in Frameworks */,
+				9F35D49F1C28EBE4005F48E6 /* Foundation.framework in Frameworks */,
+				9F35D48F1C28EBD4005F48E6 /* libopencv_stitching.a in Frameworks */,
+				9F35D4901C28EBD4005F48E6 /* libopencv_superres.a in Frameworks */,
+				9F35D4911C28EBD4005F48E6 /* libopencv_ts.a in Frameworks */,
+				9F35D4921C28EBD4005F48E6 /* libopencv_video.a in Frameworks */,
+				9F35D4931C28EBD4005F48E6 /* libopencv_videoio.a in Frameworks */,
+				9F35D4941C28EBD4005F48E6 /* libopencv_videostab.a in Frameworks */,
+				9F35D4951C28EBD4005F48E6 /* libzlib.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9FB69CC31C12B69A0085BB68 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -247,9 +398,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F35D4A51C290029005F48E6 /* OvrvisionProSDK.framework in Frameworks */,
 				9FAA05481C2255CF004A47F3 /* OpenAL.framework in Frameworks */,
 				9FAA05401C2253E0004A47F3 /* libwizapply_osx.a in Frameworks */,
-				9FE3040B1C1E60EE00C69CBF /* OvrvisionProSDK.framework in Frameworks */,
 				9FAA05411C2255B4004A47F3 /* AppKit.framework in Frameworks */,
 				9FAA05421C2255B6004A47F3 /* QTKit.framework in Frameworks */,
 				9FAA05431C2255B8004A47F3 /* OpenGL.framework in Frameworks */,
@@ -265,6 +416,45 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9F35D41C1C28E94B005F48E6 /* ovrvision_calibration */ = {
+			isa = PBXGroup;
+			children = (
+				9F35D4561C28EABC005F48E6 /* MainMenu.xib */,
+				9F35D4551C28E9FC005F48E6 /* bitmap */,
+				9F35D42C1C28E98C005F48E6 /* AppDelegate.h */,
+				9F35D42E1C28E98C005F48E6 /* AppDelegate.mm */,
+				9F35D42F1C28E98C005F48E6 /* Assets.xcassets */,
+				9F35D4331C28E98C005F48E6 /* ChessSizeForm.xib */,
+				9F35D4341C28E98C005F48E6 /* ChessSizeFormDelegate.h */,
+				9F35D4351C28E98C005F48E6 /* ChessSizeFormDelegate.m */,
+				9F35D4381C28E98C005F48E6 /* HowToUse.xib */,
+				9F35D4391C28E98C005F48E6 /* HowToUseDelegate.h */,
+				9F35D43A1C28E98C005F48E6 /* HowToUseDelegate.m */,
+				9F35D43C1C28E98C005F48E6 /* Info.plist */,
+				9F35D43D1C28E98C005F48E6 /* main.m */,
+			);
+			path = ovrvision_calibration;
+			sourceTree = "<group>";
+		};
+		9F35D4551C28E9FC005F48E6 /* bitmap */ = {
+			isa = PBXGroup;
+			children = (
+				9F35D4311C28E98C005F48E6 /* chess_size.bmp */,
+				9F35D4371C28E98C005F48E6 /* howtouse.bmp */,
+				9F35D43E1C28E98C005F48E6 /* sample.bmp */,
+				9F35D4321C28E98C005F48E6 /* chess4x7.bmp */,
+			);
+			name = bitmap;
+			sourceTree = "<group>";
+		};
+		9F35D45E1C28EB05005F48E6 /* ovrvision */ = {
+			isa = PBXGroup;
+			children = (
+				9F35D45F1C28EB05005F48E6 /* Info.plist */,
+			);
+			path = ovrvision;
+			sourceTree = "<group>";
+		};
 		9F748C001C1C08FA0054DC39 /* ArUco */ = {
 			isa = PBXGroup;
 			children = (
@@ -299,10 +489,12 @@
 		9FB69CBD1C12B69A0085BB68 = {
 			isa = PBXGroup;
 			children = (
-				9FE303EA1C1E60A000C69CBF /* ovrvision_app */,
-				9FB69CC81C12B69A0085BB68 /* Products */,
-				9FB69CC91C12B69A0085BB68 /* OvrvisionProSDK */,
 				9FB69D0A1C12B7DC0085BB68 /* Frameworks */,
+				9FE303EA1C1E60A000C69CBF /* ovrvision_app */,
+				9F35D41C1C28E94B005F48E6 /* ovrvision_calibration */,
+				9F35D45E1C28EB05005F48E6 /* ovrvision */,
+				9FB69CC91C12B69A0085BB68 /* OvrvisionProSDK */,
+				9FB69CC81C12B69A0085BB68 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -311,6 +503,8 @@
 			children = (
 				9FB69CC71C12B69A0085BB68 /* OvrvisionProSDK.framework */,
 				9FE303E91C1E60A000C69CBF /* ovrvision_app.app */,
+				9F35D41B1C28E94B005F48E6 /* ovrvision_calibration.app */,
+				9F35D45D1C28EB05005F48E6 /* ovrvision.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -406,6 +600,8 @@
 		9FB69D0A1C12B7DC0085BB68 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9F35D4531C28E9E7005F48E6 /* CoreData.framework */,
+				9F35D4501C28E9CC005F48E6 /* Cocoa.framework */,
 				9FAA05471C2255CF004A47F3 /* OpenAL.framework */,
 				9F748C811C1C11E20054DC39 /* QTKit.framework */,
 				9F748C791C1C0E930054DC39 /* AppKit.framework */,
@@ -473,6 +669,40 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		9F35D41A1C28E94B005F48E6 /* ovrvision_calibration */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9F35D42B1C28E94B005F48E6 /* Build configuration list for PBXNativeTarget "ovrvision_calibration" */;
+			buildPhases = (
+				9F35D4171C28E94B005F48E6 /* Sources */,
+				9F35D4181C28E94B005F48E6 /* Frameworks */,
+				9F35D4191C28E94B005F48E6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ovrvision_calibration;
+			productName = ovrvision_calibration;
+			productReference = 9F35D41B1C28E94B005F48E6 /* ovrvision_calibration.app */;
+			productType = "com.apple.product-type.application";
+		};
+		9F35D45C1C28EB05005F48E6 /* ovrvision */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9F35D4601C28EB05005F48E6 /* Build configuration list for PBXNativeTarget "ovrvision" */;
+			buildPhases = (
+				9F35D4591C28EB05005F48E6 /* Sources */,
+				9F35D45A1C28EB05005F48E6 /* Frameworks */,
+				9F35D45B1C28EB05005F48E6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ovrvision;
+			productName = ovrvision;
+			productReference = 9F35D45D1C28EB05005F48E6 /* ovrvision.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 		9FB69CC61C12B69A0085BB68 /* OvrvisionProSDK */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9FB69CCF1C12B69A0085BB68 /* Build configuration list for PBXNativeTarget "OvrvisionProSDK" */;
@@ -517,6 +747,12 @@
 				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = Wizapply;
 				TargetAttributes = {
+					9F35D41A1C28E94B005F48E6 = {
+						CreatedOnToolsVersion = 7.2;
+					};
+					9F35D45C1C28EB05005F48E6 = {
+						CreatedOnToolsVersion = 7.2;
+					};
 					9FB69CC61C12B69A0085BB68 = {
 						CreatedOnToolsVersion = 7.1.1;
 					};
@@ -540,11 +776,37 @@
 			targets = (
 				9FB69CC61C12B69A0085BB68 /* OvrvisionProSDK */,
 				9FE303E81C1E60A000C69CBF /* ovrvision_app */,
+				9F35D41A1C28E94B005F48E6 /* ovrvision_calibration */,
+				9F35D45C1C28EB05005F48E6 /* ovrvision */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		9F35D4191C28E94B005F48E6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F35D4A21C28EDD8005F48E6 /* ovrvision.bundle in Resources */,
+				9F35D4431C28E98C005F48E6 /* chess_size.bmp in Resources */,
+				9F35D44E1C28E98C005F48E6 /* sample.bmp in Resources */,
+				9F35D4451C28E98C005F48E6 /* ChessSizeForm.xib in Resources */,
+				9F35D4491C28E98C005F48E6 /* HowToUse.xib in Resources */,
+				9F35D4441C28E98C005F48E6 /* chess4x7.bmp in Resources */,
+				9F35D4481C28E98C005F48E6 /* howtouse.bmp in Resources */,
+				9F35D44C1C28E98C005F48E6 /* Info.plist in Resources */,
+				9F35D4411C28E98C005F48E6 /* Assets.xcassets in Resources */,
+				9F35D4581C28EABC005F48E6 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9F35D45B1C28EB05005F48E6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9FB69CC51C12B69A0085BB68 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -556,12 +818,54 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F35D4A01C28ECC1005F48E6 /* OvrvisionProSDK.framework in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		9F35D4171C28E94B005F48E6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F35D44A1C28E98C005F48E6 /* HowToUseDelegate.m in Sources */,
+				9F35D4401C28E98C005F48E6 /* AppDelegate.mm in Sources */,
+				9F35D4461C28E98C005F48E6 /* ChessSizeFormDelegate.m in Sources */,
+				9F35D44D1C28E98C005F48E6 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9F35D4591C28EB05005F48E6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F35D46E1C28EB79005F48E6 /* ovrvision_tracking.cpp in Sources */,
+				9F35D4651C28EB49005F48E6 /* ovrvision_ar_metaio.cpp in Sources */,
+				9F35D4671C28EB4F005F48E6 /* ovrvision_ar.cpp in Sources */,
+				9F35D4681C28EB68005F48E6 /* ovrvision_avf.m in Sources */,
+				9F35D4691C28EB69005F48E6 /* ovrvision_calibration.cpp in Sources */,
+				9F35D47C1C28EBA0005F48E6 /* ovrvision_csharp_unity.cpp in Sources */,
+				9F35D47B1C28EB9F005F48E6 /* ovrvision_csharp.cpp in Sources */,
+				9F35D46B1C28EB72005F48E6 /* ovrvision_ds.cpp in Sources */,
+				9F35D47A1C28EB9B005F48E6 /* OpenCL.cpp in Sources */,
+				9F35D46F1C28EB8D005F48E6 /* ar_omp.cpp in Sources */,
+				9F35D4731C28EB91005F48E6 /* cameraparameters.cpp in Sources */,
+				9F35D4761C28EB94005F48E6 /* highlyreliablemarkers.cpp in Sources */,
+				9F35D4781C28EB96005F48E6 /* markerdetector.cpp in Sources */,
+				9F35D4791C28EB97005F48E6 /* subpixelcorner.cpp in Sources */,
+				9F35D4751C28EB93005F48E6 /* cvdrawingutils.cpp in Sources */,
+				9F35D4711C28EB8F005F48E6 /* board.cpp in Sources */,
+				9F35D4771C28EB95005F48E6 /* marker.cpp in Sources */,
+				9F35D4721C28EB90005F48E6 /* boarddetector.cpp in Sources */,
+				9F35D4741C28EB92005F48E6 /* chromaticmask.cpp in Sources */,
+				9F35D4701C28EB8E005F48E6 /* arucofidmarkers.cpp in Sources */,
+				9F35D46C1C28EB74005F48E6 /* ovrvision_linux.cpp in Sources */,
+				9F35D46A1C28EB6E005F48E6 /* ovrvision_pro.cpp in Sources */,
+				9F35D46D1C28EB76005F48E6 /* ovrvision_setting.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9FB69CC21C12B69A0085BB68 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -573,7 +877,6 @@
 				9F748C221C1C090C0054DC39 /* cameraparameters.cpp in Sources */,
 				9F508F901C14073500CE8782 /* ovrvision_calibration.cpp in Sources */,
 				9F748C2D1C1C090C0054DC39 /* markerdetector.cpp in Sources */,
-				9F508F921C14073500CE8782 /* ovrvision_csharp_unity.cpp in Sources */,
 				9F748C1E1C1C090C0054DC39 /* board.cpp in Sources */,
 				9F508F9B1C14073500CE8782 /* ovrvision_tracking.cpp in Sources */,
 				9F748C201C1C090C0054DC39 /* boarddetector.cpp in Sources */,
@@ -602,11 +905,90 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXVariantGroup section */
+		9F35D4561C28EABC005F48E6 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9F35D4571C28EABC005F48E6 /* Base */,
+				9F35D4A41C28F115005F48E6 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		9F35D4291C28E94B005F48E6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					MACOSX,
+				);
+				INFOPLIST_FILE = ovrvision_calibration/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.wizapply.ovrvision-calibration";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		9F35D42A1C28E94B005F48E6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = MACOSX;
+				INFOPLIST_FILE = ovrvision_calibration/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.wizapply.ovrvision-calibration";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		9F35D4611C28EB05005F48E6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = ovrvision/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wizapply.ovrvision;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		9F35D4621C28EB05005F48E6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ovrvision/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wizapply.ovrvision;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 		9FB69CCD1C12B69A0085BB68 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -629,8 +1011,13 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
+					_DEBUG,
+					MACOSX,
+					_OVRVISION_EXPORTS,
+					OPENCV_VERSION_3,
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					DEBUG,
 					MACOSX,
 					_OVRVISION_EXPORTS,
 					OPENCV_VERSION_3,
@@ -667,6 +1054,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -690,6 +1079,7 @@
 					MACOSX,
 					_OVRVISION_EXPORTS,
 					OPENCV_VERSION_3,
+					NDEBUG,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -725,11 +1115,9 @@
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = OvrvisionProSDK/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				INSTALL_PATH = "@executable_path/../Resources";
 				PRODUCT_BUNDLE_IDENTIFIER = com.wizapply.OvrvisionProSDK;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -743,11 +1131,9 @@
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = OvrvisionProSDK/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				INSTALL_PATH = "@executable_path/../Resources";
 				PRODUCT_BUNDLE_IDENTIFIER = com.wizapply.OvrvisionProSDK;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -758,7 +1144,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -767,7 +1152,6 @@
 				INFOPLIST_FILE = ovrvision_app/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.wizapply.ovrvision-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -777,7 +1161,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = MACOSX;
 				INFOPLIST_FILE = ovrvision_app/Info.plist;
@@ -791,6 +1174,22 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		9F35D42B1C28E94B005F48E6 /* Build configuration list for PBXNativeTarget "ovrvision_calibration" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F35D4291C28E94B005F48E6 /* Debug */,
+				9F35D42A1C28E94B005F48E6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		9F35D4601C28EB05005F48E6 /* Build configuration list for PBXNativeTarget "ovrvision" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F35D4611C28EB05005F48E6 /* Debug */,
+				9F35D4621C28EB05005F48E6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		9FB69CC11C12B69A0085BB68 /* Build configuration list for PBXProject "OvrvisionProSDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
