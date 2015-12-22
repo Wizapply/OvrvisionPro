@@ -57,14 +57,15 @@ int Initialize()
 	AllocConsole();
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONIN$", "r", stdin);
-
+#endif
+    
 	if (__argc > 2) {
-		printf("Ovrvisin Pro mode changed.");
 		//__argv[0]; ApplicationPath
 		locationID = atoi(__argv[1]);
 		cameraMode = (OVR::Camprop)atoi(__argv[2]);
+        printf("Ovrvisin Pro mode changed. ID:%d, Mode:%d\n",locationID,cameraMode);
 	}
-#endif
+
 	//Initialize Wizapply library 
 	wzInitCreateWizapply("Ovrvision", APPSCREEN_WIDTH, APPSCREEN_HEIGHT, WZ_CM_NOVSYNC);//|WZ_CM_FULLSCREEN|WZ_CM_FS_DEVICE
 

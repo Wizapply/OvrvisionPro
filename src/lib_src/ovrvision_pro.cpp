@@ -210,6 +210,15 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 	m_width = cam_width;
 	m_height = cam_height;
 	m_framerate = cam_framerate;
+    
+#ifdef WIN32
+    m_pODS->StartTransfer();
+#elif MACOSX
+    [m_pOAV startTransfer];
+#elif LINUX
+    
+#endif
+    
 
 	return objs;
 }

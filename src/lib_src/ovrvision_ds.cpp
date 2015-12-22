@@ -518,16 +518,9 @@ int OvrvisionDirectShow::CreateDevice(usb_id vid, usb_id pid,
 
 	//Data area allocation
 	m_latestPixelDataSize = m_maxPixelDataSize = m_width*m_height*OV_RGB_COLOR;
-
-	//Media run
-	while(m_pMediaControl->Run()==S_FALSE)
-		Sleep(10);
-
-	//sleep
-	Sleep(10);
 	
 	//Device running
-	m_devstatus = OV_DEVRUNNING;
+	m_devstatus = OV_DEVSTOP;
 	return RESULT_OK;
 }
 
@@ -577,8 +570,9 @@ int OvrvisionDirectShow::StartTransfer()
 		return RESULT_FAILED;
 	}
 
-	//Running
-	m_pMediaControl->Run();
+    //Media run
+    while(m_pMediaControl->Run()==S_FALSE)
+        Sleep(10);
 
 	m_devstatus = OV_DEVRUNNING;
 	return RESULT_OK;

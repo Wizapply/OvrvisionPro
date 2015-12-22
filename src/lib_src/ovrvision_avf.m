@@ -299,7 +299,7 @@ const uvc_controls_t uvc_controls = {
         FourCharCode code = CMFormatDescriptionGetMediaSubType(desc);
         CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(desc);
         for(AVFrameRateRange* range in format.videoSupportedFrameRateRanges) {
-            if(kCMPixelFormat_422YpCbCr8_yuvs == code && dimensions.width == m_width && dimensions.height == m_height) {
+            if(code == 'yuvs' && dimensions.width == m_width && dimensions.height == m_height) {
                 selectedFormat = format;
                 frameRateRange = range;
                 break;
@@ -332,14 +332,17 @@ const uvc_controls_t uvc_controls = {
     dispatch_release(queue);
     
     NSDictionary* outputSettings = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    [NSNumber numberWithDouble:m_width], (id)kCVPixelBufferWidthKey,
-                                    [NSNumber numberWithDouble:m_height], (id)kCVPixelBufferHeightKey,
-                                    [NSNumber numberWithInt:kCMPixelFormat_422YpCbCr8_yuvs], (id)kCVPixelBufferPixelFormatTypeKey,
+                                    [NSNumber numberWithInt:m_width], kCVPixelBufferWidthKey,
+                                    [NSNumber numberWithInt:m_height], kCVPixelBufferHeightKey,
+                                    [NSNumber numberWithInt:'yuvs'], kCVPixelBufferPixelFormatTypeKey,
+                                    @YES, kCVPixelBufferCGImageCompatibilityKey,
+                                    @YES, kCVPixelBufferCGBitmapContextCompatibilityKey,
+                                    kCFAllocatorDefault, kCVPixelBufferMemoryAllocatorKey,
+                                    //[NSNumber numberWithInt:2], kCVPixelBufferBytesPerRowAlignmentKey,
                                     nil];
     [m_output setVideoSettings:outputSettings];
     
     //session
-    if(m_session) [m_session release];
     m_session = [[AVCaptureSession alloc] init];
     [m_session beginConfiguration];
     if([m_session canAddInput:m_deviceInput]) {
@@ -358,9 +361,9 @@ const uvc_controls_t uvc_controls = {
     [self createUSBInterface:vid pid:pid];
 
     //start
-    [m_session startRunning];
+    //[m_session startRunning];
     
-    m_devstatus = OV_DEVRUNNING;    //running
+    m_devstatus = OV_DEVSTOP;    //running
     
     return RESULT_OK;
 }
@@ -374,10 +377,11 @@ const uvc_controls_t uvc_controls = {
     
     [self stopTransfer];
     
-    [m_session release];
-    [m_deviceInput release];
+    [m_session removeInput:m_deviceInput];
+    [m_session removeOutput:m_output];
+    
     [m_device release];
-    [m_output release];
+    [m_session release];
     
     m_device = nil;
     m_session = nil;
@@ -625,7 +629,7 @@ const uvc_controls_t uvc_controls = {
 
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     }
-    
+    NSLog(@"OK");
 }
 
 

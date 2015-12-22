@@ -77,6 +77,11 @@ void DrawLoop();
 
 //for the Oculus
 void OculusEndFrame();
+    
+#ifndef WIN32
+    int __argc;
+    const char** __argv;
+#endif
 
 /*---- 関数 ----*/
 
@@ -106,6 +111,12 @@ void android_main(struct android_app* state)
 	#ifdef ANDROID9
 		wzSetAndroidState((void*)state);
 	#endif
+    
+#ifndef WIN32
+    __argc = argc;
+    __argv = argv;
+#endif
+    
 	// 関数ポインタ
 	wzSetITFuncOculusVR(Initialize, Terminate, DrawLoop, OculusEndFrame);
 
