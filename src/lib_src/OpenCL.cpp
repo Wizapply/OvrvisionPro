@@ -425,9 +425,10 @@ namespace OVR
 		return _deviceId;
 	}
 
-	void OvrvisionProOpenCL::CheckGLContext()
+	// Check saticefy OvrvisionPro
+	bool OvrvisionProOpenCL::CheckGPU()
 	{
-#ifndef MACOSX
+		bool result = false;
 		cl_uint num_of_platforms = 0;
 		// get total number of available platforms:
 		cl_int err = clGetPlatformIDs(0, 0, &num_of_platforms);
@@ -437,14 +438,16 @@ namespace OVR
 		// get IDs for all platforms:
 		err = clGetPlatformIDs(num_of_platforms, &platforms[0], 0);
 		SAMPLE_CHECK_ERRORS(err);
+
 		for (cl_uint i = 0; i < num_of_platforms; i++)
 		{
 			char devicename[80];
 			clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, sizeof(devicename), devicename, NULL);
 			printf("PLATFORM: %s\n", devicename);
+#ifndef MACOSX
 			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 			pclGetGLContextInfoKHR = GETFUNCTION(platforms[i], clGetGLContextInfoKHR);
-//#ifdef WIN32
+			//#ifdef WIN32
 			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
 			cl_context_properties opengl_props[] = {
 				CL_CONTEXT_PLATFORM, (cl_context_properties)platforms[i],
@@ -452,14 +455,14 @@ namespace OVR
 				CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
 				0
 			};
-//#elif defined(LINUX)
-//			cl_context_properties opengl_props[] = {
-//				CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
-//				CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
-//				CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
-//				0
-//			};
-//#endif
+			//#elif defined(LINUX)
+			//			cl_context_properties opengl_props[] = {
+			//				CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+			//				CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
+			//				CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
+			//				0
+			//			};
+			//#endif
 			size_t devSizeInBytes = 0;
 			pclGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, NULL, &devSizeInBytes);
 			const size_t devNum = devSizeInBytes / sizeof(cl_device_id);
@@ -480,8 +483,77 @@ namespace OVR
 					}
 				}
 			}
-		}
 #endif
+			// Check Memory capacity and extensions
+			bool gl_sharing = false, version = false, d3d11_sharing = false, memory = true;
+			cl_uint num_of_devices = 0;
+			if (CL_SUCCESS == clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_GPU, 0, 0, &num_of_devices))
+			{
+				cl_device_id *id = new cl_device_id[num_of_devices];
+				err = clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_GPU, num_of_devices, id, 0);
+				SAMPLE_CHECK_ERRORS(err);
+				for (cl_uint j = 0; j < num_of_devices; j++)
+				{
+					clGetDeviceInfo(id[j], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
+					printf("\t%s\n", devicename);
+
+					// Check version
+					char buffer[32];
+					if (clGetDeviceInfo(id[j], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, NULL) == CL_SUCCESS)
+					{
+						if (strcmp(buffer, "OpenCL C 1.2") >= 0)
+						{
+							version = true;
+						}
+					}
+
+					// Check memory capacity
+					cl_ulong mem_size;
+					clGetDeviceInfo(id[j], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(mem_size), &mem_size, NULL);
+					printf("\tGLOBAL_MEM_SIZE: %ld MBytes\n", mem_size / (1024 * 1024));
+					clGetDeviceInfo(id[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(mem_size), &mem_size, NULL);
+					printf("\tMAX_MEM_ALLOC_SIZE: %ld MBytes\n", mem_size / (1024 * 1024));
+					// TODO: Determine which is dominant
+
+					// Check extensions
+					size_t size;
+					char *extensions;
+					clGetDeviceInfo(id[j], CL_DEVICE_EXTENSIONS, 0, NULL, &size); // get entension size
+					extensions = new char[size];
+
+					clGetDeviceInfo(id[j], CL_DEVICE_EXTENSIONS, size, extensions, NULL);
+					if (strstr(extensions, "cl_khr_gl_sharing") != NULL)
+					{
+						gl_sharing = true;
+						printf("\tcl_khr_gl_sharing\n");
+					}
+#ifdef WIN32
+					if (strstr(extensions, "cl_nv_d3d11_sharing") != NULL)
+					{
+						d3d11_sharing = true;
+						printf("\tcl_nv_d3d11_sharing\n");
+					}
+					else if (strstr(extensions, "cl_khr_d3d11_sharing") != NULL)
+					{
+						d3d11_sharing = true;
+						printf("\tcl_khr_d3d11_sharing\n");
+					}
+#endif
+#ifdef _DEBUG
+					puts(extensions);
+#endif		
+
+				}
+#ifdef WIN32
+				if (gl_sharing && memory && version && d3d11_sharing)
+					result = true;
+#else
+				if (gl_sharing && memory && version)
+					result = true;
+#endif
+			}
+		}
+		return result;
 	}
 
 	// Create device context
@@ -800,6 +872,7 @@ namespace OVR
 	// TODO: Direct3D shared texture
 	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height)
 	{
+		//D3D11_TEXTURE2D_DESC desc_nv12;
 		if (_vendorD3D11 == NVIDIA)
 		{
 			return pclCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);

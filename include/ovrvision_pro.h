@@ -341,7 +341,10 @@ public:
 	void GetStereoImageHSV(unsigned char* pLeft, unsigned char* pRight);
 
 	void InspectTextures(unsigned char *left, unsigned char *right, unsigned int type = 0);
-	void CheckGPU();
+
+	/*! @brief Check GPU specification 
+		@return true if satisfaied for OrvisionPro */
+	static bool CheckGPU();
 
 private:
 #ifdef WIN32

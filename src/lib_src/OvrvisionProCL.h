@@ -157,7 +157,7 @@ namespace OVR
 			void UpdateSkinTextures(TEXTURE left, TEXTURE right);
 
 			void InspectTextures(uchar* left, uchar *right, uint type = 0);
-			static void CheckGLContext();
+			static bool CheckGPU();
 
 #ifdef WIN32
 			/*! @brief Get D3D11 Skin image for Unity Native

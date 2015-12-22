@@ -419,9 +419,9 @@ void OvrvisionPro::InspectTextures(unsigned char *left, unsigned char *right, un
 	m_pOpenCL->InspectTextures(left, right, type);
 }
 
-void OvrvisionPro::CheckGPU()
+bool OvrvisionPro::CheckGPU()
 {
-	m_pOpenCL->CheckGLContext();
+	return OvrvisionProOpenCL::CheckGPU();
 }
 
 //Get Camera data pre-store.
