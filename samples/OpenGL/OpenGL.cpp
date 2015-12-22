@@ -76,6 +76,8 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 	GL_API_CHECK(glDisable(GL_LIGHTING));
 	GL_API_CHECK(glEnable(GL_TEXTURE_2D));
 
+	ovrvision.CheckGPU();
+
 	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL, 0) == 0) // Open with OpenGL sharing mode
 		puts("Can't open OvrvisionPro");
 
@@ -116,7 +118,7 @@ GLvoid drawScene(GLvoid)
 #ifdef _DEBUG
 	cv::Mat left(size.height, size.width, CV_8UC4);
 	cv::Mat right(size.height, size.width, CV_8UC4);
-	ovrvision.InspectTextures(left.data, right.data, 2); // Get HSV images
+	ovrvision.InspectTextures(left.data, right.data, 3); // Get HSV images
 	cv::imshow("Left", left);
 	cv::imshow("Right", right);
 #endif

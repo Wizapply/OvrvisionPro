@@ -18,14 +18,16 @@
 
 #include <opencv2/core/core.hpp>
 
+#define CL_USE_DEPRECATED_OPENCL_1_2_APIS // We use OpenCL 1.2 functions
 #ifdef WIN32
 // OpenCL header
-#include <CL/opencl.h>// OpenCL and its extensions
+#include <CL/opencl.h>			// OpenCL and its extensions
+#include <CL/cl_d3d11.h>		// for OpenCL and Direct3D11 interoperability (KHR)
+#include <CL/cl_d3d11_nvidia.h>	// for OpenCL and Direct3D11 interoperability (NV)
 #include <windows.h>
 #include <dxgi.h>
 #include <d3d11.h>
 #include <GL/gl.h> 
-#include <CL/cl_d3d11_ext.h>	// for OpenCL and Direct3D11 interoperability (NV and KHR are equivalent)
 typedef void *TEXTURE;
 #endif
 
@@ -155,6 +157,7 @@ namespace OVR
 			void UpdateSkinTextures(TEXTURE left, TEXTURE right);
 
 			void InspectTextures(uchar* left, uchar *right, uint type = 0);
+			static void CheckGLContext();
 
 #ifdef WIN32
 			/*! @brief Get D3D11 Skin image for Unity Native
@@ -267,24 +270,26 @@ namespace OVR
 			int saveBinary(const char *filename);
 			//bool SaveSettings(const char *filename);
 
-#ifdef _WIN32
-			enum VENDOR _vendorD3D11;	// D3D11 sharing depends on vendor specific extensions
-
+#ifdef WIN32
+			// D3D11 sharing depends on vendor specific extensions
+			enum VENDOR _vendorD3D11;	
 			// Extension functions for NVIDIA 
-			clGetDeviceIDsFromD3D11NV_fn        clGetDeviceIDsFromD3D11NV = NULL;
-			clCreateFromD3D11BufferNV_fn		clCreateFromD3D11BufferNV = NULL;
-			clCreateFromD3D11Texture2DNV_fn		clCreateFromD3D11Texture2DNV = NULL;
-			clCreateFromD3D11Texture3DNV_fn     clCreateFromD3D11Texture3DNV = NULL;
-			clEnqueueAcquireD3D11ObjectsNV_fn	clEnqueueAcquireD3D11ObjectsNV = NULL;
-			clEnqueueReleaseD3D11ObjectsNV_fn	clEnqueueReleaseD3D11ObjectsNV = NULL;
+			clGetDeviceIDsFromD3D11NV_fn        pclGetDeviceIDsFromD3D11NV = NULL;
+			clCreateFromD3D11BufferNV_fn		pclCreateFromD3D11BufferNV = NULL;
+			clCreateFromD3D11Texture2DNV_fn		pclCreateFromD3D11Texture2DNV = NULL;
+			clCreateFromD3D11Texture3DNV_fn     pclCreateFromD3D11Texture3DNV = NULL;
+			clEnqueueAcquireD3D11ObjectsNV_fn	pclEnqueueAcquireD3D11ObjectsNV = NULL;
+			clEnqueueReleaseD3D11ObjectsNV_fn	pclEnqueueReleaseD3D11ObjectsNV = NULL;
 
 			// Extension functions for Khronos
-			clGetDeviceIDsFromD3D11KHR_fn       clGetDeviceIDsFromD3D11KHR = NULL;
-			clCreateFromD3D11BufferKHR_fn		clCreateFromD3D11BufferKHR = NULL;
-			clCreateFromD3D11Texture2DKHR_fn	clCreateFromD3D11Texture2DKHR = NULL;
-			clCreateFromD3D11Texture3DKHR_fn    clCreateFromD3D11Texture3DKHR = NULL;
-			clEnqueueAcquireD3D11ObjectsKHR_fn	clEnqueueAcquireD3D11ObjectsKHR = NULL;
-			clEnqueueReleaseD3D11ObjectsKHR_fn	clEnqueueReleaseD3D11ObjectsKHR = NULL;
+			clGetDeviceIDsFromD3D11KHR_fn       pclGetDeviceIDsFromD3D11KHR = NULL;
+			clCreateFromD3D11BufferKHR_fn		pclCreateFromD3D11BufferKHR = NULL;
+			clCreateFromD3D11Texture2DKHR_fn	pclCreateFromD3D11Texture2DKHR = NULL;
+			clCreateFromD3D11Texture3DKHR_fn    pclCreateFromD3D11Texture3DKHR = NULL;
+			clEnqueueAcquireD3D11ObjectsKHR_fn	pclEnqueueAcquireD3D11ObjectsKHR = NULL;
+			clEnqueueReleaseD3D11ObjectsKHR_fn	pclEnqueueReleaseD3D11ObjectsKHR = NULL;
+
+			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 #endif
 			char	*_deviceExtensions;
 			Mat		*_mapX[2], *_mapY[2];	// camera parameter
@@ -340,6 +345,7 @@ namespace OVR
 			cl_mem	_mx[2], _my[2]; // map for remap in GPU
 			cl_mem	_reducedL, _reducedR;	// reduced image
 			cl_mem	_texture[2];	// Texture sharing
+			cl_image_desc _desc_scaled;
 		};
 
 	/*

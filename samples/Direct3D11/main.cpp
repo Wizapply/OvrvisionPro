@@ -2,6 +2,7 @@
 //
 
 #include <windows.h>
+#include "D3D11.h"
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -52,7 +53,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, LPSTR str, int cmdshow)
 
 	ShowWindow(hwnd, cmdshow);
 
-	// Direct3D11 d3d11app(hwnd);
+	D3D11 d3d11app(hwnd);
 
 	MSG msg = {};
 	while (msg.message != WM_QUIT)
@@ -64,7 +65,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, LPSTR str, int cmdshow)
 		}
 		else
 		{
-			// d3d11app.Render();
+			d3d11app.Render();
 			Sleep(1);
 		}
 	}

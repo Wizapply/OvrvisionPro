@@ -109,8 +109,8 @@ string opencl_error_to_str(cl_int error)
 	}
 #endif
 
-#define INITPFN(x) \
-    x = (x ## _fn)clGetExtensionFunctionAddress(#x); if(!x) { printf("failed getting %s\n", #x); }
+#define GETFUNCTION(platform, x) \
+    (x ## _fn)clGetExtensionFunctionAddressForPlatform(platform, #x);
 #pragma endregion
 
 namespace OVR
@@ -148,12 +148,20 @@ namespace OVR
 			{
                 throw std::runtime_error("Insufficient OpenCL version");
 			}
+#ifndef MACOSX
+			pclGetGLContextInfoKHR = GETFUNCTION(_platformId, clGetGLContextInfoKHR);
+#endif
 			CreateContext(mode, pDevice);
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// UMat seems to have extra overhead of data transfer, so WE USE NATIVE OPENCL IMAGE2D
-			_src = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_format16UC1, _width, _height, 0, 0, &_errorCode);
+			memset(&_desc_scaled, 0, sizeof(_desc_scaled));
+			_desc_scaled.image_type = CL_MEM_OBJECT_IMAGE2D;
+			cl_image_desc desc = { CL_MEM_OBJECT_IMAGE2D, _width, _height, 0, 0, 0, 0, 0, 0, NULL };
+			cl_image_desc desc_half = { CL_MEM_OBJECT_IMAGE2D, _width / 2, _height / 2, 0, 0, 0, 0, 0, 0, NULL };
+
+			_src = clCreateImage(_context, CL_MEM_READ_ONLY, &_format16UC1, &desc, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			_remapAvailable = false;
@@ -165,16 +173,16 @@ namespace OVR
 			_skinmask[0] = new Mat(_height / 2, _width / 2, CV_8UC1);
 			_skinmask[1] = new Mat(_height / 2, _width / 2, CV_8UC1);
 
-			_l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
-			_r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
-			_L = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
-			_R = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width, _height, 0, 0, &_errorCode);
-			_mx[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
-			_my[0] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
-			_mx[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
-			_my[1] = clCreateImage2D(_context, CL_MEM_READ_ONLY, &_formatMap, _width, _height, 0, 0, &_errorCode);
-			_reducedL = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width / 2, _height / 2, 0, 0, &_errorCode);
-			_reducedR = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, _width / 2, _height / 2, 0, 0, &_errorCode);
+			_l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
+			_r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
+			_L = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
+			_R = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
+			_mx[0] = clCreateImage(_context, CL_MEM_READ_ONLY, &_formatMap, &desc, 0, &_errorCode);
+			_my[0] = clCreateImage(_context, CL_MEM_READ_ONLY, &_formatMap, &desc, 0, &_errorCode);
+			_mx[1] = clCreateImage(_context, CL_MEM_READ_ONLY, &_formatMap, &desc, 0, &_errorCode);
+			_my[1] = clCreateImage(_context, CL_MEM_READ_ONLY, &_formatMap, &desc, 0, &_errorCode);
+			_reducedL = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc_half, 0, &_errorCode);
+			_reducedR = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc_half, 0, &_errorCode);
 			_texture[0] = NULL;
 			_texture[1] = NULL;
 
@@ -336,7 +344,7 @@ namespace OVR
 			return true;
 		}
 	}
-
+	 
 	// Select GPU device
 	cl_device_id OvrvisionProOpenCL::SelectGPU(const char *platform, const char *version)
 	{
@@ -417,11 +425,70 @@ namespace OVR
 		return _deviceId;
 	}
 
+	void OvrvisionProOpenCL::CheckGLContext()
+	{
+#ifndef MACOSX
+		cl_uint num_of_platforms = 0;
+		// get total number of available platforms:
+		cl_int err = clGetPlatformIDs(0, 0, &num_of_platforms);
+		SAMPLE_CHECK_ERRORS(err);
+
+		vector<cl_platform_id> platforms(num_of_platforms);
+		// get IDs for all platforms:
+		err = clGetPlatformIDs(num_of_platforms, &platforms[0], 0);
+		SAMPLE_CHECK_ERRORS(err);
+		for (cl_uint i = 0; i < num_of_platforms; i++)
+		{
+			char devicename[80];
+			clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, sizeof(devicename), devicename, NULL);
+			printf("PLATFORM: %s\n", devicename);
+			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
+			pclGetGLContextInfoKHR = GETFUNCTION(platforms[i], clGetGLContextInfoKHR);
+//#ifdef WIN32
+			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
+			cl_context_properties opengl_props[] = {
+				CL_CONTEXT_PLATFORM, (cl_context_properties)platforms[i],
+				CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
+				CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
+				0
+			};
+//#elif defined(LINUX)
+//			cl_context_properties opengl_props[] = {
+//				CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+//				CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
+//				CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
+//				0
+//			};
+//#endif
+			size_t devSizeInBytes = 0;
+			pclGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, NULL, &devSizeInBytes);
+			const size_t devNum = devSizeInBytes / sizeof(cl_device_id);
+			if (devNum)
+			{
+				std::vector<cl_device_id> devices(devNum);
+				pclGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, devSizeInBytes, &devices[0], NULL);
+				for (size_t k = 0; k < devNum; k++)
+				{
+					cl_device_type t;
+					clGetDeviceInfo(devices[k], CL_DEVICE_TYPE, sizeof(t), &t, NULL);
+					//if (t == CL_DEVICE_TYPE_GPU)
+					{
+						clGetDeviceInfo(devices[k], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
+						char buffer[32];
+						clGetDeviceInfo(devices[k], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, NULL);
+						printf("\t%s %s\n", devicename, buffer);
+					}
+				}
+			}
+		}
+#endif
+	}
+
 	// Create device context
 	void OvrvisionProOpenCL::CreateContext(SHARING_MODE mode, void *pDevice)
 	{
 #ifdef WIN32
-		// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
+		// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 		cl_context_properties opengl_props[] = {
 			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
 			CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
@@ -444,13 +511,28 @@ namespace OVR
 //			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
 //			0
 //		};
+#elif defined(LINUX)
+		cl_context_properties opengl_props[] = {
+			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+			CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
+			CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
+			0
+		};
 #endif
 		// Prepare for sharing texture
 		switch (mode)
 		{
 #ifdef WIN32
 		case OPENGL:
-			_context = clCreateContext(opengl_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			if (opengl_props[3] != NULL && opengl_props[5] != NULL)
+			{
+				_context = clCreateContext(opengl_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			}
+			else
+			{
+				_sharing = mode = NONE;
+				_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			}
 			break;
 
 		case D3D11:
@@ -460,6 +542,10 @@ namespace OVR
 //		case OPENGL:
 //			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
 //			break;
+#elif defined(LINUX)
+		case OPENGL:
+			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
+			break
 #endif
 		default:
 			_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
@@ -556,30 +642,30 @@ namespace OVR
 		if (strstr(_deviceExtensions, "cl_nv_d3d11_sharing"))
 		{
 			_vendorD3D11 = NVIDIA;
-			INITPFN(clGetDeviceIDsFromD3D11NV);
-			INITPFN(clCreateFromD3D11BufferNV);
-			INITPFN(clCreateFromD3D11Texture2DNV);
-			INITPFN(clCreateFromD3D11Texture3DNV);
-			INITPFN(clEnqueueAcquireD3D11ObjectsNV);
-			INITPFN(clEnqueueReleaseD3D11ObjectsNV);
-			if (clCreateFromD3D11Texture2DNV != NULL)
+			pclGetDeviceIDsFromD3D11NV = GETFUNCTION(_platformId, clGetDeviceIDsFromD3D11NV);
+			pclCreateFromD3D11BufferNV = GETFUNCTION(_platformId, clCreateFromD3D11BufferNV);
+			pclCreateFromD3D11Texture2DNV = GETFUNCTION(_platformId, clCreateFromD3D11Texture2DNV);
+			pclCreateFromD3D11Texture3DNV = GETFUNCTION(_platformId, clCreateFromD3D11Texture3DNV);
+			pclEnqueueAcquireD3D11ObjectsNV = GETFUNCTION(_platformId, clEnqueueAcquireD3D11ObjectsNV);
+			pclEnqueueReleaseD3D11ObjectsNV = GETFUNCTION(_platformId, clEnqueueReleaseD3D11ObjectsNV);
+			if (pclCreateFromD3D11Texture2DNV != NULL)
 				return true;
 		}
 		else if (strstr(_deviceExtensions, "cl_khr_d3d11_sharing"))
 		{
 			_vendorD3D11 = KHRONOS;
-			INITPFN(clGetDeviceIDsFromD3D11KHR);
-			INITPFN(clCreateFromD3D11BufferKHR);
-			INITPFN(clCreateFromD3D11Texture2DKHR);
-			INITPFN(clCreateFromD3D11Texture3DKHR);
-			INITPFN(clEnqueueAcquireD3D11ObjectsKHR);
-			INITPFN(clEnqueueReleaseD3D11ObjectsKHR);
-			if (clCreateFromD3D11Texture2DKHR != NULL)
+			pclGetDeviceIDsFromD3D11KHR = GETFUNCTION(_platformId, clGetDeviceIDsFromD3D11KHR);
+			pclCreateFromD3D11BufferKHR = GETFUNCTION(_platformId, clCreateFromD3D11BufferKHR);
+			pclCreateFromD3D11Texture2DKHR = GETFUNCTION(_platformId, clCreateFromD3D11Texture2DKHR);
+			pclCreateFromD3D11Texture3DKHR = GETFUNCTION(_platformId, clCreateFromD3D11Texture3DKHR);
+			pclEnqueueAcquireD3D11ObjectsKHR = GETFUNCTION(_platformId, clEnqueueAcquireD3D11ObjectsKHR);
+			pclEnqueueReleaseD3D11ObjectsKHR = GETFUNCTION(_platformId, clEnqueueReleaseD3D11ObjectsKHR);
+			if (pclCreateFromD3D11Texture2DKHR != NULL)
 				return true;
 		}
 		return false;
 #else
-		return true;
+        return false;
 #endif
 	}
 
@@ -588,7 +674,7 @@ namespace OVR
 	{
 #ifdef MACOSX
         // Can't create clCreateFromGLTexture2D on Xcode7
-#else
+#else	// WIN32 | LINUX
 		switch (_sharing)
 		{
 		case OPENGL:
@@ -614,7 +700,7 @@ namespace OVR
 		//glFlushRenderAPPLE();// depend on mode
 		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
 		clFinish(_commandQueue);
-#else
+#else	// WIN32 || LINUX
 		//glFinish(); // depend on mode
 		_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
@@ -631,6 +717,8 @@ namespace OVR
 	{
 		int width = _scaledRegion[0];
 		int height = _scaledRegion[1];
+		cl_int status;
+		cl_event event[2];
 		size_t origin[3] = { 0, 0, 0 };
 		if (type == 2)
 		{
@@ -644,18 +732,34 @@ namespace OVR
 			_errorCode = clEnqueueReadImage(_commandQueue, _reducedL, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
 			_errorCode = clEnqueueReadImage(_commandQueue, _reducedR, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
 		}
+		else if (type == 3)
+		{
+#ifndef MACOSX
+			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clEnqueueReadImage(_commandQueue, _texture[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, &event[0]);
+			clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
+			_errorCode = clEnqueueReadImage(_commandQueue, _texture[1], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, &event[1]);
+			clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
+			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+#endif
+		}
 		else
 		{
-			_errorCode = clEnqueueReadImage(_commandQueue, _texture[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
-			_errorCode = clEnqueueReadImage(_commandQueue, _texture[1], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
+			origin[0] += _width / 4;
+			origin[1] += _height / 4;
+			_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
+			_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
 		}
 	}
 
-#if defined(WIN32) //|| defined(MACOSX)
+#if defined(WIN32) || defined(LINUX) //|| defined(MACOSX)
 	// OpenGL shared texture
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
 	{
+		cl_mem image;
 		//glGenTextures(1, &g_texture));
 		//GL_API_CHECK(glBindTexture(GL_TEXTURE_2D, g_texture));
 		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -676,17 +780,18 @@ namespace OVR
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 		//glEnable(GL_TEXTURE_2D);
-		cl_mem object = clCreateFromGLTexture2D(_context, CL_MEM_WRITE_ONLY, GL_TEXTURE_2D, 0, texture, &_errorCode);
+		image = clCreateFromGLTexture(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture, &_errorCode);
+		//image = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #ifdef _DEBUG
 		size_t w, h, s;
 		cl_image_format format;
-		clGetImageInfo(object, CL_IMAGE_WIDTH, sizeof(w), &w, NULL);
-		clGetImageInfo(object, CL_IMAGE_HEIGHT, sizeof(h), &h, NULL);
-		clGetImageInfo(object, CL_IMAGE_ELEMENT_SIZE, sizeof(s), &s, NULL);
-		clGetImageInfo(object, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
+		clGetImageInfo(image, CL_IMAGE_WIDTH, sizeof(w), &w, NULL);
+		clGetImageInfo(image, CL_IMAGE_HEIGHT, sizeof(h), &h, NULL);
+		clGetImageInfo(image, CL_IMAGE_ELEMENT_SIZE, sizeof(s), &s, NULL);
+		clGetImageInfo(image, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
 #endif
-		return object;
+		return image;
 	}
 #endif
 
@@ -697,11 +802,11 @@ namespace OVR
 	{
 		if (_vendorD3D11 == NVIDIA)
 		{
-			return clCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+			return pclCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
 		}
 		else
 		{
-			return clCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+			return pclCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
 		}
 	}
 #endif
@@ -720,16 +825,16 @@ namespace OVR
 	// Get Skin images
 	void OvrvisionProOpenCL::SkinImages(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
-		int width = _scaledRegion[0];
-		int height = _scaledRegion[1];
+		//int width = _scaledRegion[0];
+		//int height = _scaledRegion[1];
 		size_t origin[3] = { 0, 0, 0 };
 		cl_mem mask[2];
 		cl_event event[2];
 
 		// Allocate mask
-		mask[0] = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		mask[0] = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		mask[1] = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		mask[1] = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 #if 1
@@ -809,9 +914,9 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 		cl_event event[2];
 
-		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		SkinImages(l, r, &event[0], &event[1]);
@@ -1202,9 +1307,9 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 
-		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_event event[2];
 
@@ -1249,6 +1354,9 @@ namespace OVR
 		_scaledRegion[2] = 1;
 		//SCALING prev = _scaling;
 		_scaling = scaling;
+		_desc_scaled.image_type = CL_MEM_OBJECT_IMAGE2D;
+		_desc_scaled.image_width = _scaledRegion[0];
+		_desc_scaled.image_height = _scaledRegion[1];
 		return Size(_scaledRegion[0], _scaledRegion[1]);
 	}
 
@@ -1332,7 +1440,6 @@ namespace OVR
 		}
 		else 
 		{
-			cl_mem l, r;
 			uint width = _width, height = _height;
 			switch (scaling)
 			{
@@ -1353,9 +1460,10 @@ namespace OVR
 			size_t region[3] = { width, height, 1 };
 			size_t size[] = { width, height };
 
-			l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+			cl_image_desc desc = { CL_MEM_OBJECT_IMAGE2D, width, height };
+			cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
-			r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+			cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &desc, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// Resize
@@ -1388,7 +1496,6 @@ namespace OVR
 	// Get resized grayscvale images
 	void OvrvisionProOpenCL::Grayscale(uchar *left, uchar *right, enum SCALING scaling)
 	{
-		cl_mem l, r;
 		uint width = _width, height = _height;
 		switch (scaling)
 		{
@@ -1407,10 +1514,11 @@ namespace OVR
 		}
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
+		cl_image_desc desc = { CL_MEM_OBJECT_IMAGE2D, width, height };
 
-		l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &desc, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC1, width, height, 0, 0, &_errorCode);
+		cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &desc, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_event event[2];
 
@@ -1472,9 +1580,9 @@ namespace OVR
 		size_t size[] = { width, height };
 
 		// Get HSV images
-		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		cl_event event[2];
@@ -1541,9 +1649,9 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 
-		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
+		cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_event event[2];
 
