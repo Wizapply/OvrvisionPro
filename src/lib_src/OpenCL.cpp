@@ -485,7 +485,7 @@ namespace OVR
 			}
 #endif
 			// Check Memory capacity and extensions
-			bool gl_sharing = false, version = false, d3d11_sharing = false, memory = true;
+			bool gl_sharing = false, version = false, d3d11_sharing = false, memory = false;
 			cl_uint num_of_devices = 0;
 			if (CL_SUCCESS == clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_GPU, 0, 0, &num_of_devices))
 			{
@@ -515,6 +515,10 @@ namespace OVR
 					clGetDeviceInfo(id[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(mem_size), &mem_size, NULL);
 					printf("\tMAX_MEM_ALLOC_SIZE: %ld MBytes\n", mem_size / (1024 * 1024));
 					// TODO: Determine which is dominant
+					if (512 <= mem_size / (1024 * 1024))
+					{
+						memory = true;
+					}
 
 					// Check extensions
 					size_t size;
@@ -547,11 +551,21 @@ namespace OVR
 				}
 #ifdef WIN32
 				if (gl_sharing && memory && version && d3d11_sharing)
+				{
 					result = true;
+					printf("\tOvrvisionPro: Positive\n");
+				}
 #else
 				if (gl_sharing && memory && version)
+				{
 					result = true;
+					printf("\tOvrvisionPro: Positive\n");
+				}
 #endif
+				else
+				{
+					printf("\tOvrvisionPro: Negative\n");
+				}
 			}
 		}
 		return result;
