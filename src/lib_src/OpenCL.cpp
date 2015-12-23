@@ -137,9 +137,9 @@ namespace OVR
 			// TODO: check GPU memory size
 			_format16UC1.image_channel_data_type = CL_UNSIGNED_INT16;
 			_format16UC1.image_channel_order = CL_R;
-			_format8UC4.image_channel_data_type = CL_UNSIGNED_INT8;
+			_format8UC4.image_channel_data_type =CL_UNSIGNED_INT8;	// CL_UNORM_INT8;	// 
 			_format8UC4.image_channel_order = CL_RGBA;
-			_format8UC1.image_channel_data_type = CL_UNSIGNED_INT8;
+			_format8UC1.image_channel_data_type = CL_UNSIGNED_INT8; // CL_UNORM_INT8;	//
 			_format8UC1.image_channel_order = CL_R;
 			_formatMap.image_channel_data_type = CL_FLOAT;
 			_formatMap.image_channel_order = CL_R;
@@ -486,6 +486,7 @@ namespace OVR
 #endif
 			// Check Memory capacity and extensions
 			bool gl_sharing = false, version = false, d3d11_sharing = false, memory = false;
+			cl_ulong mem_size;
 			cl_uint num_of_devices = 0;
 			if (CL_SUCCESS == clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_GPU, 0, 0, &num_of_devices))
 			{
@@ -509,7 +510,6 @@ namespace OVR
 					}
 
 					// Check memory capacity
-					cl_ulong mem_size;
 					clGetDeviceInfo(id[j], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(mem_size), &mem_size, NULL);
 					printf("\tGLOBAL_MEM_SIZE: %ld MBytes\n", mem_size / (1024 * 1024));
 					clGetDeviceInfo(id[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(mem_size), &mem_size, NULL);
@@ -553,18 +553,22 @@ namespace OVR
 				if (gl_sharing && memory && version && d3d11_sharing)
 				{
 					result = true;
-					printf("\tOvrvisionPro: Positive\n");
+					printf("\tOvrvisionPro: Positive\n\n");
 				}
 #else
 				if (gl_sharing && memory && version)
 				{
 					result = true;
-					printf("\tOvrvisionPro: Positive\n");
+					printf("\tOvrvisionPro: Positive\n\n");
 				}
 #endif
+				else if (256 <= mem_size / (1024 * 1024))
+				{
+					printf("\tOvrvisionPro: Depend on resolution\n\n");
+				}
 				else
 				{
-					printf("\tOvrvisionPro: Negative\n");
+					printf("\tOvrvisionPro: Negative\n\n");
 				}
 			}
 		}
@@ -626,9 +630,11 @@ namespace OVR
 			_context = clCreateContext(d3d11_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
 			break;
 #elif defined(MACOSX)
-//		case OPENGL:
+		case OPENGL:
 //			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
-//			break;
+			_sharing = mode = NONE;
+			_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+		break;
 #elif defined(LINUX)
 		case OPENGL:
 			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
@@ -788,14 +794,97 @@ namespace OVR
 		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
 		clFinish(_commandQueue);
 #else	// WIN32 || LINUX
-		//glFinish(); // depend on mode
-		_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
-		_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
-		SAMPLE_CHECK_ERRORS(_errorCode);
+		if (_sharing == OPENGL)
+		{	//	glFinish(); // depend on mode
+			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
+			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+		else if (_sharing == D3D11)
+		{
+			if (_vendorD3D11 == NVIDIA)
+			{
+				_errorCode = pclEnqueueAcquireD3D11ObjectsNV(_commandQueue, 2, _texture, 0, NULL, NULL);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
+				_errorCode = pclEnqueueReleaseD3D11ObjectsNV(_commandQueue, 2, _texture, 2, event, NULL);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+				SAMPLE_CHECK_ERRORS(_errorCode);
+			}
+			else
+			{
+				_errorCode = pclEnqueueAcquireD3D11ObjectsKHR(_commandQueue, 2, _texture, 0, NULL, NULL);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
+				_errorCode = pclEnqueueReleaseD3D11ObjectsKHR(_commandQueue, 2, _texture, 2, event, NULL);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+				SAMPLE_CHECK_ERRORS(_errorCode)
+			}
+		}
+#endif
+	}
+
+	// Update textures
+	void OvrvisionProOpenCL::UpdateImageTextures(TEXTURE left, TEXTURE right)
+	{
+		int width = _scaledRegion[0];
+		int height = _scaledRegion[1];
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+		cl_event event[2];
+
+		if (_sharing == OPENGL)
+		{	//	glFinish(); // depend on mode
+			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+
+			// Copy to texture
+			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
+			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
+
+			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+#ifdef WIN32
+		else if (_sharing == D3D11)
+		{
+			if (_vendorD3D11 == NVIDIA)
+			{
+				_errorCode = pclEnqueueAcquireD3D11ObjectsNV(_commandQueue, 2, _texture, 0, NULL, NULL);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+
+				// Copy to texture
+				clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
+				clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
+
+				_errorCode = pclEnqueueReleaseD3D11ObjectsNV(_commandQueue, 2, _texture, 2, event, NULL);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+				SAMPLE_CHECK_ERRORS(_errorCode);
+			}
+			else
+			{
+				_errorCode = pclEnqueueAcquireD3D11ObjectsKHR(_commandQueue, 2, _texture, 0, NULL, NULL);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+
+				// Copy to texture
+				clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
+				clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
+
+				_errorCode = pclEnqueueReleaseD3D11ObjectsKHR(_commandQueue, 2, _texture, 2, event, NULL);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+				SAMPLE_CHECK_ERRORS(_errorCode)
+			}
+		}
 #endif
 	}
 
@@ -822,14 +911,42 @@ namespace OVR
 		else if (type == 3)
 		{
 #ifndef MACOSX
-			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
-			SAMPLE_CHECK_ERRORS(_errorCode);
-			_errorCode = clEnqueueReadImage(_commandQueue, _texture[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, &event[0]);
-			clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
-			_errorCode = clEnqueueReadImage(_commandQueue, _texture[1], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, &event[1]);
-			clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
-			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
-			SAMPLE_CHECK_ERRORS(_errorCode);
+			if (_sharing == D3D11)
+			{
+				if (_vendorD3D11 == NVIDIA)
+				{
+					_errorCode = pclEnqueueAcquireD3D11ObjectsNV(_commandQueue, 2, _texture, 0, NULL, NULL);
+					SAMPLE_CHECK_ERRORS(_errorCode);
+					_errorCode = clEnqueueReadImage(_commandQueue, _texture[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, &event[0]);
+					clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
+					_errorCode = clEnqueueReadImage(_commandQueue, _texture[1], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, &event[1]);
+					clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
+					_errorCode = pclEnqueueReleaseD3D11ObjectsNV(_commandQueue, 2, _texture, 2, event, NULL);
+					SAMPLE_CHECK_ERRORS(_errorCode);
+				}
+				else
+				{
+					_errorCode = pclEnqueueAcquireD3D11ObjectsKHR(_commandQueue, 2, _texture, 0, NULL, NULL);
+					SAMPLE_CHECK_ERRORS(_errorCode);
+					_errorCode = clEnqueueReadImage(_commandQueue, _texture[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, &event[0]);
+					clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
+					_errorCode = clEnqueueReadImage(_commandQueue, _texture[1], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, &event[1]);
+					clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
+					_errorCode = pclEnqueueReleaseD3D11ObjectsKHR(_commandQueue, 2, _texture, 2, event, NULL);
+					SAMPLE_CHECK_ERRORS(_errorCode);
+				}
+			}
+			else
+			{
+				_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+				_errorCode = clEnqueueReadImage(_commandQueue, _texture[0], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 0, NULL, &event[0]);
+				clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
+				_errorCode = clEnqueueReadImage(_commandQueue, _texture[1], CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 0, NULL, &event[1]);
+				clGetEventInfo(event[0], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(status), &status, NULL);
+				_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
+				SAMPLE_CHECK_ERRORS(_errorCode);
+			}
 #endif
 		}
 		else
@@ -887,7 +1004,22 @@ namespace OVR
 	// TODO: Direct3D shared texture
 	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height)
 	{
-		//D3D11_TEXTURE2D_DESC desc_nv12;
+		D3D11_TEXTURE2D_DESC texsture_desc = {
+			width,				// Width
+			height,				// Height
+			1,								// MipLevels
+			1,								// ArraySize
+			DXGI_FORMAT_R8G8B8A8_UINT,	// Format
+			{ 1 },							// SampleDesc.Count
+			D3D11_USAGE_DEFAULT,			// Usage
+		};
+
+		D3D11_SUBRESOURCE_DATA initData = {
+				// const void *pSysMem;
+				// UINT SysMemPitch;
+				// UINT SysMemSlicePitch;
+		};
+
 		if (_vendorD3D11 == NVIDIA)
 		{
 			return pclCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);

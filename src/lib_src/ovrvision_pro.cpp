@@ -279,11 +279,23 @@ void OvrvisionPro::UpdateSkinTextures(unsigned int left, unsigned int right)
 	m_pOpenCL->UpdateSkinTextures((TEXTURE)left, (TEXTURE)right);
 }
 
+// Update scaled image texture
+void OvrvisionPro::UpdateImageTextures(unsigned int left, unsigned int right)
+{
+	m_pOpenCL->UpdateImageTextures((TEXTURE)left, (TEXTURE)right);
+}
+
 #ifdef WIN32
 // Update textures(D3D11)
 void OvrvisionPro::UpdateSkinTextures(void* left, void* right)
 {
 	m_pOpenCL->UpdateSkinTextures((TEXTURE)left, (TEXTURE)right);
+}
+
+// Update scaled image texture
+void OvrvisionPro::UpdateImageTextures(void* left,void* right)
+{
+	m_pOpenCL->UpdateImageTextures((TEXTURE)left, (TEXTURE)right);
 }
 #endif
 

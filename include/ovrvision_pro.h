@@ -282,9 +282,12 @@ public:
 		@param n count of onjects
 		@param textureObjects */
 	void UpdateSkinTextures(unsigned int left, unsigned int right);
+	void UpdateImageTextures(unsigned int left, unsigned int right);
 #ifdef  WIN32
 	void UpdateSkinTextures(void* left, void* right);   // for D3D11
+	void UpdateImageTextures(void* left, void* right);
 #endif
+
     
 	// Skin property
 	/*! @brief Set Skin image scale

@@ -124,7 +124,7 @@ namespace OVR
 			void DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
 			void DemosaicRemap(const ushort* src, uchar *left, uchar *right);
 			//void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
-			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
+			//void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
 			/*! @brief set scaling (1/2, 1/4, 1/8) 
 				@param scaling (HALF, FOURTH, EIGHTH)
@@ -155,6 +155,7 @@ namespace OVR
 				@param left texture
 				@param right texure */
 			void UpdateSkinTextures(TEXTURE left, TEXTURE right);
+			void UpdateImageTextures(TEXTURE left, TEXTURE right);
 
 			void InspectTextures(uchar* left, uchar *right, uint type = 0);
 			static bool CheckGPU();

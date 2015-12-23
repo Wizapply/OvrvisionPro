@@ -8,7 +8,7 @@
 #include "D3DX11async.h"
 
 // Include the Oculus SDK
-#include "OVR_CAPI_D3D.h"
+//#include "OVR_CAPI_D3D.h"
 
 #pragma comment(lib,"d3dx11.lib")
 
