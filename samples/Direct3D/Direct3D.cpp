@@ -90,6 +90,15 @@ static bool MainLoop(bool retryCreate)
 		ovrvision.CreateSkinTextures(size.width, size.height, pTextures[0], pTextures[1]);
 		/////////////////////////////////////////////////////////////////////////////////////
 
+		D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {
+			DXGI_FORMAT_R8G8B8A8_UINT,		// DXGI_FORMAT
+			D3D11_SRV_DIMENSION_TEXTURE2D,	// D3D11_SRV_DIMENSION
+			{ 0, 1 },						// D3D11_TEX2D_SRV
+		};
+		
+		ID3D11ShaderResourceView* pSrv;
+		res = DIRECTX.Device->CreateShaderResourceView(pTextures[0], &SRVDesc, &pSrv);
+		
 		cv::Mat l(size.height, size.width, CV_8UC4);
 		cv::Mat r(size.height, size.width, CV_8UC4);
 

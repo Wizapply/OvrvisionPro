@@ -158,10 +158,6 @@ public:
 		@param eye OV_CAMEYE_LEFT or OV_CAMEYE_RIGHT */
 	void GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye);
 
-	/*!	@brief Capture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc.)
-		@param qt Set an image processing method. */
-	void Capture(OVR::Camqt qt);
-
 	/*!	@brief Get camera image region of interest
 		@param pLeft Image buffer pointer for left eye
 		@param pRight Image buffer pointer for right eye
@@ -272,15 +268,53 @@ public:
 		@param width of texture
 		@param height of texture
 		@param left texture
-		@param right texure */
+		@param right texure 
+
+		/////////////////////////////////////////////////////////////////////////////////////
+		// How to Create GPU texture and Update texture
+
+		// Set scale 1/2 and get its size
+		OVR::ROI size = ovrvision.SetSkinScale(2); 
+
+		D3D11_TEXTURE2D_DESC desc = {
+			size.width,					// Width
+			size.height,				// Height
+			1,							// MipLevels
+			1,							// ArraySize
+			DXGI_FORMAT_R8G8B8A8_UINT,	// Format, BE CAREFUL
+			{ 1 },						// SampleDesc.Count
+			D3D11_USAGE_DEFAULT,		// Usage
+		};
+
+		// Create Textures
+		ID3D11Texture2D *pTextures[2];
+		res = DIRECTX.Device->CreateTexture2D(&desc, NULL, &pTextures[0]);
+		res = DIRECTX.Device->CreateTexture2D(&desc, NULL, &pTextures[1]);
+
+		// Create GPU sharing textures
+		ovrvision.CreateSkinTextures(size.width, size.height, pTextures[0], pTextures[1]);
+		/////////////////////////////////////////////////////////////////////////////////////
+	*/
 	void CreateSkinTextures(int width, int height, unsigned int left, unsigned int right);
 #ifdef WIN32
 	void CreateSkinTextures(int width, int height, void* left, void* right); // for D3D11
 #endif
     
+	/*!	@brief Capture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc.)
+		@param qt Set an image processing method. */
+	void Capture(OVR::Camqt qt);
+
 	/*! @brief Update skin textures, UNDER CONSTRUCTION
 		@param n count of onjects
-		@param textureObjects */
+		@param textureObjects 
+
+		/////////////////////////////////////////////////////////////////////////////////////
+		// Capture image and hold it only in GPU
+		ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMSRMP);
+		// Update textures
+		ovrvision.UpdateSkinTextures(pTextures[0], pTextures[1]);
+		/////////////////////////////////////////////////////////////////////////////////////
+	*/
 	void UpdateSkinTextures(unsigned int left, unsigned int right);
 	void UpdateImageTextures(unsigned int left, unsigned int right);
 #ifdef  WIN32
