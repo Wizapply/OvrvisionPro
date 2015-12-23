@@ -318,10 +318,6 @@ namespace OVR
 			cl_context		_context;
 
 			cl_command_queue _commandQueue;
-			cl_image_format	_format16UC1;
-			cl_image_format	_format8UC4;
-			cl_image_format _format8UC1;
-			cl_image_format _formatMap;
 			cl_int			_errorCode;
 
 			cl_program		_program;
@@ -336,10 +332,10 @@ namespace OVR
 			cl_kernel		_medianBlur3x3;
 			cl_kernel		_medianBlur5x5;
 			cl_kernel		_mask;
+			//cl_kernel		_mask_opengl;
 			cl_kernel		_invertMask;
 
 		private:
-			//cl_event _execute;
 			cl_mem	_src;
 			cl_mem	_l, _r;			// demosaic and remapped image
 			cl_mem	_L, _R;			// work image

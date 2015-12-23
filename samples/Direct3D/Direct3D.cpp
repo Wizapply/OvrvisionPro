@@ -65,37 +65,49 @@ static bool MainLoop(bool retryCreate)
 
 		InitializeCamPlane(DIRECTX.Device, DIRECTX.Context, width, height, 1.1f);
 
+		/////////////////////////////////////////////////////////////////////////////////////
+		// How to Create GPU texture and Update texture
+
+		// Set scale 1/2 and get its size
+		OVR::ROI size = ovrvision.SetSkinScale(2); 
+
 		D3D11_TEXTURE2D_DESC desc = {
-			width,				// Width
-			height,				// Height
-			1,								// MipLevels
-			1,								// ArraySize
+			size.width,					// Width
+			size.height,				// Height
+			1,							// MipLevels
+			1,							// ArraySize
 			DXGI_FORMAT_R8G8B8A8_UINT,	// Format
-			{ 1 },							// SampleDesc.Count
-			D3D11_USAGE_DEFAULT,			// Usage
+			{ 1 },						// SampleDesc.Count
+			D3D11_USAGE_DEFAULT,		// Usage
 		};
 
+		// Create Textures
 		ID3D11Texture2D *pTextures[2];
 		res = DIRECTX.Device->CreateTexture2D(&desc, NULL, &pTextures[0]);
 		res = DIRECTX.Device->CreateTexture2D(&desc, NULL, &pTextures[1]);
-		OVR::ROI size = ovrvision.SetSkinScale(2);
+
+		// Create GPU sharing textures
 		ovrvision.CreateSkinTextures(size.width, size.height, pTextures[0], pTextures[1]);
+		/////////////////////////////////////////////////////////////////////////////////////
+
 		cv::Mat l(size.height, size.width, CV_8UC4);
 		cv::Mat r(size.height, size.width, CV_8UC4);
-
-		//ShowWindow(DIRECTX.Window, SW_SHOW);
-		//SetWindowPos(DIRECTX.Window, NULL, 0, 0, 640, 480, SWP_NOMOVE | SWP_NOZORDER | SWP_SHOWWINDOW);
 
 		// Main loop
 		while (DIRECTX.HandleMessages())
 		{
-			XMVECTOR forward = XMVector3Rotate(XMVectorSet(0, 0, -0.05f, 0), mainCam->Rot);
-			XMVECTOR right = XMVector3Rotate(XMVectorSet(0.05f, 0, 0, 0), mainCam->Rot);
-
+			/////////////////////////////////////////////////////////////////////////////////////
+			// Capture image and hold it only in GPU
 			ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMSRMP);
+			// Update textures
 			ovrvision.UpdateSkinTextures(pTextures[0], pTextures[1]);
+			/////////////////////////////////////////////////////////////////////////////////////
+
+			// Inspect GPU internal image
 			ovrvision.InspectTextures(l.data, r.data, 3);
 			imshow("Left", l);
+			imshow("Right", r);
+#if 0
 			for (int eye = 0; eye < 2; ++eye)
 			{
 				//Camera View
@@ -106,8 +118,8 @@ static bool MainLoop(bool retryCreate)
 
 				RendererCamPlane(DIRECTX.Device, DIRECTX.Context);
 			}
-			// Render mirror
-			//ovrD3D11Texture* tex = (ovrD3D11Texture*)mirrorTexture;
+#endif
+			// Render 
 			//DIRECTX.Context->CopyResource(DIRECTX.BackBuffer, tex->D3D11.pTexture);
 			DIRECTX.SwapChain->Present(0, 0);
 

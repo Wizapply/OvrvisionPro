@@ -124,6 +124,11 @@ namespace OVR
 #endif
 	}
 
+	static const cl_image_format _format16UC1 = { CL_R, CL_UNSIGNED_INT16 };
+	static const cl_image_format _format8UC4 = { CL_RGBA, CL_UNSIGNED_INT8 };
+	static const cl_image_format _format8UC1 = { CL_R, CL_UNSIGNED_INT8 };
+	static const cl_image_format _formatMap = { CL_R, CL_FLOAT };
+	static const cl_image_format _formatGL = { CL_RGBA, CL_UNORM_INT8 };
 
 	//namespace OPENCL
 	//{
@@ -134,15 +139,6 @@ namespace OVR
 			_width = width;
 			_height = height;
 			_sharing = mode;
-			// TODO: check GPU memory size
-			_format16UC1.image_channel_data_type = CL_UNSIGNED_INT16;
-			_format16UC1.image_channel_order = CL_R;
-			_format8UC4.image_channel_data_type =CL_UNSIGNED_INT8;	// CL_UNORM_INT8;	// 
-			_format8UC4.image_channel_order = CL_RGBA;
-			_format8UC1.image_channel_data_type = CL_UNSIGNED_INT8; // CL_UNORM_INT8;	//
-			_format8UC1.image_channel_order = CL_R;
-			_formatMap.image_channel_data_type = CL_FLOAT;
-			_formatMap.image_channel_order = CL_R;
 
 			if (SelectGPU("", "OpenCL C 1.2") == NULL) // Find OpenCL(version 1.2 and above) device 
 			{
@@ -259,6 +255,7 @@ namespace OVR
 			clReleaseKernel(_medianBlur3x3);
 			clReleaseKernel(_medianBlur5x5);
 			clReleaseKernel(_mask);
+			//clReleaseKernel(_mask_opengl);
 			clReleaseKernel(_invertMask);
 
 			clReleaseMemObject(_src);
@@ -338,6 +335,8 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_mask = clCreateKernel(_program, "mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
+			//_mask_opengl = clCreateKernel(_program, "mask_opengl", &_errorCode);
+			//SAMPLE_CHECK_ERRORS(_errorCode);
 			_invertMask = clCreateKernel(_program, "invert_mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
@@ -983,8 +982,13 @@ namespace OVR
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 		//glEnable(GL_TEXTURE_2D);
+		
+		// Attension: 
+		// ****************************************************************
+		//	OpenGL Internal format is CL_UNORM_INT8, not CL_UNSIGNED_INT8!
+		// ****************************************************************
 		image = clCreateFromGLTexture(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture, &_errorCode);
-		//image = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
+
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #ifdef _DEBUG
 		size_t w, h, s;
