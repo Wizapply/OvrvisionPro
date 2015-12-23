@@ -75,14 +75,13 @@ static bool MainLoop(bool retryCreate)
 			D3D11_USAGE_DEFAULT,			// Usage
 		};
 
-		cv::Mat l(height, width, CV_8UC4);
-		cv::Mat r(height, width, CV_8UC4);
-
 		ID3D11Texture2D *pTextures[2];
 		res = DIRECTX.Device->CreateTexture2D(&desc, NULL, &pTextures[0]);
 		res = DIRECTX.Device->CreateTexture2D(&desc, NULL, &pTextures[1]);
 		OVR::ROI size = ovrvision.SetSkinScale(2);
 		ovrvision.CreateSkinTextures(size.width, size.height, pTextures[0], pTextures[1]);
+		cv::Mat l(size.height, size.width, CV_8UC4);
+		cv::Mat r(size.height, size.width, CV_8UC4);
 
 		//ShowWindow(DIRECTX.Window, SW_SHOW);
 		//SetWindowPos(DIRECTX.Window, NULL, 0, 0, 640, 480, SWP_NOMOVE | SWP_NOZORDER | SWP_SHOWWINDOW);
