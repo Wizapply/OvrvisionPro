@@ -446,7 +446,6 @@ static void UVCApplnInit (void)
     apiRetStatus           = CyU3PGpioSetSimpleConfig (OVRPRO_OVRESET_PIN, &gpioConfig);
     if (apiRetStatus != CY_U3P_SUCCESS) UVCAppErrorHandler (apiRetStatus);
     //How to use : Drive the GPIO high to bring the sensor out.
-    //CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyTrue);
 
     /* Initialize the P-port. */
     pibclock.clkDiv      = 2;
@@ -460,7 +459,7 @@ static void UVCApplnInit (void)
     /* Setup the Callback to Handle the GPIF INTR event */
     CyU3PGpifRegisterCallback (UVCFxGpifCB);
 
-    CyU3PThreadSleep(50); //50ms
+    CyU3PThreadSleep(10); //10ms
 
     /* Image sensor initialization. Reset and then initialize with appropriate configuration. */
     apiRetStatus = OV5653SensorInit();
@@ -547,15 +546,12 @@ static void UVCApplnInit (void)
     apiRetStatus = CyU3PConnectState (CyTrue, CyTrue);
     if (apiRetStatus != CY_U3P_SUCCESS)
     	UVCAppErrorHandler (apiRetStatus);
-
-    //OV5653 Power On
-    CyU3PGpioSetValue(OVRPRO_OVRESET_PIN, CyTrue);
 }
 
 // UVC Application i2c Init
 static void UVCApplnI2CInit (void)
 {
-    CyU3PI2cConfig_t i2cConfig;;
+    CyU3PI2cConfig_t i2cConfig;
     CyU3PReturnStatus_t status;
 
     status = CyU3PI2cInit ();

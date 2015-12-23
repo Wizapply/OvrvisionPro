@@ -169,7 +169,7 @@ CyU3PReturnStatus_t OV5653SensorBusTest(void)
 
 extern void OV5653ClockReset(void)
 {
-	WI2C(0x3012,0x05);
+	//WI2C(0x3012,0x05);
 	//CyU3PBusyWait (2000);	//1ms wait
 }
 

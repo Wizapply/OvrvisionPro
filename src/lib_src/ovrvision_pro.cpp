@@ -218,7 +218,6 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 #elif LINUX
     
 #endif
-    
 
 	return objs;
 }
