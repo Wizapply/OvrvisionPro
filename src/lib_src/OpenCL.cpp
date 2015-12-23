@@ -833,12 +833,12 @@ namespace OVR
 	// Update textures
 	void OvrvisionProOpenCL::UpdateImageTextures(TEXTURE left, TEXTURE right)
 	{
-		int width = _scaledRegion[0];
-		int height = _scaledRegion[1];
+		size_t width = _scaledRegion[0];
+		size_t height = _scaledRegion[1];
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 		cl_event event[2];
-
+#ifdef WIN32
 		if (_sharing == OPENGL)
 		{	//	glFinish(); // depend on mode
 			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
@@ -853,7 +853,6 @@ namespace OVR
 			_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
-#ifdef WIN32
 		else if (_sharing == D3D11)
 		{
 			if (_vendorD3D11 == NVIDIA)
