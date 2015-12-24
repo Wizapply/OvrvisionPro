@@ -97,7 +97,7 @@ uint8_t glProbeCtrl20[CY_FX_UVC_MAX_PROBE_SETTING] = {
     0x00, 0x00,                 /* Window size for average bit rate: only applicable to video
                                    streaming with adjustable compression parameters */
     0x00, 0x00,                 /* Internal video streaming i/f latency in ms */
-    0x00, 0x00, 0x96, 0x00,     /* Max video frame size in bytes */
+    0x00, 0x80, 0x25, 0x00,     /* Max video frame size in bytes */
     0x00, 0x40, 0x00, 0x00      /* No. of bytes device can rx in single payload = 16 KB */
 };
 
@@ -153,7 +153,7 @@ volatile static CyBool_t gotPartial = CyFalse;          /* Helps track the last 
 ////////////////////// Functions //////////////////////
 
 //UVC Application Error Handler
-void UVCAppErrorHandler (CyU3PReturnStatus_t apiRetStatus)
+static void UVCAppErrorHandler (CyU3PReturnStatus_t apiRetStatus)
 {
 	//Error stop
     for (;;)
@@ -162,7 +162,7 @@ void UVCAppErrorHandler (CyU3PReturnStatus_t apiRetStatus)
     }
 }
 
-void UVCApplnAbortHandler (void)
+static void UVCApplnAbortHandler (void)
 {
 	uint32_t flag;
 	if (CyU3PEventGet (&glFxUVCEvent, CY_FX_UVC_STREAM_EVENT, CYU3P_EVENT_AND, &flag,CYU3P_NO_WAIT) == CY_U3P_SUCCESS)
@@ -446,6 +446,7 @@ static void UVCApplnInit (void)
     apiRetStatus           = CyU3PGpioSetSimpleConfig (OVRPRO_OVRESET_PIN, &gpioConfig);
     if (apiRetStatus != CY_U3P_SUCCESS) UVCAppErrorHandler (apiRetStatus);
     //How to use : Drive the GPIO high to bring the sensor out.
+    //CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyTrue);
 
     /* Initialize the P-port. */
     pibclock.clkDiv      = 2;
@@ -503,7 +504,7 @@ static void UVCApplnInit (void)
     endPointConfig.epType   = CY_U3P_USB_EP_BULK;
     endPointConfig.pcktSize = CY_FX_EP_BULK_VIDEO_PKT_SIZE;
     endPointConfig.isoPkts  = 1;
-    endPointConfig.burstLen = 16;
+    endPointConfig.burstLen = CY_FX_EP_BULK_VIDEO_PKTS_COUNT;
     endPointConfig.streams  = 0;
     apiRetStatus = CyU3PSetEpConfig (CY_FX_EP_BULK_VIDEO, &endPointConfig);
     if (apiRetStatus != CY_U3P_SUCCESS)

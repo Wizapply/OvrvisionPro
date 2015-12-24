@@ -51,6 +51,7 @@
 #include <gl/GL.h>
 #else
 #include <OpenGL/gl.h>
+typedef unsigned int GLuint;
 #endif
 #endif
 
@@ -313,12 +314,12 @@ CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr
 	}
 	else if (g_DeviceType == 0) {	//OpenGL
 #if SUPPORT_OPENGL
-		GLuint gltex_left = (GLuint)(pTexPtr_Left);
-		GLuint gltex_right = (GLuint)(pTexPtr_Right);
+        uintptr_t gltex_left = (uintptr_t)pTexPtr_Left;
+        uintptr_t gltex_right = (uintptr_t)pTexPtr_Right;
 
-		glBindTexture(GL_TEXTURE_2D, gltex_left);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)gltex_left);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_RGBA, GL_UNSIGNED_BYTE, pLeft);
-		glBindTexture(GL_TEXTURE_2D, gltex_right);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)gltex_right);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_RGBA, GL_UNSIGNED_BYTE, pRight);
 #endif
 	}

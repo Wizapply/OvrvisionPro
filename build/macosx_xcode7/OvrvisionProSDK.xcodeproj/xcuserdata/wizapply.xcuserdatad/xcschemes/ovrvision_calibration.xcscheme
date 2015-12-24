@@ -14,6 +14,20 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "9F35D45C1C28EB05005F48E6"
+               BuildableName = "ovrvision.bundle"
+               BlueprintName = "ovrvision"
+               ReferencedContainer = "container:OvrvisionProSDK.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "9F35D41A1C28E94B005F48E6"
                BuildableName = "ovrvision_calibration.app"
                BlueprintName = "ovrvision_calibration"

@@ -380,20 +380,19 @@ const uvc_controls_t uvc_controls = {
     [m_session removeInput:m_deviceInput];
     [m_session removeOutput:m_output];
     
-    [m_device release];
     [m_session release];
     
     m_device = nil;
     m_session = nil;
     m_output = nil;
     m_deviceInput = nil;
-    
+
     m_width = 0;
     m_height = 0;
     m_rate = 0;
     m_latestPixelDataSize = 0;
 
-    memset(m_nDeviceName,0x00,sizeof(m_nDeviceName));
+    memset(m_nDeviceName,0x00,sizeof(char)*OV_DEVICENAMENUM);
     free(m_pPixels);
 
     if(interface) {
@@ -629,7 +628,7 @@ const uvc_controls_t uvc_controls = {
 
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     }
-    NSLog(@"OK");
+    //NSLog(@"OK");
 }
 
 
