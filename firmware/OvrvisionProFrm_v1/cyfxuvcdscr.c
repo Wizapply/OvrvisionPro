@@ -164,7 +164,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x01,                           /* Configuration number */
 	0x00,                           /* Configuration string index */
 	0x80,                           /* Config characteristics - Bus powered */
-	0x64,                           /* Max power consumption of device (in 8mA unit) : 800mA */
+	0x4B,                           /* Max power consumption of device (in 8mA unit) : 600mA */
 
 	/* Interface Association Descriptor */
 	0x08,                           /* Descriptor Size */
@@ -479,7 +479,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	/* Super Speed Endpoint Companion Descriptor */
 	0x06,                           /* Descriptor size */
 	CY_U3P_SS_EP_COMPN_DESCR,       /* SS Endpoint Companion Descriptor Type */
-	0x0F,                           /* Max number of packets per burst: 16 */
+	CY_FX_EP_BULK_VIDEO_PKTS_COUNT-1, /* Max number of packets per burst: 16 */
 	0x00,                           /* Attribute: Streams not defined */
 	0x00,                           /* No meaning for bulk */
 	0x00

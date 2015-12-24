@@ -63,7 +63,7 @@
 #define CY_FX_UVC_STREAM_BUF_SIZE      (CY_FX_EP_BULK_VIDEO_PKTS_COUNT * CY_FX_EP_BULK_VIDEO_PKT_SIZE)  /* 16 KB */
 
 /* Maximum video data that can be accommodated in one DMA buffer. */
-#define CY_FX_UVC_BUF_FULL_SIZE        (CY_FX_UVC_STREAM_BUF_SIZE - 16)
+#define CY_FX_UVC_BUF_FULL_SIZE        (CY_FX_UVC_STREAM_BUF_SIZE - (12 + 4))
 
 /* Number of DMA buffers per GPIF DMA thread. */
 #define CY_FX_UVC_STREAM_BUF_COUNT     (4)
