@@ -264,7 +264,7 @@ public:
 	bool CameraParamSaveEEPROM();
 
 	// GPU texture
-	/*! @brief Create Skin textures, UNDER CONSTRUCTION
+	/*! @brief Create Skin textures
 		@param width of texture
 		@param height of texture
 		@param left texture
@@ -304,7 +304,7 @@ public:
 		@param qt Set an image processing method. */
 	void Capture(OVR::Camqt qt);
 
-	/*! @brief Update skin textures, UNDER CONSTRUCTION
+	/*! @brief Update skin textures
 		@param n count of onjects
 		@param textureObjects 
 
