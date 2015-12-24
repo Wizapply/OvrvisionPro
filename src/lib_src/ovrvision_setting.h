@@ -57,13 +57,16 @@ class OvrvisionSetting
 {
 public:
 	//Constructor
-	OvrvisionSetting(OvrvisionPro* system);
+	OvrvisionSetting(OvrvisionPro* system_ptr);
 
 	//Methods
 	//Read Setting
 	bool ReadEEPROM();
 	//Write Setting
 	bool WriteEEPROM(unsigned char flag);
+
+	//Reset Setting
+	bool ResetEEPROM();
 
 	// Calculate Undistortion Matrix
 	void GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &mapY, int width, int height);

@@ -393,7 +393,7 @@ int OvrvisionDirectShow::CreateDevice(usb_id vid, usb_id pid,
 	if (SUCCEEDED(hr)) {
 		//One Shot should be false unless you want to capture just one buffer
 		m_pGrabberFilter->QueryInterface(IID_ISampleGrabber, (void**)&m_pSGrabber);
-		m_pSGrabber->SetOneShot(FALSE);			//OVRVISION only
+		m_pSGrabber->SetOneShot(TRUE);			//OVRVISION only
 		m_pSGrabber->SetBufferSamples(FALSE);
 
 		//Create callback class
