@@ -129,6 +129,9 @@ namespace OVR
 	static const cl_image_format _format8UC1 = { CL_R, CL_UNSIGNED_INT8 };
 	static const cl_image_format _formatMap = { CL_R, CL_FLOAT };
 	static const cl_image_format _formatGL = { CL_RGBA, CL_UNORM_INT8 };
+	static const char ESTIMATION_INSTRUCTION[] = "Please wave hand to estimate skin color.";
+	static const char COUNTDOWN_MESSAGE[] = "Estimating.. %d";
+	static const char ESTIMATED_MESSAGE[] = "Estimation complete.";
 
 	//namespace OPENCL
 	//{
@@ -255,8 +258,9 @@ namespace OVR
 			clReleaseKernel(_medianBlur3x3);
 			clReleaseKernel(_medianBlur5x5);
 			clReleaseKernel(_mask);
-			clReleaseKernel(_mask_opengl);
+			clReleaseKernel(_maskOpengl);
 			clReleaseKernel(_invertMask);
+			clReleaseKernel(_gammaCorrection);
 
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
@@ -335,11 +339,11 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_mask = clCreateKernel(_program, "mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
-			_mask_opengl = clCreateKernel(_program, "mask_opengl", &_errorCode);
+			_maskOpengl = clCreateKernel(_program, "mask_opengl", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_invertMask = clCreateKernel(_program, "invert_mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
-
+			_gammaCorrection = clCreateKernel(_program, "gamma", &_errorCode);
 			return true;
 		}
 	}
@@ -1112,13 +1116,13 @@ namespace OVR
 			clSetKernelArg(_mask, 1, sizeof(cl_mem), &left);
 			clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[0]);
 			clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
-			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask_opengl, 2, NULL, _scaledRegion, NULL, 1, &event[0], event_l);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _maskOpengl, 2, NULL, _scaledRegion, NULL, 1, &event[0], event_l);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedR);
 			clSetKernelArg(_mask, 1, sizeof(cl_mem), &right);
 			clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[1]);
 			clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
-			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask_opengl, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _maskOpengl, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
 		else
@@ -1392,9 +1396,11 @@ namespace OVR
 					_frameCounter--;
 				}
 
-				sprintf(buffer, "Calibrating.. %d", _frameCounter);
-				putText(_left, buffer, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255), 1, CV_AA);
-				putText(_right, buffer, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255), 1, CV_AA);
+				sprintf(buffer, COUNTDOWN_MESSAGE, _frameCounter);
+				putText(_left, buffer, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 0.7, Scalar(0, 0, 255), 1, CV_AA);
+				putText(_right, buffer, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 0.7, Scalar(0, 0, 255), 1, CV_AA);
+				putText(_left, ESTIMATION_INSTRUCTION, Point(10, height / 2), CV_FONT_HERSHEY_TRIPLEX, 0.7, Scalar(0, 0, 255), 1, CV_AA);
+				putText(_right, ESTIMATION_INSTRUCTION, Point(10, height / 2), CV_FONT_HERSHEY_TRIPLEX, 0.7, Scalar(0, 0, 255), 1, CV_AA);
 
 				if (_frameCounter == 0)
 				{
@@ -1408,7 +1414,7 @@ namespace OVR
 				_frameCounter--;
 				sprintf(buffer, "H:%d - %d S:%d - %d", _h_low, _h_high, _s_low, _s_high);
 				putText(_left, buffer, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));
-				putText(_right, "Calibrated", Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));
+				putText(_right, ESTIMATED_MESSAGE, Point(0, height - 5), CV_FONT_HERSHEY_TRIPLEX, 1, Scalar(0, 0, 255));
 			}
 			return false;
 		}
