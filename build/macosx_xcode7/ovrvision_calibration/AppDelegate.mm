@@ -10,11 +10,6 @@
 #import "ChessSizeFormDelegate.h"
 #import "HowToUseDelegate.h"
 
-#define OV_PSQT_NONE 0		//No Processing quality
-#define OV_PSQT_LOW 1		//Low Processing quality
-#define OV_PSQT_HIGH 2		//High Processing quality
-#define OV_PSQT_REFSET 3		//RefOnly Processing quality
-
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -25,22 +20,68 @@
     NSURL* bundleURL = [NSURL fileURLWithPath:bundlePath];
     
     cfBundle = CFBundleCreate(kCFAllocatorDefault, (__bridge CFURLRef)bundleURL);
-    
-    if(cfBundle) {
-        ovOpen = (ovOpenPtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovOpen"));
-        ovClose = (ovClosePtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovClose"));
-        ovPreStoreCamData = (ovPreStoreCamDataPtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovPreStoreCamData"));
-        ovGetCamImage = (ovGetCamImagePtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetCamImage"));
-        ovGetCamImageBGR = (ovGetCamImageBGRPtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetCamImageBGR"));
-        ovGetImageWidth = (ovGetImageWidthPtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetImageWidth"));
-        ovGetImageHeight = (ovGetImageHeightPtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetImageHeight"));
-        ovGetImageRate = (ovGetImageRatePtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetImageRate"));
-        ovGetBufferSize = (ovGetBufferSizePtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetBufferSize"));
-        ovCalibInitialize = (ovCalibInitializePtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovCalibInitialize"));
-        ovCalibFindChess = (ovCalibFindChessPtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovCalibFindChess"));
-        ovCalibSolveStereoParameter = (ovCalibSolveStereoParameterPtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovCalibSolveStereoParameter"));
-        ovCalibGetImageCount = (ovCalibGetImageCountPtr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovCalibGetImageCount"));
-    
+    if(cfBundle)
+    {
+        ovOpen = (ovOpen_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovOpen"));
+        ovClose = (ovClose_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovClose"));
+        ovRelease = (ovRelease_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovRelease"));
+        ovPreStoreCamData = (ovPreStoreCamData_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovPreStoreCamData"));
+        ovGetCamImageBGRA = (ovGetCamImageBGRA_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetCamImageBGRA"));
+        ovGetCamImageRGB = (ovGetCamImageRGB_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetCamImageRGB"));
+        
+        ovGetCamImageBGR = (ovGetCamImageBGR_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetCamImageBGR"));
+        ovGetCamImageForUnity = NULL;
+        ovGetCamImageForUnityNative = NULL;
+        
+        ovGetImageWidth = (ovGetImageWidth_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetImageWidth"));
+        ovGetImageHeight =(ovGetImageHeight_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetImageHeight"));
+        ovGetImageRate = (ovGetImageRate_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetImageRate"));
+        ovGetBufferSize = (ovGetBufferSize_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetBufferSize"));
+        ovGetPixelSize = (ovGetPixelSize_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetPixelSize"));
+        
+        //Set camera properties
+        ovSetExposure = (ovSetExposure_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovSetExposure"));
+        ovSetGain = (ovSetGain_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovSetGain"));
+        ovSetBLC = (ovSetBLC_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovSetBLC"));
+        ovSetWhiteBalanceR = (ovSetWhiteBalanceR_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovSetWhiteBalanceR"));
+        ovSetWhiteBalanceG = (ovSetWhiteBalanceG_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovSetWhiteBalanceG"));
+        ovSetWhiteBalanceB = (ovSetWhiteBalanceB_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovSetWhiteBalanceB"));
+        ovSetWhiteBalanceAuto = (ovSetWhiteBalanceAuto_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovSetWhiteBalanceAuto"));
+        //Get camera properties
+        ovGetExposure = (ovGetExposure_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetExposure"));
+        ovGetGain = (ovGetGain_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetGain"));
+        ovGetBLC = (ovGetBLC_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetBLC"));
+        ovGetWhiteBalanceR = (ovGetWhiteBalanceR_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetWhiteBalanceR"));
+        ovGetWhiteBalanceG = (ovGetWhiteBalanceG_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetWhiteBalanceG"));
+        ovGetWhiteBalanceB = (ovGetWhiteBalanceB_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetWhiteBalanceB"));
+        ovGetWhiteBalanceAuto = (ovGetWhiteBalanceAuto_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetWhiteBalanceAuto"));
+        ovGetFocalPoint = (ovGetFocalPoint_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetFocalPoint"));
+        ovGetHMDRightGap = (ovGetHMDRightGap_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetHMDRightGap"));
+        
+        ovSetCamSyncMode = (ovSetCamSyncMode_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovSetCamSyncMode"));
+        
+        ////////////// Ovrvision AR System //////////////
+        ovARRender = (ovARRender_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovARRender"));
+        ovARGetData = (ovARGetData_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovARGetData"));
+        ovARSetMarkerSize = (ovARSetMarkerSize_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovARSetMarkerSize"));
+        ovARGetMarkerSize = (ovARGetMarkerSize_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovARGetMarkerSize"));
+        
+        ////////////// Ovrvision Tracking System //////////////
+        //testing
+        //ovTrackRender_ptr ovTrackRender;
+        //ovGetTrackData_ptr ovGetTrackData;
+        //ovTrackingCalibReset_ptr ovTrackingCalibReset;
+        
+        ////////////// Ovrvision Calibration //////////////
+        ovCalibInitialize = (ovCalibInitialize_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovCalibInitialize"));
+        ovCalibClose = (ovCalibClose_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovCalibClose"));
+        ovCalibFindChess = (ovCalibFindChess_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovCalibFindChess"));
+        ovCalibSolveStereoParameter = (ovCalibSolveStereoParameter_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovCalibSolveStereoParameter"));
+        ovCalibGetImageCount = (ovCalibGetImageCount_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovCalibGetImageCount"));
+        
+        ovSaveCamStatusToEEPROM = (ovSaveCamStatusToEEPROM_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovSaveCamStatusToEEPROM"));
+        //////////////////////////////////
+        
         NSLog(@"[OK] Loaded the ovrvision.bundle.");
     }
     
@@ -50,10 +91,7 @@
     // Image Wellに設定
     [self.imageView setImage:image];
     
-    [_OvrvisionHMDTypeButton itemAtIndex:0];
-    
     endThread = false;
-
 }
 
 - (void)dealloc {
@@ -61,6 +99,7 @@
     if([[_OvrvisionCtrl title] isEqualToString:@"Close Ovrvision"]) {
         endThread = false;
         if(ovClose()==0) {
+            ovRelease();
             NSLog(@"Ovrvision was closed.");
         }
     }
@@ -73,48 +112,36 @@
     
     if([[_OvrvisionCtrl title] isEqualToString:@"Open Ovrvision"])
     {
-        hmdtype = 2;
-        if([_OvrvisionHMDTypeDK2 state]) {
-            hmdtype = 2;
-        }
-        else if([_OvrvisionHMDTypeDK1 state]) {
-            hmdtype = 1;
-        }
-        else if([_OvrvisionHMDTypeOther state]) {
-            hmdtype = 0;
-        }
-        
-        if(ovOpen(0, 0.15f, hmdtype)==0)
+        if(ovOpen(0, 0.15f, OV_CAMHD_FULL)==0)
         {
             [_OvrvisionCtrl setTitle:@"Close Ovrvision"];
             [_OvrvisionCalib setEnabled: YES];
-            [_OvrvisionHMDTypeButton setEnabled: NO];
             
             [_outputTextView setString:@"Ovrvision was opened.\n"]; //initialize text
 
             //camera image
             left_bitmap = [[NSBitmapImageRep alloc]
                                         initWithBitmapDataPlanes:NULL
-                                        pixelsWide:640
-                                        pixelsHigh:480
+                                        pixelsWide:ovGetImageWidth()
+                                        pixelsHigh:ovGetImageHeight()
                                         bitsPerSample:8
                                         samplesPerPixel:3
                                         hasAlpha:NO
                                         isPlanar:NO
                                         colorSpaceName:NSCalibratedRGBColorSpace
-                                        bytesPerRow:640*3
+                                        bytesPerRow:ovGetImageWidth()*3
                                         bitsPerPixel:24];
         
             right_bitmap = [[NSBitmapImageRep alloc]
                            initWithBitmapDataPlanes:NULL
-                           pixelsWide:640
-                           pixelsHigh:480
+                           pixelsWide:ovGetImageWidth()
+                           pixelsHigh:ovGetImageHeight()
                            bitsPerSample:8
                            samplesPerPixel:3
                            hasAlpha:NO
                            isPlanar:NO
                            colorSpaceName:NSCalibratedRGBColorSpace
-                           bytesPerRow:640*3
+                           bytesPerRow:ovGetImageWidth()*3
                            bitsPerPixel:24];
             
             endThread = true;
@@ -127,12 +154,12 @@
     else if([[_OvrvisionCtrl title] isEqualToString:@"Close Ovrvision"])
     {
         endThread = false;
+        
         if(ovClose()==0)
         {
             [_OvrvisionCtrl setTitle:@"Open Ovrvision"];
             [_OvrvisionCalib setTitle:@"Start Calibration"];
             [_OvrvisionCalib setEnabled: NO];
-            [_OvrvisionHMDTypeButton setEnabled: YES];
             
             [self.leftCameraView setImage:NULL];
             [self.rightCameraView setImage:NULL];
@@ -184,8 +211,8 @@
         [self appendText:@"Setup in the data..... "];
         ovCalibSolveStereoParameter();
         [self appendText:@"Success.\n"];
-        [NSThread sleepForTimeInterval:1.0]; //1s wait
-        [self appendText:@"Calibration params has been saved.\n"];
+        [NSThread sleepForTimeInterval:0.5]; //1s wait
+        [self appendText:@"The calibration params was saved successfully.\n"];
         
         //Close
         endThread = false;
@@ -212,14 +239,10 @@
         NSImage *left_image = [[NSImage alloc] init];
         NSImage *right_image = [[NSImage alloc] init];
         
-        ovPreStoreCamData();
-        if(hmdtype==2) {
-            ovGetCamImage([left_bitmap bitmapData],0,OV_PSQT_REFSET);    //Ref
-            ovGetCamImage([right_bitmap bitmapData],1,OV_PSQT_REFSET);
-        } else {
-            ovGetCamImage([left_bitmap bitmapData],0,OV_PSQT_NONE);    //Ref
-            ovGetCamImage([right_bitmap bitmapData],1,OV_PSQT_NONE);
-        }
+        ovPreStoreCamData(OV_CAMQT_DMS);
+        
+        ovGetCamImageRGB([left_bitmap bitmapData],OV_CAMEYE_LEFT);    //Ref
+        ovGetCamImageRGB([right_bitmap bitmapData],OV_CAMEYE_RIGHT);
         
         [left_image addRepresentation:left_bitmap];
         [right_image addRepresentation:right_bitmap];
@@ -227,7 +250,7 @@
         [self.leftCameraView setImage:left_image];
         [self.rightCameraView setImage:right_image];
         
-        [NSThread sleepForTimeInterval:0.05];
+        [NSThread sleepForTimeInterval:0.005];  //5ms
     }
     
 }

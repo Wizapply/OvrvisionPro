@@ -930,7 +930,6 @@
 				);
 				INFOPLIST_FILE = ovrvision_calibration/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.wizapply.ovrvision-calibration";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -945,7 +944,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = MACOSX;
 				INFOPLIST_FILE = ovrvision_calibration/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.wizapply.ovrvision-calibration";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1181,6 +1179,7 @@
 				9F35D42A1C28E94B005F48E6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9F35D4601C28EB05005F48E6 /* Build configuration list for PBXNativeTarget "ovrvision" */ = {
 			isa = XCConfigurationList;
@@ -1189,6 +1188,7 @@
 				9F35D4621C28EB05005F48E6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9FB69CC11C12B69A0085BB68 /* Build configuration list for PBXProject "OvrvisionProSDK" */ = {
 			isa = XCConfigurationList;
