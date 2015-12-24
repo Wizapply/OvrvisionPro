@@ -332,7 +332,7 @@ namespace OVR
 			cl_kernel		_medianBlur3x3;
 			cl_kernel		_medianBlur5x5;
 			cl_kernel		_mask;
-			//cl_kernel		_mask_opengl;
+			cl_kernel		_mask_opengl;
 			cl_kernel		_invertMask;
 
 		private:

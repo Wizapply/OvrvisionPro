@@ -255,7 +255,7 @@ namespace OVR
 			clReleaseKernel(_medianBlur3x3);
 			clReleaseKernel(_medianBlur5x5);
 			clReleaseKernel(_mask);
-			//clReleaseKernel(_mask_opengl);
+			clReleaseKernel(_mask_opengl);
 			clReleaseKernel(_invertMask);
 
 			clReleaseMemObject(_src);
@@ -335,8 +335,8 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_mask = clCreateKernel(_program, "mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
-			//_mask_opengl = clCreateKernel(_program, "mask_opengl", &_errorCode);
-			//SAMPLE_CHECK_ERRORS(_errorCode);
+			_mask_opengl = clCreateKernel(_program, "mask_opengl", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
 			_invertMask = clCreateKernel(_program, "invert_mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
@@ -962,15 +962,6 @@ namespace OVR
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
 	{
 		cl_mem image;
-		//glGenTextures(1, &g_texture));
-		//GL_API_CHECK(glBindTexture(GL_TEXTURE_2D, g_texture));
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-		//glBindTexture(GL_TEXTURE_2D, 0);
-		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -987,7 +978,7 @@ namespace OVR
 		// ****************************************************************
 		//	OpenGL Internal format is CL_UNORM_INT8, not CL_UNSIGNED_INT8!
 		// ****************************************************************
-		image = clCreateFromGLTexture(_context, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture, &_errorCode);
+		image = clCreateFromGLTexture(_context, CL_MEM_WRITE_ONLY, GL_TEXTURE_2D, 0, texture, &_errorCode);
 
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #ifdef _DEBUG
@@ -1007,6 +998,7 @@ namespace OVR
 	// TODO: Direct3D shared texture
 	cl_mem OvrvisionProOpenCL::CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height)
 	{
+		/* Desciptor of texture must be R8B8G8A8_UINT format
 		D3D11_TEXTURE2D_DESC texsture_desc = {
 			width,				// Width
 			height,				// Height
@@ -1016,20 +1008,14 @@ namespace OVR
 			{ 1 },							// SampleDesc.Count
 			D3D11_USAGE_DEFAULT,			// Usage
 		};
-
-		D3D11_SUBRESOURCE_DATA initData = {
-				// const void *pSysMem;
-				// UINT SysMemPitch;
-				// UINT SysMemSlicePitch;
-		};
-
+		*/
 		if (_vendorD3D11 == NVIDIA)
 		{
-			return pclCreateFromD3D11Texture2DNV(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+			return pclCreateFromD3D11Texture2DNV(_context, CL_MEM_WRITE_ONLY, texture, 0, &_errorCode);
 		}
 		else
 		{
-			return pclCreateFromD3D11Texture2DKHR(_context, CL_MEM_READ_WRITE, texture, 0, &_errorCode);
+			return pclCreateFromD3D11Texture2DKHR(_context, CL_MEM_WRITE_ONLY, texture, 0, &_errorCode);
 		}
 	}
 #endif
@@ -1109,18 +1095,47 @@ namespace OVR
 		//		__read_only image2d_t mask,	// CL_UNSIGNED_INT8
 		//		__read_only int threshold)	//
 
-		clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedL);
-		clSetKernelArg(_mask, 1, sizeof(cl_mem), &left);
-		clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[0]);
-		clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask, 2, NULL, _scaledRegion, NULL, 1, &event[0], event_l);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedR);
-		clSetKernelArg(_mask, 1, sizeof(cl_mem), &right);
-		clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[1]);
-		clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
-		SAMPLE_CHECK_ERRORS(_errorCode);
+		//__kernel void mask_opengl(
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst,	// CL_UNORM_INT8 x 4	<- DIFFERENT FORMAT
+		//		__read_only image2d_t mask,	// CL_UNSIGNED_INT8
+		//		__read_only int threshold)	// 
+#ifdef _DEBUG
+		cl_image_format format;		
+		clGetImageInfo(left, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
+		clGetImageInfo(right, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
+#endif // DEBUG
+
+		if (_sharing == OPENGL)
+		{
+			clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedL);
+			clSetKernelArg(_mask, 1, sizeof(cl_mem), &left);
+			clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[0]);
+			clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask_opengl, 2, NULL, _scaledRegion, NULL, 1, &event[0], event_l);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedR);
+			clSetKernelArg(_mask, 1, sizeof(cl_mem), &right);
+			clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[1]);
+			clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask_opengl, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+		else
+		{
+			clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedL);
+			clSetKernelArg(_mask, 1, sizeof(cl_mem), &left);
+			clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[0]);
+			clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask, 2, NULL, _scaledRegion, NULL, 1, &event[0], event_l);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedR);
+			clSetKernelArg(_mask, 1, sizeof(cl_mem), &right);
+			clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[1]);
+			clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _mask, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
 
 		// Release temporaries
 		clReleaseEvent(event[0]);
