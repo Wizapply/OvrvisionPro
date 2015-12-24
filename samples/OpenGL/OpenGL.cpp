@@ -114,7 +114,7 @@ GLvoid drawScene(GLvoid)
 	// Step6. テクスチャの画像指定
 	ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMSRMP);
 	glFinish();
-	ovrvision.UpdateSkinTextures(textureIDs[0], textureIDs[1]);
+	ovrvision.UpdateImageTextures(textureIDs[0], textureIDs[1]);
 #ifdef _DEBUG
 	cv::Mat left(size.height, size.width, CV_8UC4);
 	cv::Mat right(size.height, size.width, CV_8UC4);

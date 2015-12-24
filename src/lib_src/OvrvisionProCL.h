@@ -124,7 +124,7 @@ namespace OVR
 			void DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
 			void DemosaicRemap(const ushort* src, uchar *left, uchar *right);
 			//void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
-			void DemosaicRemap(const Mat src, Mat &left, Mat &right);
+			//void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 
 			/*! @brief set scaling (1/2, 1/4, 1/8) 
 				@param scaling (HALF, FOURTH, EIGHTH)
@@ -155,6 +155,7 @@ namespace OVR
 				@param left texture
 				@param right texure */
 			void UpdateSkinTextures(TEXTURE left, TEXTURE right);
+			void UpdateImageTextures(TEXTURE left, TEXTURE right);
 
 			void InspectTextures(uchar* left, uchar *right, uint type = 0);
 			static bool CheckGPU();
@@ -317,10 +318,6 @@ namespace OVR
 			cl_context		_context;
 
 			cl_command_queue _commandQueue;
-			cl_image_format	_format16UC1;
-			cl_image_format	_format8UC4;
-			cl_image_format _format8UC1;
-			cl_image_format _formatMap;
 			cl_int			_errorCode;
 
 			cl_program		_program;
@@ -335,10 +332,10 @@ namespace OVR
 			cl_kernel		_medianBlur3x3;
 			cl_kernel		_medianBlur5x5;
 			cl_kernel		_mask;
+			//cl_kernel		_mask_opengl;
 			cl_kernel		_invertMask;
 
 		private:
-			//cl_event _execute;
 			cl_mem	_src;
 			cl_mem	_l, _r;			// demosaic and remapped image
 			cl_mem	_L, _R;			// work image
