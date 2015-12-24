@@ -27,9 +27,9 @@ namespace OVR
 /////////// CLASS ///////////
 
 //Ovrvision Setting Class
-OvrvisionSetting::OvrvisionSetting(OvrvisionPro* system)
+OvrvisionSetting::OvrvisionSetting(OvrvisionPro* system_ptr)
 {
-	m_pSystem = system;
+	m_pSystem = system_ptr;
 	InitValue();
 }
 
@@ -68,7 +68,7 @@ void OvrvisionSetting::InitValue()
 //Read EEPROM Setting
 bool OvrvisionSetting::ReadEEPROM() {
 
-	if (system == NULL)
+	if (m_pSystem == NULL)
 		return false;
 
 	cv::FileStorage cvfs("ovrvisionpro_conf.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML);
@@ -222,7 +222,7 @@ bool OvrvisionSetting::WriteEEPROM(unsigned char flag) {
 
 	unsigned char chsum = 0;	//for checksum
 
-	if (system == NULL)
+	if (m_pSystem == NULL)
 		return false;
 
 	m_pSystem->UserDataAccessUnlock();
@@ -339,6 +339,24 @@ bool OvrvisionSetting::WriteEEPROM(unsigned char flag) {
 	m_pSystem->UserDataAccessLock();
 
 	return true;
+}
+
+//Reset Setting
+bool OvrvisionSetting::ResetEEPROM()
+{
+	if (m_pSystem == NULL)
+		return false;
+
+	m_pSystem->UserDataAccessUnlock();
+	m_pSystem->UserDataAccessSelectAddress(0x0000);
+	m_pSystem->UserDataAccessSetData(0x00);			//Version:1byte reset
+
+	//save eeprom
+	m_pSystem->UserDataAccessSave();
+
+	m_pSystem->UserDataAccessLock();
+
+	return false;
 }
 
 // Calculate Undistortion Matrix
