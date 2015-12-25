@@ -103,6 +103,25 @@ GLvoid createObjects()
 	// Create textures
 	glGenTextures(2, textureIDs);
 	size = ovrvision.SetSkinScale(2);
+
+	glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, size.width, size.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+	glBindTexture(GL_TEXTURE_2D, textureIDs[1]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, size.width, size.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
 	ovrvision.CreateSkinTextures(size.width, size.height, textureIDs[0], textureIDs[1]);
 }
 
@@ -114,7 +133,7 @@ GLvoid drawScene(GLvoid)
 	// Step6. テクスチャの画像指定
 	ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMSRMP);
 	glFinish();
-	ovrvision.UpdateImageTextures(textureIDs[0], textureIDs[1]);
+	ovrvision.UpdateSkinTextures(textureIDs[0], textureIDs[1]);
 #ifdef _DEBUG
 	cv::Mat left(size.height, size.width, CV_8UC4);
 	cv::Mat right(size.height, size.width, CV_8UC4);

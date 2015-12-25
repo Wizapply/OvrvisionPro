@@ -129,7 +129,7 @@ namespace OVR
 	static const cl_image_format _format8UC1 = { CL_R, CL_UNSIGNED_INT8 };
 	static const cl_image_format _formatMap = { CL_R, CL_FLOAT };
 	static const cl_image_format _formatGL = { CL_RGBA, CL_UNORM_INT8 };
-	static const char ESTIMATION_INSTRUCTION[] = "Please wave hand to estimate skin color.";
+	static const char ESTIMATION_INSTRUCTION[] = "Please wave hand(s) to estimate skin color.";
 	static const char COUNTDOWN_MESSAGE[] = "Estimating.. %d";
 	static const char ESTIMATED_MESSAGE[] = "Estimation complete.";
 
@@ -260,7 +260,7 @@ namespace OVR
 			clReleaseKernel(_mask);
 			clReleaseKernel(_maskOpengl);
 			clReleaseKernel(_invertMask);
-			clReleaseKernel(_gammaCorrection);
+			clReleaseKernel(_toneCorrection);
 
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
@@ -343,7 +343,8 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_invertMask = clCreateKernel(_program, "invert_mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
-			_gammaCorrection = clCreateKernel(_program, "gamma", &_errorCode);
+			_toneCorrection = clCreateKernel(_program, "tone", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
 			return true;
 		}
 	}
@@ -618,7 +619,7 @@ namespace OVR
 		{
 #ifdef WIN32
 		case OPENGL:
-			if (opengl_props[3] != NULL && opengl_props[5] != NULL)
+ 			if (opengl_props[3] != NULL && opengl_props[5] != NULL)
 			{
 				_context = clCreateContext(opengl_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
 			}
@@ -967,6 +968,7 @@ namespace OVR
 	{
 		cl_mem image;
 
+		/*
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -975,9 +977,8 @@ namespace OVR
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-		//glEnable(GL_TEXTURE_2D);
-		
+		*/
+
 		// Attension: 
 		// ****************************************************************
 		//	OpenGL Internal format is CL_UNORM_INT8, not CL_UNSIGNED_INT8!
@@ -1183,7 +1184,7 @@ namespace OVR
 		_histgram[1]->setTo(Scalar(0));
 	}
 
-	// 
+	// Enamerate colors in HS space
 	bool OvrvisionProOpenCL::EnumHS(Mat &result_l, Mat &result_r)
 	{
 		bool detect = false;

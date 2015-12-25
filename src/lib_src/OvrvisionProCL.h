@@ -334,7 +334,7 @@ namespace OVR
 			cl_kernel		_mask;
 			cl_kernel		_maskOpengl;
 			cl_kernel		_invertMask;
-			cl_kernel		_gammaCorrection;
+			cl_kernel		_toneCorrection;
 
 		private:
 			cl_mem	_src;

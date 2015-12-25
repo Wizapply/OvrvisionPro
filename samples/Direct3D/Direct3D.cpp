@@ -146,6 +146,18 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_ int       nCmdShow)
 {
 	hInst = hInstance;
+	/*
+	cv::Mat tone(3, 256, CV_8UC1);
+	for (int y = 0; y < 3; y++)
+	{
+		uchar *pixel = tone.ptr<uchar>(y);
+		for (int i = 0; i < 256; i++)
+		{
+			pixel[i] = i;
+		}
+	}
+	imwrite("tone.bmp", tone);
+	*/
 	VALIDATE(DIRECTX.InitWindow(hInstance, L"Ovrvision Pro for OculusSDK"), "Failed to open window.");
 	DIRECTX.Run(MainLoop);
 	return 0;
