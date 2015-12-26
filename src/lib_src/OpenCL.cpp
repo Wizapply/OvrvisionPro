@@ -12,6 +12,7 @@
 
 #include "OpenCL_kernel.h" // kernel code declared here const char *kernel;
 
+#define TONE_CORRECTION
 
 using namespace std;
 using namespace cv;
@@ -2205,21 +2206,30 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 
 #ifdef TONE_CORRECTION
-		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_l);
-		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedL);
-		clSetKernelArg(_resize, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait, &wait2);
+		//__kernel void resize_tone( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
+		//		__read_only int scale,		// 2, 4, 8
+		//		__read_only image2d_t map)	// CL_UNSIGNED_INT8
+
+		clSetKernelArg(_resizeTone, 0, sizeof(cl_mem), &_l);
+		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedL);
+		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
+		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait, &wait2);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_r);
-		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedR);
-		clSetKernelArg(_resize, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
+		clSetKernelArg(_resizeTone, 0, sizeof(cl_mem), &_r);
+		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedR);
+		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
+		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #else
 		//__kernel void resize( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
 		//		__read_only int scale)		// 2, 4, 8
+
 		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_l);
 		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedL);
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
@@ -2374,6 +2384,26 @@ namespace OVR
 		}
 		size_t origin[3] = { 0, 0, 0 };
 
+#ifdef TONE_CORRECTION
+		//__kernel void resize_tone( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
+		//		__read_only int scale,		// 2, 4, 8
+		//		__read_only image2d_t map)	// CL_UNSIGNED_INT8
+
+		clSetKernelArg(_resizeTone, 0, sizeof(cl_mem), &_l);
+		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedL);
+		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
+		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait, &wait2);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_resizeTone, 0, sizeof(cl_mem), &_r);
+		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedR);
+		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
+		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+#else
 		//__kernel void resize( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
@@ -2389,7 +2419,7 @@ namespace OVR
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-
+#endif
 		// Release temporaries
 		clReleaseEvent(wait);
 		clReleaseEvent(wait2);
