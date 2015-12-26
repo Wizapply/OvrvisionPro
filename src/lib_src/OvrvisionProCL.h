@@ -343,6 +343,7 @@ namespace OVR
 			cl_mem	_mx[2], _my[2]; // map for remap in GPU
 			cl_mem	_reducedL, _reducedR;	// reduced image
 			cl_mem	_texture[2];	// Texture sharing
+			cl_mem	_toneMap;
 			cl_image_desc _desc_scaled;
 		};
 
