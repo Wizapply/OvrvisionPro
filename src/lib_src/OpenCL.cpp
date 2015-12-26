@@ -12,7 +12,7 @@
 
 #include "OpenCL_kernel.h" // kernel code declared here const char *kernel;
 
-#define TONE_CORRECTION
+//#define TONE_CORRECTION
 
 using namespace std;
 using namespace cv;
@@ -1681,22 +1681,7 @@ namespace OVR
 	//
 	void OvrvisionProOpenCL::SkinRegion(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
-		uint width = _width, height = _height;
-		switch (_scaling)
-		{
-		case OVR::HALF:
-			width /= 2;
-			height /= 2;
-			break;
-		case OVR::FOURTH:
-			width /= 4;
-			height /= 4;
-			break;
-		case OVR::EIGHTH:
-			width /= 8;
-			height /= 8;
-			break;
-		}
+		uint width = _scaledRegion[0], height = _scaledRegion[1];
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 		size_t size[] = { width, height };
@@ -1783,22 +1768,7 @@ namespace OVR
 	void OvrvisionProOpenCL::SkinRegion(uchar *left, uchar *right)
 	{
 		cl_mem l, r;
-		uint width = _width, height = _height;
-		switch (_scaling)
-		{
-		case OVR::HALF:
-			width /= 2;
-			height /= 2;
-			break;
-		case OVR::FOURTH:
-			width /= 4;
-			height /= 4;
-			break;
-		case OVR::EIGHTH:
-			width /= 8;
-			height /= 8;
-			break;
-		}
+		uint width = _scaledRegion[0], height = _scaledRegion[1];
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 
@@ -2078,27 +2048,6 @@ namespace OVR
 	void OvrvisionProOpenCL::GetHSVBlur(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
 		size_t size[] = { _scaledRegion[0], _scaledRegion[1] };
-		/*
-		uint width = _width, height = _height;
-		switch (_scaling)
-		{
-		case OVR::HALF:
-			width /= 2;
-			height /= 2;
-			break;
-		case OVR::FOURTH:
-			width /= 4;
-			height /= 4;
-			break;
-		case OVR::EIGHTH:
-			width /= 8;
-			height /= 8;
-			break;
-		}
-		size_t origin[3] = { 0, 0, 0 };
-		size_t region[3] = { width, height, 1 };
-		size_t size[] = { width, height };
-		*/
 
 		// Get HSV images
 		cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
@@ -2151,22 +2100,7 @@ namespace OVR
 	// Get HSV images
 	void OvrvisionProOpenCL::GetHSV(uchar *left, uchar *right)
 	{
-		uint width = _width, height = _height;
-		switch (_scaling)
-		{
-		case OVR::HALF:
-			width /= 2;
-			height /= 2;
-			break;
-		case OVR::FOURTH:
-			width /= 4;
-			height /= 4;
-			break;
-		case OVR::EIGHTH:
-			width /= 8;
-			height /= 8;
-			break;
-		}
+		uint width = _scaledRegion[0], height = _scaledRegion[1];
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 
