@@ -116,14 +116,7 @@ string opencl_error_to_str(cl_int error)
 namespace OVR
 {
 
-	void __stdcall createContextCallback(const char *message, const void *data, size_t size, void *userdata)
-	{
-		printf("clCreateContext: %d %s\n",size,  message);
-#ifdef WIN32
-		OutputDebugStringA(message);
-#endif
-	}
-
+#pragma region CONSTANTS
 	static const cl_image_format _format16UC1 = { CL_R, CL_UNSIGNED_INT16 };
 	static const cl_image_format _format8UC4 = { CL_RGBA, CL_UNSIGNED_INT8 };
 	static const cl_image_format _format8UC1 = { CL_R, CL_UNSIGNED_INT8 };
@@ -231,6 +224,7 @@ namespace OVR
 		246, 246, 247, 248, 248, 249, 249, 250,
 		251, 251, 252, 253, 253, 254, 254, 255},
 	};
+#pragma endregion
 
 	//namespace OPENCL
 	//{
@@ -362,6 +356,7 @@ namespace OVR
 			clReleaseKernel(_maskOpengl);
 			clReleaseKernel(_invertMask);
 			clReleaseKernel(_toneCorrection);
+			clReleaseKernel(_resizeTone);
 
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
@@ -446,6 +441,8 @@ namespace OVR
 			_invertMask = clCreateKernel(_program, "invert_mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_toneCorrection = clCreateKernel(_program, "tone", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_resizeTone = clCreateKernel(_program, "resize_tone", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			return true;
 		}
@@ -681,6 +678,14 @@ namespace OVR
 		return result;
 	}
 
+	void __stdcall createContextCallback(const char *message, const void *data, size_t size, void *userdata)
+	{
+		printf("clCreateContext: %d %s\n", size, message);
+#ifdef WIN32
+		OutputDebugStringA(message);
+#endif
+	}
+
 	// Create device context
 	void OvrvisionProOpenCL::CreateContext(SHARING_MODE mode, void *pDevice)
 	{
@@ -871,22 +876,28 @@ namespace OVR
 	// Create textures
 	void OvrvisionProOpenCL::CreateSkinTextures(int width, int height, TEXTURE left, TEXTURE right)
 	{
-#ifdef MACOSX
-        // Can't create clCreateFromGLTexture2D on Xcode7
-#else	// WIN32 | LINUX
+#if	defined(WIN32)
 		switch (_sharing)
 		{
 		case OPENGL:
 			_texture[0] = CreateGLTexture2D((GLuint)left, width, height);
 			_texture[1] = CreateGLTexture2D((GLuint)right, width, height);
 			break;
-#ifdef WIN32
 		case D3D11:
 			_texture[0] = CreateD3DTexture2D((ID3D11Texture2D *)left, width, height);
 			_texture[1] = CreateD3DTexture2D((ID3D11Texture2D *)right, width, height);
 			break;
-#endif
 		}
+#elif defined(LINUX)
+		switch (_sharing)
+		{
+		case OPENGL:
+			_texture[0] = CreateGLTexture2D((GLuint)left, width, height);
+			_texture[1] = CreateGLTexture2D((GLuint)right, width, height);
+			break;
+		}
+#elif defined(MACOSX)
+		// Can't create clCreateFromGLTexture2D on Xcode7
 #endif
 	}
 
@@ -895,11 +906,7 @@ namespace OVR
 	{
 		cl_event event[2];
 
-#ifdef MACOSX
-		//glFlushRenderAPPLE();// depend on mode
-		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
-		clFinish(_commandQueue);
-#else	// WIN32 || LINUX
+#if defined(WIN32)
 		if (_sharing == OPENGL)
 		{	//	glFinish(); // depend on mode
 			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
@@ -933,7 +940,26 @@ namespace OVR
 				SAMPLE_CHECK_ERRORS(_errorCode)
 			}
 		}
+#elif defined(LINUX)
+		if (_sharing == OPENGL)
+		{	//	glFinish(); // depend on mode
+			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
+			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+#elif defined(MACOSX)
+		//glFlushRenderAPPLE();// depend on mode
+		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
+		clFinish(_commandQueue);
+
 #endif
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 	}
 
 	// Update textures
@@ -990,7 +1016,26 @@ namespace OVR
 				SAMPLE_CHECK_ERRORS(_errorCode)
 			}
 		}
+#elif defined(LINUX)
+		if (_sharing == OPENGL)
+		{	//	glFinish(); // depend on mode
+			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+
+			// Copy to texture
+			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
+			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
+
+			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+#elif defined(MACOSX)
 #endif
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 	}
 
 	// Inspact textures
@@ -1015,7 +1060,7 @@ namespace OVR
 		}
 		else if (type == 3)
 		{
-#ifndef MACOSX
+#ifdef WIN32
 			if (_sharing == D3D11)
 			{
 				if (_vendorD3D11 == NVIDIA)
@@ -1052,6 +1097,9 @@ namespace OVR
 				_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 			}
+			// Release temporaries
+			clReleaseEvent(event[0]);
+			clReleaseEvent(event[1]);
 #endif
 		}
 		else
@@ -1883,6 +1931,29 @@ namespace OVR
 		clReleaseMemObject(r);
 	}
 
+	// Tone correction
+	void OvrvisionProOpenCL::Tone(cl_mem src_l, cl_mem src_r, cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
+	{
+		size_t size[] = { _scaledRegion[0], _scaledRegion[1] };
+
+		//__kernel void tone(
+		//	__read_only image2d_t src,			// CL_UNSIGNED_INT8 x 4
+		//	__write_only image2d_t	dst,		// CL_UNSIGNED_INT8 x 4
+		//	__read_only image2d_t map)			// CL_UNSIGNED_INT8
+
+		clSetKernelArg(_toneCorrection, 0, sizeof(cl_mem), &src_l);
+		clSetKernelArg(_toneCorrection, 1, sizeof(cl_mem), &left);
+		clSetKernelArg(_toneCorrection, 2, sizeof(cl_mem), &_toneMap);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _toneCorrection, 2, NULL, size, NULL, 0, NULL, event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_toneCorrection, 0, sizeof(cl_mem), &src_r);
+		clSetKernelArg(_toneCorrection, 1, sizeof(cl_mem), &right);
+		clSetKernelArg(_toneCorrection, 2, sizeof(cl_mem), &_toneMap);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _toneCorrection, 2, NULL, size, NULL, 0, NULL, event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+
+	}
+
 	// Get HSV images
 	void OvrvisionProOpenCL::GetHSV(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
@@ -1906,6 +1977,8 @@ namespace OVR
 	//
 	void OvrvisionProOpenCL::GetHSVBlur(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
+		size_t size[] = { _scaledRegion[0], _scaledRegion[1] };
+		/*
 		uint width = _width, height = _height;
 		switch (_scaling)
 		{
@@ -1925,6 +1998,7 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 		size_t size[] = { width, height };
+		*/
 
 		// Get HSV images
 		cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
@@ -2130,11 +2204,7 @@ namespace OVR
 		}
 		size_t origin[3] = { 0, 0, 0 };
 
-		//__kernel void resize( 
-		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
-		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
-		//		__read_only int scale)		// 2, 4, 8
-
+#ifdef TONE_CORRECTION
 		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_l);
 		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedL);
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
@@ -2145,7 +2215,22 @@ namespace OVR
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-
+#else
+		//__kernel void resize( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
+		//		__read_only int scale)		// 2, 4, 8
+		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_l);
+		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedL);
+		clSetKernelArg(_resize, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait, &wait2);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_r);
+		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedR);
+		clSetKernelArg(_resize, 2, sizeof(int), &scale);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+#endif
 		// Release temporaries
 		clReleaseEvent(wait);
 		clReleaseEvent(wait2);

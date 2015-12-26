@@ -74,6 +74,15 @@ int main(int argc, char* argv[])
 	Mat results[2];
 	Mat histgram(180, 256, CV_8UC1);
 
+	/*
+	Mat tone = imread("toneCorrection.bmp", 0);
+	uchar *pixel = tone.ptr<uchar>(1);
+	for (int i = 0; i < 256; i++)
+	{
+		printf("%03d\n", pixel[i]);
+	}
+	*/
+
 	ovrvision->CheckGPU();
 	if (ovrvision->Open(0, Camprop::OV_CAMHD_FULL, 0))
 	{

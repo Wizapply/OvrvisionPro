@@ -233,6 +233,8 @@ namespace OVR
 			// Direct3D shared texture
 			cl_mem CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height);
 #endif
+			/*! @brief Tone correction */
+			void Tone(cl_mem src_l, cl_mem src_r, cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r);
 
 			/*! @brief enumerate pixels
 			@param left histgram
@@ -335,6 +337,7 @@ namespace OVR
 			cl_kernel		_maskOpengl;
 			cl_kernel		_invertMask;
 			cl_kernel		_toneCorrection;
+			cl_kernel		_resizeTone;
 
 		private:
 			cl_mem	_src;
