@@ -1713,7 +1713,7 @@ namespace OVR
 		clSetKernelArg(_skincolor, 3, sizeof(int), &_h_high);
 		clSetKernelArg(_skincolor, 4, sizeof(int), &_s_low);
 		clSetKernelArg(_skincolor, 5, sizeof(int), &_s_high);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_r);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[1], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		// Release temporaries
