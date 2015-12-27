@@ -10,42 +10,8 @@
 
 void SWAPBUFFERS();	// platform depend function
 
-#if 1
+
 #define GL_API_CHECK(x)	x
-#else
-HWND g_hWnd;
-
-#define GL_API_CHECK(x)do{ \
-    x;\
-    GLenum err = glGetError(); \
-    if (GL_NO_ERROR!=err) \
-	{ \
-    ShowWindow(g_hWnd, SW_MINIMIZE); \
-    printf("GL error: %d    Happened for the following expression:\n   %s;\n    file %s, line %d\n press any key to exit...\n", err, #x, __FILE__, __LINE__);\
-    return FALSE; \
-	} \
-}while(0)
-
-#define GENERAL_API_CHECK(x, str)do{ \
-    if(!(x))\
-	{ \
-    ShowWindow(g_hWnd, SW_MINIMIZE); \
-    printf("Critical error: %s  Happened for the following expression:\n   %s;\n    file %s, line %d\n press any key to exit...\n", str, #x, __FILE__, __LINE__);\
-    return FALSE; \
-	}; \
-}while(0)
-
-#define CL_API_CHECK(x)do{ \
-    cl_int ERR = (x); \
-    if(ERR != CL_SUCCESS)\
-	{\
-    ShowWindow(g_hWnd, SW_MINIMIZE); \
-    printf("OpenCL error: %s\n   Happened for the following expression:\n   %s;\n file %s, line %d\n  press any key to exit...\n", opencl_error_to_str(ERR).c_str(), #x, __FILE__, __LINE__);\
-    return FALSE; \
-	} \
-}while(0)
-#endif
-
 
 GLuint textureIDs[2];
 
@@ -58,26 +24,6 @@ GLvoid createObjects();
 /* OpenGL code */
 GLvoid initializeGL(GLsizei width, GLsizei height)
 {
-#if 0
-	GL_API_CHECK(glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE));
-
-	//init OpenGL color buffer and viewport
-	GL_API_CHECK(glClearColor(0.0, 0.0, 0.0, 1.0));
-	GL_API_CHECK(glViewport(0, 0, width, height));
-
-	//setup camera
-	GL_API_CHECK(glMatrixMode(GL_MODELVIEW));
-	GL_API_CHECK(glLoadIdentity());
-	GL_API_CHECK(glMatrixMode(GL_PROJECTION));
-	GL_API_CHECK(glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0));
-
-
-	//no lighting or depth testing, just texturing please
-	GL_API_CHECK(glDisable(GL_DEPTH_TEST));
-	GL_API_CHECK(glDisable(GL_LIGHTING));
-	GL_API_CHECK(glEnable(GL_TEXTURE_2D));
-#endif
-
 	ovrvision.CheckGPU();
 
 	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL, 0) == 0) // Open with OpenGL sharing mode

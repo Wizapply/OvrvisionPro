@@ -438,7 +438,7 @@ const char *kernel =
 "	uint4 pixel = read_imageui(src, NEAREST, (int2)(x, y));\n"
 "	uint4 m = read_imageui(mask, NEAREST, (int2)(x, y));\n"
 "	pixel.w = m.x;\n"
-"	float4 f_pixel = (float4)(pixel.x / 255.0f, pixel.y / 255.0f, pixel.z / 255.0f, pixel.w / 255.0f);\n"
+"	float4 f_pixel = (float4)(pixel.z / 255.0f, pixel.y / 255.0f, pixel.x / 255.0f, pixel.w / 255.0f);\n"
 "	if (threshold < m.x) write_imagef(dst, (int2)(x, y), f_pixel);\n"
 "	else write_imagef(dst, (int2)(x, y), clear);\n"
 "}\n"

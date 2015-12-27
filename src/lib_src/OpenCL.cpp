@@ -1362,16 +1362,16 @@ namespace OVR
 
 		if (_sharing == OPENGL)
 		{
-			clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedL);
-			clSetKernelArg(_mask, 1, sizeof(cl_mem), &left);
-			clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[0]);
-			clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
+			clSetKernelArg(_maskOpengl, 0, sizeof(cl_mem), &_reducedL);
+			clSetKernelArg(_maskOpengl, 1, sizeof(cl_mem), &left);
+			clSetKernelArg(_maskOpengl, 2, sizeof(cl_mem), &mask[0]);
+			clSetKernelArg(_maskOpengl, 3, sizeof(int), &_skinThreshold);
 			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _maskOpengl, 2, NULL, _scaledRegion, NULL, 1, &event[0], event_l);
 			SAMPLE_CHECK_ERRORS(_errorCode);
-			clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedR);
-			clSetKernelArg(_mask, 1, sizeof(cl_mem), &right);
-			clSetKernelArg(_mask, 2, sizeof(cl_mem), &mask[1]);
-			clSetKernelArg(_mask, 3, sizeof(int), &_skinThreshold);
+			clSetKernelArg(_maskOpengl, 0, sizeof(cl_mem), &_reducedR);
+			clSetKernelArg(_maskOpengl, 1, sizeof(cl_mem), &right);
+			clSetKernelArg(_maskOpengl, 2, sizeof(cl_mem), &mask[1]);
+			clSetKernelArg(_maskOpengl, 3, sizeof(int), &_skinThreshold);
 			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _maskOpengl, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
