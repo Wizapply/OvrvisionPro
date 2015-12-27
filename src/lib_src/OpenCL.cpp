@@ -1685,7 +1685,7 @@ namespace OVR
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { width, height, 1 };
 		size_t size[] = { width, height };
-#if 1
+
 		cl_event event[2];
 		GetHSVBlur(_L, _R, &event[0], &event[1]);
 
@@ -1719,49 +1719,6 @@ namespace OVR
 		// Release temporaries
 		clReleaseEvent(event[0]);
 		clReleaseEvent(event[1]);
-#else
-		// Get HSV images
-		cl_mem l = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_mem r = clCreateImage2D(_context, CL_MEM_READ_WRITE, &_format8UC4, width, height, 0, 0, &_errorCode);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-
-		cl_event event[2];
-		GetHSVBlur(l, r, &event[0], &event[1]);
-
-		//int h_low = 13, h_high = 21;
-		//int s_low = 88, s_high = 136;
-
-		//__kernel void skincolor( 
-		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
-		//		__write_only image2d_t mask,// CL_UNSIGNED_INT8
-		//		__read_only int h_low,		// 
-		//		__read_only int h_hight,	// 
-		//		__read_only int s_low,		// 
-		//		__read_only int s_hight)	// 
-		clSetKernelArg(_skincolor, 0, sizeof(cl_mem), &l);
-		clSetKernelArg(_skincolor, 1, sizeof(cl_mem), &left);
-		clSetKernelArg(_skincolor, 2, sizeof(int), &_h_low);
-		clSetKernelArg(_skincolor, 3, sizeof(int), &_h_high);
-		clSetKernelArg(_skincolor, 4, sizeof(int), &_s_low);
-		clSetKernelArg(_skincolor, 5, sizeof(int), &_s_high);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_l);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		clSetKernelArg(_skincolor, 0, sizeof(cl_mem), &r);
-		clSetKernelArg(_skincolor, 1, sizeof(cl_mem), &right);
-		clSetKernelArg(_skincolor, 2, sizeof(int), &_h_low);
-		clSetKernelArg(_skincolor, 3, sizeof(int), &_h_high);
-		clSetKernelArg(_skincolor, 4, sizeof(int), &_s_low);
-		clSetKernelArg(_skincolor, 5, sizeof(int), &_s_high);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _skincolor, 2, NULL, size, NULL, 1, &event[0], event_r);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-
-		// Release temporaries
-		clReleaseEvent(event[0]);
-		clReleaseEvent(event[1]);
-		clReleaseMemObject(l);
-		clReleaseMemObject(r);
-#endif
 	}
 
 	//

@@ -58,6 +58,7 @@ GLvoid createObjects();
 /* OpenGL code */
 GLvoid initializeGL(GLsizei width, GLsizei height)
 {
+#if 0
 	GL_API_CHECK(glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE));
 
 	//init OpenGL color buffer and viewport
@@ -75,6 +76,7 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 	GL_API_CHECK(glDisable(GL_DEPTH_TEST));
 	GL_API_CHECK(glDisable(GL_LIGHTING));
 	GL_API_CHECK(glEnable(GL_TEXTURE_2D));
+#endif
 
 	ovrvision.CheckGPU();
 
@@ -101,6 +103,7 @@ GLvoid resize(GLsizei width, GLsizei height)
 GLvoid createObjects()
 {
 	// Create textures
+	glEnable(GL_TEXTURE_2D);
 	glGenTextures(2, textureIDs);
 	size = ovrvision.SetSkinScale(2);
 
@@ -142,21 +145,22 @@ GLvoid drawScene(GLvoid)
 	cv::imshow("Right", right);
 #endif
 
-	// render using quad and the g_texture
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
+
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-1.0f, -1.0f, 0.1f);
-
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(1.0f, -1.0f, 0.1f);
-
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(1.0f, 1.0f, 0.1f);
-
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-1.0f, 1.0f, 0.1f);
+	glTexCoord2i(0, 1);
+	glVertex3f(-1.0f, 1.0f, 0.0f);
+	glTexCoord2i(1, 1);
+	glVertex3f(1.0f, 1.0f, 0.0f);
+	glTexCoord2i(1, 0);
+	glVertex3f(1.0f, -1.0f, 0.0f);
+	glTexCoord2i(0, 0);
+	glVertex3f(-1.0f, -1.0f, 0.0f);
 	glEnd();
+	glFinish();
 
 	SWAPBUFFERS();
 }

@@ -24,6 +24,19 @@
 #pragma warning(default : 4819)
 
 //for cv::imshow
+#ifdef _DEBUG
+#pragma comment(lib, "Comctl32.lib")
+#pragma comment(lib, "IlmImfd.lib")
+#pragma comment(lib, "ippicvmt.lib")
+#pragma comment(lib, "libjpegd.lib")
+#pragma comment(lib, "libpngd.lib")
+#pragma comment(lib, "libtiffd.lib")
+#pragma comment(lib, "libwebpd.lib")
+#pragma comment(lib, "libjasperd.lib")
+#pragma comment(lib, "strmiids.lib")
+#pragma comment(lib, "zlibd.lib")
+#pragma comment(lib, "opencv_highgui300d.lib")
+#else
 #pragma comment(lib, "Comctl32.lib")
 #pragma comment(lib, "IlmImf.lib")
 #pragma comment(lib, "ippicvmt.lib")
@@ -32,7 +45,10 @@
 #pragma comment(lib, "libtiff.lib")
 #pragma comment(lib, "libwebp.lib")
 #pragma comment(lib, "libjasper.lib")
-#pragma comment(lib, "opencv_highgui300.lib") 
+#pragma comment(lib, "strmiids.lib")
+#pragma comment(lib, "zlib.lib")
+#pragma comment(lib, "opencv_highgui300.lib")
+#endif
 //#define OV_CONFIG_USEOPENCL
 
 
