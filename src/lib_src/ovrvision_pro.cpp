@@ -334,9 +334,9 @@ void OvrvisionPro::Capture(OVR::Camqt qt)
 	if()
 #endif
 		if (qt == OVR::Camqt::OV_CAMQT_DMSRMP)
-			m_pOpenCL->DemosaicRemap(m_pFrame, NULL);	//OpenCL
+			m_pOpenCL->DemosaicRemap(m_pFrame);	//OpenCL
 		else if (qt == OVR::Camqt::OV_CAMQT_DMS)
-			m_pOpenCL->Demosaic(m_pFrame, NULL);		//OpenCL
+			m_pOpenCL->Demosaic(m_pFrame);		//OpenCL
 	}
 }
 

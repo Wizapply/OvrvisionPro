@@ -113,15 +113,15 @@ namespace OVR
 			bool LoadCameraParams(OvrvisionSetting* ovrset);
 
 			// Demosaicing
-			void Demosaic(const ushort* src, cl_event *execute);	// for OpenGL/D3D sharing 
-			void Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
+			void Demosaic(const ushort* src, cl_event *event_l = NULL);	// for OpenGL/D3D sharing 
+			void Demosaic(const ushort* src, cl_mem left, cl_mem right, cl_event *event);
 			void Demosaic(const ushort* src, uchar *left, uchar *right);
 			//void Demosaic(const ushort* src, Mat &left, Mat &right);
 			//void Demosaic(const Mat src, Mat &left, Mat &right);
 
 			// Demosaic and Remap
-			void DemosaicRemap(const ushort* src, cl_event *execute);	// for OpenGL/D3D sharing
-			void DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *execute);
+			void DemosaicRemap(const ushort* src, cl_event *event_l = NULL, cl_event *event_r = NULL);	// for OpenGL/D3D sharing
+			void DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r);
 			void DemosaicRemap(const ushort* src, uchar *left, uchar *right);
 			//void DemosaicRemap(const ushort* src, Mat &left, Mat &right);
 			//void DemosaicRemap(const Mat src, Mat &left, Mat &right);

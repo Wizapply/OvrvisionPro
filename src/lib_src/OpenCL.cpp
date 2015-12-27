@@ -2343,12 +2343,12 @@ namespace OVR
 	}
 
 	// Demosaic and Remap
-	void OvrvisionProOpenCL::DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *execute)
+	void OvrvisionProOpenCL::DemosaicRemap(const ushort* src, cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { _width, _height, 1 };
 		size_t demosaicSize[] = { _width / 2, _height / 2 };
-		cl_event writeEvent;
+		cl_event writeEvent, execute;
 
 		_errorCode = clEnqueueWriteImage(_commandQueue, _src, CL_TRUE, origin, region, _width * sizeof(ushort), 0, src, 0, NULL, &writeEvent);
 		SAMPLE_CHECK_ERRORS(_errorCode);
@@ -2363,7 +2363,7 @@ namespace OVR
 		clSetKernelArg(_demosaic, 0, sizeof(cl_mem), &_src);
 		clSetKernelArg(_demosaic, 1, sizeof(cl_mem), &_L);
 		clSetKernelArg(_demosaic, 2, sizeof(cl_mem), &_R);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _demosaic, 2, NULL, demosaicSize, 0, 1, &writeEvent, execute);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _demosaic, 2, NULL, demosaicSize, 0, 1, &writeEvent, &execute);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		if (_remapAvailable)
@@ -2382,24 +2382,25 @@ namespace OVR
 			clSetKernelArg(_remap, 1, sizeof(cl_mem), &_mx[0]);
 			clSetKernelArg(_remap, 2, sizeof(cl_mem), &_my[0]);
 			clSetKernelArg(_remap, 3, sizeof(cl_mem), &left);
-			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, &writeEvent, execute);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, &execute, event_l);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			clSetKernelArg(_remap, 0, sizeof(cl_mem), &_R);
 			clSetKernelArg(_remap, 1, sizeof(cl_mem), &_mx[1]);
 			clSetKernelArg(_remap, 2, sizeof(cl_mem), &_my[1]);
 			clSetKernelArg(_remap, 3, sizeof(cl_mem), &right);
-			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, &writeEvent, execute);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _remap, 2, NULL, remapSize, 0, 1, &execute, event_r);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
 		// Release temporaries
 		clReleaseEvent(writeEvent);
+		clReleaseEvent(execute);
 	}
 
 	// 
-	void OvrvisionProOpenCL::DemosaicRemap(const ushort* src, cl_event *execute)
+	void OvrvisionProOpenCL::DemosaicRemap(const ushort* src, cl_event *event_l, cl_event *event_r)
 	{
-		cl_event wait, wait2;
-		DemosaicRemap(src, _l, _r, &wait);
+		cl_event wait_l, wait_r;
+		DemosaicRemap(src, _l, _r, &wait_l, &wait_r);
 
 		// Resize
 		int scale;
@@ -2445,17 +2446,17 @@ namespace OVR
 		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_l);
 		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedL);
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait, &wait2);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait_l, event_l);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_r);
 		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedR);
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait_r, event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #endif
 		// Release temporaries
-		clReleaseEvent(wait);
-		clReleaseEvent(wait2);
+		clReleaseEvent(wait_l);
+		clReleaseEvent(wait_r);
 	}
 
 	//
@@ -2463,16 +2464,17 @@ namespace OVR
 	{
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { _width, _height, 1 };
-		cl_event execute;
+		cl_event execute_l, execute_r;
 
-		DemosaicRemap(src, &execute);
+		DemosaicRemap(src, &execute_l, &execute_r);
 		// Read result
-		_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left, 1, &execute, NULL);
-		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right, 1, &execute, NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left, 1, &execute_l, NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right, 1, &execute_r, NULL);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		// Release temporaries
-		clReleaseEvent(execute);
+		clReleaseEvent(execute_l);
+		clReleaseEvent(execute_r);
 	}
 
 	/*
