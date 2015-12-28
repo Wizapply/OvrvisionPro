@@ -326,9 +326,8 @@ const uvc_controls_t uvc_controls = {
     //output session
     m_output = [[AVCaptureVideoDataOutput alloc] init];
     dispatch_queue_t queue = dispatch_queue_create([[m_device uniqueID] UTF8String], NULL);
-    [m_output setAlwaysDiscardsLateVideoFrames:YES];
+    [m_output setAlwaysDiscardsLateVideoFrames:NO];
     [m_output setSampleBufferDelegate:self queue:queue];
-    [[m_output connectionWithMediaType:AVMediaTypeVideo] setEnabled:YES];
     dispatch_release(queue);
     
     NSDictionary* outputSettings = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -359,9 +358,6 @@ const uvc_controls_t uvc_controls = {
     
     //USBIO
     [self createUSBInterface:vid pid:pid];
-
-    //start
-    //[m_session startRunning];
     
     m_devstatus = OV_DEVSTOP;    //running
     
@@ -449,10 +445,11 @@ const uvc_controls_t uvc_controls = {
     //sync
     [m_cond lock];
     
-    if(!nonblocking) {
+    //testing
+    //if(!nonblocking) {
         if([m_cond waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:OV_BLOCKTIMEOUT]]==NO)
             return RESULT_FAILED;
-    }
+    //}
 
     if(image)
     {
@@ -628,7 +625,6 @@ const uvc_controls_t uvc_controls = {
 
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     }
-    //NSLog(@"OK");
 }
 
 
