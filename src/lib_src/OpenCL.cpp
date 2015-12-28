@@ -2174,9 +2174,9 @@ namespace OVR
 	}
 
 	// 
-	void OvrvisionProOpenCL::Demosaic(const ushort* src, cl_event *execute)
+	void OvrvisionProOpenCL::Demosaic(const ushort* src, cl_event *event_l, cl_event *event_r)
 	{
-		cl_event wait, wait2;
+		cl_event wait;
 		Demosaic(src, _l, _r, &wait);
 
 		// Resize
@@ -2206,13 +2206,13 @@ namespace OVR
 		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedL);
 		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
 		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait, &wait2);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait, event_l);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		clSetKernelArg(_resizeTone, 0, sizeof(cl_mem), &_r);
 		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedR);
 		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
 		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait, event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #else
 		//__kernel void resize( 
@@ -2223,17 +2223,20 @@ namespace OVR
 		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_l);
 		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedL);
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait, &wait2);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait, event_l);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		clSetKernelArg(_resize, 0, sizeof(cl_mem), &_r);
 		clSetKernelArg(_resize, 1, sizeof(cl_mem), &_reducedR);
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait, event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #endif
+		if (event_l == NULL || event_r == NULL)
+		{
+			clFinish(_commandQueue);
+		}
 		// Release temporaries
 		clReleaseEvent(wait);
-		clReleaseEvent(wait2);
 	}
 
 	//
@@ -2386,13 +2389,13 @@ namespace OVR
 		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedL);
 		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
 		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait, &wait2);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait_l, event_l);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		clSetKernelArg(_resizeTone, 0, sizeof(cl_mem), &_r);
 		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedR);
 		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
 		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait2, execute);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait_r, event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #else
 		//__kernel void resize( 
@@ -2411,6 +2414,10 @@ namespace OVR
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait_r, event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #endif
+		if (event_l == NULL || event_r == NULL)
+		{
+			clFinish(_commandQueue);
+		}
 		// Release temporaries
 		clReleaseEvent(wait_l);
 		clReleaseEvent(wait_r);
