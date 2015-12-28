@@ -393,7 +393,7 @@ int OvrvisionDirectShow::CreateDevice(usb_id vid, usb_id pid,
 	if (SUCCEEDED(hr)) {
 		//One Shot should be false unless you want to capture just one buffer
 		m_pGrabberFilter->QueryInterface(IID_ISampleGrabber, (void**)&m_pSGrabber);
-		m_pSGrabber->SetOneShot(TRUE);			//OVRVISION only
+		m_pSGrabber->SetOneShot(FALSE);			//OVRVISION only
 		m_pSGrabber->SetBufferSamples(FALSE);
 
 		//Create callback class
@@ -617,8 +617,8 @@ int OvrvisionDirectShow::GetBayer16Image(unsigned char* pImage, bool nonblocking
 		m_latestPixelDataSize = m_pSGCallback->m_LatestBufferLength;
 		EnterCriticalSection(&m_pSGCallback->m_critSection);
 			memcpy(pImage, m_pSGCallback->m_pPixels, m_pSGCallback->m_LatestBufferLength);	//Data copy
-			result = RESULT_OK;
 		LeaveCriticalSection(&m_pSGCallback->m_critSection);
+		result = RESULT_OK;
 	}
 
 	ResetEvent(m_pSGCallback->m_hEvent);

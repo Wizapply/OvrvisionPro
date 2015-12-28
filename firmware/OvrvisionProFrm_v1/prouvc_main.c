@@ -396,11 +396,6 @@ static void UVCApplnInit (void)
     CyU3PGpioSimpleConfig_t      gpioConfig;
     CyU3PPibClock_t              pibclock;
 
-    /* Create UVC event group */
-    apiRetStatus = CyU3PEventCreate (&glFxUVCEvent);
-    if (apiRetStatus != CY_U3P_SUCCESS)
-        UVCAppErrorHandler (apiRetStatus);
-
     isUsbConnected = CyFalse;
     clearFeatureRqtReceived = CyFalse;
 
@@ -1124,6 +1119,11 @@ static void UVCHandleVideoStreamingRqts(void)
                             glProbeCtrl[5] = glCommitCtrl[5];
                             glProbeCtrl[6] = glCommitCtrl[6];
                             glProbeCtrl[7] = glCommitCtrl[7];
+
+                            glProbeCtrl[18] = glCommitCtrl[18];
+                            glProbeCtrl[19] = glCommitCtrl[19];
+                            glProbeCtrl[20] = glCommitCtrl[20];
+                            glProbeCtrl[21] = glCommitCtrl[21];
                         } else {
                         	glProbeCtrl20[2] = glCommitCtrl[2];
                         	glProbeCtrl20[3] = glCommitCtrl[3];
@@ -1131,6 +1131,11 @@ static void UVCHandleVideoStreamingRqts(void)
                         	glProbeCtrl20[5] = glCommitCtrl[5];
                         	glProbeCtrl20[6] = glCommitCtrl[6];
                         	glProbeCtrl20[7] = glCommitCtrl[7];
+
+                        	glProbeCtrl20[18] = glCommitCtrl[18];
+                        	glProbeCtrl20[19] = glCommitCtrl[19];
+                        	glProbeCtrl20[20] = glCommitCtrl[20];
+                        	glProbeCtrl20[21] = glCommitCtrl[21];
                         }
                     }
                     break;
@@ -1242,10 +1247,16 @@ void CyFxApplicationDefine (void)
 {
     void *ptr1, *ptr2;
     uint32_t retThrdCreate;
+    uint32_t apiRetStatus;
+
+    /* Create UVC event group */
+    apiRetStatus = CyU3PEventCreate (&glFxUVCEvent);
+    if (apiRetStatus != CY_U3P_SUCCESS)
+    	goto fatalErrorHandler;
 
     /* Allocate the memory for the thread stacks. */
     ptr1 = CyU3PMemAlloc (UVC_APP_THREAD_STACK);
-    ptr2 = CyU3PMemAlloc (UVC_APP_THREAD_STACK);
+    ptr2 = CyU3PMemAlloc (UVC_APP_EP0_THREAD_STACK);
     if ((ptr1 == 0) || (ptr2 == 0))
         goto fatalErrorHandler;
 
