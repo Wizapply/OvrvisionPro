@@ -2244,16 +2244,20 @@ namespace OVR
 	{
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { _width, _height, 1 };
-		cl_event execute;
+		cl_event execute, event[2];
 
 		Demosaic(src, &execute);
 
 		// Read result
-		_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left, 1, &execute, NULL);
-		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right, 1, &execute, NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left, 1, &execute, &event[0]);
+		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right, 1, &execute, &event[1]);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clWaitForEvents(2, event);
 
 		// Release temporaries
 		clReleaseEvent(execute);
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 	}
 
 	/*
@@ -2428,17 +2432,20 @@ namespace OVR
 	{
 		size_t origin[3] = { 0, 0, 0 };
 		size_t region[3] = { _width, _height, 1 };
-		cl_event execute_l, execute_r;
+		cl_event execute_l, execute_r, event[2];
 
 		DemosaicRemap(src, &execute_l, &execute_r);
 		// Read result
-		_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left, 1, &execute_l, NULL);
-		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right, 1, &execute_r, NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, left, 1, &execute_l, &event[0]);
+		_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, _width * sizeof(uchar) * 4, 0, right, 1, &execute_r, &event[1]);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+		clWaitForEvents(2, event);
 
 		// Release temporaries
 		clReleaseEvent(execute_l);
 		clReleaseEvent(execute_r);
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 	}
 
 	/*
