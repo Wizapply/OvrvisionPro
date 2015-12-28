@@ -18,8 +18,8 @@ HDC   ghDC;
 HGLRC ghRC;
 
 
-#define WIDTH           300 
-#define HEIGHT          200 
+#define WIDTH           800
+#define HEIGHT          600 
 
 LONG WINAPI MainWndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL bSetupPixelFormat(HDC);

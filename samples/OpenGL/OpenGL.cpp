@@ -26,7 +26,8 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 {
 	ovrvision.CheckGPU();
 
-	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL, 0) == 0) // Open with OpenGL sharing mode
+	// Open with OpenGL sharing mode
+	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL, 0) == 0) 
 		puts("Can't open OvrvisionPro");
 
 	createObjects();
@@ -48,9 +49,11 @@ GLvoid resize(GLsizei width, GLsizei height)
 
 GLvoid createObjects()
 {
-	// Create textures
+	// 左右用にテクスチャ2個割り当て
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(2, textureIDs);
+
+	// GPU共有テクスチャーの縮小率設定と、そのサイズの取得
 	size = ovrvision.SetSkinScale(2);
 
 	glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
@@ -71,6 +74,7 @@ GLvoid createObjects()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
+	// GPU共有テクスチャーを生成
 	ovrvision.CreateSkinTextures(size.width, size.height, textureIDs[0], textureIDs[1]);
 }
 
@@ -79,7 +83,7 @@ GLvoid drawScene(GLvoid)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Step6. テクスチャの画像指定
+	// テクスチャの更新
 	ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMSRMP);
 	glFinish();
 	ovrvision.UpdateSkinTextures(textureIDs[0], textureIDs[1]);
@@ -96,6 +100,7 @@ GLvoid drawScene(GLvoid)
 
 	glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
 
+	// これだと上下さかさまなので、任意に入れ替えること
 	glBegin(GL_QUADS);
 	glTexCoord2i(0, 1);
 	glVertex3f(-1.0f, 1.0f, 0.0f);
@@ -108,5 +113,6 @@ GLvoid drawScene(GLvoid)
 	glEnd();
 	glFinish();
 
+	// platform depend function
 	SWAPBUFFERS();
 }
