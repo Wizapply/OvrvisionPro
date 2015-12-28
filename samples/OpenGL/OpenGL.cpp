@@ -84,9 +84,15 @@ GLvoid drawScene(GLvoid)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// テクスチャの更新
-	ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMSRMP);
+	ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMS);
 	glFinish();
+	int64 start = cv::getTickCount();
 	ovrvision.UpdateSkinTextures(textureIDs[0], textureIDs[1]);
+	int64 stop = cv::getTickCount();
+	double usec = (stop - start) * 1000000 / cv::getTickFrequency();
+	printf("%f usec\n", usec);
+	usec = cv::getTickFrequency();
+	
 #ifdef _DEBUG
 	cv::Mat left(size.height, size.width, CV_8UC4);
 	cv::Mat right(size.height, size.width, CV_8UC4);

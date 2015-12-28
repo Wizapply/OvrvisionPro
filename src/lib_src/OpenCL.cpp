@@ -456,6 +456,9 @@ namespace OVR
 			clReleaseKernel(_invertMask);
 			clReleaseKernel(_toneCorrection);
 			clReleaseKernel(_resizeTone);
+			clReleaseKernel(_convertHSVTone);
+			clReleaseKernel(_maskTone);
+			clReleaseKernel(_maskOpenglTone);
 
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
@@ -542,6 +545,12 @@ namespace OVR
 			_toneCorrection = clCreateKernel(_program, "tone", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_resizeTone = clCreateKernel(_program, "resize_tone", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_convertHSVTone = clCreateKernel(_program, "convertHSVTone", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_maskTone = clCreateKernel(_program, "maskTone", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_maskOpenglTone = clCreateKernel(_program, "mask_openglTone", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			return true;
 		}
@@ -2195,26 +2204,6 @@ namespace OVR
 		}
 		size_t origin[3] = { 0, 0, 0 };
 
-#ifdef TONE_CORRECTION
-		//__kernel void resize_tone( 
-		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
-		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
-		//		__read_only int scale,		// 2, 4, 8
-		//		__read_only image2d_t map)	// CL_UNSIGNED_INT8
-
-		clSetKernelArg(_resizeTone, 0, sizeof(cl_mem), &_l);
-		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedL);
-		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
-		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait, event_l);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		clSetKernelArg(_resizeTone, 0, sizeof(cl_mem), &_r);
-		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedR);
-		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
-		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait, event_r);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-#else
 		//__kernel void resize( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
@@ -2230,7 +2219,7 @@ namespace OVR
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait, event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-#endif
+
 		if (event_l == NULL || event_r == NULL)
 		{
 			clFinish(_commandQueue);
@@ -2382,26 +2371,6 @@ namespace OVR
 		}
 		size_t origin[3] = { 0, 0, 0 };
 
-#ifdef TONE_CORRECTION
-		//__kernel void resize_tone( 
-		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
-		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
-		//		__read_only int scale,		// 2, 4, 8
-		//		__read_only image2d_t map)	// CL_UNSIGNED_INT8
-
-		clSetKernelArg(_resizeTone, 0, sizeof(cl_mem), &_l);
-		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedL);
-		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
-		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait_l, event_l);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-		clSetKernelArg(_resizeTone, 0, sizeof(cl_mem), &_r);
-		clSetKernelArg(_resizeTone, 1, sizeof(cl_mem), &_reducedR);
-		clSetKernelArg(_resizeTone, 2, sizeof(int), &scale);
-		clSetKernelArg(_resizeTone, 3, sizeof(cl_mem), &_toneMap);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resizeTone, 2, NULL, _scaledRegion, 0, 1, &wait_r, event_r);
-		SAMPLE_CHECK_ERRORS(_errorCode);
-#else
 		//__kernel void resize( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
 		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
@@ -2417,7 +2386,7 @@ namespace OVR
 		clSetKernelArg(_resize, 2, sizeof(int), &scale);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _resize, 2, NULL, _scaledRegion, 0, 1, &wait_r, event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-#endif
+
 		if (event_l == NULL || event_r == NULL)
 		{
 			clFinish(_commandQueue);

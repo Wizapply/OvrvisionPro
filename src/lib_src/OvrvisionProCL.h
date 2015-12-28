@@ -336,8 +336,12 @@ namespace OVR
 			cl_kernel		_mask;
 			cl_kernel		_maskOpengl;
 			cl_kernel		_invertMask;
+			// kernels with tone correction
 			cl_kernel		_toneCorrection;
 			cl_kernel		_resizeTone;
+			cl_kernel		_convertHSVTone;
+			cl_kernel		_maskTone;
+			cl_kernel		_maskOpenglTone;
 
 		private:
 			cl_mem	_src;
