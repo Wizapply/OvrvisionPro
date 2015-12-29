@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">OvrvisionSDK
-   &#160;<span id="projectnumber">1.2</span>
+   &#160;<span id="projectnumber">1.3</span>
    </div>
   </td>
  </tr>
@@ -108,6 +108,7 @@ $(document).ready(function(){initNavTree('class_o_v_r_1_1_ovrvision_pro.html',''
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="class_o_v_r_1_1_ovrvision_pro-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">OVR::OvrvisionPro Class Reference</div>  </div>
@@ -129,9 +130,9 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a9541ae130c7587f1593f79915e556795">~OvrvisionPro</a> ()</td></tr>
 <tr class="memdesc:a9541ae130c7587f1593f79915e556795"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
 <tr class="separator:a9541ae130c7587f1593f79915e556795"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afecab27f8e1e19964b26f81c747201c7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#afecab27f8e1e19964b26f81c747201c7">Open</a> (int locationID, OVR::Camprop prop)</td></tr>
-<tr class="memdesc:afecab27f8e1e19964b26f81c747201c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open the Ovrvision Pro.  <a href="#afecab27f8e1e19964b26f81c747201c7">More...</a><br /></td></tr>
-<tr class="separator:afecab27f8e1e19964b26f81c747201c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c933e8a1f0053ade36cffcbc7a318ca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a9c933e8a1f0053ade36cffcbc7a318ca">Open</a> (int locationID, OVR::Camprop prop, int deviceType=-1, void *pD3D11Device=NULL)</td></tr>
+<tr class="memdesc:a9c933e8a1f0053ade36cffcbc7a318ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open the Ovrvision Pro.  <a href="#a9c933e8a1f0053ade36cffcbc7a318ca">More...</a><br /></td></tr>
+<tr class="separator:a9c933e8a1f0053ade36cffcbc7a318ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8e7559407384fa3b9d7f7aa5b8d3658"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae8e7559407384fa3b9d7f7aa5b8d3658"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#ae8e7559407384fa3b9d7f7aa5b8d3658">Close</a> ()</td></tr>
 <tr class="memdesc:ae8e7559407384fa3b9d7f7aa5b8d3658"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close the Ovrvision Pro. <br /></td></tr>
@@ -145,28 +146,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a602cb061ea2d45083a0fec1eeccd344e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a602cb061ea2d45083a0fec1eeccd344e">GetCamImageBGRA</a> (unsigned char *pImageBuf, OVR::Cameye eye)</td></tr>
 <tr class="memdesc:a602cb061ea2d45083a0fec1eeccd344e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function gets data from <a class="el" href="class_o_v_r_1_1_ovrvision_pro.html" title="OvrvisionPro class. ">OvrvisionPro</a> inside.  <a href="#a602cb061ea2d45083a0fec1eeccd344e">More...</a><br /></td></tr>
 <tr class="separator:a602cb061ea2d45083a0fec1eeccd344e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae51fa59ddba248fd8588c1d23e4e3eac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#ae51fa59ddba248fd8588c1d23e4e3eac">Capture</a> (OVR::Camqt qt)</td></tr>
-<tr class="memdesc:ae51fa59ddba248fd8588c1d23e4e3eac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc.)  <a href="#ae51fa59ddba248fd8588c1d23e4e3eac">More...</a><br /></td></tr>
-<tr class="separator:ae51fa59ddba248fd8588c1d23e4e3eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57a64c3a06ef2b758425e66d180f7023"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a57a64c3a06ef2b758425e66d180f7023">GetStereoImageBGRA</a> (unsigned char *pLeft, unsigned char *pRight, <a class="el" href="struct_o_v_r_1_1_r_o_i.html">ROI</a> roi)</td></tr>
 <tr class="memdesc:a57a64c3a06ef2b758425e66d180f7023"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get camera image region of interest.  <a href="#a57a64c3a06ef2b758425e66d180f7023">More...</a><br /></td></tr>
 <tr class="separator:a57a64c3a06ef2b758425e66d180f7023"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad10d046bf81642df05c085bb2db645c5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad10d046bf81642df05c085bb2db645c5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#ad10d046bf81642df05c085bb2db645c5">GetStereoImageHSV</a> (unsigned char *pLeft, unsigned char *pRight)</td></tr>
-<tr class="memdesc:ad10d046bf81642df05c085bb2db645c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">UNDER CONSTRUCTION. <br /></td></tr>
-<tr class="separator:ad10d046bf81642df05c085bb2db645c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0f3dc8d6b9a9de17b03aa3006e11a73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#af0f3dc8d6b9a9de17b03aa3006e11a73">GetSkinImage</a> (unsigned char *pLeft, unsigned char *pRight)</td></tr>
-<tr class="memdesc:af0f3dc8d6b9a9de17b03aa3006e11a73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Skin images.  <a href="#af0f3dc8d6b9a9de17b03aa3006e11a73">More...</a><br /></td></tr>
-<tr class="separator:af0f3dc8d6b9a9de17b03aa3006e11a73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e16fbcad489ac53c2de07640ce6db19"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a7e16fbcad489ac53c2de07640ce6db19">SkinRegion</a> (unsigned char *left, unsigned char *right)</td></tr>
-<tr class="memdesc:a7e16fbcad489ac53c2de07640ce6db19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get skin color region.  <a href="#a7e16fbcad489ac53c2de07640ce6db19">More...</a><br /></td></tr>
-<tr class="separator:a7e16fbcad489ac53c2de07640ce6db19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0be51746b770faec807fa13b8c76d37"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#ad0be51746b770faec807fa13b8c76d37">SetSkinHSV</a> (int h_low, int h_high, int s_low, int s_high)</td></tr>
-<tr class="memdesc:ad0be51746b770faec807fa13b8c76d37"><td class="mdescLeft">&#160;</td><td class="mdescRight">set HSV region for SkinRegion  <a href="#ad0be51746b770faec807fa13b8c76d37">More...</a><br /></td></tr>
-<tr class="separator:ad0be51746b770faec807fa13b8c76d37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ed7db7aa6971c1bde2ac512dcbc0350"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a4ed7db7aa6971c1bde2ac512dcbc0350">ColorHistgram</a> (unsigned char *histgram)</td></tr>
-<tr class="memdesc:a4ed7db7aa6971c1bde2ac512dcbc0350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get color histgram in HSV space.  <a href="#a4ed7db7aa6971c1bde2ac512dcbc0350">More...</a><br /></td></tr>
-<tr class="separator:a4ed7db7aa6971c1bde2ac512dcbc0350"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6562ef5b4845e986b0802b24cc04376"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#af6562ef5b4845e986b0802b24cc04376">isOpen</a> ()</td></tr>
 <tr class="memdesc:af6562ef5b4845e986b0802b24cc04376"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether <a class="el" href="class_o_v_r_1_1_ovrvision_pro.html" title="OvrvisionPro class. ">OvrvisionPro</a> is open.  <a href="#af6562ef5b4845e986b0802b24cc04376">More...</a><br /></td></tr>
 <tr class="separator:af6562ef5b4845e986b0802b24cc04376"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -252,9 +234,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a6db471f0eef8ad1288fd44664f81bcd8">GrayscaleEighth</a> (unsigned char *left, unsigned char *right)</td></tr>
 <tr class="memdesc:a6db471f0eef8ad1288fd44664f81bcd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grayscaled image of 1/8 scaled. <br /></td></tr>
 <tr class="separator:a6db471f0eef8ad1288fd44664f81bcd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc05b37582949240f065db6e683854e5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc05b37582949240f065db6e683854e5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Read</b> (unsigned char *left, unsigned char *right)</td></tr>
-<tr class="separator:afc05b37582949240f065db6e683854e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae00c36622343f96055ae068a34b031bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae00c36622343f96055ae068a34b031bd"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>UserDataAccessUnlock</b> ()</td></tr>
 <tr class="separator:ae00c36622343f96055ae068a34b031bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -279,12 +258,61 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>UserDataAccessCheckSu
 <tr class="memitem:a719f9a7428c4515411d99d314e4b4a18"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a719f9a7428c4515411d99d314e4b4a18"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM</b> ()</td></tr>
 <tr class="separator:a719f9a7428c4515411d99d314e4b4a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a994249805248ae857cbc8530060fb7fe"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a994249805248ae857cbc8530060fb7fe">CreateGLTexture2D</a> (unsigned int texture, int width, int height)</td></tr>
-<tr class="memdesc:a994249805248ae857cbc8530060fb7fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create OpenGL sharing texture object.  <a href="#a994249805248ae857cbc8530060fb7fe">More...</a><br /></td></tr>
-<tr class="separator:a994249805248ae857cbc8530060fb7fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aead60868bd65c17aada1ce98f849c92a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#aead60868bd65c17aada1ce98f849c92a">UpdateGLSkinTextureObjects</a> (unsigned int n, void *textureObjects[])</td></tr>
-<tr class="memdesc:aead60868bd65c17aada1ce98f849c92a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update skin texture objects.  <a href="#aead60868bd65c17aada1ce98f849c92a">More...</a><br /></td></tr>
-<tr class="separator:aead60868bd65c17aada1ce98f849c92a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a565ec1a7861bbef032ea9899b0449724"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a565ec1a7861bbef032ea9899b0449724"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamResetEEPROM</b> ()</td></tr>
+<tr class="separator:a565ec1a7861bbef032ea9899b0449724"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bce368e70c716b4c12b8bdc2b68d497"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a5bce368e70c716b4c12b8bdc2b68d497">CreateSkinTextures</a> (int width, int height, unsigned int left, unsigned int right)</td></tr>
+<tr class="memdesc:a5bce368e70c716b4c12b8bdc2b68d497"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create Skin textures.  <a href="#a5bce368e70c716b4c12b8bdc2b68d497">More...</a><br /></td></tr>
+<tr class="separator:a5bce368e70c716b4c12b8bdc2b68d497"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae51fa59ddba248fd8588c1d23e4e3eac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#ae51fa59ddba248fd8588c1d23e4e3eac">Capture</a> (OVR::Camqt qt)</td></tr>
+<tr class="memdesc:ae51fa59ddba248fd8588c1d23e4e3eac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture frame and hold it in GPU for image processing(Grayscale, Skin color extraction etc.)  <a href="#ae51fa59ddba248fd8588c1d23e4e3eac">More...</a><br /></td></tr>
+<tr class="separator:ae51fa59ddba248fd8588c1d23e4e3eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18bf76aadd162adfadc10431f592f6e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a18bf76aadd162adfadc10431f592f6e0">UpdateSkinTextures</a> (unsigned int left, unsigned int right)</td></tr>
+<tr class="memdesc:a18bf76aadd162adfadc10431f592f6e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update skin textures.  <a href="#a18bf76aadd162adfadc10431f592f6e0">More...</a><br /></td></tr>
+<tr class="separator:a18bf76aadd162adfadc10431f592f6e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf49d5da0c012f6bcb480bb8f249c94c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf49d5da0c012f6bcb480bb8f249c94c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>UpdateImageTextures</b> (unsigned int left, unsigned int right)</td></tr>
+<tr class="separator:abf49d5da0c012f6bcb480bb8f249c94c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1269253859a527321ce6b9b14ef7f419"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_o_v_r_1_1_r_o_i.html">ROI</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a1269253859a527321ce6b9b14ef7f419">SetSkinScale</a> (unsigned int scale)</td></tr>
+<tr class="memdesc:a1269253859a527321ce6b9b14ef7f419"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set Skin image scale.  <a href="#a1269253859a527321ce6b9b14ef7f419">More...</a><br /></td></tr>
+<tr class="separator:a1269253859a527321ce6b9b14ef7f419"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a5fefd435a9bae97d38b11ccf7fa6b3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a1a5fefd435a9bae97d38b11ccf7fa6b3">GetScaledImageRGBA</a> (unsigned char *left, unsigned char *right)</td></tr>
+<tr class="memdesc:a1a5fefd435a9bae97d38b11ccf7fa6b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get scaled images while calibration.  <a href="#a1a5fefd435a9bae97d38b11ccf7fa6b3">More...</a><br /></td></tr>
+<tr class="separator:a1a5fefd435a9bae97d38b11ccf7fa6b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0f3dc8d6b9a9de17b03aa3006e11a73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#af0f3dc8d6b9a9de17b03aa3006e11a73">GetSkinImage</a> (unsigned char *pLeft, unsigned char *pRight)</td></tr>
+<tr class="memdesc:af0f3dc8d6b9a9de17b03aa3006e11a73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Skin images.  <a href="#af0f3dc8d6b9a9de17b03aa3006e11a73">More...</a><br /></td></tr>
+<tr class="separator:af0f3dc8d6b9a9de17b03aa3006e11a73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3504c7597f9fdb9613e3438acbead21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#aa3504c7597f9fdb9613e3438acbead21">DetectHand</a> (int frames)</td></tr>
+<tr class="memdesc:aa3504c7597f9fdb9613e3438acbead21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detect color range.  <a href="#aa3504c7597f9fdb9613e3438acbead21">More...</a><br /></td></tr>
+<tr class="separator:aa3504c7597f9fdb9613e3438acbead21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e16fbcad489ac53c2de07640ce6db19"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a7e16fbcad489ac53c2de07640ce6db19">SkinRegion</a> (unsigned char *left, unsigned char *right)</td></tr>
+<tr class="memdesc:a7e16fbcad489ac53c2de07640ce6db19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get skin color region.  <a href="#a7e16fbcad489ac53c2de07640ce6db19">More...</a><br /></td></tr>
+<tr class="separator:a7e16fbcad489ac53c2de07640ce6db19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0be51746b770faec807fa13b8c76d37"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#ad0be51746b770faec807fa13b8c76d37">SetSkinHSV</a> (int h_low, int h_high, int s_low, int s_high)</td></tr>
+<tr class="memdesc:ad0be51746b770faec807fa13b8c76d37"><td class="mdescLeft">&#160;</td><td class="mdescRight">set HSV region for SkinRegion  <a href="#ad0be51746b770faec807fa13b8c76d37">More...</a><br /></td></tr>
+<tr class="separator:ad0be51746b770faec807fa13b8c76d37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf84837ad588604f198ac84f9e681c70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#aaf84837ad588604f198ac84f9e681c70">SetSkinHSV</a> (int range[4])</td></tr>
+<tr class="memdesc:aaf84837ad588604f198ac84f9e681c70"><td class="mdescLeft">&#160;</td><td class="mdescRight">set HSV region for SkinRegion  <a href="#aaf84837ad588604f198ac84f9e681c70">More...</a><br /></td></tr>
+<tr class="separator:aaf84837ad588604f198ac84f9e681c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8816294f924b95c07ca23d2caf425311"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a8816294f924b95c07ca23d2caf425311">SetSkinThreshold</a> (int threshold)</td></tr>
+<tr class="memdesc:a8816294f924b95c07ca23d2caf425311"><td class="mdescLeft">&#160;</td><td class="mdescRight">set skin threshold to extract region  <a href="#a8816294f924b95c07ca23d2caf425311">More...</a><br /></td></tr>
+<tr class="separator:a8816294f924b95c07ca23d2caf425311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ed7db7aa6971c1bde2ac512dcbc0350"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#a4ed7db7aa6971c1bde2ac512dcbc0350">ColorHistgram</a> (unsigned char *histgram)</td></tr>
+<tr class="memdesc:a4ed7db7aa6971c1bde2ac512dcbc0350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get color histgram in HSV space.  <a href="#a4ed7db7aa6971c1bde2ac512dcbc0350">More...</a><br /></td></tr>
+<tr class="separator:a4ed7db7aa6971c1bde2ac512dcbc0350"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad10d046bf81642df05c085bb2db645c5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad10d046bf81642df05c085bb2db645c5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#ad10d046bf81642df05c085bb2db645c5">GetStereoImageHSV</a> (unsigned char *pLeft, unsigned char *pRight)</td></tr>
+<tr class="memdesc:ad10d046bf81642df05c085bb2db645c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">UNDER CONSTRUCTION. <br /></td></tr>
+<tr class="separator:ad10d046bf81642df05c085bb2db645c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f9c96201f61cb47d297132d208762cc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f9c96201f61cb47d297132d208762cc"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>InspectTextures</b> (unsigned char *left, unsigned char *right, unsigned int type=0)</td></tr>
+<tr class="separator:a5f9c96201f61cb47d297132d208762cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aec96b2ca816840444d58de9b5a5989dc"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html#aec96b2ca816840444d58de9b5a5989dc">CheckGPU</a> ()</td></tr>
+<tr class="memdesc:aec96b2ca816840444d58de9b5a5989dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check GPU specification.  <a href="#aec96b2ca816840444d58de9b5a5989dc">More...</a><br /></td></tr>
+<tr class="separator:aec96b2ca816840444d58de9b5a5989dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="class_o_v_r_1_1_ovrvision_pro.html" title="OvrvisionPro class. ">OvrvisionPro</a> class. </p>
@@ -313,6 +341,32 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
 
 </div>
 </div>
+<a class="anchor" id="aec96b2ca816840444d58de9b5a5989dc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool OVR::OvrvisionPro::CheckGPU </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check GPU specification. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if satisfaied for OrvisionPro </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a4ed7db7aa6971c1bde2ac512dcbc0350"></a>
 <div class="memitem">
 <div class="memproto">
@@ -338,19 +392,13 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
 
 </div>
 </div>
-<a class="anchor" id="a994249805248ae857cbc8530060fb7fe"></a>
+<a class="anchor" id="a5bce368e70c716b4c12b8bdc2b68d497"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void* OVR::OvrvisionPro::CreateGLTexture2D </td>
+          <td class="memname">void OVR::OvrvisionPro::CreateSkinTextures </td>
           <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>texture</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>width</em>, </td>
         </tr>
@@ -358,7 +406,19 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>height</em>&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>left</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>right</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -368,16 +428,45 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
       </table>
 </div><div class="memdoc">
 
-<p>Create OpenGL sharing texture object. </p>
+<p>Create Skin textures. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">texture</td><td>identifier </td></tr>
     <tr><td class="paramname">width</td><td>of texture </td></tr>
     <tr><td class="paramname">height</td><td>of texture </td></tr>
+    <tr><td class="paramname">left</td><td>texture </td></tr>
+    <tr><td class="paramname">right</td><td>texure</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>ptr of texture object </dd></dl>
+<p>/////////////////////////////////////////////////////////////////////////////////// How to Create GPU texture and Update texture</p>
+<p>Set scale 1/2 and get its size <a class="el" href="struct_o_v_r_1_1_r_o_i.html" title="ROI. ">OVR::ROI</a> size = ovrvision.SetSkinScale(2);</p>
+<p>D3D11_TEXTURE2D_DESC desc = { size.width, // Width size.height, // Height 1, // MipLevels 1, // ArraySize DXGI_FORMAT_R8G8B8A8_UINT, // Format, BE CAREFUL { 1 }, // SampleDesc.Count D3D11_USAGE_DEFAULT, // Usage };</p>
+<p>Create Textures ID3D11Texture2D *pTextures[2]; res = DIRECTX.Device-&gt;CreateTexture2D(&amp;desc, NULL, &amp;pTextures[0]); res = DIRECTX.Device-&gt;CreateTexture2D(&amp;desc, NULL, &amp;pTextures[1]);</p>
+<p>Create GPU sharing textures ovrvision.CreateSkinTextures(size.width, size.height, pTextures[0], pTextures[1]); /////////////////////////////////////////////////////////////////////////////////// </p>
+
+</div>
+</div>
+<a class="anchor" id="aa3504c7597f9fdb9613e3438acbead21"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void OVR::OvrvisionPro::DetectHand </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>frames</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Detect color range. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">frames</td><td>sampling frame </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -693,6 +782,42 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
 
 </div>
 </div>
+<a class="anchor" id="a1a5fefd435a9bae97d38b11ccf7fa6b3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool OVR::OvrvisionPro::GetScaledImageRGBA </td>
+          <td>(</td>
+          <td class="paramtype">unsigned char *&#160;</td>
+          <td class="paramname"><em>left</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned char *&#160;</td>
+          <td class="paramname"><em>right</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get scaled images while calibration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">left</td><td>ptr to buffer </td></tr>
+    <tr><td class="paramname">right</td><td>ptr to buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true when calibration done </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="af0f3dc8d6b9a9de17b03aa3006e11a73"></a>
 <div class="memitem">
 <div class="memproto">
@@ -720,8 +845,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
 <p>Get Skin images. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">pLeft</td><td>Image buffer pointer for left eye </td></tr>
-    <tr><td class="paramname">pRight</td><td>Image buffer pointer for right eye </td></tr>
+    <tr><td class="paramname">pLeft</td><td>Image buffer pointer (RGBA IMAGE) </td></tr>
+    <tr><td class="paramname">pRight</td><td>Image buffer pointer (RGBA IMAGE) </td></tr>
   </table>
   </dd>
 </dl>
@@ -788,7 +913,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
 
 </div>
 </div>
-<a class="anchor" id="afecab27f8e1e19964b26f81c747201c7"></a>
+<a class="anchor" id="a9c933e8a1f0053ade36cffcbc7a318ca"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -802,7 +927,19 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">OVR::Camprop&#160;</td>
-          <td class="paramname"><em>prop</em>&#160;</td>
+          <td class="paramname"><em>prop</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>deviceType</em> = <code>-1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>pD3D11Device</em> = <code>NULL</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -817,6 +954,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
   <table class="params">
     <tr><td class="paramname">locationID</td><td>Connection number </td></tr>
     <tr><td class="paramname">prop</td><td>Camera property </td></tr>
+    <tr><td class="paramname">deviceType</td><td>(2:D3D11, 0:OpenGL, -1:Dont share) </td></tr>
+    <tr><td class="paramname">pD3D11Device</td><td>ptr to D3D11 device when deviceType == 2 </td></tr>
   </table>
   </dd>
 </dl>
@@ -1089,6 +1228,83 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
 
 </div>
 </div>
+<a class="anchor" id="aaf84837ad588604f198ac84f9e681c70"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void OVR::OvrvisionPro::SetSkinHSV </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>range</em>[4]</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>set HSV region for SkinRegion </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">range[0]:h_low</td><td>(0 &lt; h_low &lt; h_high) </td></tr>
+    <tr><td class="paramname">range[1]:h_high</td><td>(h_low &lt; h_high &lt; 180) </td></tr>
+    <tr><td class="paramname">range[2]:s_low</td><td>(0 &lt; s_low &lt; s_high) </td></tr>
+    <tr><td class="paramname">range[3]:s_high</td><td>(s_low &lt; s_high &lt; 256) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a1269253859a527321ce6b9b14ef7f419"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_o_v_r_1_1_r_o_i.html">ROI</a> OVR::OvrvisionPro::SetSkinScale </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set Skin image scale. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scale</td><td>(2, 4, 8) of scale dominant </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>size of scaled image </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a8816294f924b95c07ca23d2caf425311"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int OVR::OvrvisionPro::SetSkinThreshold </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>threshold</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>set skin threshold to extract region </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">threshold</td><td>(0..255) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>previous threshold </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a7e16fbcad489ac53c2de07640ce6db19"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1116,8 +1332,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
 <p>Get skin color region. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">left</td><td>image </td></tr>
-    <tr><td class="paramname">right</td><td>image </td></tr>
+    <tr><td class="paramname">left</td><td>image (MONOCHROME MASK) </td></tr>
+    <tr><td class="paramname">right</td><td>image (MONOCHROME MASK) </td></tr>
   </table>
   </dd>
 </dl>
@@ -1125,21 +1341,21 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
 
 </div>
 </div>
-<a class="anchor" id="aead60868bd65c17aada1ce98f849c92a"></a>
+<a class="anchor" id="a18bf76aadd162adfadc10431f592f6e0"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void OVR::OvrvisionPro::UpdateGLSkinTextureObjects </td>
+          <td class="memname">void OVR::OvrvisionPro::UpdateSkinTextures </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
+          <td class="paramname"><em>left</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>textureObjects</em>[]&#160;</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>right</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1149,7 +1365,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
       </table>
 </div><div class="memdoc">
 
-<p>Update skin texture objects. </p>
+<p>Update skin textures. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">n</td><td>count of onjects </td></tr>
@@ -1157,6 +1373,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>CameraParamSaveEEPROM
   </table>
   </dd>
 </dl>
+<p>/////////////////////////////////////////////////////////////////////////////////// Capture image and hold it only in GPU ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMSRMP); Update textures ovrvision.UpdateSkinTextures(pTextures[0], pTextures[1]); /////////////////////////////////////////////////////////////////////////////////// </p>
 
 </div>
 </div>

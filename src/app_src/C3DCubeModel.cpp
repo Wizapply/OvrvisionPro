@@ -19,10 +19,10 @@
 /////////// VARS AND DEFS ///////////
 
 /*
- *	ƒVƒF[ƒ_ƒvƒƒOƒ‰ƒ€ƒ\[ƒXGLSL
+ *	ã‚·ã‚§ãƒ¼ãƒ€ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚½ãƒ¼ã‚¹GLSL
  */
-// ƒo[ƒeƒbƒNƒXƒVƒF[ƒ_
-// ’¸“_î•ñ‚ÆƒeƒNƒXƒ`ƒƒ‚t‚uÀ•W‚ğ‚à‚ç‚¤
+// ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€
+// é ‚ç‚¹æƒ…å ±ã¨ãƒ†ã‚¯ã‚¹ãƒãƒ£ï¼µï¼¶åº§æ¨™ã‚’ã‚‚ã‚‰ã†
 static const char* g_c3d_mdsource_vs = {
 "attribute vec3 vPos;\n"
 "attribute vec3 vNml;\n"
@@ -35,7 +35,7 @@ static const char* g_c3d_mdsource_vs = {
 "}\n"
 };
 
-// ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_
+// ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€
 static const char* g_c3d_mdsource_fs = {
 "varying vec3 v_nml;\n"
 "uniform vec4 u_diffuse;\n"
@@ -53,7 +53,7 @@ static const char* g_c3d_mdsource_fs = {
 
 C3DCubeModel::C3DCubeModel()
 {
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	memset(&m_cube,0,sizeof(m_cube));
 	memset(&m_shader,0,sizeof(m_shader));
 	memset(&m_texture,0,sizeof(m_texture));

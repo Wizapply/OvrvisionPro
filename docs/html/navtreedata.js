@@ -25,6 +25,7 @@ var NAVTREE =
     [ "How to Rebuild SDK", "page3.html", null ],
     [ "How to remove lens dust", "page32.html", null ],
     [ "Release Notes", "page4.html", [
+      [ "Ovrvision SDK v1.3", "page4.html#sdk5", null ],
       [ "Ovrvision SDK v1.2", "page4.html#sdk4", null ],
       [ "Ovrvision SDK v1.1", "page4.html#sdk3", null ],
       [ "Ovrvision SDK v1.01", "page4.html#sdk2", null ],
