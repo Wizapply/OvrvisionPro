@@ -263,6 +263,7 @@ public:
 	void UserDataAccessCheckSumAddress();
 	//Save the present setup to EEPROM. (Don't touch)
 	bool CameraParamSaveEEPROM();
+	bool CameraParamResetEEPROM();
 
 	// GPU texture
 	/*! @brief Create Skin textures

@@ -195,7 +195,7 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 #ifdef WIN32
 		::MessageBox(NULL, TEXT("This OvrvisionSDK is the GPU necessity which is supporting OpenCL1.2 or more."), TEXT("OpenCL Error!"), MB_ICONERROR | MB_OK);
 #elif MACOSX
-
+		NSLog(@"This OvrvisionSDK is the GPU necessity which is supporting OpenCL1.2 or more.");
 #elif LINUX
 
 #endif
@@ -212,12 +212,12 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 
 #endif
 
-	//Initialize Camera system
-	InitCameraSetting();
-
 	m_width = cam_width;
 	m_height = cam_height;
 	m_framerate = cam_framerate;
+
+	//Initialize Camera system
+	InitCameraSetting();
     
 	return objs;
 }
@@ -474,6 +474,10 @@ void OvrvisionPro::InitCameraSetting()
 	//Read files.
 	OvrvisionSetting ovrset(this);
 	if (ovrset.ReadEEPROM()) {
+
+		if (m_width == 640)	ovrset.m_propExposure /= 2;
+		if (m_width == 320) ovrset.m_propExposure /= 4;
+
 		//Read Set
 		SetCameraExposure(ovrset.m_propExposure);
 		SetCameraGain(ovrset.m_propGain);
@@ -909,6 +913,25 @@ bool OvrvisionPro::CameraParamSaveEEPROM(){
 
 	//Write
 	rt = ovrset.WriteEEPROM(WRITE_EEPROM_FLAG_CAMERASETWR);
+
+	//50ms wait
+#ifdef WIN32
+	Sleep(50);
+#elif MACOSX
+	[NSThread sleepForTimeInterval : 0.05];
+#elif LINUX
+
+#endif
+
+	return rt;
+}
+
+bool OvrvisionPro::CameraParamResetEEPROM(){
+	OvrvisionSetting ovrset(this);
+	bool rt;
+
+	//Write
+	rt = ovrset.ResetEEPROM();
 
 	//50ms wait
 #ifdef WIN32

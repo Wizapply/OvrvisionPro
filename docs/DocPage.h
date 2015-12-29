@@ -182,6 +182,21 @@ How to remove when dust has adhered to the image sensor.<br />
 
 /*! @page page4 Release Notes
 @tableofcontents
+@section sdk5 Ovrvision SDK v1.3
+Date : 29/Dec/2015<br />
+<b>Notes</b>
+- Add the function of errors display. 
+- Mac OSX support (Beta:Mac Pro)
+- Fixed bugs.
+- Stabilized system. 
+- Add  the EEPROM elimination tool. 
+
+<b>Unimplementeds and issue</b>
+- Linux OS support
+- Unreal Engine 4
+- The memory leak of OpenCL. (NVIDIA Driver)
+- The phenomenon in which transfer stops on the way.
+
 @section sdk4 Ovrvision SDK v1.2
 Date : 10/Dec/2015<br />
 <b>Notes</b>

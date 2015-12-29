@@ -105,7 +105,7 @@ uint8_t glProbeCtrl20[CY_FX_UVC_MAX_PROBE_SETTING] = {
 static uint8_t glCommitCtrl[CY_FX_UVC_MAX_PROBE_SETTING_ALIGNED];
 
 /* Scratch buffer used for handling UVC class requests with a data phase. */
-static uint8_t glEp0Buffer[32];
+static uint8_t glEp0Buffer[32] __attribute__ ((aligned (32)));
 
 /* UVC Header to be prefixed at the top of each 16 KB video data buffer. */
 uint8_t volatile glUVCHeader[CY_FX_UVC_MAX_HEADER] =
