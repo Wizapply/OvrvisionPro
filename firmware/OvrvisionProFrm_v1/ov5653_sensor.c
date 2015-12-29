@@ -191,10 +191,10 @@ void OV5653SensorControl(unsigned char frameIdx)
 
 	//Sensor reset command
 	WI2C(0x3103,0x93);		//PLL
-	CyU3PBusyWait (1000);	//1ms wait
+	CyU3PBusyWait (100);	//100us wait
 	WI2C(0x3017,0xff);
 	WI2C(0x3018,0xf0);
-	CyU3PBusyWait (1000);	//1ms wait
+	CyU3PBusyWait (100);	//100us wait
 
 	if(frameIdx >= FRAMEIDX_MODE_USB2BORDER) {	//USB2.0
 		WI2C(0x3012,0x05);	//PLL
@@ -551,10 +551,10 @@ void OV5653SensorControl(unsigned char frameIdx)
 	WI2C(0x4706,0x08);
 	WI2C(0x4708,0x03);
 
-	CyU3PBusyWait (2000);	//2ms wait
+	CyU3PBusyWait (100);	//100us wait
 	WI2C(0x3000,0x00);		//Start
 	WI2C(0x3002,0x00);
-	CyU3PBusyWait (1000);
+	CyU3PBusyWait (100); //100us
 }
 
 //Processing Unit specific UVC control function

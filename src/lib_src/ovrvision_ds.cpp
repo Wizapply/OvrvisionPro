@@ -94,7 +94,6 @@ public:
 		m_hEvent = CreateEvent(NULL, true, false, NULL);
 
 		m_LatestBufferLength = 0;
-		m_firstframe = 0;
 
 		m_pPixels = new unsigned char[OV_MAX_BUFFERNUMBYTE];
 		memset(m_pPixels,0x00,sizeof(unsigned char)*OV_MAX_BUFFERNUMBYTE);
@@ -123,12 +122,6 @@ public:
     STDMETHODIMP SampleCB(double time, IMediaSample *pSample)
 	{
 		unsigned char* ptrBuffer;
-
-		//firstframe skip
-		if(m_firstframe <= 1) {	//2frame
-			m_firstframe++;
-			return S_OK;
-		}
 		
 		if(WaitForSingleObject(m_hEvent, 0) == WAIT_OBJECT_0)
 			return S_OK;
@@ -157,8 +150,6 @@ public:
 	//Var
 	int m_LatestBufferLength;
 	unsigned char* m_pPixels;
-
-	int	m_firstframe;
 
 	//Thread var
 	CRITICAL_SECTION m_critSection;
@@ -255,33 +246,39 @@ IBaseFilter* OvrvisionDirectShow::GetSrcFilterFromID(ICreateDevEnum* pDev,
 		//Class enumerator
 		while (pClassEnum->Next(1, &pMoniker, &cFetched) == S_OK)
 		{
-			// Bind the first moniker to an object
-			IPropertyBag *pPropBag;
-			if (SUCCEEDED(pMoniker->BindToStorage(
-				0, 0, IID_IPropertyBag, (void **)&pPropBag)))
+			if (filter == NULL)
 			{
-				bool ok_usbid = false;
-				VARIANT varName;
-				VariantInit(&varName);
-
-				//ID
-				if (SUCCEEDED(pPropBag->Read(L"DevicePath", &varName, 0)))
+				// Bind the first moniker to an object
+				IPropertyBag *pPropBag;
+				if (SUCCEEDED(pMoniker->BindToStorage(
+					0, 0, IID_IPropertyBag, (void **)&pPropBag)))
 				{
-					int count = 0;
-					memset(&m_nDeviceName, 0x00, sizeof(m_nDeviceName));
-					while( varName.bstrVal[count] != 0x00 && count < OV_DEVICENAMENUM) {
-      					 m_nDeviceName[count] = (char)varName.bstrVal[count];
-      					 count++;
-     				}
+					bool ok_usbid = false;
+					VARIANT varName;
+					VariantInit(&varName);
 
-					//id cmp
-					if(UsbidCmp(m_nDeviceName, vid, pid) == RESULT_OK) {
-						pMoniker->BindToObject(NULL, NULL, IID_IBaseFilter, (void**)&filter);
+					//ID
+					if (SUCCEEDED(pPropBag->Read(L"DevicePath", &varName, 0)))
+					{
+						int count = 0;
+						memset(&m_nDeviceName, 0x00, sizeof(m_nDeviceName));
+						while (varName.bstrVal[count] != 0x00 && count < OV_DEVICENAMENUM) {
+							m_nDeviceName[count] = (char)varName.bstrVal[count];
+							count++;
+						}
+
+						//id cmp
+						if (UsbidCmp(m_nDeviceName, vid, pid) == RESULT_OK) {
+							if (skip <= 0) {
+								pMoniker->BindToObject(NULL, NULL, IID_IBaseFilter, (void**)&filter);
+							}
+							skip--;
+						}
 					}
-				}
 
-				VariantClear(&varName);	
-				pPropBag->Release();
+					VariantClear(&varName);
+					pPropBag->Release();
+				}
 			}
 			pMoniker->Release();
 		}
@@ -573,6 +570,8 @@ int OvrvisionDirectShow::StartTransfer()
     //Media run
     while(m_pMediaControl->Run()==S_FALSE)
         Sleep(10);
+
+	Sleep(20); //wait 20ms
 
 	m_devstatus = OV_DEVRUNNING;
 	return RESULT_OK;

@@ -411,8 +411,10 @@ const uvc_controls_t uvc_controls = {
     
     //running
     [m_session startRunning];
+	[NSThread sleepForTimeInterval:0.02];	//20ms wait
+
     m_devstatus = OV_DEVRUNNING;
-    
+
     return RESULT_OK;
 }
 
