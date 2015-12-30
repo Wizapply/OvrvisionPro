@@ -21,6 +21,7 @@ OVR::ROI size;
 
 GLvoid createObjects();
 
+
 /* OpenGL code */
 GLvoid initializeGL(GLsizei width, GLsizei height)
 {
@@ -30,6 +31,27 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL, 0) == 0) 
 		puts("Can't open OvrvisionPro");
 
+	// 肌色推定を行って
+	// Set scaling and size of scaled image
+	size = ovrvision.SetSkinScale(2);
+	cv::Mat images[2];
+	images[0].create(size.height, size.width, CV_8UC4);
+	images[1].create(size.height, size.width, CV_8UC4);
+
+detect:
+	// Estimate skin color range with 60 frames
+	ovrvision.DetectHand(60);
+	for (bool done = false; done == false;)
+	{
+		ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMS);
+		done = ovrvision.GetScaledImageRGBA(images[0].data, images[1].data);
+		cv::waitKey(1);
+		cv::imshow("L", images[0]);
+		cv::imshow("R", images[1]);
+	}
+	cv::destroyAllWindows();
+
+	// GPU共有テクスチャー開始
 	createObjects();
 }
 
@@ -86,12 +108,12 @@ GLvoid drawScene(GLvoid)
 	// テクスチャの更新
 	ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMS);
 	glFinish();
-	int64 start = cv::getTickCount();
+//	int64 start = cv::getTickCount();
 	ovrvision.UpdateSkinTextures(textureIDs[0], textureIDs[1]);
-	int64 stop = cv::getTickCount();
-	double usec = (stop - start) * 1000000 / cv::getTickFrequency();
-	printf("%f usec\n", usec);
-	usec = cv::getTickFrequency();
+//	int64 stop = cv::getTickCount();
+//	double usec = (stop - start) * 1000000 / cv::getTickFrequency();
+//	printf("%f usec\n", usec);
+//	usec = cv::getTickFrequency();
 	
 #ifdef _DEBUG
 	cv::Mat left(size.height, size.width, CV_8UC4);
