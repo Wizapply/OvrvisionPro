@@ -1,6 +1,6 @@
 /**************************************************************************
  *
- *              Copyright (c) 2014-2015 by Wizapply.
+ *              Copyright (c) 2014-2016 by Wizapply.
  *
  *  This software is copyrighted by and is the sole property of Wizapply
  *  All rights, title, ownership, or other interests in the software
@@ -12,7 +12,7 @@
  *  This Copyright notice may not be removed or modified without prior
  *  written consent of Wizapply.
  *
- *  Wizpply reserves the right to modify this software without notice.
+ *  Wizapply reserves the right to modify this software without notice.
  *
  *  Wizapply                                info@wizapply.com
  *  5F, KS Building,                        http://wizapply.com
@@ -23,7 +23,7 @@
 
 /**************************************************************************
  *
- *  Ovrvision Pro FirmWare v1.0
+ *  Ovrvision Pro FirmWare v1.1
  *
  *  Language is 'C' code source
  *  Files : prouvc_main.h
@@ -63,7 +63,7 @@
 #define CY_FX_UVC_STREAM_BUF_SIZE      (CY_FX_EP_BULK_VIDEO_PKTS_COUNT * CY_FX_EP_BULK_VIDEO_PKT_SIZE)  /* 16 KB */
 
 /* Maximum video data that can be accommodated in one DMA buffer. */
-#define CY_FX_UVC_BUF_FULL_SIZE        (CY_FX_UVC_STREAM_BUF_SIZE - (12 + 4))
+#define CY_FX_UVC_BUF_FULL_SIZE        (CY_FX_UVC_STREAM_BUF_SIZE - (CY_FX_UVC_MAX_HEADER + CY_FX_UVC_MAX_FOOTER))
 
 /* Number of DMA buffers per GPIF DMA thread. */
 #define CY_FX_UVC_STREAM_BUF_COUNT     (4)
@@ -90,6 +90,7 @@
 #define CY_FX_USB_SET_INTERFACE_REQ     (uint8_t)(0x0B)         /* USB SET_INTERFACE Request code. */
 
 #define CY_FX_UVC_MAX_HEADER           (12)             /* Maximum UVC header size, in bytes. */
+#define CY_FX_UVC_MAX_FOOTER           (4)              /* Maximum UVC footer size, in bytes. */
 #define CY_FX_UVC_HEADER_DEFAULT_BFH   (0x8C)           /* Default BFH (Bit Field Header) for the UVC Header */
 #define CY_FX_UVC_MAX_PROBE_SETTING    (26)             /* Maximum number of bytes in Probe Control */
 #define CY_FX_UVC_MAX_PROBE_SETTING_ALIGNED (32)        /* Probe control data size aligned to 16 bytes. */

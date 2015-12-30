@@ -1,6 +1,6 @@
 /**************************************************************************
  *
- *              Copyright (c) 2014-2015 by Wizapply.
+ *              Copyright (c) 2014-2016 by Wizapply.
  *
  *  This software is copyrighted by and is the sole property of Wizapply
  *  All rights, title, ownership, or other interests in the software
@@ -23,7 +23,7 @@
 
 /**************************************************************************
  *
- *  Ovrvision Pro FirmWare v1.0
+ *  Ovrvision Pro FirmWare v1.1
  *
  *  Language is 'C' code source
  *  Files : ov5653_sensor.h
@@ -53,8 +53,6 @@ extern CyU3PReturnStatus_t ReadI2C (uint8_t slaveAddr, uint16_t address, uint8_t
 extern CyU3PReturnStatus_t OV5653SensorInit(void);			// Initialize sensor
 extern void OV5653SensorReset(void);						// Reset sensor
 extern CyU3PReturnStatus_t OV5653SensorBusTest(void);		// Test sensor
-
-extern void OV5653ClockReset(void);							// Reset sensor
 
 // Sensor setup
 

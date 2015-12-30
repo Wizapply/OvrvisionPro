@@ -1,6 +1,6 @@
 /**************************************************************************
  *
- *              Copyright (c) 2014-2015 by Wizapply.
+ *              Copyright (c) 2014-2016 by Wizapply.
  *
  *  This software is copyrighted by and is the sole property of Wizapply
  *  All rights, title, ownership, or other interests in the software
@@ -23,7 +23,7 @@
 
 /**************************************************************************
  *
- *  Ovrvision Pro FirmWare v1.0
+ *  Ovrvision Pro FirmWare v1.1
  *
  *  Language is 'C' code source
  *  Files : prouvc_main.c
@@ -116,13 +116,10 @@ uint8_t volatile glUVCHeader[CY_FX_UVC_MAX_HEADER] =
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00  /* Source clock reference field */
 };
 
-volatile static CyBool_t hitFV = CyFalse;               /* Whether end of frame (FV) signal has been hit. */
+volatile static CyBool_t g_hitFV = CyFalse;               /* Whether end of frame (FV) signal has been hit. */
 volatile static CyBool_t gpif_initialized = CyFalse;    /* Whether the GPIF init function has been called. */
 volatile static uint16_t prodCount = 0, consCount = 0;  /* Count of buffers received and committed during
                                                            the current video frame. */
-volatile static CyBool_t gotPartial = CyFalse;          /* Helps track the last partial buffer
-                                                         * to make sure it is committed to USB.
-                                                         */
 //Define
 #define CY_FX_USB_UVC_SET_REQ_TYPE      (uint8_t)(0x21)         /* UVC Interface SET Request Type */
 #define CY_FX_USB_UVC_GET_REQ_TYPE      (uint8_t)(0xA1)         /* UVC Interface GET Request Type */
@@ -158,7 +155,7 @@ static void UVCAppErrorHandler (CyU3PReturnStatus_t apiRetStatus)
 	//Error stop
     for (;;)
     {
-        CyU3PThreadSleep (1000);
+        CyU3PThreadSleep (100);
     }
 }
 
@@ -167,8 +164,10 @@ static void UVCApplnAbortHandler (void)
 	uint32_t flag;
 	if (CyU3PEventGet (&glFxUVCEvent, CY_FX_UVC_STREAM_EVENT, CYU3P_EVENT_AND, &flag,CYU3P_NO_WAIT) == CY_U3P_SUCCESS)
 	{
+		g_hitFV     = CyFalse;
+
         /* Clear the Video Stream Request Event */
-        CyU3PEventSet (&glFxUVCEvent, ~(CY_FX_UVC_STREAM_EVENT), CYU3P_EVENT_AND);
+        CyU3PEventSet (&glFxUVCEvent, 0x00, CYU3P_EVENT_AND);
         /* Set Video Stream Abort Event */
         CyU3PEventSet (&glFxUVCEvent, CY_FX_UVC_STREAM_ABORT_EVENT, CYU3P_EVENT_OR);
 	}
@@ -183,8 +182,6 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
         CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
         uint8_t socket = 0xFF;      /*  Invalid value. */
 
-        hitFV = CyTrue;
-
         /* Verify that the current state is a terminal state for the GPIF state machine. */
         switch (currentState)
         {
@@ -198,9 +195,6 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
             case PARTIAL_BUF_IN_SCK1:
                 socket = 1;
                 break;
-            //case ERROR_CLOCK:
-            //	OV5653ClockReset();
-            //    break;
             default:
                 break;
         }
@@ -213,7 +207,6 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
             apiRetStatus = CyU3PDmaMultiChannelSetWrapUp (&glChHandleUVCStream, socket);
             if (apiRetStatus != CY_U3P_SUCCESS)
             	UVCAppErrorHandler(apiRetStatus);
-            gotPartial = CyTrue; /* Flag is set to indicate the partial buffer is acquired */
         }
     }
 }
@@ -528,8 +521,8 @@ static void UVCApplnInit (void)
     dmaMultiConfig.prodSckId [1]  = (CyU3PDmaSocketId_t)CY_U3P_PIB_SOCKET_1;
     dmaMultiConfig.consSckId [0]  = (CyU3PDmaSocketId_t)(CY_U3P_UIB_SOCKET_CONS_0 | CY_FX_EP_VIDEO_CONS_SOCKET);
     dmaMultiConfig.prodAvailCount = 0;
-    dmaMultiConfig.prodHeader     = 12;                 /* 12 byte UVC header to be added. */
-    dmaMultiConfig.prodFooter     = 4;                  /* 4 byte footer to compensate for the 12 byte header. */
+    dmaMultiConfig.prodHeader     = CY_FX_UVC_MAX_HEADER;                 /* 12 byte UVC header to be added. */
+    dmaMultiConfig.prodFooter     = CY_FX_UVC_MAX_FOOTER;                 /* 4 byte footer to compensate for the 12 byte header. */
     dmaMultiConfig.consHeader     = 0;
     dmaMultiConfig.dmaMode        = CY_U3P_DMA_MODE_BYTE;
     dmaMultiConfig.notification   = CY_U3P_DMA_CB_CONS_EVENT;
@@ -586,9 +579,12 @@ void UVCAppThread_Entry (uint32_t input)
 			if (apiRetStatus == CY_U3P_SUCCESS)
 			{
 				CyU3PMemCopy (produced_buffer.buffer - CY_FX_UVC_MAX_HEADER, (uint8_t *)glUVCHeader, CY_FX_UVC_MAX_HEADER);
-				if (produced_buffer.count != CY_FX_UVC_BUF_FULL_SIZE) {
-					(produced_buffer.buffer - CY_FX_UVC_MAX_HEADER)[1] |= 0x02;
-					gotPartial = CyFalse; /* Flag is reset to indicate that the partial buffer was committed to USB */
+				if (produced_buffer.count < CY_FX_UVC_BUF_FULL_SIZE)
+				{
+					(produced_buffer.buffer - CY_FX_UVC_MAX_HEADER)[1] |= 0x02; //EOF
+	                glUVCHeader[1] ^= 0x01;	 /* Toggle UVC header FRAME ID bit */
+
+	                g_hitFV = CyTrue; /* Flag is reset to indicate that the partial buffer was committed to USB */
 				}
 
 				/* Commit the updated DMA buffer to the USB endpoint. */
@@ -601,14 +597,11 @@ void UVCAppThread_Entry (uint32_t input)
 			/* If we have the end of frame signal and all of the committed data (including partial buffer)
 			 * has been read by the USB host; we can reset the DMA channel and prepare for the next video frame.
 			 */
-			if ((hitFV) && (prodCount == consCount) && (!gotPartial))
+			if ((g_hitFV) && (prodCount <= consCount))
 			{
 				prodCount = 0;
 				consCount = 0;
-				hitFV     = CyFalse;
-
-                /* Toggle UVC header FRAME ID bit */
-                glUVCHeader[1] ^= 1;
+				g_hitFV     = CyFalse;
 
                 /* Reset the DMA channel. */
                 apiRetStatus = CyU3PDmaMultiChannelReset (&glChHandleUVCStream);
@@ -630,9 +623,9 @@ void UVCAppThread_Entry (uint32_t input)
 			/* If we have a stream abort request pending. */
 			if (CyU3PEventGet (&glFxUVCEvent, CY_FX_UVC_STREAM_ABORT_EVENT, CYU3P_EVENT_AND_CLEAR, &flag, CYU3P_NO_WAIT) == CY_U3P_SUCCESS)
 			{
-				hitFV     = CyFalse;
 				prodCount = 0;
 				consCount = 0;
+				g_hitFV = CyFalse;
 
 				/* Sensor reset function */
 				OV5653SensorReset();
@@ -1204,6 +1197,7 @@ void UVCAppEP0Thread_Entry (uint32_t input)
 				usbSpeed = CyU3PUsbGetSpeed();
 				if (usbSpeed != CY_U3P_NOT_CONNECTED)
 					isUsbConnected = CyTrue;
+
 			}
 
 			if (eventFlag & CY_FX_UVC_VIDEO_CONTROL_REQUEST_EVENT)

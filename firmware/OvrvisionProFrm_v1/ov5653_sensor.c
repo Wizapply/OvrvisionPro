@@ -1,6 +1,6 @@
 /**************************************************************************
  *
- *              Copyright (c) 2014-2015 by Wizapply.
+ *              Copyright (c) 2014-2016 by Wizapply.
  *
  *  This software is copyrighted by and is the sole property of Wizapply
  *  All rights, title, ownership, or other interests in the software
@@ -12,7 +12,7 @@
  *  This Copyright notice may not be removed or modified without prior
  *  written consent of Wizapply.
  *
- *  Wizpply reserves the right to modify this software without notice.
+ *  Wizapply reserves the right to modify this software without notice.
  *
  *  Wizapply                                info@wizapply.com
  *  5F, KS Building,                        http://wizapply.com
@@ -23,7 +23,7 @@
 
 /**************************************************************************
  *
- *  Ovrvision Pro FirmWare v1.0
+ *  Ovrvision Pro FirmWare v1.1
  *
  *  Language is 'C' code source
  *  Files : ov5653_sensor.c
@@ -128,9 +128,9 @@ CyU3PReturnStatus_t OV5653SensorInit(void)
 
 	//PLL Reset
 	WI2C(0x3102,0x01);
-	CyU3PBusyWait (1000);
+	CyU3PBusyWait (5000);
 	WI2C(0x3102,0x00);
-	CyU3PBusyWait (1000);
+	CyU3PBusyWait (5000);
 
 	return CY_U3P_SUCCESS;
 }
@@ -149,7 +149,7 @@ void OV5653SensorReset(void)
 	//WI2C(0x3008,0x42);
 	//CyU3PBusyWait (5000);	//5ms wait
 	/* Delay the allow the sensor to power up. */
-	CyU3PThreadSleep(50); //50ms
+	CyU3PThreadSleep(30); //30ms
 }
 
 // Test sensor
@@ -165,12 +165,6 @@ CyU3PReturnStatus_t OV5653SensorBusTest(void)
 		}
 	}
 	return CY_U3P_ERROR_FAILURE;
-}
-
-extern void OV5653ClockReset(void)
-{
-	//WI2C(0x3012,0x05);
-	//CyU3PBusyWait (2000);	//1ms wait
 }
 
 // Sensor setup
