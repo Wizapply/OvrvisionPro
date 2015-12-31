@@ -31,14 +31,15 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL, 0) == 0) 
 		puts("Can't open OvrvisionPro");
 
-	// 肌色推定を行って
+	//////////////////////////////////////////////////////////////////////////////
+	// 肌色推定
+
 	// Set scaling and size of scaled image
 	size = ovrvision.SetSkinScale(2);
 	cv::Mat images[2];
 	images[0].create(size.height, size.width, CV_8UC4);
 	images[1].create(size.height, size.width, CV_8UC4);
 
-detect:
 	// Estimate skin color range with 60 frames
 	ovrvision.DetectHand(60);
 	for (bool done = false; done == false;)
@@ -50,6 +51,7 @@ detect:
 		cv::imshow("R", images[1]);
 	}
 	cv::destroyAllWindows();
+	//////////////////////////////////////////////////////////////////////////////
 
 	// GPU共有テクスチャー開始
 	createObjects();
@@ -128,15 +130,15 @@ GLvoid drawScene(GLvoid)
 
 	glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
 
-	// これだと上下さかさまなので、任意に入れ替えること
+	// テクスチャー貼り付け
 	glBegin(GL_QUADS);
-	glTexCoord2i(0, 1);
-	glVertex3f(-1.0f, 1.0f, 0.0f);
-	glTexCoord2i(1, 1);
-	glVertex3f(1.0f, 1.0f, 0.0f);
-	glTexCoord2i(1, 0);
-	glVertex3f(1.0f, -1.0f, 0.0f);
 	glTexCoord2i(0, 0);
+	glVertex3f(-1.0f, 1.0f, 0.0f);
+	glTexCoord2i(1, 0);
+	glVertex3f(1.0f, 1.0f, 0.0f);
+	glTexCoord2i(1, 1);
+	glVertex3f(1.0f, -1.0f, 0.0f);
+	glTexCoord2i(0, 1);
 	glVertex3f(-1.0f, -1.0f, 0.0f);
 	glEnd();
 	glFinish();
