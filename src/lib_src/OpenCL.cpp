@@ -12,7 +12,7 @@
 
 #include "OpenCL_kernel.h" // kernel code declared here const char *kernel;
 
-//#define TONE_CORRECTION
+#define TONE_CORRECTION
 //#define MEDIAN_3x3	// Use Median 3x3 filter to denoise
 #define GAUSSIAN	// Use Gaussian filter to denoise
 
@@ -1996,7 +1996,23 @@ namespace OVR
 	void OvrvisionProOpenCL::GetHSV(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
 	{
 		size_t size[] = { _scaledRegion[0], _scaledRegion[1] };
+#ifdef TONE_CORRECTION
+		//__kernel void convertHSVTone( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst,	// CL_UNSIGNED_INT8 x 4
+		//		__read_only image2d_t map)	// CL_UNSIGNED_INT8
 
+		clSetKernelArg(_convertHSVTone, 0, sizeof(cl_mem), &_reducedL);
+		clSetKernelArg(_convertHSVTone, 1, sizeof(cl_mem), &left);
+		clSetKernelArg(_convertHSVTone, 2, sizeof(cl_mem), &_toneMap);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSVTone, 2, NULL, size, NULL, 0, NULL, event_l);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+		clSetKernelArg(_convertHSVTone, 0, sizeof(cl_mem), &_reducedR);
+		clSetKernelArg(_convertHSVTone, 1, sizeof(cl_mem), &right);
+		clSetKernelArg(_convertHSVTone, 2, sizeof(cl_mem), &_toneMap);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSVTone, 2, NULL, size, NULL, 0, NULL, event_r);
+		SAMPLE_CHECK_ERRORS(_errorCode);
+#else
 		// Convert to HSV
 		//__kernel void convertHSV( 
 		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
@@ -2010,6 +2026,7 @@ namespace OVR
 		clSetKernelArg(_convertHSV, 1, sizeof(cl_mem), &right);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertHSV, 2, NULL, size, NULL, 0, NULL, event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+#endif // TONE_CORRECTION
 	}
 
 	//
