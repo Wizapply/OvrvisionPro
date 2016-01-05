@@ -13,8 +13,8 @@
 #include "OpenCL_kernel.h" // kernel code declared here const char *kernel;
 
 #define TONE_CORRECTION
-//#define MEDIAN_3x3	// Use Median 3x3 filter to denoise
-#define GAUSSIAN	// Use Gaussian filter to denoise
+#define MEDIAN_3x3	// Use Median 3x3 filter to denoise
+//#define GAUSSIAN	// Use Gaussian filter to denoise
 
 using namespace std;
 using namespace cv;

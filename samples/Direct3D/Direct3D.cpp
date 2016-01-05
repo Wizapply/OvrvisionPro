@@ -8,11 +8,6 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 
-#ifdef _DEBUG
-#pragma comment(lib, "ovrvisiond.lib")
-#else
-#pragma comment(lib, "ovrvision.lib")
-#endif
 
 #pragma warning(push)
 #pragma warning(disable:4005)
@@ -76,7 +71,7 @@ static bool MainLoop(bool retryCreate)
 			size.height,				// Height
 			1,							// MipLevels
 			1,							// ArraySize
-			DXGI_FORMAT_R8G8B8A8_UINT,	// Format
+			DXGI_FORMAT_R8G8B8A8_UINT,	// Format TODO DXGI_FORMAT_R8G8B8A8_UNORM accept for Pixel Shader
 			{ 1 },						// SampleDesc.Count
 			D3D11_USAGE_DEFAULT,		// Usage
 		};
@@ -91,14 +86,17 @@ static bool MainLoop(bool retryCreate)
 		/////////////////////////////////////////////////////////////////////////////////////
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {
-			DXGI_FORMAT_R8G8B8A8_UINT,		// DXGI_FORMAT
+			DXGI_FORMAT_R8G8B8A8_UINT,		// DXGI_FORMAT TODO DXGI_FORMAT_R8G8B8A8_UNORM accept for Pixel Shader
 			D3D11_SRV_DIMENSION_TEXTURE2D,	// D3D11_SRV_DIMENSION
 			{ 0, 1 },						// D3D11_TEX2D_SRV
 		};
-		
-		ID3D11ShaderResourceView* pSrv;
-		res = DIRECTX.Device->CreateShaderResourceView(pTextures[0], &SRVDesc, &pSrv);
-		
+		D3D11_RENDER_TARGET_VIEW_DESC RenderDesc = {
+			DXGI_FORMAT_R8G8B8A8_UNORM,		// DXGI_FORMAT
+			D3D11_RTV_DIMENSION_TEXTURE2D,	// D3D11_RTV_DIMENSION
+		};
+		ID3D11RenderTargetView* pSrv;
+		res = DIRECTX.Device->CreateRenderTargetView(pTextures[0], &RenderDesc, &pSrv);
+		DIRECTX.SetAndClearRenderTarget(pSrv, NULL);
 		cv::Mat l(size.height, size.width, CV_8UC4);
 		cv::Mat r(size.height, size.width, CV_8UC4);
 
