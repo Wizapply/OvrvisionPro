@@ -13,6 +13,8 @@
 #include "OpenCL_kernel.h" // kernel code declared here const char *kernel;
 
 //#define TONE_CORRECTION
+//#define MEDIAN_3x3	// Use Median 3x3 filter to denoise
+#define GAUSSIAN	// Use Gaussian filter to denoise
 
 using namespace std;
 using namespace cv;
@@ -1149,8 +1151,8 @@ namespace OVR
 	// Inspact textures
 	void OvrvisionProOpenCL::InspectTextures(uchar* left, uchar *right, uint type)
 	{
-		int width = _scaledRegion[0];
-		int height = _scaledRegion[1];
+		uint width = _scaledRegion[0];
+		uint height = _scaledRegion[1];
 		cl_int status;
 		cl_event event[2];
 		size_t origin[3] = { 0, 0, 0 };
@@ -1410,8 +1412,8 @@ namespace OVR
 	//
 	void OvrvisionProOpenCL::SkinImages(uchar *left, uchar *right)
 	{
-		int width = _scaledRegion[0];
-		int height = _scaledRegion[1];
+		uint width = _scaledRegion[0];
+		uint height = _scaledRegion[1];
 		size_t origin[3] = { 0, 0, 0 };
 		cl_event event[2];
 
@@ -1446,8 +1448,8 @@ namespace OVR
 	bool OvrvisionProOpenCL::EnumHS(Mat &result_l, Mat &result_r)
 	{
 		bool detect = false;
-		int width = _scaledRegion[0];
-		int height = _scaledRegion[1];
+		uint width = _scaledRegion[0];
+		uint height = _scaledRegion[1];
 		Mat separate[2][4];
 		Mat bilevel[2], work[2];
 		Mat HSV[2];
@@ -1636,8 +1638,8 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
 		// Skin color calibration
-		int width = _scaledRegion[0];
-		int height = _scaledRegion[1];
+		uint width = _scaledRegion[0];
+		uint height = _scaledRegion[1];
 		Mat _left(height, width, CV_8UC4, left);
 		Mat _right(height, width, CV_8UC4, right);
 

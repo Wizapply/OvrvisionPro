@@ -40,8 +40,8 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 	images[0].create(size.height, size.width, CV_8UC4);
 	images[1].create(size.height, size.width, CV_8UC4);
 
-	// Estimate skin color range with 60 frames
-	ovrvision.DetectHand(60);
+	// Estimate skin color range with 120 frames
+	ovrvision.DetectHand(120);
 	for (bool done = false; done == false;)
 	{
 		ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMS);
@@ -78,7 +78,7 @@ GLvoid createObjects()
 	glGenTextures(2, textureIDs);
 
 	// GPU共有テクスチャーの縮小率設定と、そのサイズの取得
-	size = ovrvision.SetSkinScale(2);
+	//size = ovrvision.SetSkinScale(2);
 
 	glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, size.width, size.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
