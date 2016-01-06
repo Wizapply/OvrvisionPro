@@ -51,7 +51,7 @@
 #endif
 //#define OV_CONFIG_USEOPENCL
 
-
+#include "ovrvision_handimage.h"
 
 /////////// VARS AND DEFS ///////////
 
@@ -76,6 +76,7 @@ OvrvisionTracking::OvrvisionTracking(int w, int h, float focalpoint)
 
 	m_width = w;
 	m_height = h;
+	m_focalpoint = focalpoint;
 
 	m_hue_min = 0;
 	m_hue_max = 0;
@@ -87,11 +88,9 @@ OvrvisionTracking::OvrvisionTracking(int w, int h, float focalpoint)
 	m_pos_y = 0.0f;
 	m_pos_z = 0.0f;
 
-	m_posr_x = 0.0f;
-	m_posr_y = 0.0f;
-
-	//g_pImageHandCalib = cv::imread("hand.png", -1);
-	//cv::cvtColor(g_pImageHandCalib, g_pImageHandCalib, CV_RGB2BGRA);
+	cv::Mat dat = cv::Mat(cv::Size(sizeof(g_handImage), 1), CV_MAKETYPE(CV_8U, 1), g_handImage);
+	g_pImageHandCalib = cv::imdecode(dat, CV_LOAD_IMAGE_UNCHANGED);
+	cv::cvtColor(g_pImageHandCalib, g_pImageHandCalib, CV_RGB2BGRA);
 	
 	m_set = false;
 }
@@ -120,7 +119,7 @@ void OvrvisionTracking::SetImageOpenCVImage(ovMat* pLeftImageMat, ovMat* pRightI
 }
 
 //Detect marker
-void OvrvisionTracking::Render(bool calib, bool point) {
+void OvrvisionTracking::Render(bool calib, bool debug) {
 	cv::Mat	pCamBGRAImg_L;
 	cv::Mat	pCamBGRAImg_R;
 
@@ -145,7 +144,6 @@ void OvrvisionTracking::Render(bool calib, bool point) {
 	cv::Mat pCamBGR_R(pCamBGRAResize_R.size(), CV_MAKETYPE(CV_8U, 3));
 	cv::cvtColor(pCamBGRAResize_R, pCamBGR_R, CV_BGRA2BGR);		// BGRA->BGR変換
 	cv::cvtColor(pCamBGR_R, pCamBGR_R, CV_BGR2HLS);				// BGR->HLS変換
-
 
 	//抽出済みの２値
 	cv::Mat pCamExtractionImg_L(pCamBGR_L.size(), CV_MAKETYPE(CV_8U, 1));
@@ -183,9 +181,11 @@ void OvrvisionTracking::Render(bool calib, bool point) {
 
 			if ((t >= m_hue_min_finger && t <= m_hue_max_finger) && (s >= 10 && s <= 240) && (v >= 10 && v <= 240)) {
 				thPointerFgL[(i*pCamBGR_L.cols + j)] = 255;					//A(FULL
+				thPointerL[(i*pCamBGR_L.cols + j)] = pCamBGR_L.data[(i*pCamBGR_L.cols + j) * 3 + 1];
 			}
 			if ((tr >= m_hue_min_finger && tr <= m_hue_max_finger) && (sr >= 10 && sr <= 240) && (vr >= 10 && vr <= 240)) {
 				thPointerFgR[(i*pCamBGR_R.cols + j)] = 255;					//A(FULL)
+				thPointerR[(i*pCamBGR_R.cols + j)] = pCamBGR_R.data[(i*pCamBGR_R.cols + j) * 3 + 1];					//A(FULL)
 			}
 		}
 	}
@@ -208,13 +208,15 @@ void OvrvisionTracking::Render(bool calib, bool point) {
 
 	if (lpos.x != 0 && lpos.y != 0) {
 		if (rpos.x != 0 && rpos.y != 0) {
-			m_pos_x = (float)lpos.x * 4.0f;
-			m_pos_y = (float)lpos.y * 4.0f;
+			float pos_x = lpos.x*4.0f;
+			float pos_y = lpos.y*4.0f;
+			float posr_x = rpos.x*4.0f;
+			float posr_y = rpos.y*4.0f;
 
-			m_posr_x = (float)rpos.x * 4.0f;
-			m_posr_y = (float)rpos.y * 4.0f;
+			m_pos_x = pos_x / (pos_x - posr_x);
+			m_pos_y = pos_y / (pos_x - posr_x);
+			m_pos_z = (m_focalpoint * 0.06f) / (pos_x - posr_x);
 
-			m_pos_z = 420.0f + m_posr_x - m_pos_x;
 			m_lifetime = 10;
 		}
 	}
@@ -224,18 +226,14 @@ void OvrvisionTracking::Render(bool calib, bool point) {
 		}
 		else {
 			m_pos_x = m_pos_y = m_pos_z = 0.0f;
-			m_posr_x = m_posr_y = 0.0f;
 		}
-
 	}
 
-	if (point) {
-		if (m_pos_x > 0.0f && m_pos_y > 0.0f) {
-			//char buf[32];
-			//sprintf(buf, "Z:%.1f", m_pos_z);
-			cv::circle(pCamBGRAImg_L, cv::Point(m_pos_x, m_pos_y), 30, cv::Scalar(0, 0, 255, 255), -1, 0);
-			cv::circle(pCamBGRAImg_R, cv::Point(m_posr_x, m_posr_y), 30, cv::Scalar(0, 0, 255, 255), -1, 0);
-			//cv::putText(pCamBGRAImg_L, buf, cv::Point(m_pos_x, m_pos_y + 60), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255, 255), 2, 0);
+	if (debug) {
+		if (m_pos_z > 0.0f) {
+			char buf[32];
+			sprintf(buf, "X:%.4f,Y%.4f,Z:%.4f", m_pos_x, m_pos_y,m_pos_z);
+			cv::putText(pCamBGRAImg_L, buf, cv::Point(m_width/2, m_height/2), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255, 255), 2, 0);
 		}
 	}
 
@@ -243,7 +241,7 @@ void OvrvisionTracking::Render(bool calib, bool point) {
 		cv::circle(pCamBGRAImg_L, cv::Point(pCamBGRAImg_L.size().width / 2 + (20 * 4), pCamBGRAImg_L.size().height / 2 + (20 * 4)), 10, cv::Scalar(0, 0, 255, 255), 3, 0);
 		cv::circle(pCamBGRAImg_L, cv::Point(pCamBGRAImg_L.size().width / 2, pCamBGRAImg_L.size().height / 2), 10, cv::Scalar(255, 0, 0, 255), 3, 0);
 		cv::Mat srcROIMat(pCamBGRAImg_L, cv::Rect(0, 0, g_pImageHandCalib.cols, g_pImageHandCalib.rows));
-		//pCamBGRAImg_L += g_pImageHandCalib;
+		pCamBGRAImg_L += g_pImageHandCalib;
 	}
 }
 
@@ -294,18 +292,17 @@ cv::Point2i FingerTracker(cv::Mat &image, cv::Mat &fgimage)
 
 	cv::Point2i center = cv::Point2i(0, 0);
 
-	if (mensize < 50)
+	if (mensize < 30)
 		return center;
 
-	cv::Mat dst2(image_detect.size(), CV_8UC1);
-	cv::dilate(dst, dst2, cv::Mat(), cv::Point(-1, -1), 12);
-	cv::Mat dst_img2 = fgimage & dst2;
+	cv::dilate(dst, dst, cv::Mat(), cv::Point(-1, -1), 12);
+	cv::dilate(dst, dst, cv::Mat(), cv::Point(-1, -1), 10);
+	cv::Mat dst_img2 = fgimage & dst;
 	cv::erode(dst_img2, dst_img2, cv::Mat(), cv::Point(-1, -1), 1);
 	//cv::imshow("hand", dst);
 	//cv::imshow("finger", fgimage);
 	//cv::imshow("output", dst_img2);
 
-	
 	cv::Moments moment = cv::moments(dst_img2, true);
 	if (moment.m00 != 0)
 	{

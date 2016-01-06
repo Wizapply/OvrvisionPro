@@ -18,6 +18,7 @@
 #include <EntryPoint.h>		//Cross platform for common entry point
 #include <ovrvision_pro.h>	//Ovrvision SDK
 
+#include <ovrvision_ar.h>	//Ovrvision SDK AR
 #include <ovrvision_tracking.h>
 
 /* -- Macro definition ------------------------------------------------------- */
@@ -30,7 +31,9 @@
 
 //Objects
 OVR::OvrvisionPro* g_pOvrvision;
+OVR::OvrvisionAR* g_pOvrAR;
 OVR::OvrvisionTracking* g_pOvrTrack;
+
 //Screen texture
 wzTexture g_screen_texture;
 int g_camWidth;
@@ -38,6 +41,9 @@ int g_camHeight;
 OVR::Camqt g_processMode = OVR::Camqt::OV_CAMQT_DMS;
 
 wzVector3  g_hmdGap;
+
+bool g_useOvrvisionAR = false;
+bool g_useOvrvisionTracking = false;
 
 /* -- Function prototype ------------------------------------------------- */
 
@@ -84,6 +90,7 @@ int Initialize()
 
 	//g_pOvrvision->SetCameraExposure(12960);
 	g_pOvrvision->SetCameraSyncMode(false);
+	g_pOvrvision->SetCameraWhiteBalanceAuto(false);
 
 	//OculusRightGap
 	g_hmdGap.x = g_pOvrvision->GetHMDRightGap(0) * -0.01f;
@@ -92,6 +99,9 @@ int Initialize()
 
 	g_camWidth = g_pOvrvision->GetCamWidth();
 	g_camHeight = g_pOvrvision->GetCamHeight();
+
+	//Create ovrvision AR object (0.15f = 15cm)
+	g_pOvrAR = new OVR::OvrvisionAR(0.15f, g_camWidth, g_camHeight, g_pOvrvision->GetCamFocalPoint());
 
 	//g_pOvrvision->SetCameraWhiteBalanceAuto(false);
 	g_pOvrTrack = new OVR::OvrvisionTracking(g_camWidth, g_camHeight, g_pOvrvision->GetCamFocalPoint());
@@ -112,6 +122,8 @@ int Terminate()
 	//Delete object
 	delete g_pOvrvision;
 	wzDeleteTexture(&g_screen_texture);
+
+	delete g_pOvrAR;
 	delete g_pOvrTrack;
 
 	/*------------------------------------------------------------------*/
@@ -131,6 +143,7 @@ void DrawLoop(void)
 	wzSetCullFace(WZ_CLF_NONE);	//Culling off
 	wzVector2 half_pos = { APPSCREEN_WIDTH / 2 / 2, APPSCREEN_HEIGHT / 2 };
     
+	/////// Operation ///////
 	if (wzGetKeyStateTrigger(WZ_KEY_P))
 	{
 		if (g_processMode == OVR::Camqt::OV_CAMQT_DMS)
@@ -139,6 +152,16 @@ void DrawLoop(void)
 			g_processMode = OVR::Camqt::OV_CAMQT_DMS;
 	}
 
+	if (wzGetKeyStateTrigger(WZ_KEY_O))
+	{
+		g_useOvrvisionAR ^= true;
+	}
+	if (wzGetKeyStateTrigger(WZ_KEY_I))
+	{
+		g_useOvrvisionTracking ^= true;
+	}
+
+	/////// View ///////
 	if (g_pOvrvision->isOpen())
 	{
 		//Full Draw
@@ -146,14 +169,22 @@ void DrawLoop(void)
 		unsigned char* p = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 		unsigned char* p2 = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
-		/*
-		g_pOvrTrack->SetImageBGRA(p, p2);
-		g_pOvrTrack->Render(true, true);
+		//AR DETECT
+		if (g_useOvrvisionAR) {
+			g_pOvrAR->SetImageBGRA(p);	//left
+			g_pOvrAR->Render();
+		}
 
-		if (wzGetKeyStateTrigger(WZ_KEY_SPACE))
-			g_pOvrTrack->SetHue();
-		*/
+		// HAND TRACTING DETECT
+		if (g_useOvrvisionTracking) {
+			g_pOvrTrack->SetImageBGRA(p, p2);
+			g_pOvrTrack->Render(true, true);
 
+			if (wzGetKeyStateTrigger(WZ_KEY_SPACE))
+				g_pOvrTrack->SetHue();
+		}
+
+		// Screen clear
 		wzClear();
 
 		// Left eye
@@ -194,11 +225,26 @@ void DrawLoop(void)
 	wzPrintf(20, 30, "Ovrvision Pro DemoApp");
 	wzPrintf(20, 60, "Draw:%.2f", wzGetDrawFPS());
 
+	//AR infomation
+	if (g_useOvrvisionAR) {
+		wzPrintf(20, 120, "Ovrvision AR mode!");
+
+		OVR::OvMarkerData* dt = g_pOvrAR->GetMarkerData();
+		for (int i = 0; i < g_pOvrAR->GetMarkerDataSize(); i++)
+		{
+			wzPrintf(20, 135 + (i * 20), "ARMarker:%d, T:%.2f,%.2f,%.2f Q:%.2f%.2f,%.2f,%.2f", dt[i].id,
+				dt[i].translate.x, dt[i].translate.y, dt[i].translate.z,
+				dt[i].quaternion.x, dt[i].quaternion.y, dt[i].quaternion.z, dt[i].quaternion.w);
+		}
+	}
+
 	//Error infomation
 	if (!g_pOvrvision->isOpen()) {
 		wzSetSpriteColor(1.0f, 0.0f, 0.0f, 1.0f);
-		wzPrintf(20, 120, "[ERROR]Ovrvision not found.");
+		wzPrintf(20, 80, "[ERROR]Ovrvision not found.");
 	}
+
+	wzPrintf(20, 1000, "[I]Key : HandTracking, [O]Key : AR mode [P]Key : Processing Mode");
 }
 
 void OculusEndFrame(){}

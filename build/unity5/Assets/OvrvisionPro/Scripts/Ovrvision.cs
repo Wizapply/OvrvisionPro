@@ -122,7 +122,7 @@ public class Ovrvision : MonoBehaviour
 		CameraPlaneLeft.transform.localScale = new Vector3(OvrPro.aspectW, -1.0f, 1.0f);
 		CameraPlaneRight.transform.localScale = new Vector3(OvrPro.aspectW, -1.0f, 1.0f);
 		CameraPlaneLeft.transform.localPosition = new Vector3(-0.032f, 0.0f, OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
-		CameraPlaneRight.transform.localPosition = new Vector3(CameraRightGap.x - 0.036f, CameraRightGap.y, OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
+		CameraPlaneRight.transform.localPosition = new Vector3(CameraRightGap.x - 0.040f, 0.0f, OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
 
 		UnityEngine.VR.InputTracking.Recenter();
 	}
@@ -232,7 +232,26 @@ public class Ovrvision : MonoBehaviour
 	//Ovrvision Tracking Render
 	private int OvrvisionTrackRender()
 	{
-		return 1;
+		float[] markerGet = new float[3];
+		GCHandle marker = GCHandle.Alloc(markerGet, GCHandleType.Pinned);
+		//Get marker data
+		int ri = OvrPro.OvrvisionGetFinger3(marker.AddrOfPinnedObject());
+		Vector3 fgpos = new Vector3(markerGet[0] * 0.01f, markerGet[1] * 0.01f, markerGet[2]);
+
+		OvrvisionHandTracker[] otobjs = GameObject.FindObjectsOfType(typeof(OvrvisionHandTracker)) as OvrvisionHandTracker[];
+		foreach (OvrvisionHandTracker otobj in otobjs)
+		{
+			otobj.UpdateTransformNone();
+
+			if (fgpos.z <= 0.0f)
+				continue;
+
+			otobj.UpdateTransform(fgpos);
+		}
+
+		marker.Free();
+
+		return ri;
 	}
 
 	// Quit

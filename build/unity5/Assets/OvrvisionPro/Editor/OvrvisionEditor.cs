@@ -102,4 +102,34 @@ public class OvrvisionEditor : Editor {
 		}
 		EditorUtility.SetDirty( target );	//editor set
 	}
+
+	/* not use
+	[PostProcessBuild]
+	public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
+	{
+		// Copy of "arcl" files
+		string sourceFile = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "arcl");
+		string targetFile = Path.Combine(Path.GetDirectoryName(pathToBuiltProject), "arcl");
+		CopyDirectory(sourceFile, targetFile);
+	}
+
+	public static void CopyDirectory(string stSourcePath, string stDestPath)
+	{
+		if (!System.IO.Directory.Exists(stDestPath))
+		{
+			System.IO.Directory.CreateDirectory(stDestPath);
+			System.IO.File.SetAttributes(stDestPath, System.IO.File.GetAttributes(stSourcePath));
+		}
+		foreach (string stCopyFrom in System.IO.Directory.GetFiles(stSourcePath))
+		{
+			string stCopyTo = System.IO.Path.Combine(stDestPath, System.IO.Path.GetFileName(stCopyFrom));
+			System.IO.File.Copy(stCopyFrom, stCopyTo, true);
+		}
+		foreach (string stCopyFrom in System.IO.Directory.GetDirectories(stSourcePath))
+		{
+			string stCopyTo = System.IO.Path.Combine(stDestPath, System.IO.Path.GetFileName(stCopyFrom));
+			CopyDirectory(stCopyFrom, stCopyTo);
+		}
+	}
+	*/
 }

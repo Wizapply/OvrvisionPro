@@ -82,7 +82,7 @@ const uint8_t CyFxUSBBOSDscr[] =
     0x07,                               /* Descriptor size */
     CY_U3P_DEVICE_CAPB_DESCR,           /* Device capability type descriptor */
     CY_U3P_USB2_EXTN_CAPB_TYPE,         /* USB 2.1 extension capability type */
-    0x00, 0x00, 0x00, 0x00,             /* Supported device level features - LPM support */
+    0x02, 0x00, 0x00, 0x00,             /* Supported device level features - LPM support */
 
     /* SuperSpeed Device Capability */
     0x0A,                               /* Descriptor size */
@@ -91,8 +91,8 @@ const uint8_t CyFxUSBBOSDscr[] =
     0x00,                               /* Supported device level features  */
     0x0E, 0x00,                         /* Speeds supported by the device : SS, HS and FS */
     0x03,                               /* Functionality support */
-    0x00,                               /* U1 device exit latency */
-    0x00, 0x00                          /* U2 device exit latency */
+    0x0A,                               /* U1 device exit latency */
+    0x20, 0x00                          /* U2 device exit latency */
 };
 
 /* Standard Device Qualifier Descriptor */
@@ -335,11 +335,11 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x24,                           /* Class-specific VS I/f Type */
 	0x01,                           /* Descriptor Subtype : Input Header */
 	0x01,                           /* 1 format desciptor follows */
-	0x47,0x00,                      /* Total size of Class specific VS descr */
+	0xFB,0x00,                      /* Total size of Class specific VS descr */
 	CY_FX_EP_BULK_VIDEO,            /* EP address for BULK video data */
 	0x00,                           /* No dynamic format change supported */
 	0x04,                           /* Output terminal ID : 4 */
-	0x01,                           /* Still image capture method 1 supported */
+	0x00,                           /* Still image capture method 1 supported */
 	0x00,                           /* Hardware trigger NOT supported */
 	0x00,                           /* Hardware to initiate still image capture NOT supported */
 	0x01,                           /* Size of controls field : 1 byte */
@@ -367,7 +367,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x24,                           /* Descriptor type*/
 	0x05,                           /* Subtype: uncompressed frame I/F */
 	0x01,                           /* Frame Descriptor Index */
-	0x03,                           /* Still image capture method 1 supported, fixed frame rate */
+	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x00, 0x0A,                     /* Width in pixel */
 	0x80, 0x07,                     /* Height in pixel */
 	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
@@ -382,7 +382,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x24,                           /* Descriptor type*/
 	0x05,                           /* Subtype: uncompressed frame I/F */
 	0x02,                           /* Frame Descriptor Index */
-	0x03,                           /* Still image capture method 1 supported, fixed frame rate */
+	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x80, 0x07,                     /* Width in pixel */
 	0x38, 0x04,                     /* Height in pixel */
 	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
@@ -397,7 +397,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x24,                           /* Descriptor type*/
 	0x05,                           /* Subtype: uncompressed frame I/F */
 	0x03,                           /* Frame Descriptor Index */
-	0x03,                           /* Still image capture method 1 supported, fixed frame rate */
+	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x00, 0x05,                     /* Width in pixel */
 	0xC0, 0x03,                     /* Height in pixel */
 	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
@@ -412,7 +412,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x24,                           /* Descriptor type*/
 	0x05,                           /* Subtype: uncompressed frame I/F */
 	0x04,                           /* Frame Descriptor Index */
-	0x03,                           /* Still image capture method 1 supported, fixed frame rate */
+	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x00, 0x05,                     /* Width in pixel */
 	0x20, 0x03,                     /* Height in pixel */
 	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
@@ -427,7 +427,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x24,                           /* Descriptor type*/
 	0x05,                           /* Subtype: uncompressed frame I/F */
 	0x05,                           /* Frame Descriptor Index */
-	0x03,                           /* Still image capture method 1 supported, fixed frame rate */
+	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0xC0, 0x03,                     /* Width in pixel */
 	0xB6, 0x03,                     /* Height in pixel */
 	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
@@ -442,7 +442,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x24,                           /* Descriptor type*/
 	0x05,                           /* Subtype: uncompressed frame I/F */
 	0x06,                           /* Frame Descriptor Index */
-	0x03,                           /* Still image capture method 1 supported, fixed frame rate */
+	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x80, 0x02,                     /* Width in pixel */
 	0xE0, 0x01,                     /* Height in pixel */
 	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
@@ -457,7 +457,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x24,                           /* Descriptor type*/
 	0x05,                           /* Subtype: uncompressed frame I/F */
 	0x07,                           /* Frame Descriptor Index */
-	0x03,                           /* Still image capture method 1 supported, fixed frame rate */
+	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x40, 0x01,                     /* Width in pixel */
 	0xF0, 0x00,                     /* Height in pixel */
 	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
@@ -659,11 +659,11 @@ const uint8_t CyFxUSBHSConfigDscr[] =
 	0x24,                           /* Class-specific VS I/f Type */
 	0x01,                           /* Descriptotor Subtype : Input Header */
 	0x01,                           /* 1 format desciptor follows */
-	0x29,0x00,                      /* Total size of Class specific VS descr: 41 Bytes */
+	0x65,0x00,                      /* Total size of Class specific VS descr: 41 Bytes */
 	CY_FX_EP_BULK_VIDEO,            /* EP address for BULK video data */
 	0x00,                           /* No dynamic format change supported */
 	0x04,                           /* Output terminal ID : 4 */
-	0x01,                           /* Still image capture method 1 supported */
+	0x00,                           /* Still image capture method 1 supported */
 	0x00,                           /* Hardware trigger NOT supported */
 	0x00,                           /* Hardware to initiate still image capture NOT supported */
 	0x01,                           /* Size of controls field : 1 byte */
@@ -693,7 +693,7 @@ const uint8_t CyFxUSBHSConfigDscr[] =
 	0x24,                           /* Descriptor type*/
 	0x05,                           /* Subtype: uncompressed frame I/F */
 	0x01,                           /* Frame Descriptor Index */
-	0x03,                           /* Still image capture method 1 supported, fixed frame rate */
+	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x00, 0x05,                     /* Width in pixel */
 	0xC0, 0x03,                     /* Height in pixel */
 	0x00,0x00,0x94,0x11,            /* Min bit rate bits/s. */
@@ -708,7 +708,7 @@ const uint8_t CyFxUSBHSConfigDscr[] =
 	0x24,                           /* Descriptor type*/
 	0x05,                           /* Subtype: uncompressed frame I/F */
 	0x02,                           /* Frame Descriptor Index */
-	0x03,                           /* Still image capture method 1 supported, fixed frame rate */
+	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x80,0x02,                      /* Width in pixel */
 	0xE0,0x01,                      /* Height in pixel */
 	0x00,0x00,0x94,0x11,            /* Min bit rate bits/s. */

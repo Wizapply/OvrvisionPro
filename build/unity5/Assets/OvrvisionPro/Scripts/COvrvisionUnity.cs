@@ -340,13 +340,15 @@ public class COvrvisionUnity
 	}
 
 	//AR
-	public void OvrvisionARRender()
-	{
-		ovARRender();
-	}
 	public int OvrvisionGetAR(System.IntPtr mdata, int datasize)
 	{
 		return ovARGetData(mdata, datasize);
+	}
+
+	//HandTracking
+	public int OvrvisionGetFinger3(System.IntPtr mdata)
+	{
+		return ovGetTrackData(mdata);
 	}
 
 	//Tracking

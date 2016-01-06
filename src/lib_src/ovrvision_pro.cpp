@@ -227,7 +227,6 @@ void OvrvisionPro::Close()
 {
 	if (!m_isOpen)
 		return;
-
 	
 #ifdef WIN32
 	m_pODS->DeleteDevice();

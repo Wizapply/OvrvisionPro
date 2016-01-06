@@ -60,8 +60,8 @@ uint16_t wValue, wIndex, wLength;                       /* wValue, wIndex and wL
 
 CyBool_t        isUsbConnected = CyFalse;               /* Whether USB connection is active. */
 CyU3PUSBSpeed_t usbSpeed = CY_U3P_NOT_CONNECTED;        /* Current USB connection speed. */
-CyBool_t        clearFeatureRqtReceived = CyFalse;      /* Whether a CLEAR_FEATURE (stop streaming) request has been received. */
-CyBool_t        streamingStarted = CyFalse;             /* Whether USB host has started streaming data */
+CyBool_t        glClearFeatureRqtReceived = CyFalse;      /* Whether a CLEAR_FEATURE (stop streaming) request has been received. */
+CyBool_t        glStreamingStarted = CyFalse;             /* Whether USB host has started streaming data */
 
 /* UVC Probe Control Settings for a USB 3.0 connection. */
 uint8_t glProbeCtrl[CY_FX_UVC_MAX_PROBE_SETTING] = {
@@ -116,10 +116,14 @@ uint8_t volatile glUVCHeader[CY_FX_UVC_MAX_HEADER] =
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00  /* Source clock reference field */
 };
 
-volatile static CyBool_t g_hitFV = CyFalse;               /* Whether end of frame (FV) signal has been hit. */
-volatile static CyBool_t gpif_initialized = CyFalse;    /* Whether the GPIF init function has been called. */
-volatile static uint16_t prodCount = 0, consCount = 0;  /* Count of buffers received and committed during
-                                                           the current video frame. */
+volatile static CyBool_t glHitFV = CyFalse;               /* Whether end of frame (FV) signal has been hit. */
+volatile static CyBool_t glGpif_initialized = CyFalse;    /* Whether the GPIF init function has been called. */
+volatile static int32_t glDmaCount = 0;					 /* Count of buffers received and committed during the current video frame. */
+
+#define TIMER_PERIOD	(250)
+static CyU3PTimer gUvcTimer;	/*frame incomplete Timer*/
+static CyBool_t glTimerOn = CyTrue;
+
 //Define
 #define CY_FX_USB_UVC_SET_REQ_TYPE      (uint8_t)(0x21)         /* UVC Interface SET Request Type */
 #define CY_FX_USB_UVC_GET_REQ_TYPE      (uint8_t)(0xA1)         /* UVC Interface GET Request Type */
@@ -146,6 +150,7 @@ volatile static uint16_t prodCount = 0, consCount = 0;  /* Count of buffers rece
 #define CY_FX_UVC_STREAM_ABORT_EVENT            (1 << 1)
 #define CY_FX_UVC_VIDEO_CONTROL_REQUEST_EVENT   (1 << 2)
 #define CY_FX_UVC_VIDEO_STREAM_REQUEST_EVENT    (1 << 3)
+#define CY_FX_UVC_STREAM_RESET    (1 << 4)
 
 ////////////////////// Functions //////////////////////
 
@@ -164,13 +169,19 @@ static void UVCApplnAbortHandler (void)
 	uint32_t flag;
 	if (CyU3PEventGet (&glFxUVCEvent, CY_FX_UVC_STREAM_EVENT, CYU3P_EVENT_AND, &flag,CYU3P_NO_WAIT) == CY_U3P_SUCCESS)
 	{
-		g_hitFV     = CyFalse;
-
         /* Clear the Video Stream Request Event */
         CyU3PEventSet (&glFxUVCEvent, 0x00, CYU3P_EVENT_AND);
         /* Set Video Stream Abort Event */
         CyU3PEventSet (&glFxUVCEvent, CY_FX_UVC_STREAM_ABORT_EVENT, CYU3P_EVENT_OR);
 	}
+}
+
+static void UvcAppProgressTimer (uint32_t arg)
+{
+	/* This frame has taken too long to complete.
+	 * Abort it, so that the next frame can be started. */
+	//CyU3PEventSet(&glFxUVCEvent, CY_FX_UVC_STREAM_RESET,CYU3P_EVENT_OR);
+	CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyTrue);
 }
 
 // Callback Functions
@@ -261,8 +272,8 @@ static CyBool_t UVCApplnUSBSetupCB (uint32_t setupdat0, uint32_t setupdat1)
                 {
                 	/* Stop GPIF state machine to stop data transfers through FX3 */
                     CyU3PGpifDisable (CyTrue);
-                    gpif_initialized = CyFalse;
-                    streamingStarted = CyFalse;
+                    glGpif_initialized = CyFalse;
+                    glStreamingStarted = CyFalse;
                     /* Place the EP in NAK mode before cleaning up the pipe. */
                     CyU3PUsbSetEpNak (CY_FX_EP_BULK_VIDEO, CyTrue);
                     CyU3PBusyWait (100);
@@ -275,11 +286,12 @@ static CyBool_t UVCApplnUSBSetupCB (uint32_t setupdat0, uint32_t setupdat1)
 
                     /* Clear the stall condition and sequence numbers. */
                     CyU3PUsbStall (CY_FX_EP_BULK_VIDEO, CyFalse, CyTrue);
+
                     uvcHandleReq = CyTrue;
                     /* Complete Control request handshake */
                     CyU3PUsbAckSetup ();
                     /* Indicate stop streaming to main thread */
-                    clearFeatureRqtReceived = CyTrue;
+                    glClearFeatureRqtReceived = CyTrue;
                     UVCApplnAbortHandler();
                 }
             }
@@ -293,12 +305,12 @@ static CyBool_t UVCApplnUSBSetupCB (uint32_t setupdat0, uint32_t setupdat1)
                 	 * however MAC OS sends clear feature request right after it sends a
                 	 * Commit -> SET_CUR request. Hence, stop streaming only of streaming
                 	 * has started. */
-                    if (streamingStarted == CyTrue)
+                    if (glStreamingStarted == CyTrue)
                     {
                         /* Disable the GPIF state machine. */
                         CyU3PGpifDisable (CyTrue);
-                        gpif_initialized = CyFalse;
-                        streamingStarted = CyFalse;
+                        glGpif_initialized = CyFalse;
+                        glStreamingStarted = CyFalse;
 
                         /* Place the EP in NAK mode before cleaning up the pipe. */
                         CyU3PUsbSetEpNak (CY_FX_EP_BULK_VIDEO, CyTrue);
@@ -317,7 +329,7 @@ static CyBool_t UVCApplnUSBSetupCB (uint32_t setupdat0, uint32_t setupdat1)
                         /* Complete Control request handshake */
                         CyU3PUsbAckSetup ();
                         /* Indicate stop streaming to main thread */
-                        clearFeatureRqtReceived = CyTrue;
+                        glClearFeatureRqtReceived = CyTrue;
                         UVCApplnAbortHandler();
                     }
                     else
@@ -343,21 +355,21 @@ static void UVCApplnUSBEventCB (CyU3PUsbEventType_t evtype, uint16_t evdata)
     {
         case CY_U3P_USB_EVENT_RESET:
             CyU3PGpifDisable (CyTrue);
-            gpif_initialized = CyFalse;
-            streamingStarted = CyFalse;
+            glGpif_initialized = CyFalse;
+            glStreamingStarted = CyFalse;
             UVCApplnAbortHandler();
             break;
         case CY_U3P_USB_EVENT_SUSPEND:
             CyU3PGpifDisable (CyTrue);
-            gpif_initialized = CyFalse;
-            streamingStarted = CyFalse;
+            glGpif_initialized = CyFalse;
+            glStreamingStarted = CyFalse;
             UVCApplnAbortHandler();
             break;
         case CY_U3P_USB_EVENT_DISCONNECT:
             CyU3PGpifDisable (CyTrue);
-            gpif_initialized = CyFalse;
+            glGpif_initialized = CyFalse;
             isUsbConnected = CyFalse;
-            streamingStarted = CyFalse;
+            glStreamingStarted = CyFalse;
             UVCApplnAbortHandler();
             break;
         default:
@@ -365,15 +377,59 @@ static void UVCApplnUSBEventCB (CyU3PUsbEventType_t evtype, uint16_t evdata)
     }
 }
 
+/* Callback for LPM requests. Always return true to allow host to transition device
+ * into required LPM state U1/U2/U3. When data trasmission is active LPM management
+ * is explicitly desabled to prevent data transmission errors.
+ */
+static CyBool_t UVCApplnLPMRqtCB (CyU3PUsbLinkPowerMode link_mode)          /* USB 3.0 linkmode requested by Host */
+{
+    return CyTrue;
+}
+
 /* DMA callback providing notification when each buffer has been sent out to the USB host.
  * This is used to track whether all of the data has been sent out.
  */
 void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t type, CyU3PDmaCBInput_t *input)
 {
-    if (type == CY_U3P_DMA_CB_CONS_EVENT)
+    if(type & CY_U3P_DMA_CB_PROD_EVENT)
     {
-        consCount++;
-        streamingStarted = CyTrue;
+        CyU3PDmaBuffer_t    produced_buffer;
+        CyU3PReturnStatus_t apiRetStatus;
+
+        if(glTimerOn == CyTrue) {
+        	CyU3PTimerStart (&gUvcTimer);
+        	glTimerOn = CyFalse;
+        }
+
+		/* Check if we have a buffer ready to go. */
+		apiRetStatus = CyU3PDmaMultiChannelGetBuffer (multiChHandle, &produced_buffer, CYU3P_NO_WAIT);
+		if(apiRetStatus == CY_U3P_SUCCESS)
+		{
+			CyU3PMemCopy (produced_buffer.buffer - CY_FX_UVC_MAX_HEADER, (uint8_t *)glUVCHeader, CY_FX_UVC_MAX_HEADER);
+			if (produced_buffer.count < CY_FX_UVC_BUF_FULL_SIZE)
+			{
+				(produced_buffer.buffer - CY_FX_UVC_MAX_HEADER)[1] |= 0x02; //EOF
+                glUVCHeader[1] ^= 0x01;	 /* Toggle UVC header FRAME ID bit */
+
+                glHitFV = CyTrue; /* Flag is reset to indicate that the partial buffer was committed to USB */
+			}
+
+			/* Commit the updated DMA buffer to the USB endpoint. */
+			apiRetStatus = CyU3PDmaMultiChannelCommitBuffer (multiChHandle, produced_buffer.count + CY_FX_UVC_MAX_HEADER, 0);
+			if (apiRetStatus == CY_U3P_SUCCESS)
+				glDmaCount++;
+		}
+    }
+
+    if (type & CY_U3P_DMA_CB_CONS_EVENT)
+    {
+    	CyU3PTimerStop (&gUvcTimer);
+
+    	glDmaCount--;
+        glStreamingStarted = CyTrue;
+
+        glTimerOn = CyTrue;
+        CyU3PTimerModify (&gUvcTimer, TIMER_PERIOD, 0);
     }
 }
 
@@ -390,7 +446,7 @@ static void UVCApplnInit (void)
     CyU3PPibClock_t              pibclock;
 
     isUsbConnected = CyFalse;
-    clearFeatureRqtReceived = CyFalse;
+    glClearFeatureRqtReceived = CyFalse;
 
     /* Init the GPIO module */
     gpioClock.fastClkDiv = 2;
@@ -464,10 +520,13 @@ static void UVCApplnInit (void)
     	UVCAppErrorHandler (apiRetStatus);
 
     /* Setup the Callback to Handle the USB Setup Requests */
-    CyU3PUsbRegisterSetupCallback (UVCApplnUSBSetupCB, CyFalse);
+    CyU3PUsbRegisterSetupCallback (UVCApplnUSBSetupCB, CyTrue);
 
     /* Setup the Callback to Handle the USB Events */
     CyU3PUsbRegisterEventCallback (UVCApplnUSBEventCB);
+
+    /* Register a callback to handle LPM requests from the USB 3.0 host. */
+    CyU3PUsbRegisterLPMRequestCallback (UVCApplnLPMRqtCB);
 
     /* Register the USB device descriptors with the driver. */
     CyU3PUsbSetDesc (CY_U3P_USB_SET_HS_DEVICE_DESCR, 0, (uint8_t *)CyFxUSBDeviceDscrHS);
@@ -525,11 +584,21 @@ static void UVCApplnInit (void)
     dmaMultiConfig.prodFooter     = CY_FX_UVC_MAX_FOOTER;                 /* 4 byte footer to compensate for the 12 byte header. */
     dmaMultiConfig.consHeader     = 0;
     dmaMultiConfig.dmaMode        = CY_U3P_DMA_MODE_BYTE;
-    dmaMultiConfig.notification   = CY_U3P_DMA_CB_CONS_EVENT;
+    dmaMultiConfig.notification   = CY_U3P_DMA_CB_CONS_EVENT|CY_U3P_DMA_CB_PROD_EVENT;
     dmaMultiConfig.cb             = UvcApplnDmaCallback;
     apiRetStatus = CyU3PDmaMultiChannelCreate (&glChHandleUVCStream, CY_U3P_DMA_TYPE_MANUAL_MANY_TO_ONE, &dmaMultiConfig);
     if (apiRetStatus != CY_U3P_SUCCESS)
     	UVCAppErrorHandler (apiRetStatus);
+
+    CyU3PThreadSleep(10);
+
+    // Create watch dog timer
+    CyU3PTimerCreate (&gUvcTimer, UvcAppProgressTimer, 0x00, TIMER_PERIOD, 0, CYU3P_NO_ACTIVATE);
+
+   /* Reset the channel: Set to DSCR chain starting point in PORD/CONS SCKT; set DSCR_SIZE field in DSCR memory */
+    apiRetStatus = CyU3PDmaMultiChannelReset(&glChHandleUVCStream);
+    if (apiRetStatus != CY_U3P_SUCCESS)
+        	UVCAppErrorHandler (apiRetStatus);
 
     /* Enable USB connection from the FX3 device, preferably at USB 3.0 speed. */
     apiRetStatus = CyU3PConnectState (CyTrue, CyTrue);
@@ -560,7 +629,6 @@ static void UVCApplnI2CInit (void)
 //UVC Application Entry
 void UVCAppThread_Entry (uint32_t input)
 {
-    CyU3PDmaBuffer_t    produced_buffer;
     CyU3PReturnStatus_t apiRetStatus;
     uint32_t flag;
 
@@ -574,44 +642,30 @@ void UVCAppThread_Entry (uint32_t input)
     	 /* Waiting for the Video Stream Event */
 		if (CyU3PEventGet (&glFxUVCEvent, CY_FX_UVC_STREAM_EVENT, CYU3P_EVENT_AND, &flag, CYU3P_NO_WAIT) == CY_U3P_SUCCESS)
 		{
-			/* Check if we have a buffer ready to go. */
-			apiRetStatus = CyU3PDmaMultiChannelGetBuffer (&glChHandleUVCStream, &produced_buffer, CYU3P_NO_WAIT);
-			if (apiRetStatus == CY_U3P_SUCCESS)
-			{
-				CyU3PMemCopy (produced_buffer.buffer - CY_FX_UVC_MAX_HEADER, (uint8_t *)glUVCHeader, CY_FX_UVC_MAX_HEADER);
-				if (produced_buffer.count < CY_FX_UVC_BUF_FULL_SIZE)
-				{
-					(produced_buffer.buffer - CY_FX_UVC_MAX_HEADER)[1] |= 0x02; //EOF
-	                glUVCHeader[1] ^= 0x01;	 /* Toggle UVC header FRAME ID bit */
-
-	                g_hitFV = CyTrue; /* Flag is reset to indicate that the partial buffer was committed to USB */
-				}
-
-				/* Commit the updated DMA buffer to the USB endpoint. */
-				prodCount++;
-				apiRetStatus = CyU3PDmaMultiChannelCommitBuffer (&glChHandleUVCStream, produced_buffer.count + CY_FX_UVC_MAX_HEADER, 0);
-				if (apiRetStatus != CY_U3P_SUCCESS)
-					prodCount--;
-			}
-
 			/* If we have the end of frame signal and all of the committed data (including partial buffer)
 			 * has been read by the USB host; we can reset the DMA channel and prepare for the next video frame.
 			 */
-			if ((g_hitFV) && (prodCount <= consCount))
+			if ((glHitFV == CyTrue) && (glDmaCount == 0))
 			{
-				prodCount = 0;
-				consCount = 0;
-				g_hitFV     = CyFalse;
+				glHitFV = CyFalse;
 
-                /* Reset the DMA channel. */
+				CyU3PUsbSetEpNak (CY_FX_EP_BULK_VIDEO, CyTrue);
+				CyU3PBusyWait (100);
+
+				/* Reset USB EP and DMA Channel */
                 apiRetStatus = CyU3PDmaMultiChannelReset (&glChHandleUVCStream);
                 if (apiRetStatus != CY_U3P_SUCCESS)
                 	UVCAppErrorHandler(apiRetStatus);
+
+                CyU3PUsbFlushEp(CY_FX_EP_BULK_VIDEO);
 
                 /* Start Channel Immediately */
                 apiRetStatus = CyU3PDmaMultiChannelSetXfer (&glChHandleUVCStream, 0, 0);
                 if (apiRetStatus != CY_U3P_SUCCESS)
                 	UVCAppErrorHandler(apiRetStatus);
+
+                CyU3PUsbSetEpNak (CY_FX_EP_BULK_VIDEO, CyFalse);
+                CyU3PBusyWait (100);
 
 				/* Jump to the start state of the GPIF state machine. 257 is used as an
 				   arbitrary invalid state (> 255) number. */
@@ -623,14 +677,17 @@ void UVCAppThread_Entry (uint32_t input)
 			/* If we have a stream abort request pending. */
 			if (CyU3PEventGet (&glFxUVCEvent, CY_FX_UVC_STREAM_ABORT_EVENT, CYU3P_EVENT_AND_CLEAR, &flag, CYU3P_NO_WAIT) == CY_U3P_SUCCESS)
 			{
-				prodCount = 0;
-				consCount = 0;
-				g_hitFV = CyFalse;
+				glDmaCount = 0;
+				glHitFV = CyFalse;
+
+				glTimerOn = CyTrue;
+				CyU3PTimerStop (&gUvcTimer);
+				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyFalse);
 
 				/* Sensor reset function */
 				OV5653SensorReset();
 
-				if (!clearFeatureRqtReceived)
+				if (!glClearFeatureRqtReceived)
 				{
 					apiRetStatus = CyU3PDmaMultiChannelReset (&glChHandleUVCStream);
 					if (apiRetStatus != CY_U3P_SUCCESS)
@@ -640,7 +697,7 @@ void UVCAppThread_Entry (uint32_t input)
 					CyU3PUsbFlushEp (CY_FX_EP_BULK_VIDEO);
 				}
 
-				clearFeatureRqtReceived = CyFalse;
+				glClearFeatureRqtReceived = CyFalse;
 			}
 			else
 			{
@@ -653,7 +710,7 @@ void UVCAppThread_Entry (uint32_t input)
 					UVCAppErrorHandler (apiRetStatus);
 
 				/* Initialize gpif configuration and waveform descriptors */
-				if (gpif_initialized == CyFalse)
+				if (glGpif_initialized == CyFalse)
 				{
 					/* Load GPIF */
 				    apiRetStatus =  CyU3PGpifLoad ((CyU3PGpifConfig_t *) &CyFxGpifConfig);
@@ -665,7 +722,7 @@ void UVCAppThread_Entry (uint32_t input)
 				    if (apiRetStatus != CY_U3P_SUCCESS)
 				    	UVCAppErrorHandler (apiRetStatus);
 
-					gpif_initialized = CyTrue;
+				    glGpif_initialized = CyTrue;
 				}
 				else
 				{
@@ -1198,6 +1255,12 @@ void UVCAppEP0Thread_Entry (uint32_t input)
 				if (usbSpeed != CY_U3P_NOT_CONNECTED)
 					isUsbConnected = CyTrue;
 
+				/* Disable USB 3.0 LPM while Buffer is being transmitted out*/
+				if(usbSpeed == CY_U3P_SUPER_SPEED) {
+					CyU3PUsbLPMDisable ();
+					CyU3PUsbSetLinkPowerState (CyU3PUsbLPM_U0);
+					CyU3PBusyWait (200);
+				}
 			}
 
 			if (eventFlag & CY_FX_UVC_VIDEO_CONTROL_REQUEST_EVENT)
