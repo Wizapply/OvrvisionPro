@@ -12,7 +12,7 @@
 
 #include "OpenCL_kernel.h" // kernel code declared here const char *kernel;
 
-#define TONE_CORRECTION
+#define TONE_CORRECTION	// Tone correction for improve skin color estimation
 #define MEDIAN_3x3	// Use Median 3x3 filter to denoise
 //#define GAUSSIAN	// Use Gaussian filter to denoise
 
@@ -455,6 +455,7 @@ namespace OVR
 			clReleaseKernel(_medianBlur5x5);
 			clReleaseKernel(_mask);
 			clReleaseKernel(_maskOpengl);
+			clReleaseKernel(_maskD3D11);
 			clReleaseKernel(_invertMask);
 			clReleaseKernel(_toneCorrection);
 			clReleaseKernel(_resizeTone);
@@ -541,6 +542,8 @@ namespace OVR
 			_mask = clCreateKernel(_program, "mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_maskOpengl = clCreateKernel(_program, "mask_opengl", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_maskD3D11 = clCreateKernel(_program, "mask_d3d11", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_invertMask = clCreateKernel(_program, "invert_mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
@@ -1311,6 +1314,7 @@ namespace OVR
 		mask[1] = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
+		// Create mask of skin color region
 #if 1
 		SkinRegion(mask[0], mask[1], &event[0], &event[1]);
 #else
@@ -1365,14 +1369,20 @@ namespace OVR
 		//		__write_only image2d_t dst,	// CL_UNORM_INT8 x 4	<- DIFFERENT FORMAT
 		//		__read_only image2d_t mask,	// CL_UNSIGNED_INT8
 		//		__read_only int threshold)	// 
-#ifdef _DEBUG
-		cl_image_format format;		
+
+		//__kernel void mask_d3d11( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst,	// CL_UNORM_INT8 x 4	<- DIFFERENT FORMAT
+		//		__read_only image2d_t mask,	// CL_UNSIGNED_INT8
+		//		__read_only int threshold)	// 
+
+		// Check destination image format 
+		cl_image_format format;
 		clGetImageInfo(left, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
-		clGetImageInfo(right, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
-#endif // DEBUG
 
 		if (_sharing == OPENGL)
 		{
+			// OpenGL channel order == RGBA, and dataType == UNORM_INT8 
 			clSetKernelArg(_maskOpengl, 0, sizeof(cl_mem), &_reducedL);
 			clSetKernelArg(_maskOpengl, 1, sizeof(cl_mem), &left);
 			clSetKernelArg(_maskOpengl, 2, sizeof(cl_mem), &mask[0]);
@@ -1386,7 +1396,23 @@ namespace OVR
 			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _maskOpengl, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
-		else
+		else if (format.image_channel_data_type == CL_UNORM_INT8)
+		{
+			// dataType == UNORM_INT8 for D3D11 pixel shader
+			clSetKernelArg(_maskD3D11, 0, sizeof(cl_mem), &_reducedL);
+			clSetKernelArg(_maskD3D11, 1, sizeof(cl_mem), &left);
+			clSetKernelArg(_maskD3D11, 2, sizeof(cl_mem), &mask[0]);
+			clSetKernelArg(_maskD3D11, 3, sizeof(int), &_skinThreshold);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _maskD3D11, 2, NULL, _scaledRegion, NULL, 1, &event[0], event_l);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			clSetKernelArg(_maskD3D11, 0, sizeof(cl_mem), &_reducedR);
+			clSetKernelArg(_maskD3D11, 1, sizeof(cl_mem), &right);
+			clSetKernelArg(_maskD3D11, 2, sizeof(cl_mem), &mask[1]);
+			clSetKernelArg(_maskD3D11, 3, sizeof(int), &_skinThreshold);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _maskD3D11, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+		else // dataType == UNSIGNED_INT8
 		{
 			clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedL);
 			clSetKernelArg(_mask, 1, sizeof(cl_mem), &left);

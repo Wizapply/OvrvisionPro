@@ -335,6 +335,7 @@ namespace OVR
 			cl_kernel		_medianBlur5x5;
 			cl_kernel		_mask;
 			cl_kernel		_maskOpengl;
+			cl_kernel		_maskD3D11;
 			cl_kernel		_invertMask;
 			// kernels with tone correction
 			cl_kernel		_toneCorrection;
