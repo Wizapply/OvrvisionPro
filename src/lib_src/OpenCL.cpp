@@ -663,25 +663,20 @@ namespace OVR
 			clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, sizeof(devicename), devicename, NULL);
 			printf("PLATFORM: %s\n", devicename);
 #ifdef MACOSX
-			//clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
-			//pclGetGLContextInfoKHR = GETFUNCTION(platforms[i], clGetGLContextInfoKHR);
-			//#ifdef WIN32
-			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
-
-			//CGLContextObj kCGLContext = CGLGetCurrentContext();
-			//CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
+			CGLContextObj kCGLContext = CGLGetCurrentContext();
+			CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
 
 			cl_context_properties opengl_props[] = {
-				//			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
+                CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
 				0
 			};
 			size_t devSizeInBytes = 0;
-			clGetGLContextInfoAPPLE(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, NULL, &devSizeInBytes);
-			const size_t devNum = devSizeInBytes / sizeof(cl_device_id);
+			clGetGLContextInfoAPPLE(NULL, &kCGLContext, CL_CGL_DEVICE_FOR_CURRENT_VIRTUAL_SCREEN_APPLE, 0, NULL, &devSizeInBytes);
+			const size_t devNum = devSizeInBytes / sizeof(kCGLContext);
 			if (devNum)
 			{
 				std::vector<cl_device_id> devices(devNum);
-				clGetGLContextInfoAPPLE(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, devSizeInBytes, &devices[0], NULL);
+				clGetGLContextInfoAPPLE(NULL, &kCGLContext, CL_CGL_DEVICE_FOR_CURRENT_VIRTUAL_SCREEN_APPLE, devSizeInBytes, &devices[0], NULL);
 				for (size_t k = 0; k < devNum; k++)
 				{
 					cl_device_type t;
@@ -854,11 +849,11 @@ namespace OVR
 		};
 #elif defined(MACOSX)
 		// Reference https://developer.apple.com/library/mac/documentation/Performance/Conceptual/OpenCL_MacProgGuide/shareGroups/shareGroups.html#//apple_ref/doc/uid/TP40008312-CH20-SW1
-//		CGLContextObj kCGLContext = CGLGetCurrentContext();
-//		CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
+		CGLContextObj kCGLContext = CGLGetCurrentContext();
+		CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
 
 		cl_context_properties opengl_props[] = {
-//			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
+            CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
 			0
 		};
 #elif defined(LINUX)

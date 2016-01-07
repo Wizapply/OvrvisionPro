@@ -38,6 +38,9 @@ typedef void *TEXTURE;
 #include <OpenCL/cl_gl.h>       // OpenCL/OpenGL interoperabillity
 #include <OpenCL/cl_gl_ext.h>   // OpenCL/OpenGL interoperabillity
 #include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <OpenGL/CGLDevice.h>
+#include <OpenGL/CGLCurrent.h>
 #include <sys/stat.h>
 typedef unsigned int TEXTURE;
 #endif
