@@ -663,11 +663,12 @@ namespace OVR
 			clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, sizeof(devicename), devicename, NULL);
 			printf("PLATFORM: %s\n", devicename);
 #ifdef MACOSX
+			// Reference https://developer.apple.com/library/mac/documentation/Performance/Conceptual/OpenCL_MacProgGuide/shareGroups/shareGroups.html#//apple_ref/doc/uid/TP40008312-CH20-SW1
 			CGLContextObj kCGLContext = CGLGetCurrentContext();
 			CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
 
 			cl_context_properties opengl_props[] = {
-                CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
+				CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
 				0
 			};
 			size_t devSizeInBytes = 0;
@@ -693,7 +694,7 @@ namespace OVR
 #else
 			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 			pclGetGLContextInfoKHR = GETFUNCTION(platforms[i], clGetGLContextInfoKHR);
-			//#ifdef WIN32
+//#ifdef WIN32
 			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
 			cl_context_properties opengl_props[] = {
 				CL_CONTEXT_PLATFORM, (cl_context_properties)platforms[i],
@@ -701,14 +702,14 @@ namespace OVR
 				CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
 				0
 			};
-			//#elif defined(LINUX)
-			//			cl_context_properties opengl_props[] = {
-			//				CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
-			//				CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
-			//				CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
-			//				0
-			//			};
-			//#endif
+//#elif defined(LINUX)
+			//cl_context_properties opengl_props[] = {
+			//		CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+			//		CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
+			//		CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
+			//		0
+			//};
+//#endif
 			size_t devSizeInBytes = 0;
 			pclGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, NULL, &devSizeInBytes);
 			const size_t devNum = devSizeInBytes / sizeof(cl_device_id);
@@ -778,6 +779,13 @@ namespace OVR
 						gl_sharing = true;
 						printf("\tcl_khr_gl_sharing\n");
 					}
+#ifdef MACOSX
+					else if (strstr(extensions, "cl_APPLE_gl_sharing") != NULL)
+					{
+						gl_sharing = true;
+						printf("\tcl_APPLE_gl_sharing\n");
+					}
+#endif // MACOSX
 #ifdef WIN32
 					if (strstr(extensions, "cl_nv_d3d11_sharing") != NULL)
 					{
@@ -853,7 +861,7 @@ namespace OVR
 		CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
 
 		cl_context_properties opengl_props[] = {
-            CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
+			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
 			0
 		};
 #elif defined(LINUX)
