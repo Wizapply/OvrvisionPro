@@ -341,9 +341,9 @@ namespace OVR
 			{
                 throw std::runtime_error("Insufficient OpenCL version");
 			}
-#ifndef MACOSX
+//#ifndef MACOSX
 			pclGetGLContextInfoKHR = GETFUNCTION(_platformId, clGetGLContextInfoKHR);
-#endif
+//#endif
 			CreateContext(mode, pDevice);
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
@@ -660,7 +660,7 @@ namespace OVR
 			char devicename[80];
 			clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, sizeof(devicename), devicename, NULL);
 			printf("PLATFORM: %s\n", devicename);
-#ifndef MACOSX
+//#ifndef MACOSX
 			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 			pclGetGLContextInfoKHR = GETFUNCTION(platforms[i], clGetGLContextInfoKHR);
 			//#ifdef WIN32
@@ -699,7 +699,7 @@ namespace OVR
 					}
 				}
 			}
-#endif
+//#endif
 			// Check Memory capacity and extensions
 			bool gl_sharing = false, version = false, d3d11_sharing = false, memory = false;
 			cl_ulong mem_size;
@@ -855,9 +855,9 @@ namespace OVR
 			break;
 #elif defined(MACOSX)
 		case OPENGL:
-			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
-			_sharing = mode = NONE;
-			_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			_context = clCreateContext(opengl_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			//_sharing = mode = NONE;
+			//_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
 		break;
 #elif defined(LINUX)
 		case OPENGL:
@@ -989,29 +989,19 @@ namespace OVR
 	// Create textures
 	void OvrvisionProOpenCL::CreateSkinTextures(int width, int height, TEXTURE left, TEXTURE right)
 	{
-#if	defined(WIN32)
 		switch (_sharing)
 		{
 		case OPENGL:
 			_texture[0] = CreateGLTexture2D((GLuint)left, width, height);
 			_texture[1] = CreateGLTexture2D((GLuint)right, width, height);
 			break;
+#if	defined(WIN32)
 		case D3D11:
 			_texture[0] = CreateD3DTexture2D((ID3D11Texture2D *)left, width, height);
 			_texture[1] = CreateD3DTexture2D((ID3D11Texture2D *)right, width, height);
 			break;
-		}
-#elif defined(LINUX)
-		switch (_sharing)
-		{
-		case OPENGL:
-			_texture[0] = CreateGLTexture2D((GLuint)left, width, height);
-			_texture[1] = CreateGLTexture2D((GLuint)right, width, height);
-			break;
-		}
-#elif defined(MACOSX)
-		// Can't create clCreateFromGLTexture2D on Xcode7
 #endif
+		}
 	}
 
 	// Update textures
@@ -1065,9 +1055,13 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
 #elif defined(MACOSX)
-		glFlushRenderAPPLE();// depend on mode
-		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
-		clFinish(_commandQueue);
+		if (_sharing == OPENGL)
+		{
+			glFlushRenderAPPLE();// depend on mode
+			SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
+			_errorCode = clFinish(_commandQueue);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
 #endif
 		// Release temporaries
 		clReleaseEvent(event[0]);
@@ -1222,7 +1216,7 @@ namespace OVR
 		}
 	}
 
-#if defined(WIN32) || defined(LINUX) || defined(MACOSX)
+//#if defined(WIN32) || defined(LINUX) || defined(MACOSX)
 	// OpenGL shared texture
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
@@ -1257,7 +1251,7 @@ namespace OVR
 #endif
 		return image;
 	}
-#endif
+//#endif
 
 
 #ifdef WIN32
