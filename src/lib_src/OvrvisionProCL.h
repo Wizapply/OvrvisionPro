@@ -34,6 +34,9 @@ typedef void *TEXTURE;
 #ifdef MACOSX
 // OpenCL header
 #include <OpenCL/cl.h>// OpenCL and its extensions
+#include <OpenCL/cl_ext.h>
+#include <OpenCL/cl_gl.h>       // OpenCL/OpenGL interoperabillity
+#include <OpenCL/cl_gl_ext.h>   // OpenCL/OpenGL interoperabillity
 #include <OpenGL/gl.h>
 #include <sys/stat.h>
 typedef unsigned int TEXTURE;
