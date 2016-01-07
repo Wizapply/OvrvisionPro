@@ -294,7 +294,10 @@ namespace OVR
 			clCreateFromD3D11Texture3DKHR_fn    pclCreateFromD3D11Texture3DKHR = NULL;
 			clEnqueueAcquireD3D11ObjectsKHR_fn	pclEnqueueAcquireD3D11ObjectsKHR = NULL;
 			clEnqueueReleaseD3D11ObjectsKHR_fn	pclEnqueueReleaseD3D11ObjectsKHR = NULL;
-
+#endif
+#ifdef MACOSX
+			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
+#else
 			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 #endif
 			char	*_deviceExtensions;

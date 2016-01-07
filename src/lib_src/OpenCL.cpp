@@ -341,9 +341,11 @@ namespace OVR
 			{
                 throw std::runtime_error("Insufficient OpenCL version");
 			}
-//#ifndef MACOSX
+#ifdef MACOSX
 			pclGetGLContextInfoKHR = GETFUNCTION(_platformId, clGetGLContextInfoKHR);
-//#endif
+#else
+			pclGetGLContextInfoKHR = GETFUNCTION(_platformId, clGetGLContextInfoKHR);
+#endif
 			CreateContext(mode, pDevice);
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
@@ -660,7 +662,7 @@ namespace OVR
 			char devicename[80];
 			clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, sizeof(devicename), devicename, NULL);
 			printf("PLATFORM: %s\n", devicename);
-//#ifndef MACOSX
+#ifdef MACOSX
 			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 			pclGetGLContextInfoKHR = GETFUNCTION(platforms[i], clGetGLContextInfoKHR);
 			//#ifdef WIN32
@@ -699,7 +701,46 @@ namespace OVR
 					}
 				}
 			}
-//#endif
+#else
+			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
+			pclGetGLContextInfoKHR = GETFUNCTION(platforms[i], clGetGLContextInfoKHR);
+			//#ifdef WIN32
+			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
+			cl_context_properties opengl_props[] = {
+				CL_CONTEXT_PLATFORM, (cl_context_properties)platforms[i],
+				CL_GL_CONTEXT_KHR, (cl_context_properties)wglGetCurrentContext(),
+				CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
+				0
+			};
+			//#elif defined(LINUX)
+			//			cl_context_properties opengl_props[] = {
+			//				CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+			//				CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
+			//				CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
+			//				0
+			//			};
+			//#endif
+			size_t devSizeInBytes = 0;
+			pclGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, NULL, &devSizeInBytes);
+			const size_t devNum = devSizeInBytes / sizeof(cl_device_id);
+			if (devNum)
+			{
+				std::vector<cl_device_id> devices(devNum);
+				pclGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, devSizeInBytes, &devices[0], NULL);
+				for (size_t k = 0; k < devNum; k++)
+				{
+					cl_device_type t;
+					clGetDeviceInfo(devices[k], CL_DEVICE_TYPE, sizeof(t), &t, NULL);
+					//if (t == CL_DEVICE_TYPE_GPU)
+					{
+						clGetDeviceInfo(devices[k], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
+						char buffer[32];
+						clGetDeviceInfo(devices[k], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, NULL);
+						printf("\t%s %s\n", devicename, buffer);
+					}
+				}
+			}
+#endif
 			// Check Memory capacity and extensions
 			bool gl_sharing = false, version = false, d3d11_sharing = false, memory = false;
 			cl_ulong mem_size;
@@ -1122,7 +1163,22 @@ namespace OVR
 				SAMPLE_CHECK_ERRORS(_errorCode)
 			}
 		}
-#elif defined(LINUX) || defined(MACOSX)
+#elif defined(LINUX)
+		if (_sharing == OPENGL)
+		{	//	glFinish(); // depend on mode
+			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+
+			// Copy to texture
+			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
+			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
+
+			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+#elif defined(MACOSX)
 		if (_sharing == OPENGL)
 		{	//	glFinish(); // depend on mode
 			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
