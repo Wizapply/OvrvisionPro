@@ -820,12 +820,12 @@ namespace OVR
 #elif defined(MACOSX)
 		// Reference https://developer.apple.com/library/mac/documentation/Performance/Conceptual/OpenCL_MacProgGuide/shareGroups/shareGroups.html#//apple_ref/doc/uid/TP40008312-CH20-SW1
 //		CGLContextObj kCGLContext = CGLGetCurrentContext();
-//		CGlShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGContext);
-//
-//		cl_context_properties opengl_props[] = {
+//		CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
+
+		cl_context_properties opengl_props[] = {
 //			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
-//			0
-//		};
+			0
+		};
 #elif defined(LINUX)
 		cl_context_properties opengl_props[] = {
 			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
@@ -855,7 +855,7 @@ namespace OVR
 			break;
 #elif defined(MACOSX)
 		case OPENGL:
-//			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
+			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
 			_sharing = mode = NONE;
 			_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
 		break;
@@ -1065,10 +1065,9 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
 #elif defined(MACOSX)
-		//glFlushRenderAPPLE();// depend on mode
+		glFlushRenderAPPLE();// depend on mode
 		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
 		clFinish(_commandQueue);
-
 #endif
 		// Release temporaries
 		clReleaseEvent(event[0]);
@@ -1129,7 +1128,7 @@ namespace OVR
 				SAMPLE_CHECK_ERRORS(_errorCode)
 			}
 		}
-#elif defined(LINUX)
+#elif defined(LINUX) || defined(MACOSX)
 		if (_sharing == OPENGL)
 		{	//	glFinish(); // depend on mode
 			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
@@ -1144,7 +1143,6 @@ namespace OVR
 			_errorCode = clFinish(_commandQueue);	// NVIDIA has not cl_khr_gl_event
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
-#elif defined(MACOSX)
 #endif
 		// Release temporaries
 		clReleaseEvent(event[0]);
@@ -1224,7 +1222,7 @@ namespace OVR
 		}
 	}
 
-#if defined(WIN32) || defined(LINUX) //|| defined(MACOSX)
+#if defined(WIN32) || defined(LINUX) || defined(MACOSX)
 	// OpenGL shared texture
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
@@ -2091,7 +2089,7 @@ namespace OVR
 		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &right);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[1], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-#else
+#else // MEDIAN_5x5
 		clSetKernelArg(_medianBlur5x5, 0, sizeof(cl_mem), &l);
 		clSetKernelArg(_medianBlur5x5, 1, sizeof(cl_mem), &left);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _medianBlur5x5, 2, NULL, size, NULL, 1, &event[0], event_l);
