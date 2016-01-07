@@ -296,9 +296,9 @@ namespace OVR
 			clEnqueueReleaseD3D11ObjectsKHR_fn	pclEnqueueReleaseD3D11ObjectsKHR = NULL;
 #endif
 #ifdef MACOSX
-			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
+			//clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 #else
-			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
+			//clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 #endif
 			char	*_deviceExtensions;
 			Mat		*_mapX[2], *_mapY[2];	// camera parameter
