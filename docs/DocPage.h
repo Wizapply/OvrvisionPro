@@ -57,10 +57,12 @@ Ovrvision SDK
     - <b>ovrvision_figure.exe</b> : The AR demonstration using a product package.
 - include/ : include files
 - tools/
-  - <b>calibration.exe</b> : Calibration Tool
+  - <b>ovrvision_calibration.exe</b> : Calibration Tool
+  - <b>ovrvision_clear_eeprom.exe</b> : Calibration Reset Tool (Windows Only)
   - <b>chess4x7x30mm.pdf</b> : The calibration board for printing.
 - marker_samples/
 - examples/
+  - 3rdparty/ : Other libraries which use with examples
   - vs2013/ : VisualStudio 2013 build project files
   - vs2015/ : VisualStudio 2015 build project files
 - <b>LICENSE</b> : Ovrvision SDK license
@@ -69,7 +71,7 @@ Ovrvision SDK
 @section conststruct Recommended System Requirements
 - CPU : Intel Core i5,i7 (Haswell) 3.0Ghz processor, AMD FX-6300 processor or faster
 - GPU GeForce GTX 760, AMD Radeon R9 280 or faster (OpenCL1.2 or more)
-- Memory : DDR3-1600 4GB or more
+- Memory : DDR3-1600 8GB or more
 - Interface : USB3.0 Port
 - OS 
   - Windows 7, 8.1 and 10<br />
@@ -101,18 +103,18 @@ Run Ovrvision Pro.
 Ovrvision Proを動かしてみる
 -# OvrvisionProをUSB3.0ポートに接続する
 -# 標準のUVCドライバがインストール
--# binフォルダ内の「ovrvision_app_csharp.exe」を起動しオープン。
--# カメラ画像が問題なく動作すれば完了。
+-# binフォルダ内の「ovrvision_app_csharp.exe」を起動しオープン
+-# カメラ画像が問題なく動作すれば完了
 
 @subsection gstep3 Step 3: Ovrvision Pro calibration.
 You should do a calibration, because it connects with environment. <br />
 -# How to use a calibration tool is here. ：@ref calib
--# Run bin -> demo -> <b>ovrvision_figure.exe</b>
+-# Run the [bin -> x86 or x64 -> <b>ovrvision_app.exe</b>]
 
-環境に合わせるため、キャリブレーションを行う。<br />
-キャリブレーションはカメラレンズの変更がない限り、初回のみで良い。<br />
+環境に合わせるため、キャリブレーションを行う<br />
+キャリブレーションはカメラレンズの変更がない限り、初回のみで良い<br />
 -# キャリブレーションツールの使い方はこちら：@ref calib
--# bin -> demo -> <b>ovrvision_figure.exe</b>を起動
+-# bin -> x86 or x64 -> <b>ovrvision_app.exe</b>を起動
 
 @section license SDK License
 Copyright(C) 2013-2016 Wizapply<br />
@@ -131,7 +133,7 @@ THE SOFTWARE.<br />
 @page page1 Using the Tools
 @tableofcontents
 
-Introduce how to use the tool attached to OvrvisionPro SDK. 
+Introduce how to use the tool attached to OvrvisionPro SDK.  <br />
 OvrvisionProに付属するツールの使い方についてご紹介します。
 
 @section calib Calibration tool
@@ -152,24 +154,52 @@ The usage should confirm the following video. <br />
 - Coming Soon
 */
 
-/*! @page page25 How to FingerTracking
-指をトラッキングする機能を使います。<br />
-※現在、テスト中で一部は改善予定です。<br />
 
+/*! @page page3 How to Play Demons
+
+@section htdemo_ardemo AR Demonstration
+The demonstration which does AR.<br />
+ＡＲ機能を使います。<br />
+
+- デモンストレーションプログラムを<a href="https://www.dropbox.com/s/8yy7isjnsrfkl08/ar_demo.zip?dl=0" target="_new">ここから</a>ダウンロードします。
+- Please download a demonstration program from <a href="https://www.dropbox.com/s/8yy7isjnsrfkl08/ar_demo.zip?dl=0" target="_new">HERE</a>. 
+
+If program is started, please look the package of OvrvisionPro.<br />
+It is completion when a character appears.<br />
+プログラムを起動したら、OvrvisionProのパッケージを見ます。<br />
+キャラクターが出現したら完了です。<br />
+
+@image html ar_1.png
+
+@section htdemo_handtrack Hand Tracking Demonstration
+The demonstration which does Tracking of the finger.<br />
+指をトラッキングする機能を使います。<br />
+
+- デモンストレーションプログラムを<a href="https://www.dropbox.com/s/563xs2a017lnk5t/handtracking_demo.zip?dl=0" target="_new">ここから</a>ダウンロードします。
+- Please download a demonstration program from <a href="https://www.dropbox.com/s/563xs2a017lnk5t/handtracking_demo.zip?dl=0" target="_new">HERE</a>. 
+
+If program is started, please start the calibration for Tracking by the "H" key. <br />
 プログラムを起動したら「H」キーでトラッキング用キャリブレーションを開始します。
 @image html tracking_1.jpg
+
+Like an image, you combine with the cap of the Tracking color, and red beige blue. <br />
 画像のように、青色にトラッキング色のキャップ、赤色に肌色に合わせます。
 @image html tracking_2.jpg
+Please press and set the "SPACE" key. <br />
+When it cannot do well, you press and reset a key repeatedly. 
 「SPACE」キーを押してセットします。<br />
 上手くいかなかった場合は、何度もキーを押してリセットします。
 @image html tracking_3.jpg
+
+It is completion when a red marker appears in a finger. 
+指に赤いマーカーが表示されたら完了です。
 */
 
-/*! @page page3 How to Rebuild SDK
+/*! @page page4 How to Programming Examples
 - Coming Soon
 */
 
-/*! @page page32 How to remove lens dust
+/*! @page page5 How to remove lens dust
 How to remove when dust has adhered to the image sensor.<br />
 イメージセンサーにゴミが付着している場合の除去方法<br />
 @image html lens_sow1.jpg
@@ -180,8 +210,22 @@ How to remove when dust has adhered to the image sensor.<br />
 @image html lens_sow6.jpg
 */
 
-/*! @page page4 Release Notes
+/*! @page page6 Release Notes
 @tableofcontents
+@section sdk6 Ovrvision SDK v1.31
+Date : 08/Jan/2015<br />
+<b>Notes</b>
+- Fixed bugs.
+- Improved accuracy of the hand tracking system. 
+- Add an AR sample and hand tracking.
+
+<b>Unimplementeds and issue</b>
+- Linux OS support
+- Unreal Engine 4
+- The memory leak of OpenCL. (NVIDIA Driver)
+- The phenomenon in which transfer stops on the way.
+- A defect of a document.
+
 @section sdk5 Ovrvision SDK v1.3
 Date : 29/Dec/2015<br />
 <b>Notes</b>
@@ -247,6 +291,6 @@ Date : 01/Dec/2015<br />
 - Unreal Engine 4
 */
 
-/*! @page page5 FAQ
+/*! @page page7 FAQ
   Coming Soon
 */
