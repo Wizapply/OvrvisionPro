@@ -91,7 +91,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\bin\x86;..\..\3rdparty\opencv\build\x86\vc12\lib;$(DXSDK_DIR)lib\x86</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_core300d.lib;opencv_hal300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_videoio300d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ovrvisiond.lib;opencv_core300d.lib;opencv_hal300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_videoio300d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -127,7 +127,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\bin\x86;..\..\3rdparty\opencv\build\x86\vc12\lib;$(DXSDK_DIR)lib\x86</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_core300.lib;opencv_hal300.lib;opencv_highgui300.lib;opencv_imgcodecs300.lib;opencv_imgproc300.lib;opencv_videoio300.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ovrvision.lib;opencv_core300.lib;opencv_hal300.lib;opencv_highgui300.lib;opencv_imgcodecs300.lib;opencv_imgproc300.lib;opencv_videoio300.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

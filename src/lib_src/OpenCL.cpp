@@ -12,7 +12,7 @@
 
 #include "OpenCL_kernel.h" // kernel code declared here const char *kernel;
 
-#define TONE_CORRECTION
+#define TONE_CORRECTION	// Tone correction for improve skin color estimation
 #define MEDIAN_3x3	// Use Median 3x3 filter to denoise
 //#define GAUSSIAN	// Use Gaussian filter to denoise
 
@@ -341,8 +341,10 @@ namespace OVR
 			{
                 throw std::runtime_error("Insufficient OpenCL version");
 			}
-#ifndef MACOSX
-			pclGetGLContextInfoKHR = GETFUNCTION(_platformId, clGetGLContextInfoKHR);
+#ifdef MACOSX
+			//pclGetGLContextInfoKHR = GETFUNCTION(_platformId, clGetGLContextInfoKHR);
+#else
+			//pclGetGLContextInfoKHR = GETFUNCTION(_platformId, clGetGLContextInfoKHR);
 #endif
 			CreateContext(mode, pDevice);
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
@@ -455,6 +457,7 @@ namespace OVR
 			clReleaseKernel(_medianBlur5x5);
 			clReleaseKernel(_mask);
 			clReleaseKernel(_maskOpengl);
+			clReleaseKernel(_maskD3D11);
 			clReleaseKernel(_invertMask);
 			clReleaseKernel(_toneCorrection);
 			clReleaseKernel(_resizeTone);
@@ -541,6 +544,8 @@ namespace OVR
 			_mask = clCreateKernel(_program, "mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_maskOpengl = clCreateKernel(_program, "mask_opengl", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_maskD3D11 = clCreateKernel(_program, "mask_d3d11", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_invertMask = clCreateKernel(_program, "invert_mask", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
@@ -657,10 +662,39 @@ namespace OVR
 			char devicename[80];
 			clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, sizeof(devicename), devicename, NULL);
 			printf("PLATFORM: %s\n", devicename);
-#ifndef MACOSX
+#ifdef MACOSX
+			// Reference https://developer.apple.com/library/mac/documentation/Performance/Conceptual/OpenCL_MacProgGuide/shareGroups/shareGroups.html#//apple_ref/doc/uid/TP40008312-CH20-SW1
+			CGLContextObj kCGLContext = CGLGetCurrentContext();
+			CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
+
+			cl_context_properties opengl_props[] = {
+				CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
+				0
+			};
+			size_t devSizeInBytes = 0;
+			clGetGLContextInfoAPPLE(NULL, &kCGLContext, CL_CGL_DEVICE_FOR_CURRENT_VIRTUAL_SCREEN_APPLE, 0, NULL, &devSizeInBytes);
+			const size_t devNum = devSizeInBytes / sizeof(kCGLContext);
+			if (devNum)
+			{
+				std::vector<cl_device_id> devices(devNum);
+				clGetGLContextInfoAPPLE(NULL, &kCGLContext, CL_CGL_DEVICE_FOR_CURRENT_VIRTUAL_SCREEN_APPLE, devSizeInBytes, &devices[0], NULL);
+				for (size_t k = 0; k < devNum; k++)
+				{
+					cl_device_type t;
+					clGetDeviceInfo(devices[k], CL_DEVICE_TYPE, sizeof(t), &t, NULL);
+					//if (t == CL_DEVICE_TYPE_GPU)
+					{
+						clGetDeviceInfo(devices[k], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
+						char buffer[32];
+						clGetDeviceInfo(devices[k], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, NULL);
+						printf("\t%s %s\n", devicename, buffer);
+					}
+				}
+			}
+#else
 			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 			pclGetGLContextInfoKHR = GETFUNCTION(platforms[i], clGetGLContextInfoKHR);
-			//#ifdef WIN32
+//#ifdef WIN32
 			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
 			cl_context_properties opengl_props[] = {
 				CL_CONTEXT_PLATFORM, (cl_context_properties)platforms[i],
@@ -668,14 +702,14 @@ namespace OVR
 				CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
 				0
 			};
-			//#elif defined(LINUX)
-			//			cl_context_properties opengl_props[] = {
-			//				CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
-			//				CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
-			//				CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
-			//				0
-			//			};
-			//#endif
+//#elif defined(LINUX)
+			//cl_context_properties opengl_props[] = {
+			//		CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+			//		CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
+			//		CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
+			//		0
+			//};
+//#endif
 			size_t devSizeInBytes = 0;
 			pclGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, NULL, &devSizeInBytes);
 			const size_t devNum = devSizeInBytes / sizeof(cl_device_id);
@@ -745,6 +779,13 @@ namespace OVR
 						gl_sharing = true;
 						printf("\tcl_khr_gl_sharing\n");
 					}
+#ifdef MACOSX
+					else if (strstr(extensions, "cl_APPLE_gl_sharing") != NULL)
+					{
+						gl_sharing = true;
+						printf("\tcl_APPLE_gl_sharing\n");
+					}
+#endif // MACOSX
 #ifdef WIN32
 					if (strstr(extensions, "cl_nv_d3d11_sharing") != NULL)
 					{
@@ -816,13 +857,13 @@ namespace OVR
 		};
 #elif defined(MACOSX)
 		// Reference https://developer.apple.com/library/mac/documentation/Performance/Conceptual/OpenCL_MacProgGuide/shareGroups/shareGroups.html#//apple_ref/doc/uid/TP40008312-CH20-SW1
-//		CGLContextObj kCGLContext = CGLGetCurrentContext();
-//		CGlShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGContext);
-//
-//		cl_context_properties opengl_props[] = {
-//			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
-//			0
-//		};
+		CGLContextObj kCGLContext = CGLGetCurrentContext();
+		CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
+
+		cl_context_properties opengl_props[] = {
+			CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (cl_context_properties)kCGLShareGroup,
+			0
+		};
 #elif defined(LINUX)
 		cl_context_properties opengl_props[] = {
 			CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
@@ -852,10 +893,8 @@ namespace OVR
 			break;
 #elif defined(MACOSX)
 		case OPENGL:
-//			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
-			_sharing = mode = NONE;
-			_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
-		break;
+			_context = clCreateContext(opengl_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			break;
 #elif defined(LINUX)
 		case OPENGL:
 			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
@@ -986,29 +1025,19 @@ namespace OVR
 	// Create textures
 	void OvrvisionProOpenCL::CreateSkinTextures(int width, int height, TEXTURE left, TEXTURE right)
 	{
-#if	defined(WIN32)
 		switch (_sharing)
 		{
 		case OPENGL:
 			_texture[0] = CreateGLTexture2D((GLuint)left, width, height);
 			_texture[1] = CreateGLTexture2D((GLuint)right, width, height);
 			break;
+#if	defined(WIN32)
 		case D3D11:
 			_texture[0] = CreateD3DTexture2D((ID3D11Texture2D *)left, width, height);
 			_texture[1] = CreateD3DTexture2D((ID3D11Texture2D *)right, width, height);
 			break;
-		}
-#elif defined(LINUX)
-		switch (_sharing)
-		{
-		case OPENGL:
-			_texture[0] = CreateGLTexture2D((GLuint)left, width, height);
-			_texture[1] = CreateGLTexture2D((GLuint)right, width, height);
-			break;
-		}
-#elif defined(MACOSX)
-		// Can't create clCreateFromGLTexture2D on Xcode7
 #endif
+		}
 	}
 
 	// Update textures
@@ -1062,10 +1091,13 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
 #elif defined(MACOSX)
-		//glFlushRenderAPPLE();// depend on mode
-		SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
-		clFinish(_commandQueue);
-
+		if (_sharing == OPENGL)
+		{
+			glFlushRenderAPPLE();// depend on mode
+			SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
+			_errorCode = clFinish(_commandQueue);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
 #endif
 		// Release temporaries
 		clReleaseEvent(event[0]);
@@ -1142,6 +1174,20 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
 #elif defined(MACOSX)
+		if (_sharing == OPENGL)
+		{	//	glFinish(); // depend on mode
+			_errorCode = clEnqueueAcquireGLObjects(_commandQueue, 2, _texture, 0, NULL, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+
+			// Copy to texture
+			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
+			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
+
+			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clFinish(_commandQueue);	// cl_APPLE_gl_event
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
 #endif
 		// Release temporaries
 		clReleaseEvent(event[0]);
@@ -1221,7 +1267,7 @@ namespace OVR
 		}
 	}
 
-#if defined(WIN32) || defined(LINUX) //|| defined(MACOSX)
+//#if defined(WIN32) || defined(LINUX) || defined(MACOSX)
 	// OpenGL shared texture
 	// Reference: http://www.isus.jp/article/idz/vc/sharing-surfaces-between-opencl-and-opengl43/
 	cl_mem OvrvisionProOpenCL::CreateGLTexture2D(GLuint texture, int width, int height)
@@ -1256,7 +1302,7 @@ namespace OVR
 #endif
 		return image;
 	}
-#endif
+//#endif
 
 
 #ifdef WIN32
@@ -1311,6 +1357,7 @@ namespace OVR
 		mask[1] = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
+		// Create mask of skin color region
 #if 1
 		SkinRegion(mask[0], mask[1], &event[0], &event[1]);
 #else
@@ -1365,14 +1412,20 @@ namespace OVR
 		//		__write_only image2d_t dst,	// CL_UNORM_INT8 x 4	<- DIFFERENT FORMAT
 		//		__read_only image2d_t mask,	// CL_UNSIGNED_INT8
 		//		__read_only int threshold)	// 
-#ifdef _DEBUG
-		cl_image_format format;		
+
+		//__kernel void mask_d3d11( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst,	// CL_UNORM_INT8 x 4	<- DIFFERENT FORMAT
+		//		__read_only image2d_t mask,	// CL_UNSIGNED_INT8
+		//		__read_only int threshold)	// 
+
+		// Check destination image format 
+		cl_image_format format;
 		clGetImageInfo(left, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
-		clGetImageInfo(right, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
-#endif // DEBUG
 
 		if (_sharing == OPENGL)
 		{
+			// OpenGL channel order == RGBA, and dataType == UNORM_INT8 
 			clSetKernelArg(_maskOpengl, 0, sizeof(cl_mem), &_reducedL);
 			clSetKernelArg(_maskOpengl, 1, sizeof(cl_mem), &left);
 			clSetKernelArg(_maskOpengl, 2, sizeof(cl_mem), &mask[0]);
@@ -1386,7 +1439,23 @@ namespace OVR
 			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _maskOpengl, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
-		else
+		else if (format.image_channel_data_type == CL_UNORM_INT8)
+		{
+			// dataType == UNORM_INT8 for D3D11 pixel shader
+			clSetKernelArg(_maskD3D11, 0, sizeof(cl_mem), &_reducedL);
+			clSetKernelArg(_maskD3D11, 1, sizeof(cl_mem), &left);
+			clSetKernelArg(_maskD3D11, 2, sizeof(cl_mem), &mask[0]);
+			clSetKernelArg(_maskD3D11, 3, sizeof(int), &_skinThreshold);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _maskD3D11, 2, NULL, _scaledRegion, NULL, 1, &event[0], event_l);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			clSetKernelArg(_maskD3D11, 0, sizeof(cl_mem), &_reducedR);
+			clSetKernelArg(_maskD3D11, 1, sizeof(cl_mem), &right);
+			clSetKernelArg(_maskD3D11, 2, sizeof(cl_mem), &mask[1]);
+			clSetKernelArg(_maskD3D11, 3, sizeof(int), &_skinThreshold);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _maskD3D11, 2, NULL, _scaledRegion, NULL, 1, &event[1], event_r);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+		else // dataType == UNSIGNED_INT8
 		{
 			clSetKernelArg(_mask, 0, sizeof(cl_mem), &_reducedL);
 			clSetKernelArg(_mask, 1, sizeof(cl_mem), &left);
@@ -2065,7 +2134,7 @@ namespace OVR
 		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &right);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[1], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-#else
+#else // MEDIAN_5x5
 		clSetKernelArg(_medianBlur5x5, 0, sizeof(cl_mem), &l);
 		clSetKernelArg(_medianBlur5x5, 1, sizeof(cl_mem), &left);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _medianBlur5x5, 2, NULL, size, NULL, 1, &event[0], event_l);

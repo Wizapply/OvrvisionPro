@@ -34,7 +34,13 @@ typedef void *TEXTURE;
 #ifdef MACOSX
 // OpenCL header
 #include <OpenCL/cl.h>// OpenCL and its extensions
+#include <OpenCL/cl_ext.h>
+#include <OpenCL/cl_gl.h>       // OpenCL/OpenGL interoperabillity
+#include <OpenCL/cl_gl_ext.h>   // OpenCL/OpenGL interoperabillity
 #include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <OpenGL/CGLDevice.h>
+#include <OpenGL/CGLCurrent.h>
 #include <sys/stat.h>
 typedef unsigned int TEXTURE;
 #endif
@@ -291,8 +297,11 @@ namespace OVR
 			clCreateFromD3D11Texture3DKHR_fn    pclCreateFromD3D11Texture3DKHR = NULL;
 			clEnqueueAcquireD3D11ObjectsKHR_fn	pclEnqueueAcquireD3D11ObjectsKHR = NULL;
 			clEnqueueReleaseD3D11ObjectsKHR_fn	pclEnqueueReleaseD3D11ObjectsKHR = NULL;
-
-			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
+#endif
+#ifdef MACOSX
+			//clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
+#else
+			//clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 #endif
 			char	*_deviceExtensions;
 			Mat		*_mapX[2], *_mapY[2];	// camera parameter
@@ -335,6 +344,7 @@ namespace OVR
 			cl_kernel		_medianBlur5x5;
 			cl_kernel		_mask;
 			cl_kernel		_maskOpengl;
+			cl_kernel		_maskD3D11;
 			cl_kernel		_invertMask;
 			// kernels with tone correction
 			cl_kernel		_toneCorrection;

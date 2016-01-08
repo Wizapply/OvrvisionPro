@@ -60,18 +60,40 @@ static bool MainLoop(bool retryCreate)
 
 		InitializeCamPlane(DIRECTX.Device, DIRECTX.Context, width, height, 1.1f);
 
+		//////////////////////////////////////////////////////////////////////////////
+		// ”§F„’è
+
+		// Set scaling and size of scaled image
+		OVR::ROI size = ovrvision.SetSkinScale(2);
+		cv::Mat l, r;
+		l.create(size.height, size.width, CV_8UC4);
+		r.create(size.height, size.width, CV_8UC4);
+
+		// Estimate skin color range with 120 frames
+		ovrvision.DetectHand(120);
+		for (bool done = false; done == false;)
+		{
+			ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMS);
+			done = ovrvision.GetScaledImageRGBA(l.data, r.data);
+			cv::waitKey(1);
+			cv::imshow("Left", l);
+			cv::imshow("Right", r);
+		}
+		cv::destroyAllWindows();
+		//////////////////////////////////////////////////////////////////////////////
+
 		/////////////////////////////////////////////////////////////////////////////////////
 		// How to Create GPU texture and Update texture
 
 		// Set scale 1/2 and get its size
-		OVR::ROI size = ovrvision.SetSkinScale(2); 
+		//OVR::ROI size = ovrvision.SetSkinScale(2); 
 
 		D3D11_TEXTURE2D_DESC desc = {
 			size.width,					// Width
 			size.height,				// Height
 			1,							// MipLevels
 			1,							// ArraySize
-			DXGI_FORMAT_R8G8B8A8_UINT,	// Format TODO DXGI_FORMAT_R8G8B8A8_UNORM accept for Pixel Shader
+			DXGI_FORMAT_R8G8B8A8_UNORM,	// Format TODO DXGI_FORMAT_R8G8B8A8_UNORM accept for Pixel Shader
 			{ 1 },						// SampleDesc.Count
 			D3D11_USAGE_DEFAULT,		// Usage
 		};
@@ -86,7 +108,7 @@ static bool MainLoop(bool retryCreate)
 		/////////////////////////////////////////////////////////////////////////////////////
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {
-			DXGI_FORMAT_R8G8B8A8_UINT,		// DXGI_FORMAT TODO DXGI_FORMAT_R8G8B8A8_UNORM accept for Pixel Shader
+			DXGI_FORMAT_R8G8B8A8_UNORM,		// DXGI_FORMAT TODO DXGI_FORMAT_R8G8B8A8_UNORM accept for Pixel Shader
 			D3D11_SRV_DIMENSION_TEXTURE2D,	// D3D11_SRV_DIMENSION
 			{ 0, 1 },						// D3D11_TEX2D_SRV
 		};
@@ -97,8 +119,8 @@ static bool MainLoop(bool retryCreate)
 		ID3D11RenderTargetView* pSrv;
 		res = DIRECTX.Device->CreateRenderTargetView(pTextures[0], &RenderDesc, &pSrv);
 		DIRECTX.SetAndClearRenderTarget(pSrv, NULL);
-		cv::Mat l(size.height, size.width, CV_8UC4);
-		cv::Mat r(size.height, size.width, CV_8UC4);
+		//cv::Mat l(size.height, size.width, CV_8UC4);
+		//cv::Mat r(size.height, size.width, CV_8UC4);
 
 		// Main loop
 		while (DIRECTX.HandleMessages())
@@ -144,18 +166,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_ int       nCmdShow)
 {
 	hInst = hInstance;
-	/*
-	cv::Mat tone(3, 256, CV_8UC1);
-	for (int y = 0; y < 3; y++)
-	{
-		uchar *pixel = tone.ptr<uchar>(y);
-		for (int i = 0; i < 256; i++)
-		{
-			pixel[i] = i;
-		}
-	}
-	imwrite("tone.bmp", tone);
-	*/
+
 	VALIDATE(DIRECTX.InitWindow(hInstance, L"Ovrvision Pro for OculusSDK"), "Failed to open window.");
 	DIRECTX.Run(MainLoop);
 	return 0;
