@@ -90,7 +90,6 @@ int Initialize()
 
 	//g_pOvrvision->SetCameraExposure(12960);
 	g_pOvrvision->SetCameraSyncMode(false);
-	g_pOvrvision->SetCameraWhiteBalanceAuto(false);
 
 	//OculusRightGap
 	g_hmdGap.x = g_pOvrvision->GetHMDRightGap(0) * -0.01f;
@@ -102,8 +101,6 @@ int Initialize()
 
 	//Create ovrvision AR object (0.15f = 15cm)
 	g_pOvrAR = new OVR::OvrvisionAR(0.15f, g_camWidth, g_camHeight, g_pOvrvision->GetCamFocalPoint());
-
-	//g_pOvrvision->SetCameraWhiteBalanceAuto(false);
 	g_pOvrTrack = new OVR::OvrvisionTracking(g_camWidth, g_camHeight, g_pOvrvision->GetCamFocalPoint());
 
 	//Create texture
@@ -159,6 +156,7 @@ void DrawLoop(void)
 	if (wzGetKeyStateTrigger(WZ_KEY_I))
 	{
 		g_useOvrvisionTracking ^= true;
+		g_pOvrvision->SetCameraWhiteBalanceAuto(false);
 	}
 
 	/////// View ///////
@@ -178,7 +176,7 @@ void DrawLoop(void)
 		// HAND TRACTING DETECT
 		if (g_useOvrvisionTracking) {
 			g_pOvrTrack->SetImageBGRA(p, p2);
-			g_pOvrTrack->Render(true, true);
+			g_pOvrTrack->Render(true, false);
 
 			if (wzGetKeyStateTrigger(WZ_KEY_SPACE))
 				g_pOvrTrack->SetHue();
@@ -220,28 +218,44 @@ void DrawLoop(void)
 	wzSetSpriteScSize(APPSCREEN_WIDTH, APPSCREEN_HEIGHT);
 	wzSetSpriteColor(1.0f, 1.0f, 1.0f, 1.0f);
 	wzSetSpriteRotate(0.0f);
-	wzFontSize(12);
+	wzFontSize(16);
 
 	wzPrintf(20, 30, "Ovrvision Pro DemoApp");
 	wzPrintf(20, 60, "Draw:%.2f", wzGetDrawFPS());
 
 	//AR infomation
-	if (g_useOvrvisionAR) {
-		wzPrintf(20, 120, "Ovrvision AR mode!");
+	int row = 120;
 
+	if (g_useOvrvisionAR) {
+		wzPrintf(20, row, "Ovrvision AR mode!");
+		row+=30;
 		OVR::OvMarkerData* dt = g_pOvrAR->GetMarkerData();
 		for (int i = 0; i < g_pOvrAR->GetMarkerDataSize(); i++)
 		{
-			wzPrintf(20, 135 + (i * 20), "ARMarker:%d, T:%.2f,%.2f,%.2f Q:%.2f%.2f,%.2f,%.2f", dt[i].id,
+			wzPrintf(20, row, "ARMarker:%d, T:%.2f,%.2f,%.2f Q:%.2f%.2f,%.2f,%.2f", dt[i].id,
 				dt[i].translate.x, dt[i].translate.y, dt[i].translate.z,
 				dt[i].quaternion.x, dt[i].quaternion.y, dt[i].quaternion.z, dt[i].quaternion.w);
+			row += 30;
 		}
+	}
+
+	//Tracking infomation
+	if (g_useOvrvisionTracking) {
+		wzPrintf(20, row, "Ovrvision Hand Tracking mode!");
+		row += 30;
+		float dt_x = g_pOvrTrack->FingerPosX();
+		float dt_y = g_pOvrTrack->FingerPosY();
+		float dt_z = g_pOvrTrack->FingerPosZ();
+		if (dt_z > 0.0f || dt_z < 1.0f)
+			wzPrintf(20, row, "Finger:T:%.4f,%.4f,%.4f", dt_x, dt_y, dt_z);
+		row += 30;
 	}
 
 	//Error infomation
 	if (!g_pOvrvision->isOpen()) {
 		wzSetSpriteColor(1.0f, 0.0f, 0.0f, 1.0f);
-		wzPrintf(20, 80, "[ERROR]Ovrvision not found.");
+		wzPrintf(20, row, "[ERROR]Ovrvision not found.");
+		row += 30;
 	}
 
 	wzPrintf(20, 1000, "[I]Key : HandTracking, [O]Key : AR mode [P]Key : Processing Mode");

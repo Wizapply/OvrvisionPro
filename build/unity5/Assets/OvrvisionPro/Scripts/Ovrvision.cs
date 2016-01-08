@@ -236,7 +236,10 @@ public class Ovrvision : MonoBehaviour
 		GCHandle marker = GCHandle.Alloc(markerGet, GCHandleType.Pinned);
 		//Get marker data
 		int ri = OvrPro.OvrvisionGetFinger3(marker.AddrOfPinnedObject());
-		Vector3 fgpos = new Vector3(markerGet[0] * 0.01f, markerGet[1] * 0.01f, markerGet[2]);
+		//if (ri > 0)
+		//	return 0;
+
+		Vector3 fgpos = new Vector3(markerGet[0], markerGet[1], markerGet[2]);
 
 		OvrvisionHandTracker[] otobjs = GameObject.FindObjectsOfType(typeof(OvrvisionHandTracker)) as OvrvisionHandTracker[];
 		foreach (OvrvisionHandTracker otobj in otobjs)

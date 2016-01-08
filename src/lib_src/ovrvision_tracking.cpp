@@ -206,16 +206,53 @@ void OvrvisionTracking::Render(bool calib, bool debug) {
 
 	cv::cvtColor(pCamBGR_L, pCamBGR_L, CV_HLS2BGR);				// 変換
 
+
+	//Default camera matrix
+	cv::Mat cameramat(3, 3, CV_32FC1);
+	cv::Mat cameramat_inv(3, 3, CV_32FC1);
+	cv::Mat distorsionCoeff(1, 8, CV_32FC1, 0.0);
+	cv::Size size(m_width, m_height);
+	double m_focalPointScale = 1.00;
+	//Rect roi; // Valid Region of Interest
+
+	//Adjustment calc
+	if (size.width > 1280) {
+		m_focalPointScale = 2.0;
+	}
+	else if (size.width <= 640) {
+		if (size.width <= 320)
+			m_focalPointScale = 0.25;
+		else
+			m_focalPointScale = 0.5;
+	}
+
+	cameramat.at<float>(0) = m_focalpoint * (float)m_focalPointScale;
+	cameramat.at<float>(1) = 0.0f;
+	cameramat.at<float>(2) = (float)(size.width / 2);
+	cameramat.at<float>(3) = 0.0f;
+	cameramat.at<float>(4) = m_focalpoint * (float)m_focalPointScale;
+	cameramat.at<float>(5) = (float)(size.height / 2);
+	cameramat.at<float>(6) = 0.0f;
+	cameramat.at<float>(7) = 0.0f;
+	cameramat.at<float>(8) = 1.0f;
+
+	cv::invert(cameramat, cameramat_inv, CV_LU);
+
 	if (lpos.x != 0 && lpos.y != 0) {
 		if (rpos.x != 0 && rpos.y != 0) {
 			float pos_x = lpos.x*4.0f;
 			float pos_y = lpos.y*4.0f;
 			float posr_x = rpos.x*4.0f;
 			float posr_y = rpos.y*4.0f;
+			float proje_x, proje_y, proje_z;
 
-			m_pos_x = pos_x / (pos_x - posr_x);
-			m_pos_y = pos_y / (pos_x - posr_x);
 			m_pos_z = (m_focalpoint * 0.06f) / (pos_x - posr_x);
+
+			m_pos_x = ((pos_x*2.0f) / (float)m_width) - 1.0f;
+			m_pos_y = ((pos_y*-2.0f) / (float)m_height) + 1.0f;
+			
+			m_pos_x *= m_pos_z;
+			m_pos_y *= m_pos_z;
 
 			m_lifetime = 10;
 		}
@@ -230,10 +267,10 @@ void OvrvisionTracking::Render(bool calib, bool debug) {
 	}
 
 	if (debug) {
-		if (m_pos_z > 0.0f) {
+		if (m_pos_z > 0.0f && m_pos_z < 1.0f) {
 			char buf[32];
 			sprintf(buf, "X:%.4f,Y%.4f,Z:%.4f", m_pos_x, m_pos_y,m_pos_z);
-			cv::putText(pCamBGRAImg_L, buf, cv::Point(m_width/2, m_height/2), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255, 255), 2, 0);
+			cv::putText(pCamBGRAImg_L, buf, cv::Point(m_width/2-200, m_height/2-200), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255, 255), 2, 0);
 		}
 	}
 
@@ -295,6 +332,7 @@ cv::Point2i FingerTracker(cv::Mat &image, cv::Mat &fgimage)
 	if (mensize < 30)
 		return center;
 
+	cv::dilate(dst, dst, cv::Mat(), cv::Point(-1, -1), 12);
 	cv::dilate(dst, dst, cv::Mat(), cv::Point(-1, -1), 12);
 	cv::dilate(dst, dst, cv::Mat(), cv::Point(-1, -1), 10);
 	cv::Mat dst_img2 = fgimage & dst;

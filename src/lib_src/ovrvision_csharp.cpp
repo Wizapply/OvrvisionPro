@@ -560,6 +560,9 @@ CSHARP_EXPORT int ovARGetData(float* mdata, int datasize)
 	if(g_ovOvrvisionAR==NULL)
 		return (-1);
 
+	if (mdata == NULL)
+		return (-1);
+
 	int marklen = g_ovOvrvisionAR->GetMarkerDataSize();
 	OVR::OvMarkerData* dt = g_ovOvrvisionAR->GetMarkerData();
 
@@ -631,11 +634,14 @@ CSHARP_EXPORT int ovGetTrackData(float* mdata)
 	if (g_ovOvrvisionTrack == NULL)
 		return 0 ;
 
+	if (mdata == NULL)
+		return (-1);
+
 	mdata[0] = g_ovOvrvisionTrack->FingerPosX();
 	mdata[1] = g_ovOvrvisionTrack->FingerPosY();
 	mdata[2] = g_ovOvrvisionTrack->FingerPosZ();
 
-	if (mdata[0] <= 0.0 && mdata[1] <= 0.0)
+	if (mdata[2] <= 0.0 || mdata[2] >= 1.0)	//z0.0~1.0
 		return 0;
 
 	return 1;

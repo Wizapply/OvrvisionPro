@@ -191,7 +191,6 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
     if (event == CYU3P_GPIF_EVT_SM_INTERRUPT)
     {
         CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
-        uint8_t socket = 0xFF;      /*  Invalid value. */
 
         /* Verify that the current state is a terminal state for the GPIF state machine. */
         switch (currentState)
@@ -200,24 +199,19 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
             case FULL_BUF_IN_SCK1:
                 /* Buffer is already full and would have been committed. Do nothing. */
                 break;
+			/* We have a partial buffer. Commit the buffer manually. The Wrap Up API, here, helps produce a
+			   partially filled buffer on the producer side. This action will cause CyU3PDmaMultiChannelGetBuffer API
+			   in the UVCAppThread_Entry function to succeed one more time with less than full producer buffer count */
             case PARTIAL_BUF_IN_SCK0:
-                socket = 0;
+            	apiRetStatus = CyU3PDmaMultiChannelSetWrapUp (&glChHandleUVCStream, 0);
+            	if(apiRetStatus != CY_U3P_SUCCESS) {/*nothing*/}
                 break;
             case PARTIAL_BUF_IN_SCK1:
-                socket = 1;
+            	apiRetStatus = CyU3PDmaMultiChannelSetWrapUp (&glChHandleUVCStream, 1);
+            	if(apiRetStatus != CY_U3P_SUCCESS) {/*nothing*/}
                 break;
             default:
                 break;
-        }
-
-        if (socket != 0xFF)
-        {
-            /* We have a partial buffer. Commit the buffer manually. The Wrap Up API, here, helps produce a
-               partially filled buffer on the producer side. This action will cause CyU3PDmaMultiChannelGetBuffer API
-               in the UVCAppThread_Entry function to succeed one more time with less than full producer buffer count */
-            apiRetStatus = CyU3PDmaMultiChannelSetWrapUp (&glChHandleUVCStream, socket);
-            if (apiRetStatus != CY_U3P_SUCCESS)
-            	UVCAppErrorHandler(apiRetStatus);
         }
     }
 }
@@ -357,12 +351,14 @@ static void UVCApplnUSBEventCB (CyU3PUsbEventType_t evtype, uint16_t evdata)
             CyU3PGpifDisable (CyTrue);
             glGpif_initialized = CyFalse;
             glStreamingStarted = CyFalse;
+            glTimerOn = CyTrue;
             UVCApplnAbortHandler();
             break;
         case CY_U3P_USB_EVENT_SUSPEND:
             CyU3PGpifDisable (CyTrue);
             glGpif_initialized = CyFalse;
             glStreamingStarted = CyFalse;
+            glTimerOn = CyTrue;
             UVCApplnAbortHandler();
             break;
         case CY_U3P_USB_EVENT_DISCONNECT:
@@ -370,6 +366,7 @@ static void UVCApplnUSBEventCB (CyU3PUsbEventType_t evtype, uint16_t evdata)
             glGpif_initialized = CyFalse;
             isUsbConnected = CyFalse;
             glStreamingStarted = CyFalse;
+            glTimerOn = CyTrue;
             UVCApplnAbortHandler();
             break;
         default:
@@ -396,10 +393,7 @@ void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t 
         CyU3PDmaBuffer_t    produced_buffer;
         CyU3PReturnStatus_t apiRetStatus;
 
-        if(glTimerOn == CyTrue) {
-        	CyU3PTimerStart (&gUvcTimer);
-        	glTimerOn = CyFalse;
-        }
+        CyU3PTimerStop (&gUvcTimer);
 
 		/* Check if we have a buffer ready to go. */
 		apiRetStatus = CyU3PDmaMultiChannelGetBuffer (multiChHandle, &produced_buffer, CYU3P_NO_WAIT);
@@ -419,17 +413,25 @@ void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t 
 			if (apiRetStatus == CY_U3P_SUCCESS)
 				glDmaCount++;
 		}
+		else if(apiRetStatus == CY_U3P_ERROR_TIMEOUT)
+		{
+			//Reset
+			CyU3PGpioSetValue(OVRPRO_GPIO1_PIN, CyTrue);
+		}
+
+        glTimerOn = CyTrue;
+        CyU3PTimerModify (&gUvcTimer, TIMER_PERIOD, 0);
     }
 
     if (type & CY_U3P_DMA_CB_CONS_EVENT)
     {
-    	CyU3PTimerStop (&gUvcTimer);
+        if(glTimerOn == CyTrue) {
+        	CyU3PTimerStart (&gUvcTimer);
+        	glTimerOn = CyFalse;
+        }
 
     	glDmaCount--;
         glStreamingStarted = CyTrue;
-
-        glTimerOn = CyTrue;
-        CyU3PTimerModify (&gUvcTimer, TIMER_PERIOD, 0);
     }
 }
 
@@ -643,14 +645,10 @@ void UVCAppThread_Entry (uint32_t input)
 		if (CyU3PEventGet (&glFxUVCEvent, CY_FX_UVC_STREAM_EVENT, CYU3P_EVENT_AND, &flag, CYU3P_NO_WAIT) == CY_U3P_SUCCESS)
 		{
 			/* If we have the end of frame signal and all of the committed data (including partial buffer)
-			 * has been read by the USB host; we can reset the DMA channel and prepare for the next video frame.
-			 */
+			 * has been read by the USB host; we can reset the DMA channel and prepare for the next video frame. */
 			if ((glHitFV == CyTrue) && (glDmaCount == 0))
 			{
 				glHitFV = CyFalse;
-
-				CyU3PUsbSetEpNak (CY_FX_EP_BULK_VIDEO, CyTrue);
-				CyU3PBusyWait (100);
 
 				/* Reset USB EP and DMA Channel */
                 apiRetStatus = CyU3PDmaMultiChannelReset (&glChHandleUVCStream);
@@ -663,9 +661,6 @@ void UVCAppThread_Entry (uint32_t input)
                 apiRetStatus = CyU3PDmaMultiChannelSetXfer (&glChHandleUVCStream, 0, 0);
                 if (apiRetStatus != CY_U3P_SUCCESS)
                 	UVCAppErrorHandler(apiRetStatus);
-
-                CyU3PUsbSetEpNak (CY_FX_EP_BULK_VIDEO, CyFalse);
-                CyU3PBusyWait (100);
 
 				/* Jump to the start state of the GPIF state machine. 257 is used as an
 				   arbitrary invalid state (> 255) number. */
@@ -683,6 +678,7 @@ void UVCAppThread_Entry (uint32_t input)
 				glTimerOn = CyTrue;
 				CyU3PTimerStop (&gUvcTimer);
 				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyFalse);
+				CyU3PGpioSetValue(OVRPRO_GPIO1_PIN, CyFalse);
 
 				/* Sensor reset function */
 				OV5653SensorReset();
@@ -1376,7 +1372,7 @@ int main (void)
     apiRetStatus = CyU3PDeviceCacheControl (CyTrue, CyFalse, CyFalse);
 
     /* Configure the IO matrix for the device. */
-    io_cfg.isDQ32Bit        = CyTrue;
+    io_cfg.isDQ32Bit        = CyFalse;
     io_cfg.lppMode          = CY_U3P_IO_MATRIX_LPP_DEFAULT;
     io_cfg.gpioSimpleEn[0]  = 0;
     io_cfg.gpioSimpleEn[1]  = 0;
