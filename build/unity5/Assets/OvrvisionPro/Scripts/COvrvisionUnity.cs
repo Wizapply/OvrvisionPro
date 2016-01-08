@@ -209,7 +209,7 @@ public class COvrvisionUnity
 			ovARRender();
 
 		if (useOvrvisionTrack)
-			ovTrackRender(useOvrvisionTrack_Calib, true);
+			ovTrackRender(useOvrvisionTrack_Calib, false);
 
 		ovGetCamImageForUnityNative(leftPtr, rightPtr);
     }

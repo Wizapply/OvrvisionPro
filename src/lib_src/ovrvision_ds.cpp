@@ -584,7 +584,7 @@ int OvrvisionDirectShow::StopTransfer()
 		return RESULT_FAILED;
 	}
 
-	DWORD result = WaitForSingleObject(m_pSGCallback->m_hEvent, 5000);
+	DWORD result = WaitForSingleObject(m_pSGCallback->m_hEvent, 1000);
 	if( result != WAIT_OBJECT_0)
 		return RESULT_FAILED;
 

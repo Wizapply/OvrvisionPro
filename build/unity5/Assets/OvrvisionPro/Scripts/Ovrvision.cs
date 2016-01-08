@@ -236,8 +236,8 @@ public class Ovrvision : MonoBehaviour
 		GCHandle marker = GCHandle.Alloc(markerGet, GCHandleType.Pinned);
 		//Get marker data
 		int ri = OvrPro.OvrvisionGetFinger3(marker.AddrOfPinnedObject());
-		//if (ri > 0)
-		//	return 0;
+		if (ri == 0)
+			return 0;
 
 		Vector3 fgpos = new Vector3(markerGet[0], markerGet[1], markerGet[2]);
 

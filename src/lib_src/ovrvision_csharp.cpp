@@ -641,7 +641,7 @@ CSHARP_EXPORT int ovGetTrackData(float* mdata)
 	mdata[1] = g_ovOvrvisionTrack->FingerPosY();
 	mdata[2] = g_ovOvrvisionTrack->FingerPosZ();
 
-	if (mdata[2] <= 0.0 || mdata[2] >= 1.0)	//z0.0~1.0
+	if (mdata[2] <= 0.0f || mdata[2] >= 1.0f)	//z0.0~1.0
 		return 0;
 
 	return 1;
