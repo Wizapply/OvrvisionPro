@@ -2130,9 +2130,9 @@ namespace OVR
 		clSetKernelArg(_medianBlur3x3, 1, sizeof(cl_mem), &left);
 		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _medianBlur3x3, 2, NULL, size, NULL, 1, &event[0], event_l);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		clSetKernelArg(_gaussianBlur3x3, 0, sizeof(cl_mem), &r);
-		clSetKernelArg(_gaussianBlur3x3, 1, sizeof(cl_mem), &right);
-		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _gaussianBlur3x3, 2, NULL, size, NULL, 1, &event[1], event_r);
+		clSetKernelArg(_medianBlur3x3, 0, sizeof(cl_mem), &r);
+		clSetKernelArg(_medianBlur3x3, 1, sizeof(cl_mem), &right);
+		_errorCode = clEnqueueNDRangeKernel(_commandQueue, _medianBlur3x3, 2, NULL, size, NULL, 1, &event[1], event_r);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 #else // MEDIAN_5x5
 		clSetKernelArg(_medianBlur5x5, 0, sizeof(cl_mem), &l);
