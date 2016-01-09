@@ -370,8 +370,8 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x00, 0x0A,                     /* Width in pixel */
 	0x80, 0x07,                     /* Height in pixel */
-	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
-	0x00,0x80,0x8D,0x5B,            /* Max bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Min bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Max bit rate bits/s. */
 	0x00,0x00,0x96,0x00,            /* Maximum video or still frame size in bytes(Deprecated)*/
 	0x2A, 0x2C, 0x0A, 0x00,         /* Default Frame Interval*/
 	0x01,							/* Frame interval(Frame Rate) types: Only one frame interval supported */
@@ -385,8 +385,8 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x80, 0x07,                     /* Width in pixel */
 	0x38, 0x04,                     /* Height in pixel */
-	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
-	0x00,0x80,0x8D,0x5B,            /* Max bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Min bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Max bit rate bits/s. */
 	0x00,0x48,0x3F,0x00,            /* Maximum video or still frame size in bytes(Deprecated)*/
 	0x15, 0x16, 0x05, 0x00,         /* Default Frame Interval */
 	0x01,							/* Frame interval(Frame Rate) types: Only one frame interval supported */
@@ -400,8 +400,8 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x00, 0x05,                     /* Width in pixel */
 	0xC0, 0x03,                     /* Height in pixel */
-	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
-	0x00,0x80,0x8D,0x5B,            /* Max bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Min bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Max bit rate bits/s. */
 	0x00,0x80,0x25,0x00,            /* Maximum video or still frame size in bytes(Deprecated)*/
 	0x0E, 0x64, 0x03, 0x00,         /* Default Frame Interval */
 	0x01,							/* Frame interval(Frame Rate) types: Only one frame interval supported */
@@ -415,8 +415,8 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x00, 0x05,                     /* Width in pixel */
 	0x20, 0x03,                     /* Height in pixel */
-	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
-	0x00,0x80,0x8D,0x5B,            /* Max bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Min bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Max bit rate bits/s. */
 	0x00,0x40,0x1F,0x00,            /* Maximum video or still frame size in bytes(Deprecated)*/
 	0x0A, 0x8B, 0x02, 0x00,         /* Default Frame Interval */
 	0x01,							/* Frame interval(Frame Rate) types: Only one frame interval supported */
@@ -430,8 +430,8 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0xC0, 0x03,                     /* Width in pixel */
 	0xB6, 0x03,                     /* Height in pixel */
-	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
-	0x00,0x80,0x8D,0x5B,            /* Max bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Min bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Max bit rate bits/s. */
 	0x00,0xD5,0x1B,0x00,            /* Maximum video or still frame size in bytes(Deprecated)*/
 	0x0A, 0x8B, 0x02, 0x00,         /* Default Frame Interval */
 	0x01,							/* Frame interval(Frame Rate) types: Only one frame interval supported */
@@ -445,8 +445,8 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x80, 0x02,                     /* Width in pixel */
 	0xE0, 0x01,                     /* Height in pixel */
-	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
-	0x00,0x80,0x8D,0x5B,            /* Max bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Min bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Max bit rate bits/s. */
 	0x00,0x60,0x09,0x00,            /* Maximum video or still frame size in bytes(Deprecated)*/
 	0x07, 0xB2, 0x01, 0x00,         /* Default Frame Interval */
 	0x01,							/* Frame interval(Frame Rate) types: Only one frame interval supported */
@@ -460,8 +460,8 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x00,                           /* Still image capture method 1 supported, fixed frame rate */
 	0x40, 0x01,                     /* Width in pixel */
 	0xF0, 0x00,                     /* Height in pixel */
-	0x00,0x80,0x8D,0x5B,            /* Min bit rate bits/s. */
-	0x00,0x80,0x8D,0x5B,            /* Max bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Min bit rate bits/s. */
+	0x00,0x00,0x50,0x46,            /* Max bit rate bits/s. */
 	0x00,0x58,0x02,0x00,            /* Maximum video or still frame size in bytes(Deprecated)*/
 	0x85, 0x45, 0x01, 0x00,         /* Default Frame Interval */
 	0x01,							/* Frame interval(Frame Rate) types: Only one frame interval supported */
