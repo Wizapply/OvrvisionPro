@@ -91,8 +91,8 @@ const uint8_t CyFxUSBBOSDscr[] =
     0x00,                               /* Supported device level features  */
     0x0E, 0x00,                         /* Speeds supported by the device : SS, HS and FS */
     0x03,                               /* Functionality support */
-    0x0A,                               /* U1 device exit latency */
-    0x20, 0x00                          /* U2 device exit latency */
+    0x00,                               /* U1 device exit latency */
+    0x00, 0x00                          /* U2 device exit latency */
 };
 
 /* Standard Device Qualifier Descriptor */

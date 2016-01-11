@@ -185,6 +185,10 @@ void DrawLoop(void)
 		// Screen clear
 		wzClear();
 
+		// Aspect
+		float view_width = APPSCREEN_WIDTH / 2;
+		float view_height = ((float)(APPSCREEN_WIDTH / 2) / (float)g_camWidth) * (float)g_camHeight;
+
 		// Left eye
 		wzSetViewport(0, 0, APPSCREEN_WIDTH / 2, APPSCREEN_HEIGHT);
 		wzSetSpriteScSize(APPSCREEN_WIDTH / 2, APPSCREEN_HEIGHT);
@@ -193,7 +197,7 @@ void DrawLoop(void)
 		wzSetSpritePosition(half_pos.x, half_pos.y, 0.0f);
 		wzSetSpriteColor(1.0f, 1.0f, 1.0f, 1.0f);
 		wzSetSpriteTexCoord(0.0f, 0.0f, 1.0f, 1.0f);
-		wzSetSpriteSize((float)g_camWidth, (float)g_camHeight);
+		wzSetSpriteSize(view_width, view_height);
 		wzSetSpriteTexture(&g_screen_texture);
 		wzSpriteDraw();	//Draw
 
@@ -205,7 +209,7 @@ void DrawLoop(void)
 		wzSetSpritePosition(half_pos.x, half_pos.y, 0.0f);
 		wzSetSpriteColor(1.0f, 1.0f, 1.0f, 1.0f);
 		wzSetSpriteTexCoord(0.0f, 0.0f, 1.0f, 1.0f);
-		wzSetSpriteSize((float)g_camWidth, (float)g_camHeight);
+		wzSetSpriteSize(view_width, view_height);
 		wzSetSpriteTexture(&g_screen_texture);
 		wzSpriteDraw();	//Draw
 
