@@ -447,7 +447,6 @@ const uvc_controls_t uvc_controls = {
     //sync
     [m_cond lock];
     
-    //testing
     //if(!nonblocking) {
         if([m_cond waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:OV_BLOCKTIMEOUT]]==NO)
             return RESULT_FAILED;
@@ -614,13 +613,13 @@ const uvc_controls_t uvc_controls = {
     }
 
     CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    
     if(CVPixelBufferLockBaseAddress(imageBuffer, 0) == kCVReturnSuccess) {
-    
-        size_t datasize = CVPixelBufferGetDataSize(imageBuffer);
         unsigned char* databuffer = (unsigned char*)CVPixelBufferGetBaseAddress(imageBuffer);
-    
+        size_t datasize = CVPixelBufferGetDataSize(imageBuffer);
+        m_datasize = (int)datasize - 32;
+        
         [m_cond lock];  //LOCK!
-            m_datasize = (int)datasize - (m_width*2);
             memcpy(m_pPixels, databuffer ,m_datasize);
         [m_cond signal];
         [m_cond unlock];

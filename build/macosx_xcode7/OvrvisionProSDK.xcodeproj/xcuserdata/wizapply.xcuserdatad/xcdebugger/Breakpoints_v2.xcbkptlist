@@ -15,7 +15,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "371"
             endingLineNumber = "371"
-            landmarkName = "OvrvisionProOpenCL::SelectGPU(const char *platform, const char *version)"
+            landmarkName = "OvrvisionProOpenCL::OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode, void *pDevice)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

@@ -40,7 +40,7 @@
 #define OV_DEVICENAMENUM	(256)
 
 //Blocking timeout
-#define OV_BLOCKTIMEOUT		(3)	//3s
+#define OV_BLOCKTIMEOUT		(1)	//3s
 
 //IOKIT
 #define UVC_INPUT_TERMINAL_ID 0x01
