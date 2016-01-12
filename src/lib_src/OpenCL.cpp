@@ -1563,11 +1563,14 @@ namespace OVR
 					// Mass center
 					Moments moment;
 					moment = moments(contour);
-					double mc[2] = { (moment.m10 / moment.m00), (moment.m01 / moment.m00) };
-					Vec4b center = HSV[eye].at<Vec4b>((int)mc[1], (int)mc[0]);
-					if (0 <= center[0] && center[0] <= 30 && _s_low <= center[1] && center[1] <= _s_high)
+					if (0 < moment.m00)
 					{
-						finger++;
+						double mc[2] = { (moment.m10 / moment.m00), (moment.m01 / moment.m00) };
+						Vec4b center = HSV[eye].at<Vec4b>((int)mc[1], (int)mc[0]);
+						if (0 <= center[0] && center[0] <= 30 && _s_low <= center[1] && center[1] <= _s_high)
+						{
+							finger++;
+						}
 					}
 
 					convexityDefects(contour, convex, defects);
