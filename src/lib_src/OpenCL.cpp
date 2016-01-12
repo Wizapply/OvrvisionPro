@@ -1119,6 +1119,7 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// Copy to texture
+			// TODO Rearrange requried for OpenGL channel order RGBA 
 			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
 			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
 
@@ -1165,6 +1166,7 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// Copy to texture
+			// TODO Rearrange requried for OpenGL channel order RGBA 
 			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
 			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
 
@@ -1180,6 +1182,7 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// Copy to texture
+			// TODO Rearrange requried for OpenGL channel order RGBA 
 			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
 			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
 
