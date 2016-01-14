@@ -1110,10 +1110,6 @@ namespace OVR
 	// Update textures
 	void OvrvisionProOpenCL::UpdateImageTextures(TEXTURE left, TEXTURE right)
 	{
-		//size_t width = _scaledRegion[0];
-		//size_t height = _scaledRegion[1];
-		//size_t origin[3] = { 0, 0, 0 };
-		//size_t region[3] = { width, height, 1 };
 		cl_event event[2];
 #ifdef WIN32
 		if (_sharing == OPENGL)
