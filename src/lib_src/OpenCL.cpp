@@ -1484,20 +1484,23 @@ namespace OVR
 		uint width = _scaledRegion[0];
 		uint height = _scaledRegion[1];
 		size_t origin[3] = { 0, 0, 0 };
-		cl_event event[2];
+		cl_event event_l, event_r, event[2];
 
 		cl_mem l = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
-		SkinImages(l, r, &event[0], &event[1]);
+		SkinImages(l, r, &event_l, &event_r);
 
 		// Read result
-		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
-		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, left, 1, &event_l, &event[0]);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, _scaledRegion, width * sizeof(uchar) * 4, 0, right, 1, &event_r, &event[1]);
+		clWaitForEvents(2, event);
 
 		// Release temporaries
+		clReleaseEvent(event_l);
+		clReleaseEvent(event_r);
 		clReleaseEvent(event[0]);
 		clReleaseEvent(event[1]);
 		clReleaseMemObject(l);
@@ -1560,11 +1563,14 @@ namespace OVR
 					// Mass center
 					Moments moment;
 					moment = moments(contour);
-					double mc[2] = { (moment.m10 / moment.m00), (moment.m01 / moment.m00) };
-					Vec4b center = HSV[eye].at<Vec4b>((int)mc[1], (int)mc[0]);
-					if (0 <= center[0] && center[0] <= 30 && _s_low <= center[1] && center[1] <= _s_high)
+					if (0 < moment.m00)
 					{
-						finger++;
+						double mc[2] = { (moment.m10 / moment.m00), (moment.m01 / moment.m00) };
+						Vec4b center = HSV[eye].at<Vec4b>((int)mc[1], (int)mc[0]);
+						if (0 <= center[0] && center[0] <= 30 && _s_low <= center[1] && center[1] <= _s_high)
+						{
+							finger++;
+						}
 					}
 
 					convexityDefects(contour, convex, defects);
@@ -1701,10 +1707,16 @@ namespace OVR
 	bool OvrvisionProOpenCL::Read(uchar *left, uchar *right)
 	{
 		size_t origin[3] = { 0, 0, 0 };
-		_errorCode = clEnqueueReadImage(_commandQueue, _reducedL, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
+		cl_event event[2];
+		_errorCode = clEnqueueReadImage(_commandQueue, _reducedL, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, left, 0, NULL, &event[0]);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clEnqueueReadImage(_commandQueue, _reducedR, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, _reducedR, CL_TRUE, origin, _scaledRegion, _scaledRegion[0] * sizeof(uchar) * 4, 0, right, 0, NULL, &event[1]);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+		clWaitForEvents(2, event);
+
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 
 		// Skin color calibration
 		uint width = _scaledRegion[0];
@@ -1813,16 +1825,19 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_event event[2];
+		cl_event event_l, event_r, event[2];
 
-		SkinRegion(l, r, &event[0], &event[1]);
+		SkinRegion(l, r, &event_l, &event_r);
 
-		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar), 0, left, 1, &event[0], NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar), 0, left, 1, &event_l, &event[0]);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event[1], NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event_r, &event[1]);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+		clWaitForEvents(2, event);
 
 		// Release temporaries
+		clReleaseEvent(event_l);
+		clReleaseEvent(event_r);
 		clReleaseEvent(event[0]);
 		clReleaseEvent(event[1]);
 		clReleaseMemObject(l);
@@ -1910,15 +1925,21 @@ namespace OVR
 	{
 		size_t origin[3] = { static_cast<size_t>(offsetX), static_cast<size_t>(offsetY), 0 };
 		size_t region[3] = { width, height, 1 };
-		//cl_event execute;
+		cl_event event[2];
+
 		if (left != NULL)
 		{
-			_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 0, NULL, NULL);
+			_errorCode = clEnqueueReadImage(_commandQueue, _l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 0, NULL, &event[0]);
 		}
 		if (right != NULL)
 		{
-			_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 0, NULL, NULL);
+			_errorCode = clEnqueueReadImage(_commandQueue, _r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 0, NULL, &event[1]);
 		}
+		clWaitForEvents(2, event);
+
+		// Release temporaries
+		clReleaseEvent(event[0]);
+		clReleaseEvent(event[1]);
 	}
 
 	//
@@ -2022,16 +2043,19 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &desc, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_event event[2];
+		cl_event event_l, event_r, event[2];
 
-		Grayscale(l, r, scaling, &event[0], &event[1]);
+		Grayscale(l, r, scaling, &event_l, &event_r);
 
-		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar), 0, left, 1, &event[0], NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar), 0, left, 1, &event_l, &event[0]);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event[1], NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar), 0, right, 1, &event_r, &event[1]);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+		clWaitForEvents(2, event);
 
 		// Release temporaries
+		clReleaseEvent(event_l);
+		clReleaseEvent(event_r);
 		clReleaseEvent(event[0]);
 		clReleaseEvent(event[1]);
 		clReleaseMemObject(l);
@@ -2162,16 +2186,19 @@ namespace OVR
 		SAMPLE_CHECK_ERRORS(_errorCode);
 		cl_mem r = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC4, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		cl_event event[2];
+		cl_event event_l, event_r, event[2];
 
-		GetHSV(l, r, &event[0], &event[1]);
+		GetHSV(l, r, &event_l, &event_r);
 
-		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 1, &event[0], NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, l, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, left, 1, &event_l, &event[0]);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event[1], NULL);
+		_errorCode = clEnqueueReadImage(_commandQueue, r, CL_TRUE, origin, region, width * sizeof(uchar) * 4, 0, right, 1, &event_r, &event[1]);
 		SAMPLE_CHECK_ERRORS(_errorCode);
+		clWaitForEvents(2, event);
 
 		// Release temporaries
+		clReleaseEvent(event_l);
+		clReleaseEvent(event_r);
 		clReleaseEvent(event[0]);
 		clReleaseEvent(event[1]);
 		clReleaseMemObject(l);
