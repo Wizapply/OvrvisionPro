@@ -95,6 +95,7 @@
     <OutDir>.\..\..\bin\x86\</OutDir>
     <IntDir>$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>.\..\..\bin\x64\</OutDir>
@@ -148,6 +149,9 @@
       <TargetMachine>MachineX86</TargetMachine>
       <ImportLibrary>$(OutDir)ovrvisiond.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>If Exist $(TargetDir)\ovrvision.dll copy $(TargetDir)\ovrvision.dll $(SolutionDir)..\all_unity5\Assets\OvrvisionPro\Plugins\x86\ovrvision.dll /Y /B</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -176,7 +180,7 @@
       <ImportLibrary>$(OutDir)ovrvision64d.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetDir)ovrvision.dll $(SolutionDir)..\unity_package\Assets\Plugins\x86_64\ovrvision.dll /Y /B</Command>
+      <Command>If Exist $(TargetDir)\ovrvision.dll copy $(TargetDir)\ovrvision.dll $(SolutionDir)..\all_unity5\Assets\OvrvisionPro\Plugins\x86_64\ovrvision.dll /Y /B</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -205,7 +209,7 @@
       <ImportLibrary>$(OutDir)ovrvision.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>If Exist $(TargetDir)\ovrvision.dll copy $(TargetDir)\ovrvision.dll $(SolutionDir)..\unity5\Assets\Plugins\x86\ovrvision.dll /Y /B</Command>
+      <Command>If Exist $(TargetDir)\ovrvision.dll copy $(TargetDir)\ovrvision.dll $(SolutionDir)..\all_unity5\Assets\OvrvisionPro\Plugins\x86\ovrvision.dll /Y /B</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MetaioARRelease|Win32'">
@@ -235,7 +239,7 @@
       <ImportLibrary>$(OutDir)ovrvision.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>If Exist $(TargetDir)\ovrvision_metaio.dll copy $(TargetDir)\ovrvision_metaio.dll $(SolutionDir)..\unity5_metaio\Assets\Plugins\x86\ovrvision.dll /Y /B</Command>
+      <Command>If Exist $(TargetDir)\ovrvision_metaio.dll copy $(TargetDir)\ovrvision_metaio.dll $(SolutionDir)..\all_unity5_metaio\Assets\OvrvisionPro\Plugins\x86\ovrvision.dll /Y /B</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -267,7 +271,7 @@
       <ImportLibrary>$(OutDir)ovrvision64.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>If Exist $(TargetDir)\ovrvision.dll copy $(TargetDir)\ovrvision.dll $(SolutionDir)..\unity5\Assets\Plugins\x86_64\ovrvision.dll /Y /B</Command>
+      <Command>If Exist $(TargetDir)\ovrvision.dll copy $(TargetDir)\ovrvision.dll $(SolutionDir)..\all_unity5\Assets\OvrvisionPro\Plugins\x86_64\ovrvision.dll /Y /B</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MetaioARRelease|x64'">
@@ -300,7 +304,7 @@
       <ImportLibrary>$(OutDir)ovrvision64.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>If Exist $(TargetDir)\ovrvision_metaio.dll copy $(TargetDir)\ovrvision_metaio.dll $(SolutionDir)..\unity5_metaio\Assets\Plugins\x86_64\ovrvision.dll /Y /B</Command>
+      <Command>If Exist $(TargetDir)\ovrvision_metaio.dll copy $(TargetDir)\ovrvision_metaio.dll $(SolutionDir)..\all_unity5_metaio\Assets\OvrvisionPro\Plugins\x86_64\ovrvision.dll /Y /B</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -99,7 +99,7 @@ uint8_t volatile glUVCHeader[CY_FX_UVC_MAX_HEADER] =
 
 volatile static CyBool_t glHitFV = CyFalse;               /* Whether end of frame (FV) signal has been hit. */
 volatile static CyBool_t glGpif_initialized = CyFalse;    /* Whether the GPIF init function has been called. */
-volatile static int32_t glDmaCount = 0;					 /* Count of buffers received and committed during the current video frame. */
+volatile static int32_t glDmaCount = 0;                   /* Count of buffers received and committed during the current video frame. */
 
 //Define
 #define CY_FX_USB_UVC_SET_REQ_TYPE      (uint8_t)(0x21)         /* UVC Interface SET Request Type */
@@ -128,6 +128,8 @@ volatile static int32_t glDmaCount = 0;					 /* Count of buffers received and co
 #define CY_FX_UVC_VIDEO_CONTROL_REQUEST_EVENT   (1 << 2)
 #define CY_FX_UVC_VIDEO_STREAM_REQUEST_EVENT    (1 << 3)
 
+#define DEBUG_DMAERROR_OUTPUT (0)
+
 ////////////////////// Functions //////////////////////
 
 //UVC Application Error Handler
@@ -146,7 +148,7 @@ static void UVCApplnAbortHandler (void)
 	if (CyU3PEventGet (&glFxUVCEvent, CY_FX_UVC_STREAM_EVENT, CYU3P_EVENT_AND, &flag,CYU3P_NO_WAIT) == CY_U3P_SUCCESS)
 	{
         /* Clear the Video Stream Request Event */
-        CyU3PEventSet (&glFxUVCEvent, 0x00, CYU3P_EVENT_AND);
+        CyU3PEventSet (&glFxUVCEvent, ~(CY_FX_UVC_STREAM_EVENT), CYU3P_EVENT_AND);
         /* Set Video Stream Abort Event */
         CyU3PEventSet (&glFxUVCEvent, CY_FX_UVC_STREAM_ABORT_EVENT, CYU3P_EVENT_OR);
 	}
@@ -165,10 +167,6 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
         /* Verify that the current state is a terminal state for the GPIF state machine. */
         switch (currentState)
         {
-            case FULL_BUF_IN_SCK0:
-            case FULL_BUF_IN_SCK1:
-                /* Buffer is already full and would have been committed. Do nothing. */
-                break;
 			/* We have a partial buffer. Commit the buffer manually. The Wrap Up API, here, helps produce a
 			   partially filled buffer on the producer side. This action will cause CyU3PDmaMultiChannelGetBuffer API
 			   in the UVCAppThread_Entry function to succeed one more time with less than full producer buffer count */
@@ -179,6 +177,10 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
             case PARTIAL_BUF_IN_SCK1:
             	apiRetStatus = CyU3PDmaMultiChannelSetWrapUp (&glChHandleUVCStream, 1);
             	if(apiRetStatus != CY_U3P_SUCCESS) {/*nothing*/}
+                break;
+            case FULL_BUF_IN_SCK0:
+            case FULL_BUF_IN_SCK1:
+                /* Buffer is already full and would have been committed. Do nothing. */
                 break;
             default:
                 break;
@@ -342,8 +344,8 @@ static void UVCApplnUSBEventCB (CyU3PUsbEventType_t evtype, uint16_t evdata)
 }
 
 /* Callback for LPM requests. Always return true to allow host to transition device
- * into required LPM state U1/U2/U3. When data trasmission is active LPM management
- * is explicitly desabled to prevent data transmission errors.
+ * into required LPM state U1/U2/U3. When data transmission is active LPM management
+ * is explicitly disabled to prevent data transmission errors.
  */
 static CyBool_t UVCApplnLPMRqtCB (CyU3PUsbLinkPowerMode link_mode)          /* USB 3.0 linkmode requested by Host */
 {
@@ -355,31 +357,37 @@ static CyBool_t UVCApplnLPMRqtCB (CyU3PUsbLinkPowerMode link_mode)          /* U
  */
 void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t type, CyU3PDmaCBInput_t *input)
 {
-    if(type & CY_U3P_DMA_CB_PROD_EVENT)
+    if(type == CY_U3P_DMA_CB_PROD_EVENT)
     {
         CyU3PDmaBuffer_t    produced_buffer;
         CyU3PReturnStatus_t apiRetStatus;
 
 		/* Check if we have a buffer ready to go. */
 		apiRetStatus = CyU3PDmaMultiChannelGetBuffer (multiChHandle, &produced_buffer, CYU3P_NO_WAIT);
-		if(apiRetStatus == CY_U3P_SUCCESS)
+		while(apiRetStatus == CY_U3P_SUCCESS)
 		{
 			CyU3PMemCopy (produced_buffer.buffer - CY_FX_UVC_MAX_HEADER, (uint8_t *)glUVCHeader, CY_FX_UVC_MAX_HEADER);
-			if (produced_buffer.count < CY_FX_UVC_BUF_FULL_SIZE)
+			if (produced_buffer.count < CY_FX_UVC_BUF_FULL_SIZE) {
+                glUVCHeader[1] ^= 0x01;	 /* Toggle UVC header FRAME ID bit */
 				(produced_buffer.buffer - CY_FX_UVC_MAX_HEADER)[1] |= 0x02; //EOF
+			}
 
 			/* Commit the updated DMA buffer to the USB endpoint. */
 			apiRetStatus = CyU3PDmaMultiChannelCommitBuffer (multiChHandle, produced_buffer.count + CY_FX_UVC_MAX_HEADER, 0);
 			if (apiRetStatus == CY_U3P_SUCCESS)
 				glDmaCount++;
-		}
-		else if(apiRetStatus == CY_U3P_ERROR_TIMEOUT)
-		{
-			//CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyTrue);
+			else {
+#if DEBUG_DMAERROR_OUTPUT
+				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyTrue);
+#endif
+				break;
+			}
+
+			apiRetStatus = CyU3PDmaMultiChannelGetBuffer (multiChHandle, &produced_buffer, CYU3P_NO_WAIT);
 		}
     }
 
-    if (type & CY_U3P_DMA_CB_CONS_EVENT)
+    if (type == CY_U3P_DMA_CB_CONS_EVENT)
     {
     	glDmaCount--;
         glStreamingStarted = CyTrue;
@@ -408,7 +416,7 @@ static void UVCApplnInit (void)
     gpioClock.clkSrc     = CY_U3P_SYS_CLK;
     gpioClock.halfDiv    = 0;
 
-    /* Initialize Gpio interface */
+    /* Initialize GPIO interface */
     apiRetStatus = CyU3PGpioInit (&gpioClock, NULL);
     if (apiRetStatus != 0)
     	UVCAppErrorHandler (apiRetStatus);
@@ -600,7 +608,6 @@ void UVCAppThread_Entry (uint32_t input)
 			if ((glHitFV == CyTrue) && (glDmaCount == 0))
 			{
 				glHitFV = CyFalse;
-                glUVCHeader[1] ^= 0x01;	 /* Toggle UVC header FRAME ID bit */
 
 				/* Reset USB EP and DMA Channel */
                 CyU3PUsbFlushEp(CY_FX_EP_BULK_VIDEO);
@@ -614,9 +621,13 @@ void UVCAppThread_Entry (uint32_t input)
                 if (apiRetStatus != CY_U3P_SUCCESS)
                 	UVCAppErrorHandler(apiRetStatus);
 
+#if DEBUG_DMAERROR_OUTPUT
+				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyFalse);
+#endif
+
 				/* Jump to the start state of the GPIF state machine. 257 is used as an
 				   arbitrary invalid state (> 255) number. */
-				CyU3PGpifSMSwitch (257, 0, 257, 0, 2);
+                CyU3PGpifSMSwitch (257, 0, 257, 0, 2);
 			}
 		}
 		else
@@ -626,6 +637,10 @@ void UVCAppThread_Entry (uint32_t input)
 			{
 				glDmaCount = 0;
 				glHitFV = CyFalse;
+
+#if DEBUG_DMAERROR_OUTPUT
+				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyFalse);
+#endif
 
 				/* Sensor reset function */
 				OV5653SensorReset();

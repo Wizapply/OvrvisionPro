@@ -607,19 +607,14 @@ const uvc_controls_t uvc_controls = {
 //AVCaptureVideoDataOutputSampleBufferDelegate
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
-    if( !CMSampleBufferDataIsReady(sampleBuffer) ) {
-        NSLog(@"sample buffer is not ready. Skipping sample");
-        return;
-    }
-
     CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     
     if(CVPixelBufferLockBaseAddress(imageBuffer, 0) == kCVReturnSuccess) {
         unsigned char* databuffer = (unsigned char*)CVPixelBufferGetBaseAddress(imageBuffer);
         size_t datasize = CVPixelBufferGetDataSize(imageBuffer);
-        m_datasize = (int)datasize - 32;
         
         [m_cond lock];  //LOCK!
+            m_datasize = (int)datasize - 32;
             memcpy(m_pPixels, databuffer ,m_datasize);
         [m_cond signal];
         [m_cond unlock];
