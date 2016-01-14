@@ -34,7 +34,7 @@ LPCSTR g_planeShader =
 	"   float4 PSFunc(VS_OUTPUT input) : SV_Target\n"
 	"   {\n"
 	"      return g_texDecal.Sample(g_samLinear, input.Tex);\n"
-	"	}\n"
+	"   }\n"
 ;
 
 //Vector class
@@ -84,7 +84,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	ID3DBlob *pErrors = NULL;
 
 	//頂点シェーダー作成
-	if (FAILED(D3DX11CompileFromMemory(g_planeShader, strlen(g_planeShader), NULL, NULL, NULL, "VSFunc", "vs_4_0", 0, 0, NULL, &pCompiledShader, &pErrors, NULL)))
+	if (FAILED(D3DX11CompileFromMemory(g_planeShader, strlen(g_planeShader), NULL, NULL, NULL, "VSFunc", "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0, NULL, &pCompiledShader, &pErrors, NULL)))
 	{
 		MessageBox(0, L"Vertex Shader Read Error!", NULL, MB_OK);
 		return E_FAIL;

@@ -359,6 +359,42 @@ namespace ovrvision_app
             return ovSaveCamStatusToEEPROM();
         }
 
+        /*
+        public Vector3 HMDCameraRightGap()
+        {
+            return new Vector3(ovGetHMDRightGap(0) * 0.001f,
+                            ovGetHMDRightGap(1) * 0.001f,
+                            ovGetHMDRightGap(2) * 0.001f);	//1/1000
+        }
+        */
+        public float GetFloatPoint()
+        {
+            if (!camStatus)
+                return 0.0f;
+
+            return ovGetFocalPoint() * 0.001f;	//1/1000
+        }
+
+        //AR
+        public int OvrvisionGetAR(System.IntPtr mdata, int datasize)
+        {
+            return ovARGetData(mdata, datasize);
+        }
+
+        //Tracking
+        public void OvrvisionTrackRender(bool calib, bool point)
+        {
+            ovTrackRender(calib, point);
+        }
+        public int OvrvisionGetTrackingVec3(System.IntPtr mdata)
+        {
+            return ovGetTrackData(mdata);
+        }
+        public void OvrvisionTrackReset()
+        {
+            ovTrackingCalibReset();
+        }
+
         //Calibration
         public void InitializeCalibration(int pattern_size_w, int pattern_size_h, double chessSizeMM)
         {

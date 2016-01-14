@@ -5,9 +5,10 @@
 /bin/x64
 /bin/x86
 /build/windows_vs2013_new/ovrvision.v12.suo
-/build/unity5/Assets/Plugins/x86/ovrvision.dll
-/build/unity5/Assets/Plugins/x86_64/ovrvision.dll
-/build/unity5_metaio/Assets/Plugins/x86/ovrvision.dll
-/build/unity5_metaio/Assets/Plugins/x86_64/ovrvision.dll
 /docs/html
 /docs/man
+/build/all_unity5/Assets/OvrvisionPro/Plugins/ovrvision.bundle
+/build/all_unity5/Assets/OvrvisionPro/Plugins/x86/ovrvision.dll
+/build/all_unity5/Assets/OvrvisionPro/Plugins/x86_64/ovrvision.dll
+/build/all_unity5_metaio/Assets/OvrvisionPro/Plugins/x86/ovrvision.dll
+/build/all_unity5_metaio/Assets/OvrvisionPro/Plugins/x86_64/ovrvision.dll
