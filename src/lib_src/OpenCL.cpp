@@ -464,6 +464,7 @@ namespace OVR
 			clReleaseKernel(_convertHSVTone);
 			clReleaseKernel(_maskTone);
 			clReleaseKernel(_maskOpenglTone);
+			clReleaseKernel(_copyOpengl);
 
 			clReleaseMemObject(_src);
 			clReleaseMemObject(_l);
@@ -558,6 +559,8 @@ namespace OVR
 			_maskTone = clCreateKernel(_program, "maskTone", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			_maskOpenglTone = clCreateKernel(_program, "mask_openglTone", &_errorCode);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_copyOpengl = clCreateKernel(_program, "copy_opengl", &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 			return true;
 		}
@@ -1107,10 +1110,10 @@ namespace OVR
 	// Update textures
 	void OvrvisionProOpenCL::UpdateImageTextures(TEXTURE left, TEXTURE right)
 	{
-		size_t width = _scaledRegion[0];
-		size_t height = _scaledRegion[1];
-		size_t origin[3] = { 0, 0, 0 };
-		size_t region[3] = { width, height, 1 };
+		//size_t width = _scaledRegion[0];
+		//size_t height = _scaledRegion[1];
+		//size_t origin[3] = { 0, 0, 0 };
+		//size_t region[3] = { width, height, 1 };
 		cl_event event[2];
 #ifdef WIN32
 		if (_sharing == OPENGL)
@@ -1119,9 +1122,7 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// Copy to texture
-			// TODO Rearrange requried for OpenGL channel order RGBA 
-			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
-			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
+			CopyImage(_texture[0], _texture[1], &event[0], &event[1]);
 
 			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
 			SAMPLE_CHECK_ERRORS(_errorCode);
@@ -1136,8 +1137,7 @@ namespace OVR
 				SAMPLE_CHECK_ERRORS(_errorCode);
 
 				// Copy to texture
-				clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
-				clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
+				CopyImage(_texture[0], _texture[1], &event[0], &event[1]);
 
 				_errorCode = pclEnqueueReleaseD3D11ObjectsNV(_commandQueue, 2, _texture, 2, event, NULL);
 				SAMPLE_CHECK_ERRORS(_errorCode);
@@ -1149,9 +1149,7 @@ namespace OVR
 				_errorCode = pclEnqueueAcquireD3D11ObjectsKHR(_commandQueue, 2, _texture, 0, NULL, NULL);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 
-				// Copy to texture
-				clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
-				clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
+				CopyImage(_texture[0], _texture[1], &event[0], &event[1]);
 
 				_errorCode = pclEnqueueReleaseD3D11ObjectsKHR(_commandQueue, 2, _texture, 2, event, NULL);
 				SAMPLE_CHECK_ERRORS(_errorCode);
@@ -1166,9 +1164,7 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// Copy to texture
-			// TODO Rearrange requried for OpenGL channel order RGBA 
-			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
-			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
+			CopyImage(_texture[0], _texture[1], &event[0], &event[1]);
 
 			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
 			SAMPLE_CHECK_ERRORS(_errorCode);
@@ -1182,9 +1178,7 @@ namespace OVR
 			SAMPLE_CHECK_ERRORS(_errorCode);
 
 			// Copy to texture
-			// TODO Rearrange requried for OpenGL channel order RGBA 
-			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedL, _texture[0], origin, origin, region, NULL, NULL, &event[0]);
-			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedR, _texture[1], origin, origin, region, NULL, NULL, &event[1]);
+			CopyImage(_texture[0], _texture[1], &event[0], &event[1]);
 
 			_errorCode = clEnqueueReleaseGLObjects(_commandQueue, 2, _texture, 2, event, NULL);
 			SAMPLE_CHECK_ERRORS(_errorCode);
@@ -1482,6 +1476,47 @@ namespace OVR
 	}
 
 	//
+	void OvrvisionProOpenCL::CopyImage(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r)
+	{
+		size_t width = _scaledRegion[0];
+		size_t height = _scaledRegion[1];
+		size_t origin[3] = { 0, 0, 0 };
+		size_t region[3] = { width, height, 1 };
+
+		//cl_event event[2];
+		cl_image_format format;
+		clGetImageInfo(left, CL_IMAGE_FORMAT, sizeof(format), &format, NULL);
+
+		//__kernel void copy_opengl( 
+		//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
+		//		__write_only image2d_t dst)	// CL_UNORM_INT8 x 4
+
+		if (format.image_channel_data_type == CL_UNORM_INT8)
+		{
+			// dataType == UNORM_INT8 for D3D11 pixel shader
+			_errorCode = clSetKernelArg(_copyOpengl, 0, sizeof(cl_mem), &_reducedL);
+			_errorCode = clSetKernelArg(_copyOpengl, 1, sizeof(cl_mem), &left);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _copyOpengl, 2, NULL, _scaledRegion, NULL, 0, NULL, event_l);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			clSetKernelArg(_copyOpengl, 0, sizeof(cl_mem), &_reducedR);
+			clSetKernelArg(_copyOpengl, 1, sizeof(cl_mem), &right);
+			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _copyOpengl, 2, NULL, _scaledRegion, NULL, 0, NULL, event_r);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+		else // dataType == UNSIGNED_INT8
+		{
+			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedL, left, origin, origin, region, NULL, NULL, event_l);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+			_errorCode = clEnqueueCopyImage(_commandQueue, _reducedR, right, origin, origin, region, NULL, NULL, event_r);
+			SAMPLE_CHECK_ERRORS(_errorCode);
+		}
+
+		// Release temporaries
+		//clReleaseEvent(event[0]);
+		//clReleaseEvent(event[1]);
+	}
+
+	//
 	void OvrvisionProOpenCL::SkinImages(uchar *left, uchar *right)
 	{
 		uint width = _scaledRegion[0];
@@ -1654,7 +1689,7 @@ namespace OVR
 		Mat normalized(256, 256, CV_8UC1);
 
 		add(*_histgram[0], *_histgram[1], sum);
-		normalize(sum, normalized, 0, 255, NORM_MINMAX, normalized.type());
+		cv::normalize(sum, normalized, 0, 255, NORM_MINMAX, normalized.type());
 		medianBlur(normalized, normalized, 3);
 
 		// Estimate color range in HS space
@@ -2248,7 +2283,7 @@ namespace OVR
 			}
 		}
 		Mat h(180, 256, CV_8UC1, histgram);
-		normalize(hist, h, 0, 255, NORM_MINMAX, h.type());
+		cv::normalize(hist, h, 0, 255, NORM_MINMAX, h.type());
 	}
 
 	// Depricate?
@@ -2580,7 +2615,7 @@ namespace OVR
 			{
 				cl_int status;
 				fread(buffer, st.st_size, 1, file);
-				fclose(file);
+				std::fclose(file);
 				_program = clCreateProgramWithBinary(_context, 1, &_deviceId, &size, (const unsigned char **)&buffer, &status, &_errorCode);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 			}
@@ -2590,7 +2625,7 @@ namespace OVR
 			if ((file = fopen(filename, "r")) != NULL)
 			{
 				fread(buffer, st.st_size, 1, file);
-				fclose(file);
+				std::fclose(file);
 				_program = clCreateProgramWithSource(_context, 1, (const char **)&buffer, &size, &_errorCode);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 				_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
@@ -2633,7 +2668,7 @@ namespace OVR
 			clGetProgramInfo(_program, CL_PROGRAM_BINARIES, kernel_bin_size, &buffer, NULL);
 			fwrite(buffer, kernel_bin_size, 1, file);
 			delete[] buffer;
-			fclose(file);
+			std::fclose(file);
 			return 0;
 		}
 		else

@@ -252,6 +252,7 @@ namespace OVR
 			@param histgram */
 			void EstimateColorRange();
 
+			void CopyImage(cl_mem left, cl_mem right, cl_event *event_l, cl_event *event_r);
 		private:
 			/*! @brief Download from GPU
 			@param image
@@ -346,6 +347,7 @@ namespace OVR
 			cl_kernel		_maskOpengl;
 			cl_kernel		_maskD3D11;
 			cl_kernel		_invertMask;
+			cl_kernel		_copyOpengl;
 			// kernels with tone correction
 			cl_kernel		_toneCorrection;
 			cl_kernel		_resizeTone;
