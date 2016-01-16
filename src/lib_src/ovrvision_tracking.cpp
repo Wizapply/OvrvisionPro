@@ -244,7 +244,6 @@ void OvrvisionTracking::Render(bool calib, bool debug) {
 			float pos_y = lpos.y*4.0f;
 			float posr_x = rpos.x*4.0f;
 			float posr_y = rpos.y*4.0f;
-			float proje_x, proje_y, proje_z;
 
 			m_pos_z = (m_focalpoint * 0.06f) / (pos_x - posr_x);
 

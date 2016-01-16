@@ -88,4 +88,7 @@ extern void OV5653SensorSetBLC(uint16_t v);
 extern unsigned char OV5653SensorGetCurRoll();
 extern void OV5653SensorSetModRoll(unsigned char v);
 
+//Camera Timing control
+extern void OV5653SensorSetRelativeTimingHTS(uint16_t v);
+
 #endif /*_OV5653_SENSOR_H_*/

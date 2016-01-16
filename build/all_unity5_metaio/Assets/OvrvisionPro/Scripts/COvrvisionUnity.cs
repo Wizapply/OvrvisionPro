@@ -345,18 +345,12 @@ public class COvrvisionUnity
 		return ovARGetData(mdata, datasize);
 	}
 
-	//HandTracking
-	public int OvrvisionGetFinger3(System.IntPtr mdata)
-	{
-		return ovGetTrackData(mdata);
-	}
-
 	//Tracking
 	public void OvrvisionTrackRender(bool calib, bool point)
 	{
 		ovTrackRender(calib,point);
 	}
-	public int OvrvisionGetTracking(System.IntPtr mdata)
+	public int OvrvisionGetTrackingVec3(System.IntPtr mdata)
 	{
 		return ovGetTrackData(mdata);
 	}

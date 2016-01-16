@@ -95,5 +95,85 @@ namespace ovrvision_app
                 System.Windows.Forms.MessageBox.Show(this, "The camera setting was saved successfully.", "OvrvisionPro");
             }
         }
+
+        private void button1_30_Click(object sender, EventArgs e)
+        {
+            if (ovrSys.SetExposurePerSec(30.0f)!=0)
+                tbExposure.Value = ovrSys.GetExposure();
+            else
+                System.Windows.Forms.MessageBox.Show(this, "Cannot set the exposure less than framerate.", "OvrvisionPro");
+        }
+
+        private void button1_60_Click(object sender, EventArgs e)
+        {
+            if (ovrSys.SetExposurePerSec(60.0f) != 0)
+                tbExposure.Value = ovrSys.GetExposure();
+            else
+                System.Windows.Forms.MessageBox.Show(this, "Cannot set the exposure less than framerate.", "OvrvisionPro");
+        }
+
+        private void button1_120_Click(object sender, EventArgs e)
+        {
+            if (ovrSys.SetExposurePerSec(120.0f) != 0)
+                tbExposure.Value = ovrSys.GetExposure();
+            else
+                System.Windows.Forms.MessageBox.Show(this, "Cannot set the exposure less than framerate.", "OvrvisionPro");
+        }
+
+        private void button1_180_Click(object sender, EventArgs e)
+        {
+            if (ovrSys.SetExposurePerSec(180.0f) != 0)
+                tbExposure.Value = ovrSys.GetExposure();
+            else
+                System.Windows.Forms.MessageBox.Show(this, "Cannot set the exposure less than framerate.", "OvrvisionPro");
+        }
+
+        private void button1_240_Click(object sender, EventArgs e)
+        {
+            if (ovrSys.SetExposurePerSec(240.0f) != 0)
+                tbExposure.Value = ovrSys.GetExposure();
+            else
+                System.Windows.Forms.MessageBox.Show(this, "Cannot set the exposure less than framerate.", "OvrvisionPro");
+        }
+
+        private void button1_25_Click(object sender, EventArgs e)
+        {
+            if (ovrSys.SetExposurePerSec(25.0f) != 0)
+                tbExposure.Value = ovrSys.GetExposure();
+            else
+                System.Windows.Forms.MessageBox.Show(this, "Cannot set the exposure less than framerate.", "OvrvisionPro");
+        }
+
+        private void button1_50_Click(object sender, EventArgs e)
+        {
+            if (ovrSys.SetExposurePerSec(50.0f) != 0)
+                tbExposure.Value = ovrSys.GetExposure();
+            else
+                System.Windows.Forms.MessageBox.Show(this, "Cannot set the exposure less than framerate.", "OvrvisionPro");
+        }
+
+        private void button1_100_Click(object sender, EventArgs e)
+        {
+            if (ovrSys.SetExposurePerSec(100.0f) != 0)
+                tbExposure.Value = ovrSys.GetExposure();
+            else
+                System.Windows.Forms.MessageBox.Show(this, "Cannot set the exposure less than framerate.", "OvrvisionPro");
+        }
+
+        private void button1_150_Click(object sender, EventArgs e)
+        {
+            if (ovrSys.SetExposurePerSec(150.0f) != 0)
+                tbExposure.Value = ovrSys.GetExposure();
+            else
+                System.Windows.Forms.MessageBox.Show(this, "Cannot set the exposure less than framerate.", "OvrvisionPro");
+        }
+
+        private void button1_200_Click(object sender, EventArgs e)
+        {
+            if (ovrSys.SetExposurePerSec(200.0f) != 0)
+                tbExposure.Value = ovrSys.GetExposure();
+            else
+                System.Windows.Forms.MessageBox.Show(this, "Cannot set the exposure less than framerate.", "OvrvisionPro");
+        }
     }
 }

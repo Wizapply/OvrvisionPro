@@ -60,6 +60,7 @@ OvrvisionPro::OvrvisionPro()
 	m_width = 960;
 	m_height = 950;
 	m_framerate = 60;
+	m_expo_f = 937156.80f;
 
 	m_focalpoint = 1.0f;
 	m_rightgap[0] = m_rightgap[1] = m_rightgap[2] = 0.0f;
@@ -93,6 +94,7 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 	int cam_width;
 	int cam_height;
 	int cam_framerate;
+	float cam_expo_f;
 
 	if (m_isOpen)
 		return 0;
@@ -102,48 +104,61 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 		cam_width = 2560;
 		cam_height = 1920;
 		cam_framerate = 15;
+		cam_expo_f = 480000.00f;
 		break;
 	case OV_CAM5MP_FHD:
 		cam_width = 1920;
 		cam_height = 1080;
 		cam_framerate = 30;
+		cam_expo_f = 570579.49f;
 		break;
 	case OV_CAMHD_FULL:
 		cam_width = 1280;
 		cam_height = 960;
 		cam_framerate = 45;
+		cam_expo_f = 720112.52f;
 		break;
 	case OV_CAMVR_FULL:
 		cam_width = 960;
 		cam_height = 950;
 		cam_framerate = 60;
+		cam_expo_f = 937156.80f;
 		break;
 	case OV_CAMVR_WIDE:
 		cam_width = 1280;
 		cam_height = 800;
 		cam_framerate = 60;
+		cam_expo_f = 783273.84f;
 		break;
 	case OV_CAMVR_VGA:
 		cam_width = 640;
 		cam_height = 480;
 		cam_framerate = 90;
+		cam_expo_f = 720112.52f;
 		break;
 	case OV_CAMVR_QVGA:
 		cam_width = 320;
 		cam_height = 240;
 		cam_framerate = 120;
+		cam_expo_f = 491520.00f;
 		break;
 	case OV_CAM20HD_FULL:
 		cam_width = 1280;
 		cam_height = 960;
 		cam_framerate = 15;
+		cam_expo_f = 240000.00f;
 		break;
 	case OV_CAM20VR_VGA:
 		cam_width = 640;
 		cam_height = 480;
 		cam_framerate = 30;
+		cam_expo_f = 240000.00f;
 		break;
 	default:
+		cam_width = 960;
+		cam_height = 950;
+		cam_framerate = 60;
+		cam_expo_f = 937156.80f;
 		return 0;
 	};
 
@@ -215,6 +230,7 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 	m_width = cam_width;
 	m_height = cam_height;
 	m_framerate = cam_framerate;
+	m_expo_f = cam_expo_f;
 
 	//Initialize Camera system
 	InitCameraSetting();
@@ -474,9 +490,6 @@ void OvrvisionPro::InitCameraSetting()
 	OvrvisionSetting ovrset(this);
 	if (ovrset.ReadEEPROM()) {
 
-		if (m_width == 640)	ovrset.m_propExposure /= 2;
-		if (m_width == 320) ovrset.m_propExposure /= 4;
-
 		//Read Set
 		SetCameraExposure(ovrset.m_propExposure);
 		SetCameraGain(ovrset.m_propGain);
@@ -566,6 +579,9 @@ void OvrvisionPro::SetCameraExposure(int value){
 	if (value > 32767)	//high
 		value = 32767;
 
+	// Number is divided by 8
+	value -= value % 8;
+
 #ifdef WIN32
 	m_pODS->SetCameraSetting(OV_CAMSET_EXPOSURE, value, false);
 #elif MACOSX
@@ -573,6 +589,25 @@ void OvrvisionPro::SetCameraExposure(int value){
 #elif LINUX
 	//NONE
 #endif
+}
+bool OvrvisionPro::SetCameraExposurePerSec(float fps){
+	if (!m_isOpen)
+		return false;
+
+	//The range specification
+	if (fps < 25.0f)	//low
+		fps = 25.0f;
+	if (fps > 240.0f)	//high
+		fps = 240.0f;
+
+	fps += 0.5f;
+	if ((float)m_framerate > fps) {
+		return false;
+	}
+
+	int fpsint = (int)(m_expo_f / fps);
+	SetCameraExposure(fpsint);
+	return true;
 }
 
 int OvrvisionPro::GetCameraGain(){

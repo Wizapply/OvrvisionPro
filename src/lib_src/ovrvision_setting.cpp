@@ -39,8 +39,8 @@ void OvrvisionSetting::InitValue()
 	isReaded = false;
 
 	//initialize Camera Setting
-	m_propExposure = 12960;		//Exposure
-	m_propGain = 8;				//Gain
+	m_propExposure = 7808;		//Exposure
+	m_propGain = 20;			//Gain
 	m_propBLC = 32;				//BLC
 	m_propWhiteBalanceR = 1472;	//WhitebalanceR
 	m_propWhiteBalanceG = 1024;	//WhitebalanceG

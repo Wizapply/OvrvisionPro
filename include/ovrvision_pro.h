@@ -1,5 +1,5 @@
 // ovrvision_pro.h
-// Version 1.31 : 8/Jan/2016
+// Version 1.4 : 15/Jan/2016
 //
 //MIT License
 //THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -200,6 +200,10 @@ public:
 	/*!	@brief Set exposure of the Ovrvision.
 		@param value Exposure time. Range of 0 - 32767 */
 	void SetCameraExposure(int value);
+	/*!	@brief Set exposure of the Ovrvision.
+		@param value Exposure time per Sec. 60Hz Range of 30 - 240 frame, 50Hz Range of 25 - 200 frame
+		@return error, true or false */
+	bool SetCameraExposurePerSec(float fps);
 	/*!	@brief Get gain value of the Ovrvision.
 		@return gain value. */
 	int GetCameraGain();
@@ -409,7 +413,8 @@ private:
 	int				m_height;
 	int				m_framerate;
 	float			m_focalpoint;
-	float			m_rightgap[3];	//vector
+	float			m_rightgap[3];	//vector3
+	float			m_expo_f;
 
 	bool			m_isOpen;
 	bool			m_isCameraSync;

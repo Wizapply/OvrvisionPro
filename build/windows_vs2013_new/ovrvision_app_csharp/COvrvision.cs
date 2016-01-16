@@ -62,6 +62,8 @@ namespace ovrvision_app
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern void ovSetExposure(int value);
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        static extern int ovSetExposurePerSec(float value);
+        [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern void ovSetGain(int value);
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern void ovSetBLC(int value);
@@ -72,7 +74,7 @@ namespace ovrvision_app
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern void ovSetWhiteBalanceB(int value);
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        static extern void ovSetWhiteBalanceAuto(bool value);
+        static extern void ovSetWhiteBalanceAuto(int value);
         //Get camera properties
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern int ovGetExposure();
@@ -87,7 +89,7 @@ namespace ovrvision_app
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern int ovGetWhiteBalanceB();
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        static extern bool ovGetWhiteBalanceAuto();
+        static extern int ovGetWhiteBalanceAuto();
 
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern float ovGetFocalPoint();
@@ -95,7 +97,7 @@ namespace ovrvision_app
         static extern float ovGetHMDRightGap(int at);
 
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        static extern float ovSetCamSyncMode(bool at);
+        static extern float ovSetCamSyncMode(int at);
 
         ////////////// Ovrvision AR System //////////////
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -270,6 +272,13 @@ namespace ovrvision_app
                 return;
             ovSetExposure(value);
         }
+        public int SetExposurePerSec(float fps)
+        {
+            if (!camStatus)
+                return 0;
+
+            return ovSetExposurePerSec(fps);
+        }
         public void SetGain(int value)
         {
             if (!camStatus)
@@ -304,7 +313,7 @@ namespace ovrvision_app
         {
             if (!camStatus)
                 return;
-            ovSetWhiteBalanceAuto(value);
+            ovSetWhiteBalanceAuto(value ? 1:0);
         }
 
         public int GetExposure()
@@ -347,7 +356,7 @@ namespace ovrvision_app
         {
             if (!camStatus)
                 return false;
-            return ovGetWhiteBalanceAuto();
+            return ovGetWhiteBalanceAuto()==1;
         }
 
         //Save

@@ -334,7 +334,6 @@ void OV5653SensorControl(unsigned char frameIdx)
 			WI2C(0x381e,0x06);
 			WI2C(0x381f,0x50);
 			WI2C(0x3820,0x00);
-
 			break;
 		case FRAMEIDX_MODE_960X950AT60FPS:
 			WI2C(0x3800,0x02);
@@ -678,5 +677,25 @@ unsigned char OV5653SensorGetCurRoll() {
 }
 void OV5653SensorSetModRoll(unsigned char v) {
 
+}
+
+//Camera Timing control
+void OV5653SensorSetRelativeTimingHTS(uint16_t v){
+	uint8_t highBit = 0;
+	uint8_t lowBit = 0;
+	uint16_t buffer = 0;
+
+	ReadI2C(I2C_SENSOR_ADDR_RD, 0x380D, &highBit);	//32 no more
+	ReadI2C(I2C_SENSOR_ADDR_RD, 0x380E, &lowBit);
+
+	buffer |= lowBit;
+	buffer |= (uint16_t)highBit << 8;
+
+	buffer += v;
+
+	highBit = buffer >> 8;
+	lowBit = buffer & 0x00FF;
+	WI2C(0x380D,highBit);
+	WI2C(0x380E,lowBit);
 }
 

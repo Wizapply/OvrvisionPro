@@ -10,6 +10,17 @@ public class OvrvisionTools : EditorWindow
 	{
 		if (GameObject.Find("OvrvisionProCamera") == null)
 		{
+			//Eliminate other camera objects.
+			Camera[] camObjs = GameObject.FindObjectsOfType(typeof(Camera)) as Camera[];
+			foreach (Camera camobj in camObjs)
+			{
+				string delName = camobj.gameObject.name;
+				if (UnityEditor.EditorUtility.DisplayDialog(delName + " : Competition!", "Do you inactivate the unnecessary camera[" + delName + "] object which will cause the problem?", "YES", "NO"))
+				{
+					camobj.gameObject.SetActive(false);
+				}
+			}
+
 			CreateLayer(24, "OvrvisionProLeftImage");
 			CreateLayer(25, "OvrvisionProRightImage");
 
