@@ -52,7 +52,7 @@ Ovrvision SDK
   - x64/ : Program files for x86_64 CPU (Windows Only)
     - <b>ovrvision_app.exe</b> : Ovrvision Pro Camera C++ Viewer
     - <b>ovrvision_oculus_app.exe</b> : When looking by Oculus Rift
-  - mac/ : Program files for Mac OSX (Mac OSX Only)
+  - ovrvision_app.app/ : OvrvisionPro Camera Viewer for Mac OSX (Mac OSX Only)
   - demo/ : Demonstration
     - <b>ovrvision_figure.exe</b> : The AR demonstration using a product package.
 - include/ : include files
@@ -77,7 +77,7 @@ Ovrvision SDK
   - Windows 7, 8.1 and 10<br />
   - Mac OS X 10.10<br />
   - Linux (in the future)
-- Development Environment : VS2013, VS2015, Xcode7, Unity5.2.3, UnrealEngine4.10(in the future)
+- Development Environment : VS2013, VS2015, Xcode7, Unity5.3.0, UnrealEngine4.10(in the future)
 
 @section install Installation
 @subsection gstep1 Step 1: Setup your environment
@@ -156,7 +156,7 @@ The usage should confirm the following video. <br />
 
 
 /*! @page page3 How to Play Demons
-
+@tableofcontents
 @section htdemo_ardemo AR Demonstration
 The demonstration which does AR.<br />
 ＡＲ機能を使います。<br />
@@ -191,15 +191,34 @@ When it cannot do well, you press and reset a key repeatedly.
 上手くいかなかった場合は、何度もキーを押してリセットします。
 @image html tracking_3.jpg
 
-It is completion when a red marker appears in a finger. 
+It is completion when a red marker appears in the finger. 
 指に赤いマーカーが表示されたら完了です。
 */
 
-/*! @page page4 How to Programming Examples
+/*! @page page4 Use in VisualStudio & Xcode
 - Coming Soon
 */
 
-/*! @page page5 How to remove lens dust
+/*! @page page5 Use in Unity5
+@image html into_unity1.jpg
+Explain the usage in the case of using OvrvisionPro in Unity5. <br />
+Unity5でOvrvisionProを使用する場合の使い方を説明します。
+@image html into_unity2.jpg
+First, please import UnityPackage of OvrvisionSDK.  <br />
+まずは、ダウンロードしたOvrvisionSDKのUnityPackageをインポートします。
+@image html into_unity3.jpg
+"OvrvisionPro" is added to the menubar of Unity5. Click top "Add OvrvisionProCamera" and put the ovrvision system on this scene.  <br />
+Unity5のメニューバーに「OvrvisionPro」が追加されます。一番上の「Add OvrvisionProCamera」をクリックし、Ovrvision用のシステムをシーンに追加します。
+@image html into_unity4.jpg
+It is completion when it can add like this image. Please push PLAY of Unity5 and confirm run. If using AR Function and a hand tracking Function, Click "Add OvrvisionARTracker" of a menu bar, and "Add OvrvisionHandTracker", and put on this scene.  <br />
+このように追加できたら完了です。Unity5の再生を押して起動を確認してください。もし、ＡＲ機能やハンドトラッキング機能を利用する場合はメニューバーの「Add OvrvisionARTracker」や「Add OvrvisionHandTracker」をクリックしてシーンに追加します。
+@image html into_unity5.jpg
+If required, can change setting by "OvrvisionProCamera" Object. AR Marker size is metric system. : 0.15 = 15cm<br />
+必要に応じて、「OvrvisionProCamera」の設定を変更できます。AR Marker sizeはメートル法です。 : 0.15 = 15cm
+
+*/
+
+/*! @page page6 How to remove lens dust
 How to remove when dust has adhered to the image sensor.<br />
 イメージセンサーにゴミが付着している場合の除去方法<br />
 @image html lens_sow1.jpg
@@ -210,8 +229,23 @@ How to remove when dust has adhered to the image sensor.<br />
 @image html lens_sow6.jpg
 */
 
-/*! @page page6 Release Notes
+/*! @page page7 Release Notes
 @tableofcontents
+@section sdk7 Ovrvision SDK v1.4
+Date : 16/Jan/2015<br />
+<b>Notes</b>
+- OvrvisionPro new firmware was released.
+- Dissolve the memory leak of OpenCL. 
+- Become easy to introduce OvrvisionSDK(Add in MenuBar) in Unity5. 
+- Fixed bugs of the Calibration Tool. 
+- SetCameraExposurePerSec() was added in order to simplify Exposure setting.
+- Improve system performance. 
+
+<b>Unimplementeds and issue</b>
+- Linux OS support
+- Unreal Engine 4
+- A defect of a document.
+
 @section sdk6 Ovrvision SDK v1.31
 Date : 08/Jan/2015<br />
 <b>Notes</b>
@@ -291,6 +325,6 @@ Date : 01/Dec/2015<br />
 - Unreal Engine 4
 */
 
-/*! @page page7 FAQ
+/*! @page pag8 FAQ
   Coming Soon
 */

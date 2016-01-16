@@ -62,7 +62,7 @@ CyBool_t        isUsbConnected = CyFalse;               /* Whether USB connectio
 CyU3PUSBSpeed_t usbSpeed = CY_U3P_NOT_CONNECTED;        /* Current USB connection speed. */
 CyBool_t        glClearFeatureRqtReceived = CyFalse;    /* Whether a CLEAR_FEATURE (stop streaming) request has been received. */
 CyBool_t        glStreamingStarted = CyFalse;           /* Whether USB host has started streaming data */
-CyBool_t		glDmaError = CyFalse;            /* This flag when an error happens in the data transfer */
+uint8_t			glDmaError = 0;            				/* This flag when an error happens in the data transfer */
 
 /* UVC Probe Control Settings for a USB connection. */
 uint8_t glProbeCtrl[CY_FX_UVC_MAX_PROBE_SETTING] = {
@@ -122,6 +122,8 @@ volatile static int32_t glDmaCount = 0;                   /* Count of buffers re
 #define CY_FX_UVC_CAMERA_TERMINAL_ID    (uint8_t)(1)            /* wIndex value used to select Camera terminal. */
 #define CY_FX_UVC_PROCESSING_UNIT_ID    (uint8_t)(2)            /* wIndex value used to select Processing Unit. */
 #define CY_FX_UVC_EXTENSION_UNIT_ID     (uint8_t)(3)            /* wIndex value used to select Extension Unit. */
+
+#define DEBUG_DMAERROR_RANKDOWN_NUM		(4)
 
 //Events Define
 #define CY_FX_UVC_STREAM_EVENT                  (1 << 0)
@@ -324,14 +326,14 @@ static void UVCApplnUSBEventCB (CyU3PUsbEventType_t evtype, uint16_t evdata)
             CyU3PGpifDisable (CyTrue);
             glGpif_initialized = CyFalse;
             glStreamingStarted = CyFalse;
-            glDmaError = CyFalse;
+            glDmaError = 0;
             UVCApplnAbortHandler();
             break;
         case CY_U3P_USB_EVENT_SUSPEND:
             CyU3PGpifDisable (CyTrue);
             glGpif_initialized = CyFalse;
             glStreamingStarted = CyFalse;
-            glDmaError = CyFalse;
+            glDmaError = 0;
             UVCApplnAbortHandler();
             break;
         case CY_U3P_USB_EVENT_DISCONNECT:
@@ -339,7 +341,7 @@ static void UVCApplnUSBEventCB (CyU3PUsbEventType_t evtype, uint16_t evdata)
             glGpif_initialized = CyFalse;
             isUsbConnected = CyFalse;
             glStreamingStarted = CyFalse;
-            glDmaError = CyFalse;
+            glDmaError = 0;
             UVCApplnAbortHandler();
             break;
         default:
@@ -381,7 +383,7 @@ void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t 
 			if (apiRetStatus == CY_U3P_SUCCESS)
 				glDmaCount++;
 			else {
-				glDmaError = CyTrue;
+				glDmaError++;
 #if DEBUG_DMAERROR_OUTPUT
 				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyTrue);
 #endif
@@ -616,9 +618,9 @@ void UVCAppThread_Entry (uint32_t input)
 				glHitFV = CyFalse;
 
 				/* Frame down */
-				if(glDmaError == CyTrue) {
-					OV5653SensorSetRelativeTimingHTS(0x0001);
-					glDmaError = CyFalse;
+				if(glDmaError > DEBUG_DMAERROR_RANKDOWN_NUM) {
+					OV5653SensorSetRelativeTimingHTS(0x0002);
+					glDmaError = 0;
 				}
 
 				/* Reset USB EP and DMA Channel */
@@ -649,7 +651,7 @@ void UVCAppThread_Entry (uint32_t input)
 			{
 				glDmaCount = 0;
 				glHitFV = CyFalse;
-				glDmaError = CyFalse;
+				glDmaError = 0;
 
 #if DEBUG_DMAERROR_OUTPUT
 				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyFalse);

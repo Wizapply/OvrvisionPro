@@ -1,4 +1,1 @@
-sceneSetups:
-- path: Assets/OvrvisionPro/Demos/camimage_demo.unity
-  isLoaded: 1
-  isActive: 1
+sceneSetups: []
