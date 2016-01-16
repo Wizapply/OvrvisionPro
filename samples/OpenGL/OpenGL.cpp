@@ -10,6 +10,7 @@
 
 void SWAPBUFFERS();	// platform depend function
 
+//#define HAND_TEXTURE
 
 #define GL_API_CHECK(x)	x
 
@@ -36,6 +37,7 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 
 	// Set scaling and size of scaled image
 	size = ovrvision.SetSkinScale(2);
+#ifdef HAND_TEXTURE
 	cv::Mat images[2];
 	images[0].create(size.height, size.width, CV_8UC4);
 	images[1].create(size.height, size.width, CV_8UC4);
@@ -51,6 +53,7 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 		cv::imshow("R", images[1]);
 	}
 	cv::destroyAllWindows();
+#endif // HAND_TEXTURE
 	//////////////////////////////////////////////////////////////////////////////
 
 	// GPU共有テクスチャー開始
@@ -111,7 +114,12 @@ GLvoid drawScene(GLvoid)
 	ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMS);
 	glFinish();
 //	int64 start = cv::getTickCount();
-	ovrvision.UpdateSkinTextures(textureIDs[0], textureIDs[1]);
+#ifdef HAND_TEXTURE
+	ovrvision.UpdateSkinTextures(textureIDs[0], textureIDs[1]); 
+#else
+	ovrvision.UpdateImageTextures(textureIDs[0], textureIDs[1]);
+#endif // DEBUG
+
 //	int64 stop = cv::getTickCount();
 //	double usec = (stop - start) * 1000000 / cv::getTickFrequency();
 //	printf("%f usec\n", usec);
