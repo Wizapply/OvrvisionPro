@@ -45,6 +45,15 @@ typedef void *TEXTURE;
 typedef unsigned int TEXTURE;
 #endif
 
+#ifdef LINUX
+#include <CL/opencl.h>
+#include <GL/glew.h>
+#include <GL/glext.h>
+#include <GL/wglew.h>
+#include <GL/glxew.h>
+typedef unsigned int TEXTURE;
+#endif
+
 //ovrvision setting
 #include "ovrvision_setting.h"
 

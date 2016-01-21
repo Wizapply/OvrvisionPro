@@ -697,7 +697,7 @@ namespace OVR
 #else
 			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
 			pclGetGLContextInfoKHR = GETFUNCTION(platforms[i], clGetGLContextInfoKHR);
-//#ifdef WIN32
+#ifdef WIN32
 			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit
 			cl_context_properties opengl_props[] = {
 				CL_CONTEXT_PLATFORM, (cl_context_properties)platforms[i],
@@ -705,14 +705,14 @@ namespace OVR
 				CL_WGL_HDC_KHR, (cl_context_properties)wglGetCurrentDC(),
 				0
 			};
-//#elif defined(LINUX)
-			//cl_context_properties opengl_props[] = {
-			//		CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
-			//		CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
-			//		CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
-			//		0
-			//};
-//#endif
+#elif defined(LINUX)
+			cl_context_properties opengl_props[] = {
+					CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
+					CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
+					CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
+					0
+			};
+#endif
 			size_t devSizeInBytes = 0;
 			pclGetGLContextInfoKHR(opengl_props, CL_DEVICES_FOR_GL_CONTEXT_KHR, 0, NULL, &devSizeInBytes);
 			const size_t devNum = devSizeInBytes / sizeof(cl_device_id);
@@ -901,7 +901,7 @@ namespace OVR
 #elif defined(LINUX)
 		case OPENGL:
 			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
-			break
+			break;
 #endif
 		default:
 			_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
@@ -2611,7 +2611,7 @@ namespace OVR
 			{
 				cl_int status;
 				fread(buffer, st.st_size, 1, file);
-				std::fclose(file);
+				fclose(file);
 				_program = clCreateProgramWithBinary(_context, 1, &_deviceId, &size, (const unsigned char **)&buffer, &status, &_errorCode);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 			}
@@ -2621,7 +2621,7 @@ namespace OVR
 			if ((file = fopen(filename, "r")) != NULL)
 			{
 				fread(buffer, st.st_size, 1, file);
-				std::fclose(file);
+				fclose(file);
 				_program = clCreateProgramWithSource(_context, 1, (const char **)&buffer, &size, &_errorCode);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 				_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
@@ -2664,7 +2664,7 @@ namespace OVR
 			clGetProgramInfo(_program, CL_PROGRAM_BINARIES, kernel_bin_size, &buffer, NULL);
 			fwrite(buffer, kernel_bin_size, 1, file);
 			delete[] buffer;
-			std::fclose(file);
+			fclose(file);
 			return 0;
 		}
 		else
