@@ -506,7 +506,7 @@ void OvrvisionPro::InitCameraSetting()
 #elif defined(MACOSX)
 		[NSThread sleepForTimeInterval:0.05];
 #elif defined(LINUX)
-		Sleep(50);
+		usleep(50000);
 #endif
 		m_focalpoint = ovrset.m_focalPoint.at<float>(0);
 		m_rightgap[0] = (float)-ovrset.m_trans.at<double>(0);	//T:X
@@ -955,7 +955,7 @@ bool OvrvisionPro::CameraParamSaveEEPROM(){
 #elif defined(MACOSX)
 	[NSThread sleepForTimeInterval : 0.05];
 #elif defined(LINUX)
-	Sleep(50);
+	usleep(50000);
 #endif
 
 	return rt;
@@ -974,7 +974,7 @@ bool OvrvisionPro::CameraParamResetEEPROM(){
 #elif defined(MACOSX)
 	[NSThread sleepForTimeInterval : 0.05];
 #elif defined(LINUX)
-	Sleep(50);
+	usleep(50000);
 #endif
 
 	return rt;

@@ -47,6 +47,7 @@
 #elif defined(MACOSX)
 #include "ovrvision_avf.h"	//!AVFoundation
 #elif defined(LINUX)
+#include <unistd.h>
 #include "ovrvision_v4l.h"	//!Video4Linux
 #endif
 #include "OvrvisionProCL.h"	//!OpenCL Engine
@@ -81,7 +82,7 @@ namespace OVR {
 #endif	/*MACOSX*/
 	
 #ifdef LINUX
-    
+	#define OVRPORT
 #endif	/*LINUX*/
 
 #ifndef _OV_CAMEYE_ENUM_
