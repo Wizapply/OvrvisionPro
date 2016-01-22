@@ -32,7 +32,13 @@
 #endif	/*MACOSX*/
 	
 #ifdef LINUX
-
+#include <asm/types.h>
+#include <linux/videodev2.h>
+#include <linux/v4l2-common.h>
+#include <linux/v4l2-controls.h>
+#include <linux/v4l2-dv-timings.h>
+#include <linux/v4l2-mediabus.h>
+#include <linux/v4l2-subdev.h>
 #endif	/*LINUX*/
 
 //Common header
@@ -50,10 +56,10 @@
 //USB cameras driver
 #ifdef WIN32
 class OvrvisionDirectShow;
-#elif MACOSX
+#elif defined(MACOSX)
 #define OvrvisionAVFoundation   void
-#elif LINUX
-
+#elif defined(LINUX)
+#include "OvrvisionProCL.h"
 #endif
 //opencl class
 class OvrvisionProOpenCL;
