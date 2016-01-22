@@ -59,6 +59,9 @@ public:
 	OvrvisionVideo4Linux();
 	~OvrvisionVideo4Linux();
 
+	//Open device
+	int OpenDevice(int num, int width, int height, int frame_rate);
+
 	//Delete device
 	int DeleteDevice();
 
@@ -74,6 +77,18 @@ public:
 	int SetCameraSetting(CamSetting proc, int value, bool automode);
 	//Get camera setting
 	int GetCameraSetting(CamSetting proc, int* value, bool* automode);
+
+protected:
+	int Control(int request, void *arg);
+	void Init();
+
+private:
+	char _device_name[16];
+	int	_fd;
+	uint	_n_buffers;
+	struct buffer*	_buffers;
+	int _width;
+	int _height;
 };
 
 }; // namespave OVR

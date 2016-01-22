@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <opencv2/opencv.hpp>
-
+#include <stdexcept>
 
 #include "OvrvisionProCL.h"
 
