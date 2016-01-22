@@ -33,7 +33,7 @@ typedef void *TEXTURE;
 
 #ifdef MACOSX
 // OpenCL header
-#include <OpenCL/cl.h>// OpenCL and its extensions
+#include <OpenCL/cl.h>	// OpenCL and its extensions
 #include <OpenCL/cl_ext.h>
 #include <OpenCL/cl_gl.h>       // OpenCL/OpenGL interoperabillity
 #include <OpenCL/cl_gl_ext.h>   // OpenCL/OpenGL interoperabillity
@@ -46,10 +46,10 @@ typedef unsigned int TEXTURE;
 #endif
 
 #ifdef LINUX
-#include <CL/opencl.h>
-#include <GL/glew.h>
-#include <GL/glext.h>
-#include <GL/wglew.h>
+#include <CL/opencl.h>	// OpenCL and its extensions
+//#include <GL/glew.h>
+//#include <GL/glext.h>
+//#include <GL/wglew.h>
 #include <GL/glxew.h>
 typedef unsigned int TEXTURE;
 #endif
@@ -98,10 +98,10 @@ namespace OVR
 	};
 
 	// Convex object
-	typedef struct {
-		int mx, my;				// mass center
-        std::vector<cv::Point> convexs;	// convex contor
-	} Convex;
+	//typedef struct {
+	//	int mx, my;				// mass center
+    //   std::vector<cv::Point> convexs;	// convex contor
+	//} Convex;
 
 	// OpenCL extension callback function
 	typedef int(*EXTENSION_CALLBACK)(void *pItem, const char *extensions);
@@ -244,7 +244,7 @@ namespace OVR
 			// dataType must be GL_UNSIGNED_BYTE
 			cl_mem CreateGLTexture2D(GLuint texture, int width, int height);
 
-#ifdef _WIN32
+#ifdef WIN32
 			// Direct3D shared texture
 			cl_mem CreateD3DTexture2D(ID3D11Texture2D *texture, int width, int height);
 #endif
@@ -329,7 +329,7 @@ namespace OVR
 			enum SHARING_MODE _sharing;	// Sharing with OpenGL or Direct3D11 
 			enum SCALING	_scaling;	//
 			size_t	_scaledRegion[3];
-			Convex	_convex[2];			// Assume to be both hands
+			//Convex	_convex[2];			// Assume to be both hands
 			//KalmanFilter _kalman[2];
 
 		protected:

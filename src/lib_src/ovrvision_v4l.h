@@ -58,6 +58,22 @@ public:
 	//Constructor/Destructor
 	OvrvisionVideo4Linux();
 	~OvrvisionVideo4Linux();
+
+	//Delete device
+	int DeleteDevice();
+
+	//Transfer status
+	int StartTransfer();
+	int StopTransfer();
+
+	//Get pixel data
+	//In non blocking, when data cannot be acquired, RESULT_FAILED returns. 
+	int GetBayer16Image(unsigned char* pimage, bool nonblocking = false);
+
+	//Set camera setting
+	int SetCameraSetting(CamSetting proc, int value, bool automode);
+	//Get camera setting
+	int GetCameraSetting(CamSetting proc, int* value, bool* automode);
 };
 
 }; // namespave OVR
