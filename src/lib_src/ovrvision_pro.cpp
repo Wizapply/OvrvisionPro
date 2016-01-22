@@ -44,15 +44,14 @@ namespace OVR
 //Constructor/Destructor
 OvrvisionPro::OvrvisionPro()
 {
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS = new OvrvisionDirectShow();
-#endif
-#ifdef MACOSX
+#elif defined(MACOSX)
 	m_pOAV = [[OvrvisionAVFoundation alloc] init];
+#elif defined(LINUX)
+	m_pOV4L = new OvrvisionVideo4Linux();
 #endif
-#ifdef LINUX
 
-#endif
 	m_pFrame = NULL;
 	m_pPixels[0] = m_pPixels[1] = NULL;
 	m_pOpenCL = NULL;
@@ -73,14 +72,12 @@ OvrvisionPro::~OvrvisionPro()
 {
 	Close();
 
-#ifdef WIN32
+#if defined(WIN32)
 	delete m_pODS;
-#endif
-#ifdef MACOSX
+#elif defined(MACOSX)
 	[m_pOAV dealloc];
-#endif
-#ifdef LINUX
-
+#elif defined(LINUX)
+	delete m_pOV4L;
 #endif
 }
 
@@ -164,20 +161,20 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 
 	//Open
 	for(challenge = 0; challenge < OV_CHALLENGENUM; challenge++) {	//CHALLENGEN
-#ifdef WIN32
+#if defined(WIN32)
 		if (m_pODS->CreateDevice(OV_USB_VENDERID, OV_USB_PRODUCTID, cam_width, cam_height, cam_framerate, locationID) == 0) {
 			objs++;
 			break;
 		}
 		Sleep(150);	//150ms wait
-#elif MACOSX
+#elif defined(MACOSX)
 	if([m_pOAV createDevice:OV_USB_VENDERID pid:OV_USB_PRODUCTID
 		cam_w:cam_width cam_h:cam_height rate:cam_framerate locate:locationID] == 0) {
 		objs++;
         break;
 	}
     [NSThread sleepForTimeInterval:0.150];	//150ms wait
-#elif LINUX
+#elif defined(LINUX)
 
 #endif
 	}
@@ -207,11 +204,11 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
     }
 	catch (std::exception ex)
 	{
-#ifdef WIN32
+#if defined(WIN32)
 		::MessageBox(NULL, TEXT("This OvrvisionSDK is the GPU necessity which is supporting OpenCL1.2 or more."), TEXT("OpenCL Error!"), MB_ICONERROR | MB_OK);
-#elif MACOSX
+#elif defined(MACOSX)
 		NSLog(@"This OvrvisionSDK is the GPU necessity which is supporting OpenCL1.2 or more.");
-#elif LINUX
+#elif defined(LINUX)
 
 #endif
 		return 0;
@@ -219,11 +216,11 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 	//Opened
 	m_isOpen = true;
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->StartTransfer();
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV startTransfer];
-#elif LINUX
+#elif defined(LINUX)
 
 #endif
 
@@ -244,11 +241,11 @@ void OvrvisionPro::Close()
 	if (!m_isOpen)
 		return;
 	
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->DeleteDevice();
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV deleteDevice];
-#elif LINUX
+#elif defined(LINUX)
 
 #endif
 	if (m_pOpenCL) {
@@ -341,11 +338,11 @@ void OvrvisionPro::Capture(OVR::Camqt qt)
 	if (qt == OVR::Camqt::OV_CAMQT_NONE)
 		return;
 
-#ifdef WIN32
+#if defined(WIN32)
 	if (m_pODS->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK) {
-#elif MACOSX
+#elif defined(MACOSX)
     if([m_pOAV getBayer16Image:(uchar *)m_pFrame blocking:!m_isCameraSync]==RESULT_OK) {
-#elif LINUX
+#elif defined(LINUX)
 	if()
 #endif
 		if (qt == OVR::Camqt::OV_CAMQT_DMSRMP)
@@ -459,11 +456,11 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 	if (qt == OVR::Camqt::OV_CAMQT_NONE)
 		return;
 
-#ifdef WIN32
+#if defined(WIN32)
 	if (m_pODS->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK) {
-#elif MACOSX
+#elif defined(MACOSX)
     if ([m_pOAV getBayer16Image: (uchar *)m_pFrame blocking: !m_isCameraSync] == RESULT_OK) {
-#elif LINUX
+#elif defined(LINUX)
 	if ()
 #endif
 		if (qt == OVR::Camqt::OV_CAMQT_DMSRMP)
@@ -502,11 +499,11 @@ void OvrvisionPro::InitCameraSetting()
 		}
 		
 		//50ms wait
-#ifdef WIN32
+#if defined(WIN32)
 		Sleep(50);
-#elif MACOSX
+#elif defined(MACOSX)
 		[NSThread sleepForTimeInterval:0.05];
-#elif LINUX
+#elif defined(LINUX)
 
 #endif
 		m_focalpoint = ovrset.m_focalPoint.at<float>(0);
@@ -559,11 +556,11 @@ int OvrvisionPro::GetCameraExposure(){
 	if (!m_isOpen)
 		return (-1);
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->GetCameraSetting(OV_CAMSET_EXPOSURE, &value, &automode);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV getCameraSetting: OV_CAMSET_EXPOSURE value: &value automode: &automode];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 
@@ -582,11 +579,11 @@ void OvrvisionPro::SetCameraExposure(int value){
 	// Number is divided by 8
 	value -= value % 8;
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->SetCameraSetting(OV_CAMSET_EXPOSURE, value, false);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting:OV_CAMSET_EXPOSURE value : value automode : false];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 }
@@ -617,11 +614,11 @@ int OvrvisionPro::GetCameraGain(){
 	if (!m_isOpen)
 		return (-1);
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->GetCameraSetting(OV_CAMSET_GAIN, &value, &automode);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV getCameraSetting: OV_CAMSET_GAIN value: &value automode: &automode];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 
@@ -638,11 +635,11 @@ void OvrvisionPro::SetCameraGain(int value){
 		value = 47;
 
 	//set
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->SetCameraSetting(OV_CAMSET_GAIN, value, false);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting: OV_CAMSET_GAIN value: value automode: false];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 }
@@ -654,11 +651,11 @@ int OvrvisionPro::GetCameraWhiteBalanceR(){
 	if (!m_isOpen)
 		return (-1);
 
-#ifdef WIN32
+#if defined(WIN32)
     m_pODS->GetCameraSetting(OV_CAMSET_WHITEBALANCER, &value, &automode);
-#elif MACOSX
+#elif defined(MACOSX)
     [m_pOAV getCameraSetting: OV_CAMSET_WHITEBALANCER value: &value automode: &automode];
-#elif LINUX
+#elif defined(LINUX)
     //NONE
 #endif
 	return value;
@@ -674,11 +671,11 @@ void OvrvisionPro::SetCameraWhiteBalanceR(int value){
 		value = 4095;
 
 	//set
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCER, value, false);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting : OV_CAMSET_WHITEBALANCER value : value automode : false];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 }
@@ -689,11 +686,11 @@ int OvrvisionPro::GetCameraWhiteBalanceG(){
 	if (!m_isOpen)
 		return (-1);
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->GetCameraSetting(OV_CAMSET_WHITEBALANCEG, &value, &automode);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV getCameraSetting:OV_CAMSET_WHITEBALANCEG value: &value automode: &automode];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 
@@ -710,11 +707,11 @@ void OvrvisionPro::SetCameraWhiteBalanceG(int value){
 		value = 4095;
 
 	//set
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEG, value, false);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting: OV_CAMSET_WHITEBALANCEG value: value automode: false];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 }
@@ -725,11 +722,11 @@ int OvrvisionPro::GetCameraWhiteBalanceB(){
 	if (!m_isOpen)
 		return (-1);
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->GetCameraSetting(OV_CAMSET_WHITEBALANCEB, &value, &automode);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV getCameraSetting: OV_CAMSET_WHITEBALANCEB value: &value automode: &automode];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 	return value;
@@ -747,11 +744,11 @@ void OvrvisionPro::SetCameraWhiteBalanceB(int value) {
 	bool curval = GetCameraWhiteBalanceAuto();
 
 	//set
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEB, value, curval);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting: OV_CAMSET_WHITEBALANCEB value: value automode: curval];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 }
@@ -763,11 +760,11 @@ int OvrvisionPro::GetCameraBLC(){
 	if (!m_isOpen)
 		return (-1);
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->GetCameraSetting(OV_CAMSET_BLC, &value, &automode);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV getCameraSetting: OV_CAMSET_BLC value: &value automode: &automode];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 	return value;
@@ -783,11 +780,11 @@ void OvrvisionPro::SetCameraBLC(int value){
 		value = 1023;
 
 	//set
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->SetCameraSetting(OV_CAMSET_BLC, value, false);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting: OV_CAMSET_BLC value: value automode: false];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 }
@@ -799,11 +796,11 @@ bool OvrvisionPro::GetCameraWhiteBalanceAuto(){
 	if (!m_isOpen)
 		return false;
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->GetCameraSetting(OV_CAMSET_WHITEBALANCEB, &value, &automode);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV getCameraSetting: OV_CAMSET_WHITEBALANCEB value: &value automode: &automode];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 	return automode;
@@ -816,11 +813,11 @@ void OvrvisionPro::SetCameraWhiteBalanceAuto(bool value){
 	int curval = GetCameraWhiteBalanceB();
 
 	//set
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->SetCameraSetting(OV_CAMSET_WHITEBALANCEB, curval, value);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting: OV_CAMSET_WHITEBALANCEB value:curval  automode: value];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 }
@@ -830,16 +827,16 @@ void OvrvisionPro::UserDataAccessUnlock(){
 	if (!m_isOpen)
 		return;
 
-#ifdef WIN32
+#if defined(WIN32)
 	//UNLOCK Signal
 	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00007000, false);
 	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00006000, false);
 	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00007000, false);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting: OV_CAMSET_DATA value:0x00007000 automode: false];
 	[m_pOAV setCameraSetting: OV_CAMSET_DATA value:0x00006000 automode: false];
 	[m_pOAV setCameraSetting: OV_CAMSET_DATA value:0x00007000 automode: false];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 }
@@ -848,12 +845,12 @@ void OvrvisionPro::UserDataAccessLock() {
 	if (!m_isOpen)
 		return;
 
-#ifdef WIN32
+#if defined(WIN32)
 	//LOCK Signal
 	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00000000, false);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting: OV_CAMSET_DATA value:0x00000000 automode: false];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 }
@@ -864,11 +861,11 @@ void OvrvisionPro::UserDataAccessSelectAddress(unsigned int addr) {
 	addr &= 0x000001FF;
 	addr |= 0x00001000;	//cmd
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->SetCameraSetting(OV_CAMSET_DATA, addr, false);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting: OV_CAMSET_DATA value:addr automode: false];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 
@@ -881,11 +878,11 @@ unsigned char OvrvisionPro::UserDataAccessGetData() {
 	if (!m_isOpen)
 		return 0x00;
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->GetCameraSetting(OV_CAMSET_DATA, &value, &automode_none);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV getCameraSetting: OV_CAMSET_DATA value:&value automode: &automode_none];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 	return (unsigned char)value;
@@ -897,11 +894,11 @@ void OvrvisionPro::UserDataAccessSetData(unsigned char value){
 	int value_int = (int)value;
 	value_int |= 0x00002000;	//cmd
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->SetCameraSetting(OV_CAMSET_DATA, value_int, false);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting: OV_CAMSET_DATA value:value_int automode: false];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 
@@ -910,11 +907,11 @@ void OvrvisionPro::UserDataAccessSave(){
 	if (!m_isOpen)
 		return;
 
-#ifdef WIN32
+#if defined(WIN32)
 	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00003000, false);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting: OV_CAMSET_DATA value:0x00003000 automode: false];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 }
@@ -923,11 +920,11 @@ void OvrvisionPro::UserDataAccessCheckSumAddress(){
 	if (!m_isOpen)
 		return;
 
-#ifdef WIN32
+#if (WIN32)
 	m_pODS->SetCameraSetting(OV_CAMSET_DATA, 0x00005000, false);
-#elif MACOSX
+#elif defined(MACOSX)
 	[m_pOAV setCameraSetting: OV_CAMSET_DATA value:0x00005000 automode: false];
-#elif LINUX
+#elif defined(LINUX)
 	//NONE
 #endif
 }
@@ -949,11 +946,11 @@ bool OvrvisionPro::CameraParamSaveEEPROM(){
 	rt = ovrset.WriteEEPROM(WRITE_EEPROM_FLAG_CAMERASETWR);
 
 	//50ms wait
-#ifdef WIN32
+#if defined(WIN32)
 	Sleep(50);
-#elif MACOSX
+#elif defined(MACOSX)
 	[NSThread sleepForTimeInterval : 0.05];
-#elif LINUX
+#elif defined(LINUX)
 
 #endif
 
@@ -968,11 +965,11 @@ bool OvrvisionPro::CameraParamResetEEPROM(){
 	rt = ovrset.ResetEEPROM();
 
 	//50ms wait
-#ifdef WIN32
+#if defined(WIN32)
 	Sleep(50);
-#elif MACOSX
+#elif defined(MACOSX)
 	[NSThread sleepForTimeInterval : 0.05];
-#elif LINUX
+#elif defined(LINUX)
 
 #endif
 

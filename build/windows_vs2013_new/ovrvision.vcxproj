@@ -330,6 +330,7 @@
     <ClCompile Include="..\..\src\lib_src\ovrvision_pro.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_setting.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_tracking.cpp" />
+    <ClCompile Include="..\..\src\lib_src\ovrvision_v4l.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\3rdparty\aruco\aruco.h" />
@@ -356,6 +357,7 @@
     <ClInclude Include="..\..\src\lib_src\ovrvision_handimage.h" />
     <ClInclude Include="..\..\src\lib_src\ovrvision_linux.h" />
     <ClInclude Include="..\..\src\lib_src\ovrvision_setting.h" />
+    <ClInclude Include="..\..\src\lib_src\ovrvision_v4l.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\lib_src\ovrvision_avf.m" />

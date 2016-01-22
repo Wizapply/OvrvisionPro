@@ -32,13 +32,7 @@
 #endif	/*MACOSX*/
 	
 #ifdef LINUX
-#include <asm/types.h>
-#include <linux/videodev2.h>
-#include <linux/v4l2-common.h>
-#include <linux/v4l2-controls.h>
-#include <linux/v4l2-dv-timings.h>
-#include <linux/v4l2-mediabus.h>
-#include <linux/v4l2-subdev.h>
+
 #endif	/*LINUX*/
 
 //Common header
@@ -48,9 +42,13 @@
 #include <string.h>
 
 #ifdef _OVRVISION_EXPORTS	//in ovrvision
+#if defined(WIN32)
 #include "ovrvision_ds.h"	//!DirectShow
+#elif defined(MACOSX)
 #include "ovrvision_avf.h"	//!AVFoundation
-
+#elif defined(LINUX)
+#include "ovrvision_v4l.h"	//!Video4Linux
+#endif
 #include "OvrvisionProCL.h"	//!OpenCL Engine
 #else
 //USB cameras driver
@@ -59,7 +57,7 @@ class OvrvisionDirectShow;
 #elif defined(MACOSX)
 #define OvrvisionAVFoundation   void
 #elif defined(LINUX)
-#include "OvrvisionProCL.h"
+class OvrvisionVideo4Linux;
 #endif
 //opencl class
 class OvrvisionProOpenCL;
@@ -399,10 +397,10 @@ private:
 #ifdef WIN32
 	//DirectShow
 	OvrvisionDirectShow*	m_pODS;
-#elif MACOSX
+#elif defined(MACOSX)
 	OvrvisionAVFoundation*  m_pOAV;
-#elif LINUX
-	//NONE
+#elif defined(LINUX)
+	OvrvisionVideo4Linux*	m_pOV4L;
 #endif
 
 	//OpenCL Ovrvision System
