@@ -707,10 +707,10 @@ namespace OVR
 			};
 #elif defined(LINUX)
 			cl_context_properties opengl_props[] = {
-					CL_CONTEXT_PLATFORM, (cl_context_properties)_platformId,
-					CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
-					CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
-					0
+				CL_CONTEXT_PLATFORM, (cl_context_properties)platforms[i],
+				CL_GL_CONTEXT_KHR, (cl_context_properties)glXGetCurrentContext(),
+				CL_GLX_DISPLAY_KHR, (cl_context_properties)glXGetCurrentDisplay(),
+				0
 			};
 #endif
 			size_t devSizeInBytes = 0;
@@ -832,13 +832,13 @@ namespace OVR
 		return result;
 	}
 
+#ifdef WIN32
 	void __stdcall createContextCallback(const char *message, const void *data, size_t size, void *userdata)
 	{
 		printf("clCreateContext: %d %s\n", size, message);
-#ifdef WIN32
 		OutputDebugStringA(message);
-#endif
 	}
+#endif
 
 	// Create device context
 	void OvrvisionProOpenCL::CreateContext(SHARING_MODE mode, void *pDevice)
@@ -896,7 +896,7 @@ namespace OVR
 			break;
 #elif defined(MACOSX)
 		case OPENGL:
-			_context = clCreateContext(opengl_props, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			_context = clCreateContext(opengl_props, 1, &_deviceId, NULL, NULL, &_errorCode);
 			break;
 #elif defined(LINUX)
 		case OPENGL:
@@ -904,7 +904,7 @@ namespace OVR
 			break;
 #endif
 		default:
-			_context = clCreateContext(NULL, 1, &_deviceId, createContextCallback, NULL, &_errorCode);
+			_context = clCreateContext(NULL, 1, &_deviceId, NULL, NULL, &_errorCode);
 			break;
 		}
 		SAMPLE_CHECK_ERRORS(_errorCode);
