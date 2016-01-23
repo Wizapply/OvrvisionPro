@@ -86,7 +86,10 @@ private:
 	char _device_name[16];
 	int	_fd;
 	uint	_n_buffers;
-	struct buffer*	_buffers;
+	struct {
+		void *start;
+		size_t length;
+	} *_buffers;
 	int _width;
 	int _height;
 };

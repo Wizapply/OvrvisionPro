@@ -91,7 +91,7 @@ namespace OVR
 			if(-1 == Control(VIDIOC_QBUF, &buf))
 				return -1;
 		}
-		return Control(VIDIOC_STREAMON, &type))
+		return Control(VIDIOC_STREAMON, &type);
 	}
 	
 	int OvrvisionVideo4Linux::StopTransfer()
@@ -123,10 +123,10 @@ namespace OVR
 				return -1;
 			}
 		}
-		assert(buf.index < _n_buffers);
+		//assert(buf.index < _n_buffers);
 		//if(count == 0)
 		//	process_image(buffers[buf.index].start,buffers[buf.index].length);
-		return Control(VIDIOC_QBUF, &buf));
+		return Control(VIDIOC_QBUF, &buf);
 	}
 
 	//Set camera setting
@@ -162,7 +162,7 @@ namespace OVR
 		{
 			if (EINVAL == errno)
 			{
-				fprintf(stderr, "%s is no V4L2 device\n", dev_name);
+				fprintf(stderr, "%s is no V4L2 device\n", _device_name);
 				//exit(EXIT_FAILURE);
 				return -1;
 			}
@@ -174,14 +174,14 @@ namespace OVR
 		}
 		if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE))
 		{
-			fprintf(stderr, "%s is no video capture device\n", dev_name);
+			fprintf(stderr, "%s is no video capture device\n", _device_name);
 			//exit(EXIT_FAILURE);
 			return -1;
 		}
 		if (!(cap.capabilities & V4L2_CAP_STREAMING))
 		{
 			fprintf(stderr, "%s does not support streaming i/o\n",
-				dev_name);
+				_device_name);
 			//exit(EXIT_FAILURE);
 			return -1;
 		}
