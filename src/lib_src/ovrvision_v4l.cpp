@@ -57,8 +57,7 @@ namespace OVR
 		}
 		_width = width;
 		_height = height;
-		Init();
-		return 0;
+		return Init();
 	}
 
 	//Delete device
@@ -120,7 +119,8 @@ namespace OVR
 				/* Could ignore EIO, see spec. */
 				/* fall through */
 			default:
-				errno_exit("VIDIOC_DQBUF");
+				//errno_exit("VIDIOC_DQBUF");
+				return -1;
 			}
 		}
 		assert(buf.index < _n_buffers);
@@ -150,7 +150,7 @@ namespace OVR
 		return result;
 	}
 
-	void OvrvisionVideo4Linux::Init()
+	int OvrvisionVideo4Linux::Init()
 	{
 		struct v4l2_capability cap;
 		struct v4l2_cropcap cropcap;
@@ -163,23 +163,27 @@ namespace OVR
 			if (EINVAL == errno)
 			{
 				fprintf(stderr, "%s is no V4L2 device\n", dev_name);
-				exit(EXIT_FAILURE);
+				//exit(EXIT_FAILURE);
+				return -1;
 			}
 			else
 			{
-				errno_exit("VIDIOC_QUERYCAP");
+				//errno_exit("VIDIOC_QUERYCAP");
+				return -1;
 			}
 		}
 		if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE))
 		{
 			fprintf(stderr, "%s is no video capture device\n", dev_name);
-			exit(EXIT_FAILURE);
+			//exit(EXIT_FAILURE);
+			return -1;
 		}
 		if (!(cap.capabilities & V4L2_CAP_STREAMING))
 		{
 			fprintf(stderr, "%s does not support streaming i/o\n",
 				dev_name);
-			exit(EXIT_FAILURE);
+			//exit(EXIT_FAILURE);
+			return -1;
 		}
 		/* Select video input, video standard and tune here. */
 		CLEAR(cropcap);
@@ -213,21 +217,20 @@ namespace OVR
 		fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		fmt.fmt.pix.width = _width;
 		fmt.fmt.pix.height = _height;
-		fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
-		fmt.fmt.pix.field = V4L2_FIELD_INTERLACED;
+		fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_Y16;	// Gray scale 16bit depth
+		fmt.fmt.pix.field = V4L2_FIELD_NONE;		// or V4L2_FIELD_ANY
 
-		if (-1 == Control(VIDIOC_S_FMT, &fmt))
-			errno_exit("VIDIOC_S_FMT");
-
-		/* Note VIDIOC_S_FMT may change width and height. */
-
-		/* Buggy driver paranoia. */
-		min = fmt.fmt.pix.width * 2;
-		if (fmt.fmt.pix.bytesperline < min) 
-			fmt.fmt.pix.bytesperline = min;
-		min = fmt.fmt.pix.bytesperline * fmt.fmt.pix.height;
-		if (fmt.fmt.pix.sizeimage < min) 
-			fmt.fmt.pix.sizeimage = min;
+		if (0 == Control(VIDIOC_S_FMT, &fmt))
+		{
+			/* Note VIDIOC_S_FMT may change width and height. */
+			_width = fmt.fmt.pix.width;
+			_height = fmt.fmt.pix.height;
+			return 0;
+		}
+		else  
+		{
+			return -1;
+		}
 	}
 };
 

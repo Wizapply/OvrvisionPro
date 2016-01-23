@@ -80,7 +80,7 @@ public:
 
 protected:
 	int Control(int request, void *arg);
-	void Init();
+	int Init();
 
 private:
 	char _device_name[16];
