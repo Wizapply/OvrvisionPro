@@ -16,7 +16,7 @@
 
 #include "ovrvision_setting.h"
 //for eeprom system
-#include "Ovrvision_pro.h"
+#include "ovrvision_pro.h"
 
 /////////// VARS AND DEFS ///////////
 
@@ -395,7 +395,7 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 	double cals_y = (double)size.height / (double)sizeCalibBase.height;
 
     // Stereo rectify maps need calibrated camera matrix and coeffs
-	if (eye == Cameye::OV_CAMEYE_LEFT)
+	if (eye == OV_CAMEYE_LEFT)
 	{ 
 		cv::Mat camPs = getOptimalNewCameraMatrix(cameramat, distorsionCoeff, size, 0, size, &m_leftROI, false);
 

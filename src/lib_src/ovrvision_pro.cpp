@@ -195,11 +195,11 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 	try {
 		if (deviceType == 2 && pDevice != NULL)
 		{
-			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, SHARING_MODE::D3D11, pDevice); // When use D3D11 sharing texture
+			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, D3D11, pDevice); // When use D3D11 sharing texture
 		}
 		else if (deviceType == 0)
 		{
-			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, SHARING_MODE::OPENGL);    // When use OpenGL sharing texture
+			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, OPENGL);    // When use OpenGL sharing texture
 		}
 		else
 		{
@@ -318,19 +318,19 @@ void OvrvisionPro::UpdateImageTextures(void* left,void* right)
 // Grayscaled images 1/2 scaled
 void OvrvisionPro::GrayscaleHalf(unsigned char *left, unsigned char *right)
 {
-	return m_pOpenCL->Grayscale(left, right, SCALING::HALF);
+	return m_pOpenCL->Grayscale(left, right, HALF);
 }
 
 // 1/4 scaled
 void OvrvisionPro::GrayscaleFourth(unsigned char *left, unsigned char *right)
 {
-	return m_pOpenCL->Grayscale(left, right, SCALING::FOURTH);
+	return m_pOpenCL->Grayscale(left, right, FOURTH);
 }
 
 // 1/8 scaled
 void OvrvisionPro::GrayscaleEighth(unsigned char *left, unsigned char *right)
 {
-	return m_pOpenCL->Grayscale(left, right, SCALING::EIGHTH);
+	return m_pOpenCL->Grayscale(left, right, EIGHTH);
 }
 
 // Capture frame
@@ -339,7 +339,7 @@ void OvrvisionPro::Capture(OVR::Camqt qt)
 	if (!m_isOpen)
 		return;
 
-	if (qt == OVR::Camqt::OV_CAMQT_NONE)
+	if (qt == OV_CAMQT_NONE)
 		return;
 
 #if defined(WIN32)
@@ -350,9 +350,9 @@ void OvrvisionPro::Capture(OVR::Camqt qt)
 	if (m_pOV4L->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK)
 #endif
 	{
-		if (qt == OVR::Camqt::OV_CAMQT_DMSRMP)
+		if (qt == OV_CAMQT_DMSRMP)
 			m_pOpenCL->DemosaicRemap(m_pFrame);	//OpenCL
-		else if (qt == OVR::Camqt::OV_CAMQT_DMS)
+		else if (qt == OV_CAMQT_DMS)
 			m_pOpenCL->Demosaic(m_pFrame);		//OpenCL
 	}
 }
@@ -458,7 +458,7 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 	if (!m_isOpen)
 		return;
 
-	if (qt == OVR::Camqt::OV_CAMQT_NONE)
+	if (qt == OV_CAMQT_NONE)
 		return;
 
 #if defined(WIN32)
@@ -469,9 +469,9 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 	if (m_pOV4L->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK)
 #endif
 	{
-		if (qt == OVR::Camqt::OV_CAMQT_DMSRMP)
+		if (qt == OV_CAMQT_DMSRMP)
 			m_pOpenCL->DemosaicRemap(m_pFrame, m_pPixels[0], m_pPixels[1]);	//OpenCL
-		else if (qt == OVR::Camqt::OV_CAMQT_DMS)
+		else if (qt == OV_CAMQT_DMS)
 			m_pOpenCL->Demosaic(m_pFrame, m_pPixels[0], m_pPixels[1]);		//OpenCL
 	}
 }

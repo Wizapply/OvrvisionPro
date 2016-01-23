@@ -2,6 +2,8 @@
 
 // Linux only
 #ifdef LINUX
+#include <stdio.h>
+#include <string.h>
 #include <fcntl.h>              /* low-level i/o */
 #include <unistd.h>
 #include <errno.h>
@@ -17,7 +19,7 @@
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
 
 typedef struct {
-	uint32 flag;
+	__u32 flag;
 	char *name;
 } V4L2_CAPABILITY_MAP;
 
