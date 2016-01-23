@@ -16,6 +16,11 @@
 
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
 
+typedef struct {
+	uint32 flag;
+	char *name;
+} V4L2_CAPABILITY_MAP;
+
 //Group
 namespace OVR
 {
@@ -57,6 +62,9 @@ namespace OVR
 		}
 		_width = width;
 		_height = height;
+#ifdef _DEBUG
+		QueryCapability();
+#endif
 		return Init();
 	}
 
@@ -152,10 +160,12 @@ namespace OVR
 
 	int OvrvisionVideo4Linux::Init()
 	{
+		struct v4l2_format fmt;
+
+#if 0
 		struct v4l2_capability cap;
 		struct v4l2_cropcap cropcap;
 		struct v4l2_crop crop;
-		struct v4l2_format fmt;
 		unsigned int min;
 
 		if (-1 == Control(VIDIOC_QUERYCAP, &cap))
@@ -185,6 +195,7 @@ namespace OVR
 			//exit(EXIT_FAILURE);
 			return -1;
 		}
+
 		/* Select video input, video standard and tune here. */
 		CLEAR(cropcap);
 
@@ -212,6 +223,8 @@ namespace OVR
 		{
 			/* Errors ignored. */
 		}
+#endif
+
 		CLEAR(fmt);
 
 		fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -230,6 +243,50 @@ namespace OVR
 		else  
 		{
 			return -1;
+		}
+	}
+
+	static V4L2_CAPABILITY_MAP capabilities[] = {
+		{V4L2_CAP_VIDEO_CAPTURE,		"V4L2_CAP_VIDEO_CAPTURE (Video Capture)"},
+		{V4L2_CAP_VIDEO_OUTPUT,			"V4L2_CAP_VIDEO_OUTPUT (Video Output)"},
+		{V4L2_CAP_VIDEO_OVERLAY,		"V4L2_CAP_VIDEO_OVERLAY (Video Overlay)"},
+		{V4L2_CAP_VBI_CAPTURE,			"V4L2_CAP_VBI_CAPTURE (Raw VBI Capture)"},
+		{V4L2_CAP_VBI_OUTPUT,			"V4L2_CAP_VBI_OUTPUT (Raw VBI Output)"},
+		{V4L2_CAP_SLICED_VBI_CAPTURE,	"V4L2_CAP_SLICED_VBI_CAPTURE (Sliced VBI Capture)"},
+		{V4L2_CAP_SLICED_VBI_OUTPUT,	"V4L2_CAP_SLICED_VBI_OUTPUT (Sliced VBI Output)"},
+		{V4L2_CAP_RDS_CAPTURE,			"V4L2_CAP_RDS_CAPTURE (Undefined.[to be defined])"},
+		{V4L2_CAP_VIDEO_OUTPUT_OVERLAY,	"V4L2_CAP_VIDEO_OUTPUT_OVERLAY (Video Output Overlay (OSD))"},
+		{V4L2_CAP_TUNER,				"V4L2_CAP_TUNER (Tuner)"},
+		{V4L2_CAP_AUDIO,				"V4L2_CAP_AUDIO (Audio inputs or outputs)"},
+		{V4L2_CAP_RADIO,				"V4L2_CAP_RADIO (Radio receiver)"},
+		{V4L2_CAP_READWRITE,			"V4L2_CAP_READWRITE (Read/write() I/O method)"},
+		{V4L2_CAP_ASYNCIO,				"V4L2_CAP_ASYNCIO (Asynchronous I/O method)"},
+		{V4L2_CAP_STREAMING,			"V4L2_CAP_STREAMING (Streaming I/O method)"},
+		{0,NULL}
+	};
+
+	void OvrvisionVideo4Linux::QueryCapability()
+	{
+		struct v4l2_capability fmt;
+		if(-1 != Control(VIDIOC_QUERYCAP, &fmt))
+		{
+			printf("Driver name     : %s\n", fmt.driver);
+			printf("Driver Version  : %u.%u.%u\n",
+				(fmt.version >> 16) & 0xFF,
+				(fmt.version >> 8) & 0xFF,
+				fmt.version & 0xFF);
+			printf("Device name     : %s\n", fmt.card);
+			printf("Bus information : %s\n", fmt.bus_info);
+			printf("Capabilities    : %08xh\n", fmt.capabilities);
+			
+			for (size_t i = 0; i < sizeof(capabilities) / sizeof(V4L2_CAPABILITY_MAP); i++)
+			{
+				if (fmt.capabilities & capabilities[i].flag)
+				{
+					puts(capabilities[i].name);
+				}
+			}
+			printf("\n");
 		}
 	}
 };

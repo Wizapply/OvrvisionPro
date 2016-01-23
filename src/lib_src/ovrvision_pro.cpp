@@ -175,7 +175,11 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 	}
     [NSThread sleepForTimeInterval:0.150];	//150ms wait
 #elif defined(LINUX)
-
+		if (m_pOV4L->OpenDevice(locationID, cam_width, cam_height, cam_framerate) == 0) {
+			objs++;
+			break;
+		}
+		usleep(150000);	//150ms wait
 #endif
 	}
 
