@@ -23,6 +23,15 @@ typedef struct {
 	char *name;
 } V4L2_CAPABILITY_MAP;
 
+static int xioctl(int fd, int request, void *arg)
+{
+	int result;
+	do {
+		result = ioctl(fd, request, arg);
+	} while(-1 == result && EINTR == errno);
+	return result;
+}
+
 //Group
 namespace OVR
 {
@@ -38,6 +47,7 @@ namespace OVR
 	{
 		struct stat st; 
 
+		// TODO: Enumerate /dev/device* and check OvrvisionPro
 		sprintf(_device_name, "/dev/video%d", num);
 
 		if(-1 == stat(_device_name, &st))
@@ -153,11 +163,7 @@ namespace OVR
 
 	int OvrvisionVideo4Linux::Control(int request, void *arg)
 	{
-		int result;
-		do {
-			result = ioctl(_fd, request, arg);
-		} while(-1 == result && EINTR == errno);
-		return result;
+		return xioctl(_fd, request, arg);
 	}
 
 	int OvrvisionVideo4Linux::Init()
@@ -277,9 +283,9 @@ namespace OVR
 				(fmt.version >> 16) & 0xFF,
 				(fmt.version >> 8) & 0xFF,
 				fmt.version & 0xFF);
-			printf("Device name     : %s\n", fmt.card);
+			printf("Device name     : %s\n", fmt.card);	// MUST TO BE 'OvrvisionPro'
 			printf("Bus information : %s\n", fmt.bus_info);
-			printf("Capabilities    : %08xh\n", fmt.capabilities);
+			printf("Capabilities    : %08xh\n", fmt.capabilities);	// MUST TO BE V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING
 			
 			for (size_t i = 0; i < sizeof(capabilities) / sizeof(V4L2_CAPABILITY_MAP); i++)
 			{

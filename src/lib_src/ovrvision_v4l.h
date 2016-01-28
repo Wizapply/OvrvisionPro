@@ -78,6 +78,9 @@ public:
 	//Get camera setting
 	int GetCameraSetting(CamSetting proc, int* value, bool* automode);
 
+	/*! @brief Check capability */
+	bool CheckCapability();
+
 	/*! @brief Query capability of device */
 	void QueryCapability();
 
