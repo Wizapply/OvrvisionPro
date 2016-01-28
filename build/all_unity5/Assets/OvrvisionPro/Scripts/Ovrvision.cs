@@ -125,6 +125,12 @@ public class Ovrvision : MonoBehaviour
 		CameraPlaneRight.transform.localPosition = new Vector3(CameraRightGap.x - 0.040f, 0.0f, OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
 
 		UnityEngine.VR.InputTracking.Recenter();
+
+		if (useOvrvisionTrack)
+		{
+			OvrPro.useOvrvisionTrack_Calib = true;
+			CameraPlaneRight.active = !OvrPro.useOvrvisionTrack_Calib;
+		}
 	}
 
 	private Mesh CreateCameraPlaneMesh()

@@ -14,8 +14,8 @@
 
 //Shader
 LPCSTR g_planeShader =
-	"Texture2D g_texDecal : register(t0);\n"
-	"SamplerState g_samLinear : register(s0);\n"
+	"Texture2D g_texDecal : register(ps,t0);\n"
+	"SamplerState g_samLinear : register(ps,s0);\n"
 	"\n"
 	"   struct VS_OUTPUT\n"
 	"   {\n"
@@ -35,6 +35,7 @@ LPCSTR g_planeShader =
 	"   {\n"
 	"      return g_texDecal.Sample(g_samLinear, input.Tex);\n"
 	"   }\n"
+	"\n"
 ;
 
 //Vector class

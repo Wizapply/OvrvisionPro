@@ -26,6 +26,9 @@ public class OvrvisionTools : EditorWindow
 
 			Object obj = Instantiate(Resources.Load("Prefabs/OvrvisionProCamera"), new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
 			obj.name = "OvrvisionProCamera";
+
+			//Force Virtual mode.
+			PlayerSettings.virtualRealitySupported = true;
 		}
 		else
 		{

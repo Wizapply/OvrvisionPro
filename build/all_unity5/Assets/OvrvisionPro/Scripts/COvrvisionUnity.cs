@@ -59,6 +59,8 @@ public class COvrvisionUnity
     //Set camera properties
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern void ovSetExposure(int value);
+	[DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+	static extern int ovSetExposurePerSec(float value);
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern void ovSetGain(int value);
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
