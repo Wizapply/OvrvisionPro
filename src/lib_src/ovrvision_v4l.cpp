@@ -13,8 +13,11 @@
 #include <sys/time.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
+#include <dirent.h>
 
 #include "ovrvision_v4l.h"
+
+#define OVRVISIONPRO	"OvrvisionPro"
 
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
 
@@ -46,6 +49,10 @@ namespace OVR
 
 	int OvrvisionVideo4Linux::OpenDevice(int num, int width, int height, int frame_rate)
 	{
+#if 1
+		if (SearchDevice(OVRVISIONPRO) != 0)
+			return -1;
+#else
 		struct stat st; 
 
 		// TODO: Enumerate /dev/device* and check OvrvisionPro
@@ -73,6 +80,7 @@ namespace OVR
 			//exit(EXIT_FAILURE);
 			return -1;
 		}
+#endif
 		_width = width;
 		_height = height;
 #ifdef _DEBUG
@@ -318,6 +326,35 @@ namespace OVR
 		}
 #endif // USE_MMAP
 		return 0;
+	}
+
+	int OvrvisionVideo4Linux::SearchDevice(const char *name)
+	{
+		DIR *dir = opendir("/dev");
+		if (dir == NULL)
+			return -1;
+		struct dirent *entry;
+		while ((entry = readdir(dir)) != NULL)
+		{
+			if (strncmp(entry->d_name, "video", 5) == 0)
+			{
+				char path[256];
+				sprintf(path, "/dev/%s", entry->d_name);
+				int fd = open(path, O_RDWR | O_NONBLOCK, 0);
+				struct v4l2_capability cap;
+				if(-1 != xioctl(fd, VIDIOC_QUERYCAP, &cap))
+				{
+					if (name != NULL && 0 ==strcmp(name, (const char *)(cap.card)))
+					{
+						_fd = fd;
+						return 0;
+					}
+				}
+				close(fd);
+			}
+		}
+		closedir(dir);
+		return -1;
 	}
 
 	int OvrvisionVideo4Linux::CheckCapability()

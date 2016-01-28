@@ -93,7 +93,7 @@ public:
 	void EnumFormats();
 
 protected:
-	//int Control(int request, void *arg);
+	int SearchDevice(const char *name);
 	int Init();
 
 private:
