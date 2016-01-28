@@ -5,6 +5,7 @@
 
 #ifdef LINUX
 /////////// INCLUDE ///////////
+#include <unistd.h>
 #include <asm/types.h>
 #include <linux/videodev2.h>	//!Video4Linux
 #include <linux/v4l2-common.h>
@@ -50,6 +51,11 @@ typedef enum ov_camseet {
 	OV_CAMSET_DATA,				//EEPROM Data Access
 } CamSetting;
 
+typedef struct {
+	void *start;
+	size_t length;
+} V4L_BUFFER;
+
 /////////// CLASS ///////////
 //class
 class OvrvisionVideo4Linux
@@ -93,11 +99,8 @@ protected:
 private:
 	char _device_name[16];
 	int	_fd;
-	uint	_n_buffers;
-	struct {
-		void *start;
-		size_t length;
-	} *_buffers;
+	unsigned int	_n_buffers;
+	V4L_BUFFER *_buffers;
 	int _width;
 	int _height;
 	struct v4l2_format _format;

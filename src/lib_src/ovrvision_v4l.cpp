@@ -94,7 +94,7 @@ namespace OVR
 		}
 		free(_buffers);
 #else	// USE_USERPTR
-		for (i = 0; i < _n_buffers; ++i)
+		for (uint i = 0; i < _n_buffers; ++i)
 		{
 			free(_buffers[i].start);
 		}
@@ -203,7 +203,7 @@ namespace OVR
 			printf("%i: %c%c%c%c (%s)\n", fmt.index,
 				fmt.pixelformat >> 0, fmt.pixelformat >> 8,
 				fmt.pixelformat >> 16, fmt.pixelformat >> 24, fmt.description);
-			memset(&fmt, 0, sizeof(struct v4l2_fmtdesc));
+			//memset(&fmt, 0, sizeof(struct v4l2_fmtdesc));
 			fmt.index = ++i;
 			fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		}
@@ -300,7 +300,7 @@ namespace OVR
 			}
 		}
 
-		_buffers = calloc(4, sizeof(*_buffers));
+		_buffers = (V4L_BUFFER *)calloc(4, sizeof(V4L_BUFFER));
 
 		if (!_buffers) {
 			//fprintf(stderr, "Out of memory\n");
@@ -308,10 +308,10 @@ namespace OVR
 		}
 
 		for (_n_buffers = 0; _n_buffers < 4; ++_n_buffers) {
-			_buffers[n_buffers].length = _format.fmt.pix.sizeimage;
-			_buffers[n_buffers].start = malloc(_format.fmt.pix.sizeimage);
+			_buffers[_n_buffers].length = _format.fmt.pix.sizeimage;
+			_buffers[_n_buffers].start = malloc(_format.fmt.pix.sizeimage);
 
-			if (!_buffers[n_buffers].start) {
+			if (!_buffers[_n_buffers].start) {
 				//fprintf(stderr, "Out of memory\n");
 				//exit(EXIT_FAILURE);
 			}
