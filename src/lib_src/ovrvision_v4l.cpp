@@ -23,6 +23,7 @@ typedef struct {
 	char *name;
 } V4L2_CAPABILITY_MAP;
 
+
 static int xioctl(int fd, int request, void *arg)
 {
 	int result;
@@ -83,6 +84,7 @@ namespace OVR
 	//Delete device
 	int OvrvisionVideo4Linux::DeleteDevice()
 	{
+#ifdef USE_MMAP
 		for(uint i = 0; i < _n_buffers; ++i)
 		{
 			if(-1 == munmap(_buffers[i].start, _buffers[i].length))
@@ -91,6 +93,13 @@ namespace OVR
 			}
 		}
 		free(_buffers);
+#else	// USE_USERPTR
+		for (i = 0; i < _n_buffers; ++i)
+		{
+			free(_buffers[i].start);
+		}
+#endif // USE_MMAP
+
 		return close(_fd);
 	}
 
@@ -99,7 +108,7 @@ namespace OVR
 	{
 		unsigned int i;
 		enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-
+#ifdef USE_MMAP
 		for(i = 0; i < _n_buffers; ++i)
 		{
 			struct v4l2_buffer buf;
@@ -108,16 +117,35 @@ namespace OVR
 			buf.memory      = V4L2_MEMORY_MMAP;
 			buf.index       = i;
 
-			if(-1 == Control(VIDIOC_QBUF, &buf))
+			if(-1 == xioctl(_fd, VIDIOC_QBUF, &buf))
 				return -1;
 		}
-		return Control(VIDIOC_STREAMON, &type);
+#else	// USE_USERPTR
+		for (i = 0; i < _n_buffers; ++i)
+		{
+			struct v4l2_buffer buf;
+
+			CLEAR(buf);
+			buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+			buf.memory = V4L2_MEMORY_USERPTR;
+			buf.index = i;
+			buf.m.userptr = (unsigned long)_buffers[i].start;
+			buf.length = _buffers[i].length;
+
+			if (-1 == xioctl(_fd, VIDIOC_QBUF, &buf))
+			{
+				//errno_exit("VIDIOC_QBUF");
+				return -1;
+			}
+		}
+#endif // USE_MMAP
+		return xioctl(_fd, VIDIOC_STREAMON, &type);
 	}
 	
 	int OvrvisionVideo4Linux::StopTransfer()
 	{
 		enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		return Control(VIDIOC_STREAMOFF, &type);
+		return xioctl(_fd, VIDIOC_STREAMOFF, &type);
 	}
 
 	//Get pixel data
@@ -125,11 +153,11 @@ namespace OVR
 	int OvrvisionVideo4Linux::GetBayer16Image(unsigned char* pimage, bool nonblocking)
 	{
 		struct v4l2_buffer buf;
-
+#ifdef USE_MMAP
 		CLEAR(buf);
 		buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buf.memory = V4L2_MEMORY_MMAP;
-		if (-1 == Control(VIDIOC_DQBUF, &buf))
+		if (-1 == xioctl(_fd, VIDIOC_DQBUF, &buf))
 		{
 			switch(errno)
 			{
@@ -143,10 +171,13 @@ namespace OVR
 				return -1;
 			}
 		}
+#else	// USE_USERPTR
+#endif // USE_MMAP
+
 		//assert(buf.index < _n_buffers);
 		//if(count == 0)
 		//	process_image(buffers[buf.index].start,buffers[buf.index].length);
-		return Control(VIDIOC_QBUF, &buf);
+		return xioctl(_fd, VIDIOC_QBUF, &buf);
 	}
 
 	//Set camera setting
@@ -161,22 +192,143 @@ namespace OVR
 		return 0;	
 	}
 
-	int OvrvisionVideo4Linux::Control(int request, void *arg)
+	void OvrvisionVideo4Linux::EnumFormats()
 	{
-		return xioctl(_fd, request, arg);
+		int i;
+		struct v4l2_fmtdesc fmt;
+		fmt.index = i = 0;
+		fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+		while(-1 != xioctl(_fd, VIDIOC_ENUM_FMT, &fmt)) {
+			printf("%i: %c%c%c%c (%s)\n", fmt.index,
+				fmt.pixelformat >> 0, fmt.pixelformat >> 8,
+				fmt.pixelformat >> 16, fmt.pixelformat >> 24, fmt.description);
+			memset(&fmt, 0, sizeof(struct v4l2_fmtdesc));
+			fmt.index = ++i;
+			fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		}
 	}
 
 	int OvrvisionVideo4Linux::Init()
 	{
-		struct v4l2_format fmt;
+		struct v4l2_requestbuffers req;
 
+		CLEAR(_format);
+
+		_format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		_format.fmt.pix.width = _width;
+		_format.fmt.pix.height = _height;
+		_format.fmt.pix.pixelformat = V4L2_PIX_FMT_Y16;	// Gray scale 16bit depth
+		_format.fmt.pix.field = V4L2_FIELD_NONE;		// or V4L2_FIELD_ANY
+
+		if (0 == xioctl(_fd, VIDIOC_S_FMT, &_format))
+		{
+			/* Note VIDIOC_S_FMT may change width and height. */
+			_width = _format.fmt.pix.width;
+			_height = _format.fmt.pix.height;
+			//return 0;
+		}
+		else  
+		{
+			return -1;
+		}
+
+		CLEAR(req);
+#ifdef USE_MMAP
+		req.count = 4;
+		req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		req.memory = V4L2_MEMORY_MMAP;
+
+		if (-1 == xioctl(_fd, VIDIOC_REQBUFS, &req)) {
+			if (EINVAL == errno) {
+				//fprintf(stderr, "%s does not support memory mapping\n", dev_name);
+				//exit(EXIT_FAILURE);
+			} else {
+				//errno_exit("VIDIOC_REQBUFS");
+			}
+		}
+
+		if (req.count < 2) {
+			//fprintf(stderr, "Insufficient buffer memory on %s\n", dev_name);
+			//exit(EXIT_FAILURE);
+		}
+
+		_buffers = calloc(req.count, sizeof(*_buffers));
+
+		if (!_buffers) {
+			//fprintf(stderr, "Out of memory\n");
+			//exit(EXIT_FAILURE);
+		}
+
+		for (_n_buffers = 0; _n_buffers < req.count; ++_n_buffers) {
+			struct v4l2_buffer buf;
+
+			CLEAR(buf);
+
+			buf.type        = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+			buf.memory      = V4L2_MEMORY_MMAP;
+			buf.index       = _n_buffers;
+
+			if (-1 == xioctl(fd, VIDIOC_QUERYBUF, &buf))
+			{
+				//errno_exit("VIDIOC_QUERYBUF");
+			}
+			_buffers[_n_buffers].length = buf.length;
+			_buffers[_n_buffers].start =
+				mmap(NULL /* start anywhere */,
+				buf.length,
+				PROT_READ | PROT_WRITE /* required */,
+				MAP_SHARED /* recommended */,
+				fd, buf.m.offset);
+
+			if (MAP_FAILED == _buffers[n_buffers].start)
+			{
+				//errno_exit("mmap");
+			}
+		}
+#else	// USE_USERPTR
+		req.count  = 4;
+		req.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		req.memory = V4L2_MEMORY_USERPTR;
+
+		if (-1 == xioctl(_fd, VIDIOC_REQBUFS, &req)) {
+			if (EINVAL == errno) {
+				//fprintf(stderr, "%s does not support user pointer i/o\n", dev_name);
+				//exit(EXIT_FAILURE);
+			} else {
+				//errno_exit("VIDIOC_REQBUFS");
+			}
+		}
+
+		_buffers = calloc(4, sizeof(*_buffers));
+
+		if (!_buffers) {
+			//fprintf(stderr, "Out of memory\n");
+			//exit(EXIT_FAILURE);
+		}
+
+		for (_n_buffers = 0; _n_buffers < 4; ++_n_buffers) {
+			_buffers[n_buffers].length = _format.fmt.pix.sizeimage;
+			_buffers[n_buffers].start = malloc(_format.fmt.pix.sizeimage);
+
+			if (!_buffers[n_buffers].start) {
+				//fprintf(stderr, "Out of memory\n");
+				//exit(EXIT_FAILURE);
+			}
+		}
+#endif // USE_MMAP
+		return 0;
+	}
+
+	int OvrvisionVideo4Linux::CheckCapability()
+	{
 #if 0
 		struct v4l2_capability cap;
 		struct v4l2_cropcap cropcap;
 		struct v4l2_crop crop;
 		unsigned int min;
 
-		if (-1 == Control(VIDIOC_QUERYCAP, &cap))
+		if (-1 == xioctl(_fd, VIDIOC_QUERYCAP, &cap))
 		{
 			if (EINVAL == errno)
 			{
@@ -209,12 +361,12 @@ namespace OVR
 
 		cropcap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-		if (0 == Control(VIDIOC_CROPCAP, &cropcap))
+		if (0 == xioctl(_fd, VIDIOC_CROPCAP, &cropcap))
 		{
 			crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 			crop.c = cropcap.defrect; /* reset to default */
 
-			if (-1 == Control(VIDIOC_S_CROP, &crop))
+			if (-1 == xioctl(_fd, VIDIOC_S_CROP, &crop))
 			{
 				switch (errno)
 				{
@@ -233,19 +385,19 @@ namespace OVR
 		}
 #endif
 
-		CLEAR(fmt);
+		CLEAR(_format);
 
-		fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		fmt.fmt.pix.width = _width;
-		fmt.fmt.pix.height = _height;
-		fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_Y16;	// Gray scale 16bit depth
-		fmt.fmt.pix.field = V4L2_FIELD_NONE;		// or V4L2_FIELD_ANY
+		_format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		_format.fmt.pix.width = _width;
+		_format.fmt.pix.height = _height;
+		_format.fmt.pix.pixelformat = V4L2_PIX_FMT_Y16;	// Gray scale 16bit depth
+		_format.fmt.pix.field = V4L2_FIELD_NONE;		// or V4L2_FIELD_ANY
 
-		if (0 == Control(VIDIOC_S_FMT, &fmt))
+		if (0 == xioctl(_fd, VIDIOC_S_FMT, &_format))
 		{
 			/* Note VIDIOC_S_FMT may change width and height. */
-			_width = fmt.fmt.pix.width;
-			_height = fmt.fmt.pix.height;
+			_width = _format.fmt.pix.width;
+			_height = _format.fmt.pix.height;
 			return 0;
 		}
 		else  
@@ -276,7 +428,7 @@ namespace OVR
 	void OvrvisionVideo4Linux::QueryCapability()
 	{
 		struct v4l2_capability fmt;
-		if(-1 != Control(VIDIOC_QUERYCAP, &fmt))
+		if(-1 != xioctl(_fd, VIDIOC_QUERYCAP, &fmt))
 		{
 			printf("Driver name     : %s\n", fmt.driver);
 			printf("Driver Version  : %u.%u.%u\n",

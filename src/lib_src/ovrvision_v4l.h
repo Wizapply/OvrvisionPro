@@ -79,13 +79,15 @@ public:
 	int GetCameraSetting(CamSetting proc, int* value, bool* automode);
 
 	/*! @brief Check capability */
-	bool CheckCapability();
+	int CheckCapability();
 
 	/*! @brief Query capability of device */
 	void QueryCapability();
 
+	void EnumFormats();
+
 protected:
-	int Control(int request, void *arg);
+	//int Control(int request, void *arg);
 	int Init();
 
 private:
@@ -98,6 +100,7 @@ private:
 	} *_buffers;
 	int _width;
 	int _height;
+	struct v4l2_format _format;
 };
 
 }; // namespave OVR
