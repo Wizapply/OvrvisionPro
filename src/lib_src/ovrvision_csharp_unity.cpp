@@ -18,6 +18,7 @@
 #if WIN32
 #define SUPPORT_D3D9 1
 #define SUPPORT_D3D11 1 // comment this out if you don't have D3D11 header/library files
+#define SUPPORT_D3D12 0 // comment this out if you don't have D3D12 header/library files
 #define SUPPORT_OPENGL 1
 #endif
 
@@ -30,6 +31,9 @@
 #endif
 #if SUPPORT_D3D11
 #include <d3d11.h>
+#endif
+#if SUPPORT_D3D12
+#include <d3d12.h>
 #endif
 #if SUPPORT_OPENGL
 #if WIN32
@@ -51,19 +55,20 @@
 // Graphics device identifiers in Unity
 enum GfxDeviceRenderer
 {
-	kGfxRendererOpenGL = 0,		// Desktop OpenGL
-	kGfxRendererD3D9 = 1,		// Direct3D 9
-	kGfxRendererD3D11 = 2,		// Direct3D 11
-	kGfxRendererGCM = 3,		// PlayStation 3
-	kGfxRendererNull = 4,		// "null" device (used in batch mode)
-	kGfxRendererXenon = 6,		// Xbox 360
+	kGfxRendererOpenGL = 0, // Legacy OpenGL
+	kGfxRendererD3D9 = 1, // Direct3D 9
+	kGfxRendererD3D11 = 2, // Direct3D 11
+	kGfxRendererGCM = 3, // PlayStation 3
+	kGfxRendererNull = 4, // "null" device (used in batch mode)
+	kGfxRendererXenon = 6, // Xbox 360
 	kGfxRendererOpenGLES20 = 8, // OpenGL ES 2.0
 	kGfxRendererOpenGLES30 = 11, // OpenGL ES 3.0
-	kGfxRendererGXM = 12,		// PlayStation Vita
-	kGfxRendererPS4 = 13,		// PlayStation 4
-	kGfxRendererXboxOne = 14,	// Xbox One        
-	kGfxRendererMetal = 16,		// iOS Metal
-	kGfxRendererD3D12 = 18,		// Direct3D 12
+	kGfxRendererGXM = 12, // PlayStation Vita
+	kGfxRendererPS4 = 13, // PlayStation 4
+	kGfxRendererXboxOne = 14, // Xbox One        
+	kGfxRendererMetal = 16, // iOS Metal
+	kGfxRendererOpenGLCore = 17, // OpenGL core
+	kGfxRendererD3D12 = 18, // Direct3D 12
 };
 
 // Event types for UnitySetGraphicsDevice
@@ -126,7 +131,7 @@ void CSHARP_EXPORT UnitySetGraphicsDevice(void* device, int deviceType, int even
 	// If we've got an OpenGL device, remember device type. There's no OpenGL
 	// "device pointer" to remember since OpenGL always operates on a currently set
 	// global context.
-	if (deviceType == kGfxRendererOpenGL)
+	if (deviceType == kGfxRendererOpenGL || deviceType == kGfxRendererOpenGLCore)
 	{
 		g_DeviceType = deviceType;
 	}

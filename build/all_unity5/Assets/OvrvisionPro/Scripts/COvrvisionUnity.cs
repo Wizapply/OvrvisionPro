@@ -44,6 +44,8 @@ public class COvrvisionUnity
 
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern void ovGetCamImageForUnityNative(System.IntPtr pTexPtr_Left, System.IntPtr pTexPtr_Right);
+	[DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+	static extern System.IntPtr ovGetCamImageForUnityNativeGLCall(System.IntPtr pTexPtr_Left, System.IntPtr pTexPtr_Right);
 
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern int ovGetImageWidth();
@@ -213,7 +215,8 @@ public class COvrvisionUnity
 		if (useOvrvisionTrack)
 			ovTrackRender(useOvrvisionTrack_Calib, false);
 
-		ovGetCamImageForUnityNative(leftPtr, rightPtr);
+		//ovGetCamImageForUnityNative(leftPtr, rightPtr);
+		GL.IssuePluginEvent(ovGetCamImageForUnityNativeGLCall(leftPtr, rightPtr), 1);
     }
 
     //Close the Ovrvision

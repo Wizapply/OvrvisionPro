@@ -79,12 +79,19 @@ static OVR::OvrvisionTracking* g_ovOvrvisionTrack = NULL;
 //Calibration Ovrvision Object
 static OVR::OvrvisionCalibration* g_ovOvrvisionCalib = NULL;
 
+//for GL Call
+static void* g_callTexture2DLeft = NULL;
+static void* g_callTexture2DRight = NULL;
+
 /////////// EXPORT FUNCTION ///////////
 
 //C language
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+// Provide them with an address to a function of this signature.
+typedef void(* UnityRenderNative)(int eventID);
 
 // int ovOpen(void)
 CSHARP_EXPORT int ovOpen(int locationID, float arMeter, int type)
@@ -106,6 +113,10 @@ CSHARP_EXPORT int ovOpen(int locationID, float arMeter, int type)
 	if (g_ovOvrvisionTrack == NULL)
 		g_ovOvrvisionTrack = new OVR::OvrvisionTracking(g_ovOvrvision->GetCamWidth(),
 						g_ovOvrvision->GetCamHeight(), g_ovOvrvision->GetCamFocalPoint());	//Tracking
+
+	//Clear
+	g_callTexture2DLeft = NULL;
+	g_callTexture2DRight = NULL;
 
 	return 0;	//OK
 }
@@ -262,6 +273,7 @@ extern ID3D11Device* g_D3D11Device;
 #if SUPPORT_D3D9
 extern IDirect3DDevice9* g_D3D9Device;
 #endif
+
 // void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr_Right, int qt, int useAR)
 CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr_Right)
 {
@@ -318,11 +330,33 @@ CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr
         uintptr_t gltex_right = (uintptr_t)pTexPtr_Right;
 
 		glBindTexture(GL_TEXTURE_2D, (GLuint)gltex_left);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_RGBA, GL_UNSIGNED_BYTE, pLeft);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_BGRA_EXT, GL_UNSIGNED_BYTE, pLeft);
 		glBindTexture(GL_TEXTURE_2D, (GLuint)gltex_right);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_BGRA_EXT, GL_UNSIGNED_BYTE, pRight);
+#endif
+	}
+	else if (g_DeviceType == 17) {	//OpenGLCore
+#if SUPPORT_OPENGL
+		uintptr_t gltex_left = (uintptr_t)pTexPtr_Left;
+		uintptr_t gltex_right = (uintptr_t)pTexPtr_Right;
+
+		glBindTexture(GL_TEXTURE_2D, gltex_left);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_RGBA, GL_UNSIGNED_BYTE, pLeft);
+		glBindTexture(GL_TEXTURE_2D, gltex_right);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, g_ovOvrvision->GetCamWidth(), g_ovOvrvision->GetCamHeight(), GL_RGBA, GL_UNSIGNED_BYTE, pRight);
 #endif
 	}
+}
+//for GL.IssuePluginEvent
+extern "C" void CSHARP_EXPORT ovGetCamImageForUnityNativeEvent(int eventID)
+{
+	ovGetCamImageForUnityNative(g_callTexture2DLeft, g_callTexture2DRight);
+}
+extern "C" UnityRenderNative CSHARP_EXPORT ovGetCamImageForUnityNativeGLCall(void* pTexPtr_Left, void* pTexPtr_Right)
+{
+	g_callTexture2DLeft = pTexPtr_Left;
+	g_callTexture2DRight = pTexPtr_Right;
+	return ovGetCamImageForUnityNativeEvent;
 }
 
 //This method will be detected if a hand is put in front of a camera. 

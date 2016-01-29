@@ -103,6 +103,9 @@ public class Ovrvision : MonoBehaviour
 		CameraTexLeft.wrapMode = TextureWrapMode.Clamp;
 		CameraTexRight.wrapMode = TextureWrapMode.Clamp;
 
+		CameraTexLeft.Apply();
+		CameraTexRight.Apply();
+
 		//Mesh
 		Mesh m = CreateCameraPlaneMesh();
 		CameraPlaneLeft.GetComponent<MeshFilter>().mesh = m;
