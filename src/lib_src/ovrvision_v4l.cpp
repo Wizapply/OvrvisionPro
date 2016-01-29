@@ -18,6 +18,7 @@
 #include "ovrvision_v4l.h"
 
 #define OVRVISIONPRO	"OvrvisionPro"
+#define USE_MMAP
 
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
 
@@ -261,7 +262,7 @@ namespace OVR
 			//exit(EXIT_FAILURE);
 		}
 
-		_buffers = calloc(req.count, sizeof(*_buffers));
+		_buffers = (V4L_BUFFER *)calloc(req.count, sizeof(V4L_BUFFER));
 
 		if (!_buffers) {
 			//fprintf(stderr, "Out of memory\n");
@@ -277,7 +278,7 @@ namespace OVR
 			buf.memory      = V4L2_MEMORY_MMAP;
 			buf.index       = _n_buffers;
 
-			if (-1 == xioctl(fd, VIDIOC_QUERYBUF, &buf))
+			if (-1 == xioctl(_fd, VIDIOC_QUERYBUF, &buf))
 			{
 				//errno_exit("VIDIOC_QUERYBUF");
 			}
@@ -287,9 +288,9 @@ namespace OVR
 				buf.length,
 				PROT_READ | PROT_WRITE /* required */,
 				MAP_SHARED /* recommended */,
-				fd, buf.m.offset);
+				_fd, buf.m.offset);
 
-			if (MAP_FAILED == _buffers[n_buffers].start)
+			if (MAP_FAILED == _buffers[_n_buffers].start)
 			{
 				//errno_exit("mmap");
 			}

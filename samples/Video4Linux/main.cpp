@@ -5,7 +5,7 @@ using namespace OVR;
 int main(int argc, char *argv[])
 {
 	OvrvisionVideo4Linux v4l;
-	v4l.OpenDevice(0, 0, 0, 0);
+	v4l.OpenDevice(0, 1280, 800, 0);
 	v4l.QueryCapability();
 	v4l.EnumFormats();
 }
