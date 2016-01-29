@@ -227,12 +227,15 @@ namespace OVR
 		_format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		_format.fmt.pix.width = _width;
 		_format.fmt.pix.height = _height;
-		_format.fmt.pix.pixelformat = V4L2_PIX_FMT_Y16;	// Gray scale 16bit depth
+		_format.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;	// Gray scale 16bit depth
 		_format.fmt.pix.field = V4L2_FIELD_NONE;		// or V4L2_FIELD_ANY
 
 		if (0 == xioctl(_fd, VIDIOC_S_FMT, &_format))
 		{
 			/* Note VIDIOC_S_FMT may change width and height. */
+#ifdef	DEBUG
+			printf("%d:%d x %d:%d SIZE:%d\n", _width, _format.fmt.pix.width, _height, _format.fmt.pix.height, _format.fmt.pix.sizeimage);
+#endif
 			_width = _format.fmt.pix.width;
 			_height = _format.fmt.pix.height;
 			//return 0;
