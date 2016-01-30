@@ -42,6 +42,7 @@ namespace OVR
 {
 	OvrvisionVideo4Linux::OvrvisionVideo4Linux()
 	{
+		_n_buffers = 0;
 	}
 
 	OvrvisionVideo4Linux::~OvrvisionVideo4Linux()
@@ -162,6 +163,20 @@ namespace OVR
 	int OvrvisionVideo4Linux::GetBayer16Image(unsigned char* pimage, bool nonblocking)
 	{
 		struct v4l2_buffer buf;
+        fd_set fds;
+         struct timeval tv;
+         int r;
+
+         FD_ZERO (&fds);
+         FD_SET (_fd, &fds);
+
+         /* Timeout. */
+         tv.tv_sec = 1;
+         tv.tv_usec = 8000;
+
+         r = select(_fd + 1, &fds, NULL, NULL, &tv);
+         if (r <= 0)
+        	 return -1;
 #ifdef USE_MMAP
 		CLEAR(buf);
 		buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -180,6 +195,7 @@ namespace OVR
 				return -1;
 			}
 		}
+		// Copy data from _buffer[buf.index] to pimage with crop
 #else	// USE_USERPTR
 #endif // USE_MMAP
 
@@ -192,13 +208,27 @@ namespace OVR
 	//Set camera setting
 	int OvrvisionVideo4Linux::SetCameraSetting(CamSetting proc, int value, bool automode)
 	{
+		struct v4l2_control ctrl;
+
+		//ctrl.id = id; // V4L2_CID_BRIGHTNESS, V4L2_CID_CONTRAST
+		ctrl.value = value;
+		if (xioctl(_fd,  VIDIOC_S_CTRL, &ctrl) < 0) {
+			return -1;
+		}
 		return 0;
 	}
 
 	//Get camera setting
 	int OvrvisionVideo4Linux::GetCameraSetting(CamSetting proc, int* value, bool* automode)
 	{
-		return 0;	
+		struct v4l2_control ctrl;
+
+		//ctrl.id = id;
+		if (xioctl(_fd,  VIDIOC_G_CTRL, &ctrl) < 0) {
+			return -1;
+		}
+		*value = ctrl.value;
+		return 0;
 	}
 
 	void OvrvisionVideo4Linux::EnumFormats()
