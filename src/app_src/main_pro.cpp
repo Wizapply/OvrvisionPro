@@ -88,7 +88,7 @@ int Initialize()
 		printf("Ovrvision Pro Open Error!\nPlease check whether OvrvisionPro is connected.");
 	}
 
-	//g_pOvrvision->SetCameraExposure(12960);
+	//g_pOvrvision->SetCameraExposurePerSec(60.0f);
 	g_pOvrvision->SetCameraSyncMode(false);
 
 	//OculusRightGap

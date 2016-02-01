@@ -127,7 +127,7 @@ CyU3PReturnStatus_t OV5653SensorInit(void)
 	OV5653SensorReset();
 
 	//PLL Reset
-	WI2C(0x3102,0x01);
+	WI2C(0x3102,0x05);
 	CyU3PBusyWait (5000);
 	WI2C(0x3102,0x00);
 	CyU3PBusyWait (5000);

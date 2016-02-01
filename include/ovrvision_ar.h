@@ -187,6 +187,13 @@ public:
 		@return Meter size 1.0f = 100cm */
 	float GetMarkerSizeMeter(){ return m_markerSize_Meter; };
 
+	/*!	@brief Set the Threashold value
+	@param value threashold 0-255 */
+	void SetDetectThreshold(float value) { m_threshold = value; };
+	/*!	@brief Get the Threashold value
+	@return threashold value 0-255 */
+	float GetDetectThreshold(){ return m_threshold; };
+
 	//Reserved method.
 	void SetInstantTraking(bool value);
 
@@ -194,6 +201,7 @@ private:
 	//Marker detector
 	MarkerDetector*			m_detector;
 	CameraParameters*		m_cameraParam;
+	float					m_threshold;
 	//Marker size
 	float					m_markerSize_Meter;
 

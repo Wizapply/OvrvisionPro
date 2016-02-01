@@ -34,9 +34,12 @@ OvrvisionAR::OvrvisionAR(float markersize_meter, int w, int h, float focalPoint)
 	m_detector = new aruco::MarkerDetector();
 	m_cameraParam = new aruco::CameraParameters();
 
+	m_threshold = 130.0f;
+
 	//Marker detector settings
 	m_detector->setCornerRefinementMethod(aruco::MarkerDetector::LINES);
-	m_detector->setThresholdMethod(aruco::MarkerDetector::ADPT_THRES);
+	m_detector->setThresholdMethod(aruco::MarkerDetector::FIXED_THRES);
+	m_detector->setThresholdParams(m_threshold, 0.0);
 
 	m_markerSize_Meter = markersize_meter;
 	m_pMarkerData = NULL;
@@ -185,6 +188,7 @@ void OvrvisionAR::Render()
 	}
 	
 	//detect
+	m_detector->setThresholdParams(m_threshold, 0.0);
 	m_detector->detect(pGrayImg, markers, m_cameraParam->CameraMatrix, cv::Mat(), m_markerSize_Meter, true);
 
 	//edit data
