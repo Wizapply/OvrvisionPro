@@ -14,28 +14,28 @@
 
 //Shader
 LPCSTR g_planeShader =
-	"Texture2D g_texDecal : register(ps,t0);\n"
-	"SamplerState g_samLinear : register(ps,s0);\n"
-	"\n"
-	"   struct VS_OUTPUT\n"
-	"   {\n"
-	"      float4 Pos : SV_POSITION;\n"
-	"      float2 Tex : TEXCOORD;\n"
-	"   };\n"
-	"\n"
-	"   VS_OUTPUT VSFunc(float4 Pos : POSITION, float2 Tex : TEXCOORD)\n"
-	"   {\n"
-	"      VS_OUTPUT output = (VS_OUTPUT)0;\n"
-	"      output.Pos = Pos;\n"
-	"      output.Tex = Tex;\n"
-	"      return output;\n"
-	"   }\n"
-	"\n"
-	"   float4 PSFunc(VS_OUTPUT input) : SV_Target\n"
-	"   {\n"
-	"      return g_texDecal.Sample(g_samLinear, input.Tex);\n"
-	"   }\n"
-	"\n"
+"Texture2D g_texDecal : register(ps,t0);\n"
+"SamplerState g_samLinear : register(ps,s0);\n"
+"\n"
+"   struct VS_OUTPUT\n"
+"   {\n"
+"      float4 Pos : SV_POSITION;\n"
+"      float2 Tex : TEXCOORD;\n"
+"   };\n"
+"\n"
+"   VS_OUTPUT VSFunc(float4 Pos : POSITION, float2 Tex : TEXCOORD)\n"
+"   {\n"
+"      VS_OUTPUT output = (VS_OUTPUT)0;\n"
+"      output.Pos = Pos;\n"
+"      output.Tex = Tex;\n"
+"      return output;\n"
+"   }\n"
+"\n"
+"   float4 PSFunc(VS_OUTPUT input) : SV_Target\n"
+"   {\n"
+"      return g_texDecal.Sample(g_samLinear, input.Tex);\n"
+"   }\n"
+"\n"
 ;
 
 //Vector class
@@ -80,14 +80,16 @@ static ID3D11ShaderResourceView* ShaderRC = NULL;
 
 int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext, int w, int h, float zsize)
 {
-	//初期化
+	//Init
 	ID3DBlob *pCompiledShader = NULL;
 	ID3DBlob *pErrors = NULL;
 
-	//頂点シェーダー作成
+	//Create Vertex Shader 
 	if (FAILED(D3DX11CompileFromMemory(g_planeShader, strlen(g_planeShader), NULL, NULL, NULL, "VSFunc", "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0, NULL, &pCompiledShader, &pErrors, NULL)))
 	{
 		MessageBox(0, L"Vertex Shader Read Error!", NULL, MB_OK);
+		MessageBox(0, (LPCWSTR)pErrors->GetBufferPointer(), NULL, MB_OK);
+		
 		return E_FAIL;
 	}
 	Release(pErrors);
@@ -96,9 +98,10 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	{
 		Release(pCompiledShader);
 		MessageBox(0, L"Vertex Shader Create Error!", NULL, MB_OK);
+
 		return E_FAIL;
 	}
-	//頂点インプットレイアウトを定義
+	//Define layout
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -106,16 +109,16 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	};
 	UINT numElements = sizeof(layout) / sizeof(layout[0]);
 
-	//頂点インプットレイアウトを作成
 	if (FAILED(Device->CreateInputLayout(layout, numElements, pCompiledShader->GetBufferPointer(), pCompiledShader->GetBufferSize(), &VertexLayout)))
 		return FALSE;
-	//頂点インプットレイアウトをセット
+
 	DeviceContext->IASetInputLayout(VertexLayout);
 
-	//ピクセルシェーダー作成
+	//Create Pixel shader
 	if (FAILED(D3DX11CompileFromMemory(g_planeShader, strlen(g_planeShader), NULL, NULL, NULL, "PSFunc", "ps_4_0", 0, 0, NULL, &pCompiledShader, &pErrors, NULL)))
 	{
 		MessageBox(0, L"Pixel Shader Read Error!", NULL, MB_OK);
+		MessageBox(0, (LPCWSTR)pErrors->GetBufferPointer(), NULL, MB_OK);
 		return E_FAIL;
 	}
 	Release(pErrors);
@@ -129,7 +132,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 
 	float aspect = (float)h / (float)w * 0.82f;
 
-	//四角形ポリゴン
+	//Square polygon
 	SimpleVertex vertices[] =
 	{
 		VECTOR3(-zsize, -zsize*aspect, 0.5f), VECTOR2(0, 1),
@@ -149,15 +152,13 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	if (FAILED(Device->CreateBuffer(&bd, &InitData, &VertexBuffer)))
 		return FALSE;
 
-	//バーテックスバッファーをセット
+	// Set Buffer
 	UINT stride = sizeof(SimpleVertex);
 	UINT offset = 0;
 	DeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
-
-	//プリミティブ・トポロジーをセット
 	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	//テクスチャー用サンプラー作成
+	//Sampler
 	D3D11_SAMPLER_DESC SamDesc;
 	ZeroMemory(&SamDesc, sizeof(D3D11_SAMPLER_DESC));
 
@@ -167,7 +168,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	Device->CreateSamplerState(&SamDesc, &SampleLinear);
 
-	//テクスチャー作成
+	//Create texture
 	D3D11_TEXTURE2D_DESC texDesc;
 	memset(&texDesc, 0, sizeof(texDesc));
 
@@ -184,7 +185,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 
 	if (FAILED(Device->CreateTexture2D(&texDesc, NULL, &Texture)))
 	{
-		MessageBox(0, L"テクスチャバッファ作成に失敗", NULL, MB_OK);
+		MessageBox(0, L"Failed to create texture buffer", NULL, MB_OK);
 		return E_FAIL;
 	}
 
@@ -194,7 +195,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 	if (FAILED(Device->CreateShaderResourceView(Texture, &srvDesc, &ShaderRC))){
-		MessageBox(0, L"リソースバッファ作成に失敗", NULL, MB_OK);
+		MessageBox(0, L"Failed to create resource buffer", NULL, MB_OK);
 		return E_FAIL;
 	}
 
@@ -231,15 +232,12 @@ int RendererCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext)
 	if (Texture == NULL)
 		return S_FALSE;
 
-	//使用するシェーダーの登録
 	DeviceContext->VSSetShader(VertexShader, NULL, 0);
 	DeviceContext->PSSetShader(PixelShader, NULL, 0);
 
-	//テクスチャーをシェーダーに渡す
 	DeviceContext->PSSetSamplers(0, 1, &SampleLinear);
 	DeviceContext->PSSetShaderResources(0, 1, &ShaderRC);
 
-	//プリミティブをレンダリング
 	DeviceContext->Draw(4, 0);
 
 	return S_OK;
