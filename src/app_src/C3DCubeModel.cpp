@@ -18,11 +18,7 @@
 
 /////////// VARS AND DEFS ///////////
 
-/*
- *	シェーダプログラムソースGLSL
- */
-// バーテックスシェーダ
-// 頂点情報とテクスチャＵＶ座標をもらう
+//Vertex Shader
 static const char* g_c3d_mdsource_vs = {
 "attribute vec3 vPos;\n"
 "attribute vec3 vNml;\n"
@@ -35,7 +31,7 @@ static const char* g_c3d_mdsource_vs = {
 "}\n"
 };
 
-// フラグメントシェーダ
+//Fragment Shader
 static const char* g_c3d_mdsource_fs = {
 "varying vec3 v_nml;\n"
 "uniform vec4 u_diffuse;\n"
@@ -53,7 +49,7 @@ static const char* g_c3d_mdsource_fs = {
 
 C3DCubeModel::C3DCubeModel()
 {
-	// 初期化
+	// Initialize
 	memset(&m_cube,0,sizeof(m_cube));
 	memset(&m_shader,0,sizeof(m_shader));
 	memset(&m_texture,0,sizeof(m_texture));

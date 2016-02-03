@@ -24,9 +24,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_oculus_app", "ovr
 		{DD5351C3-7463-428E-9598-29CF37003494} = {DD5351C3-7463-428E-9598-29CF37003494}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_clear_eeprom", "..\ovrvision_clear_eeprom\ovrvision_clear_eeprom.vcxproj", "{E42951C1-45D8-4186-97FE-B66DA8834D64}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_clear_eeprom", "ovrvision_clear_eeprom\ovrvision_clear_eeprom.vcxproj", "{E42951C1-45D8-4186-97FE-B66DA8834D64}"
 	ProjectSection(ProjectDependencies) = postProject
 		{93964603-90DE-4EA0-9BBB-816E91AA6D4E} = {93964603-90DE-4EA0-9BBB-816E91AA6D4E}
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647} = {FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}
+		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0} = {3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}
 	EndProjectSection
 EndProject
 Global
@@ -91,6 +93,7 @@ Global
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Debug|Win32.Build.0 = Debug|Win32
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Debug|x64.ActiveCfg = Debug|Win32
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.MetaioARRelease|Win32.ActiveCfg = Release|Win32
+		{E42951C1-45D8-4186-97FE-B66DA8834D64}.MetaioARRelease|Win32.Build.0 = Release|Win32
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.MetaioARRelease|x64.ActiveCfg = Release|Win32
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Release|Win32.ActiveCfg = Release|Win32
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Release|Win32.Build.0 = Release|Win32

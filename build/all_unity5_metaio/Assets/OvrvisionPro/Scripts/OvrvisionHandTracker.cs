@@ -4,6 +4,7 @@ using System.Collections;
 public class OvrvisionHandTracker : MonoBehaviour {
 
 	private GameObject OvrvisionProCameraObj = null;
+	private Vector3 offsetPos = new Vector3(-0.032f, 0.0f, 0.0f);
 
 	// Use this for initialization
 	void Start () {
@@ -18,7 +19,7 @@ public class OvrvisionHandTracker : MonoBehaviour {
 
 	// UpdateTracker
 	public void UpdateTransform (Vector3 trakingGet) {
-		this.transform.localPosition = trakingGet;
+		this.transform.localPosition = trakingGet + offsetPos;
 	}
 
 	public void UpdateTransformNone()

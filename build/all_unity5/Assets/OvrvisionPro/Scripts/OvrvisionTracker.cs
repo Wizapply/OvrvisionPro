@@ -14,7 +14,7 @@ public class OvrvisionTracker : MonoBehaviour {
 	private GameObject OvrvisionProCameraObj = null;
 
 	private float hideTime;
-	public float timeToDisappear = 1.0f;
+	public float timeToDisappear = 0.1f;
 
 	private Vector3 offsetPos = new Vector3(-0.032f,0.0f,0.0f);
 	

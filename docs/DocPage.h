@@ -231,6 +231,19 @@ How to remove when dust has adhered to the image sensor.<br />
 
 /*! @page page7 Release Notes
 @tableofcontents
+@section sdk8 Ovrvision SDK v1.5
+Date : 2/Feb/2015<br />
+<b>Notes</b>
+- Fixed the bug of the shader read error. 
+- Fixed the bug which is not drawn by OpenGL of Unity.
+- Improve AR system performance. 
+- Improve OpenCL system performance.
+
+<b>Unimplementeds and issue</b>
+- Linux OS support
+- Unreal Engine 4
+- A defect of a document.
+
 @section sdk7 Ovrvision SDK v1.4
 Date : 16/Jan/2015<br />
 <b>Notes</b>

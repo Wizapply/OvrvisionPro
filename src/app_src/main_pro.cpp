@@ -88,7 +88,7 @@ int Initialize()
 		printf("Ovrvision Pro Open Error!\nPlease check whether OvrvisionPro is connected.");
 	}
 
-	//g_pOvrvision->SetCameraExposure(12960);
+	//g_pOvrvision->SetCameraExposurePerSec(60.0f);
 	g_pOvrvision->SetCameraSyncMode(false);
 
 	//OculusRightGap
@@ -102,6 +102,8 @@ int Initialize()
 	//Create ovrvision AR object (0.15f = 15cm)
 	g_pOvrAR = new OVR::OvrvisionAR(0.15f, g_camWidth, g_camHeight, g_pOvrvision->GetCamFocalPoint());
 	g_pOvrTrack = new OVR::OvrvisionTracking(g_camWidth, g_camHeight, g_pOvrvision->GetCamFocalPoint());
+
+	g_pOvrAR->SetDetectThreshold(130.0f);	//0-255
 
 	//Create texture
 	wzCreateTextureBuffer(&g_screen_texture, g_camWidth, g_camHeight, WZ_FORMATTYPE_BGRA_RGBA);
@@ -169,6 +171,7 @@ void DrawLoop(void)
 
 		//AR DETECT
 		if (g_useOvrvisionAR) {
+			g_processMode = OVR::Camqt::OV_CAMQT_DMSRMP;
 			g_pOvrAR->SetImageBGRA(p);	//left
 			g_pOvrAR->Render();
 		}
