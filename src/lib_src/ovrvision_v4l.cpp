@@ -163,7 +163,11 @@ namespace OVR
 	int OvrvisionVideo4Linux::GetBayer16Image(unsigned char* pimage, bool nonblocking)
 	{
 		struct v4l2_buffer buf;
-        fd_set fds;
+
+		for (bool wait = true; wait; )
+		{
+			fd_set fds;
+
          struct timeval tv;
          int r;
 
@@ -175,8 +179,9 @@ namespace OVR
          tv.tv_usec = 8000;
 
          r = select(_fd + 1, &fds, NULL, NULL, &tv);
-         if (r <= 0)
-        	 return -1;
+         if (r > 0)	// timeout
+        	 wait = false;
+		}
 #ifdef USE_MMAP
 		CLEAR(buf);
 		buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -196,6 +201,7 @@ namespace OVR
 			}
 		}
 		// Copy data from _buffer[buf.index] to pimage with crop
+		memcpy(pimage, _buffers[buf.index].start, buf.bytesused);
 #else	// USE_USERPTR
 #endif // USE_MMAP
 

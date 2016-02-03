@@ -4,8 +4,8 @@
 using namespace OVR;
 using namespace cv;
 
-#define WIDTH 1280
-#define HEIGHT	960
+#define WIDTH 640
+#define HEIGHT	480
 
 int main(int argc, char *argv[])
 {
@@ -15,9 +15,20 @@ int main(int argc, char *argv[])
 	v4l.QueryCapability();
 	v4l.EnumFormats();
 	v4l.StartTransfer();
-	if (0 == v4l.GetBayer16Image(image.data))
+	for (bool loop = true; loop;)
 	{
-		imshow("Bayer", image);
+		if (0 == v4l.GetBayer16Image(image.data))
+		{
+			imshow("Bayer", image);
+		}
+		switch (waitKey(10))
+		{case 'q':
+			loop = false;
+			break;
+		case ' ':
+			imwrite("frame.png", image);
+			break;
+		}
 	}
 	v4l.StopTransfer();
 	v4l.DeleteDevice();
