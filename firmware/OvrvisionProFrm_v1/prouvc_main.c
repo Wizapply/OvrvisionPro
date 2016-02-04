@@ -47,6 +47,8 @@
 #include "eeprom_data.h"		// EEPROM User data
 #include "cyfxgpif2config.h"	// GPIF program design
 
+#include "gpio_test_pcd8544.h"
+
 ////////////////////// Global Variables //////////////////////
 
 static CyU3PThread   uvcAppThread;                      /* UVC video streaming thread. */
@@ -460,6 +462,7 @@ static void UVCApplnInit (void)
     if (apiRetStatus != CY_U3P_SUCCESS) UVCAppErrorHandler (apiRetStatus);
     //How to use : Drive the GPIO high to bring the sensor out.
     //CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyTrue);
+    //CyU3PGpioSimpleSetValue(OVRPRO_GPIO0_PIN, CyTrue);
 
     /* Initialize the P-port. */
     pibclock.clkDiv      = 2;
@@ -573,6 +576,21 @@ static void UVCApplnInit (void)
     apiRetStatus = CyU3PConnectState (CyTrue, CyTrue);
     if (apiRetStatus != CY_U3P_SUCCESS)
     	UVCAppErrorHandler (apiRetStatus);
+
+    /*
+    PCD8544_Initialise();
+    PCD8544_Clear();
+
+    PCD8544_GotoXY(0,0);
+    PCD8544_String("OvrvisionPro");
+    PCD8544_GotoXY(0,1);
+    PCD8544_String(" Wizapply");
+
+    PCD8544_GotoXY(0,3);
+    PCD8544_String("GPIO Test!");
+
+    //PCD8544_LogoDraw();
+    */
 }
 
 // UVC Application i2c Init

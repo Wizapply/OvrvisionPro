@@ -88,8 +88,9 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	if (FAILED(D3DX11CompileFromMemory(g_planeShader, strlen(g_planeShader), NULL, NULL, NULL, "VSFunc", "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0, NULL, &pCompiledShader, &pErrors, NULL)))
 	{
 		MessageBox(0, L"Vertex Shader Read Error!", NULL, MB_OK);
-		MessageBox(0, (LPCWSTR)pErrors->GetBufferPointer(), NULL, MB_OK);
-		
+		MessageBox(0, L"Please install DirectX11 Runtime from the page of Microsoft.", NULL, MB_OK);
+		ShellExecute(NULL, L"open", L"https://www.microsoft.com/en-us/download/details.aspx?id=35&", NULL, NULL, SW_SHOWNORMAL);
+
 		return E_FAIL;
 	}
 	Release(pErrors);

@@ -324,6 +324,11 @@ CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr
 		d3dtex_right->UnlockRect(0);
 #endif
 	}
+	else if (g_DeviceType == 18) {	//DirectX12
+#if SUPPORT_D3D12
+
+#endif
+	}
 	else if (g_DeviceType == 0) {	//OpenGL
 #if SUPPORT_OPENGL
         uintptr_t gltex_left = (uintptr_t)pTexPtr_Left;

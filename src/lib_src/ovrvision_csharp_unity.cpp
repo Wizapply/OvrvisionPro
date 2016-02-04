@@ -18,7 +18,7 @@
 #if WIN32
 #define SUPPORT_D3D9 1
 #define SUPPORT_D3D11 1 // comment this out if you don't have D3D11 header/library files
-#define SUPPORT_D3D12 0 // comment this out if you don't have D3D12 header/library files
+#define SUPPORT_D3D12 0
 #define SUPPORT_OPENGL 1
 #endif
 
@@ -93,6 +93,9 @@ int g_DeviceType = -1;
 #if SUPPORT_D3D11
 ID3D11Device* g_D3D11Device = NULL;
 #endif
+#if SUPPORT_D3D11
+ID3D11Device* g_D3D11Device = NULL;
+#endif
 #if SUPPORT_D3D9
 IDirect3DDevice9* g_D3D9Device = NULL;
 #endif
@@ -124,6 +127,16 @@ void CSHARP_EXPORT UnitySetGraphicsDevice(void* device, int deviceType, int even
 	{
 		g_DeviceType = deviceType;
 		g_D3D11Device = (ID3D11Device*)device;
+	}
+#endif
+
+#if SUPPORT_D3D12
+	// D3D11 device, remember device pointer and device type.
+	// The pointer we get is ID3D11Device.
+	if (deviceType == kGfxRendererD3D12)
+	{
+		g_DeviceType = deviceType;
+
 	}
 #endif
 
