@@ -205,35 +205,71 @@ namespace OVR
 #else	// USE_USERPTR
 #endif // USE_MMAP
 
-		//assert(buf.index < _n_buffers);
-		//if(count == 0)
-		//	process_image(buffers[buf.index].start,buffers[buf.index].length);
 		return xioctl(_fd, VIDIOC_QBUF, &buf);
 	}
 
-	//Set camera setting
+	//Set camera setting, NOT YET IMPLEMENTED
 	int OvrvisionVideo4Linux::SetCameraSetting(CamSetting proc, int value, bool automode)
 	{
 		struct v4l2_control ctrl;
 
 		//ctrl.id = id; // V4L2_CID_BRIGHTNESS, V4L2_CID_CONTRAST
-		ctrl.value = value;
-		if (xioctl(_fd,  VIDIOC_S_CTRL, &ctrl) < 0) {
-			return -1;
+		//ctrl.value = value;
+		//if (xioctl(_fd,  VIDIOC_S_CTRL, &ctrl) < 0) {
+		//	return -1;
+		//}
+		switch(proc) {
+		case OV_CAMSET_EXPOSURE:// m_pAMVideoProcAmp->Set(VideoProcAmp_Brightness, value, autoflag);
+			break;
+		case OV_CAMSET_GAIN: //m_pAMVideoProcAmp->Set(VideoProcAmp_Gain, value, autoflag);
+			break;
+		case OV_CAMSET_WHITEBALANCER: //m_pAMVideoProcAmp->Set(VideoProcAmp_Sharpness, value, autoflag);
+			break;
+		case OV_CAMSET_WHITEBALANCEG: //m_pAMVideoProcAmp->Set(VideoProcAmp_Gamma, value, autoflag);
+			break;
+		case OV_CAMSET_WHITEBALANCEB: //m_pAMVideoProcAmp->Set(VideoProcAmp_WhiteBalance, value, autoflag);
+			break;
+		case OV_CAMSET_BLC: //m_pAMVideoProcAmp->Set(VideoProcAmp_BacklightCompensation, value, autoflag);
+			break;
+		case OV_CAMSET_DATA: //m_pAMVideoProcAmp->Set(VideoProcAmp_Contrast, value, false);
+			break;
+		default:
+			return RESULT_FAILED;
+			break;
 		}
 		return 0;
 	}
 
-	//Get camera setting
+	//Get camera setting, NOT YET IMPLEMENTED
 	int OvrvisionVideo4Linux::GetCameraSetting(CamSetting proc, int* value, bool* automode)
 	{
 		struct v4l2_control ctrl;
 
 		//ctrl.id = id;
-		if (xioctl(_fd,  VIDIOC_G_CTRL, &ctrl) < 0) {
-			return -1;
+		//if (xioctl(_fd,  VIDIOC_G_CTRL, &ctrl) < 0) {
+		//	return -1;
+		//}
+		//*value = ctrl.value;
+
+		switch(proc) {
+		case OV_CAMSET_EXPOSURE: //m_pAMVideoProcAmp->Get(VideoProcAmp_Brightness, (long*)value, &autoflag);
+			break;
+		case OV_CAMSET_GAIN: //m_pAMVideoProcAmp->Get(VideoProcAmp_Gain, (long*)value, &autoflag);
+			break;
+		case OV_CAMSET_WHITEBALANCER: //m_pAMVideoProcAmp->Get(VideoProcAmp_Sharpness, (long*)value, &autoflag);
+			break;
+		case OV_CAMSET_WHITEBALANCEG: //m_pAMVideoProcAmp->Get(VideoProcAmp_Gamma, (long*)value, &autoflag);
+			break;
+		case OV_CAMSET_WHITEBALANCEB: //m_pAMVideoProcAmp->Get(VideoProcAmp_WhiteBalance, (long*)value, &autoflag);
+			break;
+		case OV_CAMSET_BLC: //m_pAMVideoProcAmp->Get(VideoProcAmp_BacklightCompensation, (long*)value, &autoflag);
+			break;
+		case OV_CAMSET_DATA: //m_pAMVideoProcAmp->Get(VideoProcAmp_Contrast, (long*)value, &autoflag);
+			break;
+		default:
+			return RESULT_FAILED;
+			break;
 		}
-		*value = ctrl.value;
 		return 0;
 	}
 
