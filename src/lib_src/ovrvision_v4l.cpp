@@ -43,6 +43,7 @@ namespace OVR
 	OvrvisionVideo4Linux::OvrvisionVideo4Linux()
 	{
 		_n_buffers = 0;
+		_cropVertical = _cropHorizontal = false;
 	}
 
 	OvrvisionVideo4Linux::~OvrvisionVideo4Linux()
@@ -51,38 +52,9 @@ namespace OVR
 
 	int OvrvisionVideo4Linux::OpenDevice(int num, int width, int height, int frame_rate)
 	{
-#if 1
 		if (SearchDevice(OVRVISIONPRO) != 0)
 			return -1;
-#else
-		struct stat st; 
 
-		// TODO: Enumerate /dev/device* and check OvrvisionPro
-		sprintf(_device_name, "/dev/video%d", num);
-
-		if(-1 == stat(_device_name, &st))
-		{
-			fprintf(stderr, "Cannot identify '%s': %d, %s\n",
-				_device_name, errno, strerror(errno));
-			//exit(EXIT_FAILURE);
-			return -1;
-		}
-
-		if(!S_ISCHR(st.st_mode))
-		{
-			fprintf(stderr, "%s is no device\n", _device_name);
-			//exit(EXIT_FAILURE);
-			return -1;
-		}
-		_fd = open(_device_name, O_RDWR /* required */ | O_NONBLOCK, 0);
-		if(-1 == _fd)
-		{
-			fprintf(stderr, "Cannot open '%s': %d, %s\n",
-				_device_name, errno, strerror(errno));
-			//exit(EXIT_FAILURE);
-			return -1;
-		}
-#endif
 		_width = width;
 		_height = height;
 #ifdef _DEBUG
@@ -99,7 +71,7 @@ namespace OVR
 		{
 			if(-1 == munmap(_buffers[i].start, _buffers[i].length))
 			{
-				//errno_exit("munmap");
+				fprintf(stderr, "munmap");
 			}
 		}
 		free(_buffers);
@@ -167,20 +139,19 @@ namespace OVR
 		for (bool wait = true; wait; )
 		{
 			fd_set fds;
+			struct timeval tv;
+			int r;
 
-         struct timeval tv;
-         int r;
+			FD_ZERO (&fds);
+			FD_SET (_fd, &fds);
 
-         FD_ZERO (&fds);
-         FD_SET (_fd, &fds);
+			/* Timeout. */
+			tv.tv_sec = 1;
+			tv.tv_usec = 0;
 
-         /* Timeout. */
-         tv.tv_sec = 1;
-         tv.tv_usec = 8000;
-
-         r = select(_fd + 1, &fds, NULL, NULL, &tv);
-         if (r > 0)	// timeout
-        	 wait = false;
+			r = select(_fd + 1, &fds, NULL, NULL, &tv);
+			if (r > 0)	// timeout
+				wait = false;
 		}
 #ifdef USE_MMAP
 		CLEAR(buf);
@@ -201,7 +172,34 @@ namespace OVR
 			}
 		}
 		// Copy data from _buffer[buf.index] to pimage with crop
-		memcpy(pimage, _buffers[buf.index].start, buf.bytesused);
+		if (_cropHorizontal)
+		{
+			if (_cropVertical)
+			{
+
+			}
+			else
+			{
+
+			}
+		}
+		else if (_cropVertical)
+		{
+			int offset = (_format.fmt.pix.height - _height) / 2;
+			if (0 < offset)
+			{
+				unsigned char *addr = (unsigned char *)(_buffers[buf.index].start) + _format.fmt.pix.bytesperline * offset;
+				memcpy(pimage, addr, _format.fmt.pix.bytesperline * _height);
+			}
+			else
+			{
+				memcpy(pimage + _format.fmt.pix.bytesperline * offset, _buffers[buf.index].start, buf.bytesused);
+			}
+		}
+		else
+		{
+			memcpy(pimage, _buffers[buf.index].start, buf.bytesused);
+		}
 #else	// USE_USERPTR
 #endif // USE_MMAP
 
@@ -211,7 +209,7 @@ namespace OVR
 	//Set camera setting, NOT YET IMPLEMENTED
 	int OvrvisionVideo4Linux::SetCameraSetting(CamSetting proc, int value, bool automode)
 	{
-		struct v4l2_control ctrl;
+		//struct v4l2_control ctrl;
 
 		//ctrl.id = id; // V4L2_CID_BRIGHTNESS, V4L2_CID_CONTRAST
 		//ctrl.value = value;
@@ -243,7 +241,7 @@ namespace OVR
 	//Get camera setting, NOT YET IMPLEMENTED
 	int OvrvisionVideo4Linux::GetCameraSetting(CamSetting proc, int* value, bool* automode)
 	{
-		struct v4l2_control ctrl;
+		//struct v4l2_control ctrl;
 
 		//ctrl.id = id;
 		//if (xioctl(_fd,  VIDIOC_G_CTRL, &ctrl) < 0) {
@@ -308,9 +306,16 @@ namespace OVR
 #ifdef	DEBUG
 			printf("%d:%d x %d:%d SIZE:%d\n", _width, _format.fmt.pix.width, _height, _format.fmt.pix.height, _format.fmt.pix.sizeimage);
 #endif
-			_width = _format.fmt.pix.width;
-			_height = _format.fmt.pix.height;
-			//return 0;
+			if (_width != _format.fmt.pix.width)
+			{
+				_cropHorizontal = true;
+			}
+			if (_height != _format.fmt.pix.height)
+			{
+				_cropVertical = true;
+			}
+			//_width = _format.fmt.pix.width;
+			//_height = _format.fmt.pix.height;
 		}
 		else  
 		{
@@ -325,7 +330,7 @@ namespace OVR
 
 		if (-1 == xioctl(_fd, VIDIOC_REQBUFS, &req)) {
 			if (EINVAL == errno) {
-				//fprintf(stderr, "%s does not support memory mapping\n", dev_name);
+				fprintf(stderr, "%s does not support memory mapping\n", _device_name);
 				//exit(EXIT_FAILURE);
 			} else {
 				//errno_exit("VIDIOC_REQBUFS");
@@ -333,14 +338,14 @@ namespace OVR
 		}
 
 		if (req.count < 2) {
-			//fprintf(stderr, "Insufficient buffer memory on %s\n", dev_name);
+			fprintf(stderr, "Insufficient buffer memory on %s\n", _device_name);
 			//exit(EXIT_FAILURE);
 		}
 
 		_buffers = (V4L_BUFFER *)calloc(req.count, sizeof(V4L_BUFFER));
 
 		if (!_buffers) {
-			//fprintf(stderr, "Out of memory\n");
+			fprintf(stderr, "Out of memory\n");
 			//exit(EXIT_FAILURE);
 		}
 

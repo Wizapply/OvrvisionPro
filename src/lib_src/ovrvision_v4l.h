@@ -103,6 +103,8 @@ private:
 	V4L_BUFFER *_buffers;
 	int _width;
 	int _height;
+	bool _cropVertical;
+	bool _cropHorizontal;
 	struct v4l2_format _format;
 };
 
