@@ -473,10 +473,10 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 		else {
 			byte* p_left = m_pPixels[0];
 			byte* p_right = m_pPixels[1];
-			for (register int y = 0; y < m_height; y++) {
-				for (register int x = 0; x < m_width; x++) {
-					register int ps = (y * m_width) + x;
-					register int dest_ps = ps * 4;
+			for (int y = 0; y < m_height; y++) {
+				for (int x = 0; x < m_width; x++) {
+					int ps = (y * m_width) + x;
+					int dest_ps = ps * 4;
 					p_left[dest_ps + 0] = p_left[dest_ps + 1] = p_left[dest_ps + 2] = p_left[dest_ps + 3] = (m_pFrame[ps] & 0x00FF);
 					p_right[dest_ps + 0] = p_right[dest_ps + 1] = p_right[dest_ps + 2] = p_right[dest_ps + 3] = (m_pFrame[ps] >> 8);
 				}
