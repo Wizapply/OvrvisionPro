@@ -458,13 +458,10 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 	if (!m_isOpen)
 		return;
 
-	if (qt == OV_CAMQT_NONE)
-		return;
-
 #if defined(WIN32)
 	if (m_pODS->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK)
 #elif defined(MACOSX)
-    if ([m_pOAV getBayer16Image: (uchar *)m_pFrame blocking: !m_isCameraSync] == RESULT_OK)
+	if ([m_pOAV getBayer16Image: (uchar *)m_pFrame blocking: !m_isCameraSync] == RESULT_OK)
 #elif defined(LINUX)
 	if (m_pOV4L->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK)
 #endif
@@ -473,6 +470,19 @@ void OvrvisionPro::PreStoreCamData(OVR::Camqt qt)
 			m_pOpenCL->DemosaicRemap(m_pFrame, m_pPixels[0], m_pPixels[1]);	//OpenCL
 		else if (qt == OV_CAMQT_DMS)
 			m_pOpenCL->Demosaic(m_pFrame, m_pPixels[0], m_pPixels[1]);		//OpenCL
+		else {
+			byte* p_left = m_pPixels[0];
+			byte* p_right = m_pPixels[1];
+			for (register int y = 0; y < m_height; y++) {
+				for (register int x = 0; x < m_width; x++) {
+					register int ps = (y * m_width) + x;
+					register int dest_ps = ps * 4;
+					p_left[dest_ps + 0] = p_left[dest_ps + 1] = p_left[dest_ps + 2] = p_left[dest_ps + 3] = (m_pFrame[ps] & 0x00FF);
+					p_right[dest_ps + 0] = p_right[dest_ps + 1] = p_right[dest_ps + 2] = p_right[dest_ps + 3] = (m_pFrame[ps] >> 8);
+				}
+			}
+
+		}
 	}
 }
 

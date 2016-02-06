@@ -90,8 +90,8 @@ extern "C" {
 float g_Time;
 int g_DeviceType = -1;
 
-#if SUPPORT_D3D11
-ID3D11Device* g_D3D11Device = NULL;
+#if SUPPORT_D3D12
+ID3D12Device* g_D3D12Device = NULL;
 #endif
 #if SUPPORT_D3D11
 ID3D11Device* g_D3D11Device = NULL;
