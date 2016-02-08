@@ -49,17 +49,6 @@ typedef cv::Mat ovMat;
 #define ovMat void
 #endif
 
-#ifndef _OV_CAMEYE_ENUM_
-#define _OV_CAMEYE_ENUM_
-//! @enum ov_cameraeye
-//! Eye selection the Left or Right.
-typedef enum ov_cameraeye {
-	OV_CAMEYE_LEFT = 0,		//!Left camera
-	OV_CAMEYE_RIGHT,		//!Right camera
-	OV_CAMNUM,
-} Cameye;
-#endif
-
 //OVR Group
 namespace OVR {
 
@@ -80,6 +69,17 @@ namespace OVR {
 #ifdef LINUX
     
 #endif	/*LINUX*/
+
+#ifndef _OV_CAMEYE_ENUM_
+#define _OV_CAMEYE_ENUM_
+	//! @enum ov_cameraeye
+	//! Eye selection the Left or Right.
+	typedef enum ov_cameraeye {
+		OV_CAMEYE_LEFT = 0,		//!Left camera
+		OV_CAMEYE_RIGHT,		//!Right camera
+		OV_CAMNUM,
+	} Cameye;
+#endif
 
 //unsigned char to byte
 typedef unsigned char byte;

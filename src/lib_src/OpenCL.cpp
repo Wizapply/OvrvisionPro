@@ -695,7 +695,7 @@ namespace OVR
 				}
 			}
 #else
-			clGetGLContextInfoKHR_fn			pclGetGLContextInfoKHR = NULL;
+			clGetGLContextInfoKHR_fn pclGetGLContextInfoKHR = NULL;
 			pclGetGLContextInfoKHR = GETFUNCTION(platforms[i], clGetGLContextInfoKHR);
 #ifdef WIN32
 			// Reference https://software.intel.com/en-us/articles/sharing-surfaces-between-opencl-and-opengl-43-on-intel-processor-graphics-using-implicit

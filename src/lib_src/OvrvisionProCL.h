@@ -46,11 +46,12 @@ typedef unsigned int TEXTURE;
 #endif
 
 #ifdef LINUX
-#include <CL/opencl.h>	// OpenCL and its extensions
-//#include <GL/glew.h>
-//#include <GL/glext.h>
-//#include <GL/wglew.h>
-#include <GL/glxew.h>
+#include <CL/cl.h>	// OpenCL and its extensions
+#include <CL/cl_ext.h>
+#include <CL/cl_gl.h>       // OpenCL/OpenGL interoperabillity
+#include <CL/cl_gl_ext.h>   // OpenCL/OpenGL interoperabillity
+#include <GL/gl.h>
+#include <GL/glx.h>
 typedef unsigned int TEXTURE;
 #endif
 

@@ -23,7 +23,7 @@
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
 
 typedef struct {
-	__u32 flag;
+	unsigned int flag;
 	char *name;
 } V4L2_CAPABILITY_MAP;
 

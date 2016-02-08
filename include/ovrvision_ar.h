@@ -1,5 +1,5 @@
 // ovrvision_ar.h
-// Version 1.31 : 8/Jan/2016
+// Version 1.51 : 8/Feb/2016
 //
 //MIT License
 //THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -59,17 +59,6 @@ typedef cv::Mat ovMat;
 #define ovMat void
 #endif
 
-#ifndef _OV_CAMEYE_ENUM_
-#define _OV_CAMEYE_ENUM_
-//! @enum ov_cameraeye
-//! Eye selection the Left or Right.
-typedef enum ov_cameraeye {
-	OV_CAMEYE_LEFT = 0,		//!Left camera
-	OV_CAMEYE_RIGHT,		//!Right camera
-	OV_CAMNUM,
-} Cameye;
-#endif
-
 //OVR Group
 namespace OVR {
 
@@ -86,11 +75,21 @@ namespace OVR {
 #ifdef MACOSX
     #define OVRPORT 
 #endif	/*MACOSX*/
-	
+
 #ifdef LINUX
-    
+	#define OVRPORT
 #endif	/*LINUX*/
 
+#ifndef _OV_CAMEYE_ENUM_
+#define _OV_CAMEYE_ENUM_
+	//! @enum ov_cameraeye
+	//! Eye selection the Left or Right.
+	typedef enum ov_cameraeye {
+		OV_CAMEYE_LEFT = 0,		//!Left camera
+		OV_CAMEYE_RIGHT,		//!Right camera
+		OV_CAMNUM,
+	} Cameye;
+#endif
 
 /*! @brief Vector2D structure for ov_st_marker_data */
 typedef struct OVRPORT ov_st_vector2d {

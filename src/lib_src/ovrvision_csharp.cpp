@@ -28,31 +28,47 @@
 #undef _OVRVISION_EXPORTS
 #include "ovrvision_pro.h"
 #include "ovrvision_ar.h"
+#else //LINUX
+#include <ovrvision_pro.h>
+#include <ovrvision_ar.h>
+#include <ovrvision_tracking.h>
+#include "ovrvision_setting.h"
+#include "ovrvision_calibration.h"
 #endif
 
-#if WIN32
+#ifdef WIN32
 #define SUPPORT_D3D9 1
 #define SUPPORT_D3D11 1 // comment this out if you don't have D3D11 header/library files
 #define SUPPORT_OPENGL 1
 #endif
 
-#if MACOSX
+#ifdef MACOSX
 #define SUPPORT_OPENGL 1
 #endif
+
+#ifdef LINUX
+#define SUPPORT_OPENGL 1
+#endif
+
 
 #if SUPPORT_D3D9
 #include <d3d9.h>
 #endif
+
 #if SUPPORT_D3D11
 #include <d3d11.h>
 #endif
+
 #if SUPPORT_OPENGL
-#if WIN32
-#include <gl/GL.h>
-#else
-#include <OpenGL/gl.h>
-typedef unsigned int GLuint;
-#endif
+	#if WIN32
+	#include <gl/GL.h>
+	#elif MACOSX
+	#include <OpenGL/gl.h>
+	typedef unsigned int GLuint;
+	#else //LINUX
+	#include <GL/gl.h>
+	#include <GL/glx.h>
+	#endif
 #endif
 
 /////////// VARS AND DEFS ///////////
@@ -62,6 +78,8 @@ typedef unsigned int GLuint;
 #define CSHARP_EXPORT __declspec(dllexport)
 #elif MACOSX
 #define CSHARP_EXPORT 
+#else //LINUX
+#define CSHARP_EXPORT
 #endif
 
 //AR deta size
@@ -729,7 +747,7 @@ CSHARP_EXPORT int ovCalibFindChess()
 	if(g_ovOvrvisionCalib == NULL)
 		return 0;
 
-	g_ovOvrvision->PreStoreCamData(OVR::Camqt::OV_CAMQT_DMS);	//ReRenderer
+	g_ovOvrvision->PreStoreCamData(OVR::OV_CAMQT_DMS);	//ReRenderer
 	unsigned char* pLeft = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 	unsigned char* pRight = g_ovOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
