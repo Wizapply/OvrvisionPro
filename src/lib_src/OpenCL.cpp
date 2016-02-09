@@ -627,7 +627,7 @@ namespace OVR
 						clGetDeviceInfo(id[j], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint), &units, &length);
 						clGetDeviceInfo(id[j], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
 						printf("%s %d Compute units %dMHz : %s\n", devicename, units, freq, buffer);
-						if (strcmp(buffer, version) == 0)
+						if (strcmp(buffer, version) >= 0)
 						{
 							if ((maxFreq * maxUnits) < (freq * units))
 							{
