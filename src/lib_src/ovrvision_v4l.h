@@ -1,9 +1,23 @@
 // ovrvision_v4l.h
+//
+//MIT License
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//THE SOFTWARE.
+//
+// Oculus Rift : TM & Copyright Oculus VR, Inc. All Rights Reserved
+// Unity : TM & Copyright Unity Technologies. All Rights Reserved
+
+//Linux only
+#ifdef LINUX
 
 #ifndef __OVRVISION_V4L__
 #define __OVRVISION_V4L__
 
-#ifdef LINUX
 /////////// INCLUDE ///////////
 #include <unistd.h>
 #include <asm/types.h>
@@ -109,6 +123,7 @@ private:
 };
 
 }; // namespave OVR
-#endif // LINUX
 
 #endif // __OVRVISION_V4L__
+
+#endif // LINUX

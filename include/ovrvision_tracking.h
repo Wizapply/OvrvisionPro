@@ -67,7 +67,7 @@ namespace OVR {
 #endif	/*MACOSX*/
 	
 #ifdef LINUX
-    
+    #define OVRPORT 
 #endif	/*LINUX*/
 
 #ifndef _OV_CAMEYE_ENUM_

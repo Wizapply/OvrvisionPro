@@ -1,7 +1,16 @@
+// OpenCL.cpp
 //
+//MIT License
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//THE SOFTWAR
 //
-//
-
+// Oculus Rift : TM & Copyright Oculus VR, Inc. All Rights Reserved
+// Unity : TM & Copyright Unity Technologies. All Rights Reserved
 
 #include <stdio.h>
 #include <sys/stat.h>
@@ -618,7 +627,7 @@ namespace OVR
 						clGetDeviceInfo(id[j], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint), &units, &length);
 						clGetDeviceInfo(id[j], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
 						printf("%s %d Compute units %dMHz : %s\n", devicename, units, freq, buffer);
-						if (strcmp(buffer, version) >= 0)
+						if (strcmp(buffer, version) == 0)
 						{
 							if ((maxFreq * maxUnits) < (freq * units))
 							{
