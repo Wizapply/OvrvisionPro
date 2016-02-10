@@ -47,7 +47,6 @@
 #elif defined(MACOSX)
 #include "ovrvision_avf.h"	//!AVFoundation
 #elif defined(LINUX)
-#include <unistd.h>
 #include "ovrvision_v4l.h"	//!Video4Linux
 #endif
 #include "OvrvisionProCL.h"	//!OpenCL Engine
