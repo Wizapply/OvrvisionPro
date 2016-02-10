@@ -3,7 +3,7 @@
 
 //#include "stdafx.h"
 #include "OvrvisionProCUDA.h"
-#include <opencv2/core.hpp>
+#include <opencv2/core/core.hpp>
 #include <opencv2/gpu/gpu.hpp>
 //#include <opencv2/cudawarping.hpp>
 
