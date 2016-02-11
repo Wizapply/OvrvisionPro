@@ -3,9 +3,18 @@
 
 #include <stdio.h>
 #include <opencv2/core/core.hpp>
+using namespace cv;
+#ifdef OPENCV_VERSION_2_4
+#include <opencv2/gpu/gpu.hpp>
+using namespace cv::gpu;
+#else
 #include <opencv2/core/cuda.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/cuda/saturate_cast.hpp>
+using namespace cv::cuda;
+#endif
+
+#include <opencv2/imgproc/imgproc.hpp>
+
 
 using namespace cv;
 
@@ -13,7 +22,7 @@ namespace OVR
 {
 	//namespace CUDA
 	//{
-		__global__ void remap_kernel(const cuda::PtrStepSz<uchar3> src, const cuda::PtrStep<float> mapx, const cuda::PtrStep<float> mapy, cuda::PtrStepSz<uchar3> dst)
+		__global__ void remap_kernel(const PtrStepSz<uchar3> src, const PtrStep<float> mapx, const PtrStep<float> mapy, PtrStepSz<uchar3> dst)
 		{
 			const int x = blockDim.x * blockIdx.x + threadIdx.x;
 			const int y = blockDim.y * blockIdx.y + threadIdx.y;
@@ -41,7 +50,7 @@ namespace OVR
 			}
 		}
 
-		double remap(const cuda::GpuMat src, cuda::GpuMat dst, const cuda::GpuMat mapx, const cuda::GpuMat mapy)
+		double remap(const GpuMat src, GpuMat dst, const GpuMat mapx, const GpuMat mapy)
 		{
 			dim3 threads(16, 16);
 			dim3 grid((src.cols) / (threads.x), (src.rows) / (threads.y));

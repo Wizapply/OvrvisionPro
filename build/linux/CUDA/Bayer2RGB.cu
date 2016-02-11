@@ -3,11 +3,17 @@
 
 #include <stdio.h>
 #include <opencv2/core/core.hpp>
-#include <opencv2/core/cuda.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
 
 using namespace cv;
+#ifdef OPENCV_VERSION_2_4
+#include <opencv2/gpu/gpu.hpp>
+using namespace cv::gpu;
+#else
+#include <opencv2/core/cuda.hpp>
+using namespace cv::cuda;
+#endif
+#include <opencv2/imgproc/imgproc.hpp>
+
 
 namespace OVR
 {
@@ -36,7 +42,7 @@ namespace OVR
 				patch[3][3] >>= 8;
 			}
 
-			__device__ void apply(int x, int y, cuda::PtrStepSz<uchar3> dst)
+			__device__ void apply(int x, int y, PtrStepSz<uchar3> dst)
 			{
 				uchar3 bgr[2][2];
 				ushort p[4][4];
@@ -81,7 +87,7 @@ namespace OVR
 			}
 
 			// First row of image
-			__device__ void applyUpper(int x, int y, cuda::PtrStepSz<uchar3> dst)
+			__device__ void applyUpper(int x, int y, PtrStepSz<uchar3> dst)
 			{
 				uchar3 bgr[2][2];
 				ushort p[4][4];
@@ -136,7 +142,7 @@ namespace OVR
 		// ------
 		// B|GB|G
 		// 
-		__global__ void bayer2BGR(const cuda::PtrStepSz<ushort> src, cuda::PtrStepSz<uchar3> left, cuda::PtrStepSz<uchar3> right)
+		__global__ void bayer2BGR(const PtrStepSz<ushort> src, PtrStepSz<uchar3> left, PtrStepSz<uchar3> right)
 		{
 			int s_x = 2 * ((blockIdx.x * blockDim.x) + threadIdx.x);
 			int s_y = 2 * ((blockIdx.y * blockDim.y) + threadIdx.y);
@@ -322,7 +328,7 @@ namespace OVR
 			}
 		}
 
-		double bayerGB2BGR(cuda::GpuMat src, cuda::GpuMat left, cuda::GpuMat right)
+		double bayerGB2BGR(GpuMat src, GpuMat left, GpuMat right)
 		{
 			dim3 threads(16, 16);
 			dim3 grid((src.cols / 2) / (threads.x), (src.rows / 2) / (threads.y));

@@ -29,7 +29,7 @@ namespace OVR
 		_r.release();
 		_L.release();
 		_R.release();
-		if (_remapAvailable)
+		//if (_remapAvailable)
 		{
 			//intrinsic.release();
 			//distortion.release();
