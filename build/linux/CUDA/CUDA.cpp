@@ -1,18 +1,8 @@
 // OvrvisionProDLL.cpp : Defines the exported functions for the DLL application.
 //
 
-//#include "stdafx.h"
 #include "OvrvisionProCUDA.h"
-#include <opencv2/core/core.hpp>
-#include <opencv2/gpu/gpu.hpp>
-//#include <opencv2/cudawarping.hpp>
 
-//#include <opencv2/highgui.hpp>
-//#include <opencv2/imgproc.hpp>
-//#include <opencv2/calib3d.hpp>
-
-using namespace cv;
-using namespace cv::gpu;
 
 namespace OVR
 {

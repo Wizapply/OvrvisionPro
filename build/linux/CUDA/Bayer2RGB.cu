@@ -11,8 +11,8 @@ using namespace cv;
 
 namespace OVR
 {
-	namespace CUDA
-	{
+	//namespace CUDA
+	//{
 		struct Bayer2BGR
 		{
 			ushort patch[4][4];
@@ -334,5 +334,5 @@ namespace OVR
 			return (stop - start) * 1000000 / getTickFrequency();
 			//return 0;
 		}
-	}
+	//}
 }
