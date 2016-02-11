@@ -29,9 +29,6 @@
 #define OVRVISIONPRODLL_API
 #endif
 
-#include <opencv2/opencv.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/gpu/gpumat.hpp>
 
 #ifdef WIN32
 // OpenCL header
@@ -55,11 +52,23 @@ typedef void *TEXTURE;
 typedef unsigned int TEXTURE;
 #endif
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#ifdef OPENCV_VERSION_2_4
+#include <opencv2/gpu/gpu.hpp>
+using namespace cv;
+using namespace cv::gpu;
+#else
+#include <opencv2/core/cuda.hpp>
+using namespace cv;
+using namespace cv::cuda;
+#endif
+
+
 //ovrvision setting
 //#include "ovrvision_setting.h"
 
-using namespace cv;
-using namespace cv::gpu;
+
 
 namespace OVR
 {
