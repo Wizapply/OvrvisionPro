@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lopencv_core -lopencv_gpu -lopencv_highgui
+LIBS := -lopencv_core -lopencv_legacy -lopencv_imgproc -lopencv_gpu -lopencv_highgui -lopencv_nonfree -lopencv_video
 
