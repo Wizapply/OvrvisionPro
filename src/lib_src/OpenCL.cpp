@@ -358,7 +358,6 @@ namespace OVR
 			CreateContext(mode, pDevice);
 			_commandQueue = clCreateCommandQueue(_context, _deviceId, 0, &_errorCode);
 			SAMPLE_CHECK_ERRORS(_errorCode);
-
 			// UMat seems to have extra overhead of data transfer, so WE USE NATIVE OPENCL IMAGE2D
 			memset(&_desc_scaled, 0, sizeof(_desc_scaled));
 			_desc_scaled.image_type = CL_MEM_OBJECT_IMAGE2D;

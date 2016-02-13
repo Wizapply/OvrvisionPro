@@ -213,7 +213,7 @@ void OvrvisionAR::Render()
 
 		cv::Mat Rot(3,3,CV_32FC1);
 		markers[i].Rvec.at<float>(0,0) = -markers[i].Rvec.at<float>(0,0);
-		markers[i].Rvec.at<float>(1,0) = markers[i].Rvec.at<float>(1,0);
+		//markers[i].Rvec.at<float>(1,0) = markers[i].Rvec.at<float>(1,0); !!!!self!!!!
 		markers[i].Rvec.at<float>(2,0) = -markers[i].Rvec.at<float>(2,0);
 		cv::Rodrigues(markers[i].Rvec, Rot);
 

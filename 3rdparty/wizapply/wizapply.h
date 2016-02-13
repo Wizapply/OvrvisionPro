@@ -112,6 +112,9 @@ extern "C" {
 #include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#define XK_LATIN1
+#define XK_MISCELLANY
+#include <X11/keysymdef.h> // XK_*
 #ifndef X11ES
 #include <GL/gl.h>
 #include <GL/glx.h>
@@ -1130,105 +1133,105 @@ void wzHTTPFileDownLoadStop();
 //X11用キーコード一覧
 #if defined(X11)
 //COMMAND
-#define WZ_KEY_BACK		KEY_BACKSPACE
-#define WZ_KEY_TAB		KEY_TAB
-#define WZ_KEY_RETURN	KEY_ENTER
-#define WZ_KEY_LSHIFT	KEY_LEFTSHIFT
-#define WZ_KEY_RSHIFT	KEY_RIGHTSHIFT
-#define WZ_KEY_LCTRL	KEY_LEFTCTRL
-#define WZ_KEY_RCTRL	KEY_RIGHTCTRL
-#define WZ_KEY_MENU		KEY_MENU
-#define WZ_KEY_PAUSE	KEY_PAUSE
-#define WZ_KEY_ESCAPE	KEY_ESC
-#define WZ_KEY_SPACE	KEY_SPACE
-#define WZ_KEY_PAGEUP	KEY_PAGEUP
-#define WZ_KEY_PAGEDOWN	KEY_PAGEDOWN
-#define WZ_KEY_END		KEY_END
-#define WZ_KEY_HOME		KEY_HOME
-#define WZ_KEY_LEFT		KEY_LEFT
-#define WZ_KEY_UP		KEY_UP
-#define WZ_KEY_RIGHT	KEY_RIGHT
-#define WZ_KEY_DOWN		KEY_DOWN
-#define WZ_KEY_INSERT	KEY_INSERT
-#define WZ_KEY_DELETE	KEY_DELETE
+#define WZ_KEY_BACK		XK_BackSpace
+#define WZ_KEY_TAB		XK_Tab
+#define WZ_KEY_RETURN	XK_Return
+#define WZ_KEY_LSHIFT	XK_Shift_L
+#define WZ_KEY_RSHIFT	XK_Shift_R
+#define WZ_KEY_LCTRL	XK_Control_L
+#define WZ_KEY_RCTRL	XK_Control_R
+#define WZ_KEY_MENU		XK_Menu
+#define WZ_KEY_PAUSE	XK_Pause
+#define WZ_KEY_ESCAPE	XK_Escape
+#define WZ_KEY_SPACE	XK_space
+#define WZ_KEY_PAGEUP	XK_Page_Up
+#define WZ_KEY_PAGEDOWN	XK_Page_Down
+#define WZ_KEY_END		XK_End
+#define WZ_KEY_HOME		XK_Home
+#define WZ_KEY_LEFT		XK_Left
+#define WZ_KEY_UP		XK_Up
+#define WZ_KEY_RIGHT	XK_Right
+#define WZ_KEY_DOWN		XK_Down
+#define WZ_KEY_INSERT	XK_Insert
+#define WZ_KEY_DELETE	XK_Delete
 //0-9A-Z
-#define WZ_KEY_0		KEY_0
-#define WZ_KEY_1		KEY_1
-#define WZ_KEY_2		KEY_2
-#define WZ_KEY_3		KEY_3
-#define WZ_KEY_4		KEY_4
-#define WZ_KEY_5		KEY_5
-#define WZ_KEY_6		KEY_6
-#define WZ_KEY_7		KEY_7
-#define WZ_KEY_8		KEY_8
-#define WZ_KEY_9		KEY_9
-#define WZ_KEY_A		KEY_A
-#define WZ_KEY_B		KEY_B
-#define WZ_KEY_C		KEY_C
-#define WZ_KEY_D		KEY_D
-#define WZ_KEY_E		KEY_E
-#define WZ_KEY_F		KEY_F
-#define WZ_KEY_G		KEY_G
-#define WZ_KEY_H		KEY_H
-#define WZ_KEY_I		KEY_I
-#define WZ_KEY_J		KEY_J
-#define WZ_KEY_K		KEY_K
-#define WZ_KEY_L		KEY_L
-#define WZ_KEY_M		KEY_M
-#define WZ_KEY_N		KEY_N
-#define WZ_KEY_O		KEY_O
-#define WZ_KEY_P		KEY_P
-#define WZ_KEY_Q		KEY_Q
-#define WZ_KEY_R		KEY_R
-#define WZ_KEY_S		KEY_S
-#define WZ_KEY_T		KEY_T
-#define WZ_KEY_U		KEY_U
-#define WZ_KEY_V		KEY_V
-#define WZ_KEY_W		KEY_W
-#define WZ_KEY_X		KEY_X
-#define WZ_KEY_Y		KEY_Y
-#define WZ_KEY_Z		KEY_Z
+#define WZ_KEY_0		XK_0
+#define WZ_KEY_1		XK_1
+#define WZ_KEY_2		XK_2
+#define WZ_KEY_3		XK_3
+#define WZ_KEY_4		XK_4
+#define WZ_KEY_5		XK_5
+#define WZ_KEY_6		XK_6
+#define WZ_KEY_7		XK_7
+#define WZ_KEY_8		XK_8
+#define WZ_KEY_9		XK_9
+#define WZ_KEY_A		XK_a
+#define WZ_KEY_B		XK_b
+#define WZ_KEY_C		XK_c
+#define WZ_KEY_D		XK_d
+#define WZ_KEY_E		XK_e
+#define WZ_KEY_F		XK_f
+#define WZ_KEY_G		XK_g
+#define WZ_KEY_H		XK_h
+#define WZ_KEY_I		XK_i
+#define WZ_KEY_J		XK_j
+#define WZ_KEY_K		XK_k
+#define WZ_KEY_L		XK_l
+#define WZ_KEY_M		XK_m
+#define WZ_KEY_N		XK_n
+#define WZ_KEY_O		XK_o
+#define WZ_KEY_P		XK_p
+#define WZ_KEY_Q		XK_q
+#define WZ_KEY_R		XK_r
+#define WZ_KEY_S		XK_s
+#define WZ_KEY_T		XK_t
+#define WZ_KEY_U		XK_u
+#define WZ_KEY_V		XK_v
+#define WZ_KEY_W		XK_w
+#define WZ_KEY_X		XK_x
+#define WZ_KEY_Y		XK_y
+#define WZ_KEY_Z		XK_z
 //SPECIAL
-#define WZ_KEY_COLON	KEY_APOSTROPHE
-#define WZ_KEY_SMCOLON	KEY_SEMICOLON
-#define WZ_KEY_COMMA	KEY_COMMA
-#define WZ_KEY_MINUS	KEY_MINUS
-#define WZ_KEY_DOT		KEY_DOT
-#define WZ_KEY_SLASH	KEY_SLASH
-#define WZ_KEY_ATMARK	KEY_GRAVE
-#define WZ_KEY_LBRACE	KEY_LEFTBRACE
-#define WZ_KEY_YEN		KEY_YEN
-#define WZ_KEY_RBRACE	KEY_RIGHTBRACE
-#define WZ_KEY_CARET	KEY_EQUAL
+#define WZ_KEY_COLON	XK_apostrophe
+#define WZ_KEY_SMCOLON	XK_semicolon
+#define WZ_KEY_COMMA	XK_comma
+#define WZ_KEY_MINUS	XK_minus
+#define WZ_KEY_DOT		XK_period
+#define WZ_KEY_SLASH	XK_slash
+#define WZ_KEY_ATMARK	XK_grave
+#define WZ_KEY_LBRACE	XK_bracketleft
+#define WZ_KEY_YEN		XK_backslash
+#define WZ_KEY_RBRACE	XK_bracketright
+#define WZ_KEY_CARET	XK_equal
 //FUNCTION
-#define WZ_KEY_F1		KEY_F1
-#define WZ_KEY_F2		KEY_F2
-#define WZ_KEY_F3		KEY_F3
-#define WZ_KEY_F4		KEY_F4
-#define WZ_KEY_F5		KEY_F5
-#define WZ_KEY_F6		KEY_F6
-#define WZ_KEY_F7		KEY_F7
-#define WZ_KEY_F8		KEY_F8
-#define WZ_KEY_F9		KEY_F9
-#define WZ_KEY_F10		KEY_F10
-#define WZ_KEY_F11		KEY_F11
-#define WZ_KEY_F12		KEY_F12
+#define WZ_KEY_F1		XK_F1
+#define WZ_KEY_F2		XK_F2
+#define WZ_KEY_F3		XK_F3
+#define WZ_KEY_F4		XK_F4
+#define WZ_KEY_F5		XK_F5
+#define WZ_KEY_F6		XK_F6
+#define WZ_KEY_F7		XK_F7
+#define WZ_KEY_F8		XK_F8
+#define WZ_KEY_F9		XK_F9
+#define WZ_KEY_F10		XK_F10
+#define WZ_KEY_F11		XK_F11
+#define WZ_KEY_F12		XK_F12
 //NUMPAD
-#define WZ_KEY_NUMPAD0	KEY_KP0
-#define WZ_KEY_NUMPAD1	KEY_KP1
-#define WZ_KEY_NUMPAD2	KEY_KP2
-#define WZ_KEY_NUMPAD3	KEY_KP3
-#define WZ_KEY_NUMPAD4	KEY_KP4
-#define WZ_KEY_NUMPAD5	KEY_KP5
-#define WZ_KEY_NUMPAD6	KEY_KP6
-#define WZ_KEY_NUMPAD7	KEY_KP7
-#define WZ_KEY_NUMPAD8	KEY_KP8
-#define WZ_KEY_NUMPAD9	KEY_KP9
-#define WZ_KEY_MULTIPLY	KEY_KPASTERISK
-#define WZ_KEY_ADD		KEY_KPPLUS
-#define WZ_KEY_SUBTRACT	KEY_KPMINUS
-#define WZ_KEY_DECIMAL	KEY_KPDOT
-#define WZ_KEY_DIVIDE	KEY_KPSLASH
+#define WZ_KEY_NUMPAD0	XK_0
+#define WZ_KEY_NUMPAD1	XK_1
+#define WZ_KEY_NUMPAD2	XK_2
+#define WZ_KEY_NUMPAD3	XK_3
+#define WZ_KEY_NUMPAD4	XK_4
+#define WZ_KEY_NUMPAD5	XK_5
+#define WZ_KEY_NUMPAD6	XK_6
+#define WZ_KEY_NUMPAD7	XK_7
+#define WZ_KEY_NUMPAD8	XK_8
+#define WZ_KEY_NUMPAD9	XK_9
+#define WZ_KEY_MULTIPLY	XK_KP_Multiply
+#define WZ_KEY_ADD		XK_KP_Add
+#define WZ_KEY_SUBTRACT	XK_KP_Subtract
+#define WZ_KEY_DECIMAL	XK_KP_Decimal
+#define WZ_KEY_DIVIDE	XK_KP_Divide
 #endif
 
 //専用関数（クロスプラットフォームではない）

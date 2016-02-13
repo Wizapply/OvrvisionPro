@@ -38,7 +38,7 @@ OVR::OvrvisionTracking* g_pOvrTrack;
 wzTexture g_screen_texture;
 int g_camWidth;
 int g_camHeight;
-OVR::Camqt g_processMode = OVR::Camqt::OV_CAMQT_DMS;
+OVR::Camqt g_processMode = OVR::OV_CAMQT_DMS;
 
 wzVector3  g_hmdGap;
 
@@ -47,7 +47,6 @@ bool g_useOvrvisionTracking = false;
 
 /* -- Function prototype ------------------------------------------------- */
 
-void UpdateFunc(void);	//!<Func
 
 /* -- Functions ------------------------------------------------------------- */
 
@@ -85,7 +84,7 @@ int Initialize()
 	//Create Ovrvision object
 	g_pOvrvision = new OVR::OvrvisionPro();
 	if (g_pOvrvision->Open(locationID, cameraMode) == 0) {	//Open 960x950@60 default
-		printf("Ovrvision Pro Open Error!\nPlease check whether OvrvisionPro is connected.");
+		printf("Ovrvision Pro Open Error!\nPlease check whether OvrvisionPro is connected.\n");
 	}
 
 	//g_pOvrvision->SetCameraExposurePerSec(60.0f);
@@ -141,14 +140,14 @@ void DrawLoop(void)
 	wzSetDepthTest(TRUE);		//Depth off
 	wzSetCullFace(WZ_CLF_NONE);	//Culling off
 	wzVector2 half_pos = { APPSCREEN_WIDTH / 2 / 2, APPSCREEN_HEIGHT / 2 };
-    
+
 	/////// Operation ///////
 	if (wzGetKeyStateTrigger(WZ_KEY_P))
 	{
-		if (g_processMode == OVR::Camqt::OV_CAMQT_DMS)
-			g_processMode = OVR::Camqt::OV_CAMQT_DMSRMP;
+		if (g_processMode == OVR::OV_CAMQT_DMS)
+			g_processMode = OVR::OV_CAMQT_DMSRMP;
 		else
-			g_processMode = OVR::Camqt::OV_CAMQT_DMS;
+			g_processMode = OVR::OV_CAMQT_DMS;
 	}
 
 	if (wzGetKeyStateTrigger(WZ_KEY_O))
@@ -171,7 +170,7 @@ void DrawLoop(void)
 
 		//AR DETECT
 		if (g_useOvrvisionAR) {
-			g_processMode = OVR::Camqt::OV_CAMQT_DMSRMP;
+			g_processMode = OVR::OV_CAMQT_DMSRMP;
 			g_pOvrAR->SetImageBGRA(p);	//left
 			g_pOvrAR->Render();
 		}
@@ -267,7 +266,5 @@ void DrawLoop(void)
 
 	wzPrintf(20, 1000, "[I]Key : HandTracking, [O]Key : AR mode [P]Key : Processing Mode");
 }
-
-void OculusEndFrame(){}
 
 //EOF

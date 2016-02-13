@@ -213,7 +213,7 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 #elif defined(MACOSX)
 		NSLog(@"This OvrvisionSDK is the GPU necessity which is supporting OpenCL1.2 or more.");
 #elif defined(LINUX)
-
+		printf("This OvrvisionSDK is the GPU necessity which is supporting OpenCL1.2 or more.\n");
 #endif
 		return 0;
 	}
