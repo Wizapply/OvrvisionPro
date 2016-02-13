@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 		if (0 == v4l.GetBayer16Image(image.data))
 		{
 			cuda.Demosaic(image, left, right);
-			imshow("Bayer", image);
+			//imshow("Bayer", image);
 			imshow("Left", left);
 			imshow("Right", right);
 		}
@@ -51,4 +51,4 @@ Capabilities    : 84000001h
 V4L2_CAP_VIDEO_CAPTURE (Video Capture)
 V4L2_CAP_STREAMING (Streaming I/O method)
 */
-\
+
