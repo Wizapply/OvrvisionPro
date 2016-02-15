@@ -195,10 +195,20 @@ It is completion when a red marker appears in the finger.
 指に赤いマーカーが表示されたら完了です。
 */
 
-/*! @page page4 Use in VisualStudio & Xcode
+/*! @page page4 Use in VisualStudio
 @image html into_vs1.jpg
-Explain the usage in the case of using OvrvisionPro in Unity5. <br />
-Unity5でOvrvisionProを使用する場合の使い方を説明します。
+Explain the usage in the case of using OvrvisionPro in VisualStudio.<br />
+VisualStudioでOvrvisionProを使用する場合の使い方を説明します。<br />
+@image html into_vs2.jpg
+First, in order to compile Program for Oculus Rift, please install the DirectX SDK. <br />
+Download: <a href="https://www.microsoft.com/en-us/download/details.aspx?id=68120" target="_new">https://www.microsoft.com/en-us/download/details.aspx?id=6812</a><br />
+まずは、Oculus Rift用プログラムをコンパイルするために「DirectX SDK」をインストールします。<br />
+ここからダウンロード：<a href="https://www.microsoft.com/en-us/download/details.aspx?id=68120" target="_new">https://www.microsoft.com/en-us/download/details.aspx?id=6812</a><br />
+@image html into_vs3.jpg
+Open the solution of Examples folder -> vs2015 or vs2013 by VisualStudio.<br />
+And it will be completion, if it builds and finishes normally.<br />
+Examplesフォルダ→vs2015又はvs2013のソリューションをVisualStudioで開きます。<br />
+そしてビルドを行い、正常に終われば完了です。<br />
 */
 
 /*! @page page5 Use in Unity5
@@ -233,8 +243,20 @@ How to remove when dust has adhered to the image sensor.<br />
 
 /*! @page page7 Release Notes
 @tableofcontents
+@section sdk9 Ovrvision SDK v1.6
+Date : 15/Feb/2016<br />
+<b>Notes</b>
+- Linux OS beta support (Ubuntu x86_64 only)
+- Arranged exsample projects. 
+- The bug displayed not to support although GPU is stacked was fixed.
+
+<b>Unimplementeds and issue</b>
+- Unreal Engine 4
+- A defect of a document.
+
+@tableofcontents
 @section sdk8 Ovrvision SDK v1.5
-Date : 2/Feb/2015<br />
+Date : 2/Feb/2016<br />
 <b>Notes</b>
 - Fixed the bug of the shader read error. 
 - Fixed the bug which is not drawn by OpenGL of Unity.
@@ -247,7 +269,7 @@ Date : 2/Feb/2015<br />
 - A defect of a document.
 
 @section sdk7 Ovrvision SDK v1.4
-Date : 16/Jan/2015<br />
+Date : 16/Jan/2016<br />
 <b>Notes</b>
 - OvrvisionPro new firmware was released.
 - Dissolve the memory leak of OpenCL. 
@@ -262,7 +284,7 @@ Date : 16/Jan/2015<br />
 - A defect of a document.
 
 @section sdk6 Ovrvision SDK v1.31
-Date : 08/Jan/2015<br />
+Date : 08/Jan/2016<br />
 <b>Notes</b>
 - Fixed bugs.
 - Improved accuracy of the hand tracking system. 
