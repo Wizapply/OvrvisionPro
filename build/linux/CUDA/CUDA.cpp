@@ -1,5 +1,24 @@
 // OvrvisionProDLL.cpp : Defines the exported functions for the DLL application.
 //
+//
+//MIT License
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//THE SOFTWAR
+//
+// Oculus Rift : TM & Copyright Oculus VR, Inc. All Rights Reserved
+// Unity : TM & Copyright Unity Technologies. All Rights Reserved
+
+// The following ifdef block is the standard way of creating macros which make exporting 
+// from a DLL simpler. All files within this DLL are compiled with the OVRVISIONPRODLL_EXPORTS
+// symbol defined on the command line. This symbol should not be defined on any project
+// that uses this DLL. This way any other project whose source files include this file see 
+// OVRVISIONPRODLL_API functions as being imported from a DLL, whereas this DLL sees symbols
+// defined with this macro as being exported.
 
 #include "OvrvisionProCUDA.h"
 
@@ -132,6 +151,12 @@ namespace OVR
 		bayerGB2BGR(_src, _l, _r);
 		_l.download(left);
 		_r.download(right);
+	}
+
+	void OvrvisionProCUDA::Demosaic(const Mat src)
+	{
+		_src.upload(src);
+		bayerGB2BGR(_src, _l, _r);
 	}
 
 	void OvrvisionProCUDA::Demosaic(const Mat src, GpuMat &left, GpuMat &right)

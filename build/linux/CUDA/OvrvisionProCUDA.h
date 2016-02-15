@@ -69,7 +69,6 @@ using namespace cv::cuda;
 //#include "ovrvision_setting.h"
 
 
-
 namespace OVR
 {
 	enum SHARING_MODE {
@@ -131,7 +130,9 @@ namespace OVR
 
 		// Demosaicing
 		void Demosaic(const Mat src, Mat &left, Mat &right);
+		void Demosaic(const Mat src);
 		void Demosaic(const Mat src, GpuMat &left, GpuMat &right);
+
 		// Demosaic and Remap
 		void DemosaicRemap(const Mat src, Mat &left, Mat &right);
 		void DemosaicRemap(const Mat src, GpuMat &left, GpuMat &right);

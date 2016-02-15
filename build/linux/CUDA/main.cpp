@@ -24,10 +24,11 @@ int main(int argc, char *argv[])
 	{
 		if (0 == v4l.GetBayer16Image(image.data))
 		{
-			cuda.Demosaic(image, left, right);
-			//imshow("Bayer", image);
-			imshow("Left", left);
-			imshow("Right", right);
+			//cuda.Demosaic(image, left, right);
+			cuda.Demosaic(image);
+			imshow("Bayer", image);
+			//imshow("Left", left);
+			//imshow("Right", right);
 		}
 		switch (waitKey(10))
 		{case 'q':
