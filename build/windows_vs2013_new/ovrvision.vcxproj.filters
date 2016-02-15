@@ -61,9 +61,6 @@
     <ClCompile Include="..\..\src\lib_src\ovrvision_ds.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib_src\ovrvision_linux.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\lib_src\ovrvision_pro.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -143,9 +140,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\lib_src\OvrvisionProCL.h">
       <Filter>ソース ファイル\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\lib_src\ovrvision_linux.h">
-      <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\ovrvision_pro.h">
       <Filter>ソース ファイル</Filter>

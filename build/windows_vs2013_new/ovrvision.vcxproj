@@ -326,7 +326,6 @@
     <ClCompile Include="..\..\src\lib_src\ovrvision_csharp.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_csharp_unity.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_ds.cpp" />
-    <ClCompile Include="..\..\src\lib_src\ovrvision_linux.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_pro.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_setting.cpp" />
     <ClCompile Include="..\..\src\lib_src\ovrvision_tracking.cpp" />
@@ -355,7 +354,6 @@
     <ClInclude Include="..\..\src\lib_src\ovrvision_calibration.h" />
     <ClInclude Include="..\..\src\lib_src\ovrvision_ds.h" />
     <ClInclude Include="..\..\src\lib_src\ovrvision_handimage.h" />
-    <ClInclude Include="..\..\src\lib_src\ovrvision_linux.h" />
     <ClInclude Include="..\..\src\lib_src\ovrvision_setting.h" />
     <ClInclude Include="..\..\src\lib_src\ovrvision_v4l.h" />
   </ItemGroup>
