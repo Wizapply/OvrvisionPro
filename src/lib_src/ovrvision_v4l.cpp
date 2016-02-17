@@ -219,6 +219,86 @@ namespace OVR
 		return xioctl(_fd, VIDIOC_QBUF, &buf);
 	}
 
+	int OvrvisionVideo4Linux::GetBayer16Image(unsigned char* pimage, size_t step, bool nonblocking)
+	{
+		struct v4l2_buffer buf;
+
+		for (bool wait = true; wait; )
+		{
+			fd_set fds;
+			struct timeval tv;
+			int r;
+
+			FD_ZERO (&fds);
+			FD_SET (_fd, &fds);
+
+			/* Timeout. */
+			tv.tv_sec = 1;
+			tv.tv_usec = 0;
+
+			r = select(_fd + 1, &fds, NULL, NULL, &tv);
+			if (r > 0)	// timeout
+				wait = false;
+		}
+#ifdef USE_MMAP
+		CLEAR(buf);
+		buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		buf.memory = V4L2_MEMORY_MMAP;
+		if (-1 == xioctl(_fd, VIDIOC_DQBUF, &buf))
+		{
+			switch(errno)
+			{
+			case EAGAIN:
+				return 0;
+			case EIO:
+				/* Could ignore EIO, see spec. */
+				/* fall through */
+			default:
+				//errno_exit("VIDIOC_DQBUF");
+				return -1;
+			}
+		}
+		// Copy data from _buffer[buf.index] to pimage with crop
+		if (_cropHorizontal)
+		{
+			if (_cropVertical)
+			{
+
+			}
+			else
+			{
+
+			}
+		}
+		else if (_cropVertical)
+		{
+			int offset = (_format.fmt.pix.height - _height) / 2;
+			if (0 < offset)
+			{
+				unsigned char *addr = (unsigned char *)(_buffers[buf.index].start) + _format.fmt.pix.bytesperline * offset;
+				memcpy(pimage, addr, _format.fmt.pix.bytesperline * _height);
+			}
+			else
+			{
+				memcpy(pimage + _format.fmt.pix.bytesperline * offset, _buffers[buf.index].start, buf.bytesused);
+			}
+		}
+		else
+		{
+			unsigned char *addr = _buffers[buf.index].start;
+			for (int y = 0; y < _format.fmt.pix.height; y++)
+			{
+				memcpy(pimage, addr, _format.fmt.pix.bytesperline);
+				pimage += step;
+				addr += _format.fmt.pix.bytesperline;
+			}
+		}
+#else	// USE_USERPTR
+#endif // USE_MMAP
+
+		return xioctl(_fd, VIDIOC_QBUF, &buf);
+	}
+
 	void OvrvisionVideo4Linux::EnumFormats()
 	{
 		int i;

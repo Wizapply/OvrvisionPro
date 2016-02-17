@@ -92,6 +92,7 @@ public:
 	//Get pixel data
 	//In non blocking, when data cannot be acquired, RESULT_FAILED returns. 
 	int GetBayer16Image(unsigned char* pimage, bool nonblocking = false);
+	int GetBayer16Image(unsigned char* pimage, size_t step, bool nonblocking = false);
 
 	//Set camera setting
 	int SetCameraSetting(CamSetting proc, int value, bool automode);

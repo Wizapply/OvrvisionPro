@@ -22,13 +22,13 @@ int main(int argc, char *argv[])
 	v4l.EnumFormats();
 	v4l.StartTransfer();
 #ifdef JETSON_TK1
-	printf("%d %d %d %d\n", cuda._srcMat.cols, cuda._srcMat.rows, cuda._srcMat.elemSize1(), cuda._srcMat.step1());
+	printf("%d %d %d %d\n", cuda._srcMat.cols, cuda._srcMat.rows, cuda._srcMat.step1(), cuda._srcMat.step);
 #endif
 	for (bool loop = true; loop;)
 	{
 #ifdef JETSON_TK1
 		unsigned char *buffer = cuda.GetBufferPtr();
-		if (0 == v4l.GetBayer16Image(buffer))
+		if (0 == v4l.GetBayer16Image(buffer, cuda._srcMat.step))
 		{
 			cuda.Demosaic();
 			imshow("Bayer", cuda._srcMat);
