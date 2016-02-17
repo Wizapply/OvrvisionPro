@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <opencv2/opencv.hpp>
 #include "ovrvision_v4l.h"
 #include "OvrvisionProCUDA.h"
@@ -20,6 +21,9 @@ int main(int argc, char *argv[])
 	v4l.QueryCapability();
 	v4l.EnumFormats();
 	v4l.StartTransfer();
+#ifdef JETSON_TK1
+	printf("%d %d %d %d\n", cuda._srcMat.cols, cuda._srcMat.rows, cuda._srcMat.elemSize1(), cuda._srcMat.step1());
+#endif
 	for (bool loop = true; loop;)
 	{
 #ifdef JETSON_TK1
@@ -29,7 +33,7 @@ int main(int argc, char *argv[])
 			cuda.Demosaic();
 			imshow("Bayer", cuda._srcMat);
 			imshow("Left", cuda._left);
-			//imshow("Right", cuda._right);
+			imshow("Right", cuda._right);
 		}
 #else
 		if (0 == v4l.GetBayer16Image(image.data))
