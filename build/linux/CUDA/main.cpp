@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
 		{
 			cuda.Demosaic();
 			imshow("Bayer", cuda._srcMat);
-			//imshow("Left", left);
-			//imshow("Right", right);
+			imshow("Left", cuda._left);
+			//imshow("Right", cuda._right);
 		}
 #else
 		if (0 == v4l.GetBayer16Image(image.data))

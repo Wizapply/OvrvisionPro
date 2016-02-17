@@ -163,6 +163,7 @@ namespace OVR
 	public:
 		Size _size;
 		Mat	_srcMat;
+		Mat	_left, _right;
 
 	private:
 		//OvrvisionSetting _settings;

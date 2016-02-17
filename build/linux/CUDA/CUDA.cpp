@@ -41,6 +41,8 @@ namespace OVR
 		_src = _srcCuda.createGpuMatHeader();
 		_l = _lCuda.createGpuMatHeader();
 		_r = _rCuda.createGpuMatHeader();
+		_left = _lCuda.createMatHeader();
+		_right = _rCuda.createMatHeader();
 		_L.create(_size, CV_8UC3);
 		_R.create(_size, CV_8UC3);
 #else
