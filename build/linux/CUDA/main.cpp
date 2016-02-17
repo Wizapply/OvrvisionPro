@@ -22,6 +22,16 @@ int main(int argc, char *argv[])
 	v4l.StartTransfer();
 	for (bool loop = true; loop;)
 	{
+#ifdef JETSON_TK1
+		unsigned char *buffer = cuda.GetBufferPtr();
+		if (0 == v4l.GetBayer16Image(buffer))
+		{
+			cuda.Demosaic();
+			//imshow("Bayer", image);
+			//imshow("Left", left);
+			//imshow("Right", right);
+		}
+#else
 		if (0 == v4l.GetBayer16Image(image.data))
 		{
 			//cuda.Demosaic(image, left, right);
@@ -30,6 +40,7 @@ int main(int argc, char *argv[])
 			//imshow("Left", left);
 			//imshow("Right", right);
 		}
+#endif
 		switch (waitKey(10))
 		{case 'q':
 			loop = false;

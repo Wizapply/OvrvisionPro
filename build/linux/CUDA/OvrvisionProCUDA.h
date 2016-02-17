@@ -52,6 +52,12 @@ typedef void *TEXTURE;
 typedef unsigned int TEXTURE;
 #endif
 
+#ifdef JETSON_TK1
+#	ifndef OPENCV_VERSION_2_4
+#	define OPENCV_VERSION_2_4
+#	endif
+#endif
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #ifdef OPENCV_VERSION_2_4
@@ -146,16 +152,34 @@ namespace OVR
 		@return size */
 		cv::Size GetScaledSize();
 
+		/*! @brief Check ZEROCOPY capability */
+		static bool CanZeroCopy();
+
+#ifdef JETSON_TK1
+		unsigned char *GetBufferPtr();
+		void Demosaic();
+#endif
+
 	public:
 		Size _size;
-		Mat *_mapX[2], *_mapY[2]; // camera parameter
 
 	private:
 		//OvrvisionSetting _settings;
-
+		bool canZeroCopy;
+#ifdef JETSON_TK1
+		Mat		_srcMat;
+		CudaMem _srcCuda;
+		CudaMem _lCuda, _rCuda;
+		GpuMat _src;
+		GpuMat	_l, _r;
+		GpuMat	_R, _L;
+		GpuMat	_mx[2], _my[2];
+#else
 		GpuMat _src;
 		GpuMat _l, _r, _L, _R;	// remap image
 		GpuMat _mx[2], _my[2]; // map for remap in GPU
+		Mat *_mapX[2], *_mapY[2]; // camera parameter
+#endif
 		bool	_remapAvailable;
 	};
 
