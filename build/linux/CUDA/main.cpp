@@ -6,8 +6,8 @@
 using namespace OVR;
 using namespace cv;
 
-#define WIDTH 640
-#define HEIGHT	480
+#define WIDTH 320	//640
+#define HEIGHT	240	//480
 
 int main(int argc, char *argv[])
 {
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	v4l.EnumFormats();
 	v4l.StartTransfer();
 #ifdef JETSON_TK1
-	printf("%d %d %d %d\n", cuda._srcMat.cols, cuda._srcMat.rows, cuda._srcMat.step1(), cuda._srcMat.step);
+	printf("%d %d %d\n", cuda._srcMat.cols, cuda._srcMat.rows, cuda._srcMat.step1());
 #endif
 	for (bool loop = true; loop;)
 	{
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 		if (0 == v4l.GetBayer16Image(buffer, cuda._srcMat.step))
 		{
 			cuda.Demosaic();
-			imshow("Bayer", cuda._srcMat);
+			//imshow("Bayer", cuda._srcMat);
 			imshow("Left", cuda._left);
 			imshow("Right", cuda._right);
 		}

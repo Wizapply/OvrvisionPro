@@ -285,7 +285,7 @@ namespace OVR
 		}
 		else
 		{
-			unsigned char *addr = _buffers[buf.index].start;
+			unsigned char *addr = (unsigned char *)(_buffers[buf.index].start);
 			for (int y = 0; y < _format.fmt.pix.height; y++)
 			{
 				memcpy(pimage, addr, _format.fmt.pix.bytesperline);
