@@ -33,16 +33,16 @@ CPP_DEPS += \
 %.o: ../%.cu
 	@echo 'Building file: $<'
 	@echo 'Invoking: NVCC Compiler'
-	nvcc -DLINUX -DOPENCV_VERSION_2_4 -D_OVRVISION_EXPORTS -I/home/mao/OvrvisionPro/src/lib_src -I"/home/mao/OvrvisionPro/build/linux/CUDA" -O3  -odir "" -M -o "$(@:%.o=%.d)" "$<"
-	nvcc --compile -DLINUX -DOPENCV_VERSION_2_4 -D_OVRVISION_EXPORTS -I/home/mao/OvrvisionPro/src/lib_src -I"/home/mao/OvrvisionPro/build/linux/CUDA" -O3  -x cu -o  "$@" "$<"
+	nvcc -DLINUX -DOPENCV_VERSION_2_4 -DJETSON_TK1 -D_OVRVISION_EXPORTS -I/home/mao/OvrvisionPro/src/lib_src -I"/home/mao/OvrvisionPro/build/linux/CUDA" -O3  -odir "" -M -o "$(@:%.o=%.d)" "$<"
+	nvcc --compile -DLINUX -DOPENCV_VERSION_2_4 -DJETSON_TK1 -D_OVRVISION_EXPORTS -I/home/mao/OvrvisionPro/src/lib_src -I"/home/mao/OvrvisionPro/build/linux/CUDA" -O3  -x cu -o  "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
 %.o: ../%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: NVCC Compiler'
-	nvcc -DLINUX -DOPENCV_VERSION_2_4 -D_OVRVISION_EXPORTS -I/home/mao/OvrvisionPro/src/lib_src -I"/home/mao/OvrvisionPro/build/linux/CUDA" -O3  -odir "" -M -o "$(@:%.o=%.d)" "$<"
-	nvcc -DLINUX -DOPENCV_VERSION_2_4 -D_OVRVISION_EXPORTS -I/home/mao/OvrvisionPro/src/lib_src -I"/home/mao/OvrvisionPro/build/linux/CUDA" -O3 --compile  -x c++ -o  "$@" "$<"
+	nvcc -DLINUX -DOPENCV_VERSION_2_4 -DJETSON_TK1 -D_OVRVISION_EXPORTS -I/home/mao/OvrvisionPro/src/lib_src -I"/home/mao/OvrvisionPro/build/linux/CUDA" -O3  -odir "" -M -o "$(@:%.o=%.d)" "$<"
+	nvcc -DLINUX -DOPENCV_VERSION_2_4 -DJETSON_TK1 -D_OVRVISION_EXPORTS -I/home/mao/OvrvisionPro/src/lib_src -I"/home/mao/OvrvisionPro/build/linux/CUDA" -O3 --compile  -x c++ -o  "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

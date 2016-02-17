@@ -162,12 +162,12 @@ namespace OVR
 
 	public:
 		Size _size;
+		Mat	_srcMat;
 
 	private:
 		//OvrvisionSetting _settings;
 		bool canZeroCopy;
 #ifdef JETSON_TK1
-		Mat		_srcMat;
 		CudaMem _srcCuda;
 		CudaMem _lCuda, _rCuda;
 		GpuMat _src;

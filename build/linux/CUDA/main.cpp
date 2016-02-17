@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 		if (0 == v4l.GetBayer16Image(buffer))
 		{
 			cuda.Demosaic();
-			//imshow("Bayer", image);
+			imshow("Bayer", cuda._srcMat);
 			//imshow("Left", left);
 			//imshow("Right", right);
 		}

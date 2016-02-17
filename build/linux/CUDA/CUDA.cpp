@@ -34,9 +34,9 @@ namespace OVR
 		// TODO: check GPU memory size
 #ifdef JETSON_TK1
 		canZeroCopy = CudaMem::canMapHostMemory();
-		_srcCuda.create(_size, CV_16UC1, ALLOC_ZEROCOPY); // share with CPU
-		_lCuda.create(_size, CV_8UC3, ALLOC_ZEROCOPY); // share with CPU
-		_rCuda.create(_size, CV_8UC3, ALLOC_ZEROCOPY); // share with CPU
+		_srcCuda.create(_size, CV_16UC1, CudaMem::ALLOC_ZEROCOPY); // share with CPU
+		_lCuda.create(_size, CV_8UC3, CudaMem::ALLOC_ZEROCOPY); // share with CPU
+		_rCuda.create(_size, CV_8UC3, CudaMem::ALLOC_ZEROCOPY); // share with CPU
 		_srcMat = _srcCuda.createMatHeader();
 		_src = _srcCuda.createGpuMatHeader();
 		_l = _lCuda.createGpuMatHeader();
@@ -67,10 +67,10 @@ namespace OVR
 		{
 			//intrinsic.release();
 			//distortion.release();
-			_mapX[0]->release();
-			_mapY[0]->release();
-			_mapX[1]->release();
-			_mapY[1]->release();
+			//_mapX[0]->release();
+			//_mapY[0]->release();
+			//_mapX[1]->release();
+			//_mapY[1]->release();
 			//_mx[0].release();
 			//_my[0].release();
 			//_mx[1].release();
