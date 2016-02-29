@@ -47,7 +47,7 @@
 #include "eeprom_data.h"		// EEPROM User data
 #include "cyfxgpif2config.h"	// GPIF program design
 
-#include "gpio_test_pcd8544.h"
+//#include "gpio_test_pcd8544.h"
 
 ////////////////////// Global Variables //////////////////////
 
