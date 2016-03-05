@@ -174,31 +174,32 @@ void OvrvisionAR::Render()
 	cv::Mat	pGrayImg;
 	std::vector<aruco::Marker> markers;
 
-	if(m_pImageSrc == NULL && m_pImageOpenCVMat == NULL)
+	if (m_pImageSrc == NULL && m_pImageOpenCVMat == NULL)
 		return;
 
 	//create image
 	pGrayImg = cv::Mat(cv::Size(m_width, m_height), CV_MAKETYPE(CV_8U, 1));
-	if(m_pImageSrc != NULL) {
+	if (m_pImageSrc != NULL) {
 		pCamBGRAImg = cv::Mat(cv::Size(m_width, m_height), CV_MAKETYPE(CV_8U, OV_RGB_DATASIZE), m_pImageSrc);
 		//convert color
 		cv::cvtColor(pCamBGRAImg, pGrayImg, CV_BGRA2GRAY);
-	} else {
+	}
+	else {
 		cv::cvtColor((*m_pImageOpenCVMat), pGrayImg, CV_BGRA2GRAY);
 	}
-	
+
 	//detect
 	m_detector->setThresholdParams(m_threshold, 0.0);
 	m_detector->detect(pGrayImg, markers, m_cameraParam->CameraMatrix, cv::Mat(), m_markerSize_Meter, true);
 
 	//edit data
 	m_markerDataSize = (int)markers.size();
-	if(m_pMarkerData)
+	if (m_pMarkerData)
 		delete[] m_pMarkerData;
 	m_pMarkerData = new OVR::OvMarkerData[m_markerDataSize];
 
 	//insert
-	for(int i=0; i < m_markerDataSize; i++) {
+	for (int i = 0; i < m_markerDataSize; i++) {
 		OvVector4D aj = { 1.0f, 0.0f, 0.0f, 0.0f };
 		OvMarkerData* dt = &m_pMarkerData[i];
 		float rotation_matrix[16];
@@ -207,14 +208,14 @@ void OvrvisionAR::Render()
 		dt->centerPtOfImage.x = markers[i].getCenter().x;
 		dt->centerPtOfImage.y = markers[i].getCenter().y;
 
-		dt->translate.x = markers[i].Tvec.at<float>(0,0);	//X
-		dt->translate.y = -markers[i].Tvec.at<float>(1,0);	//Y
-		dt->translate.z = markers[i].Tvec.at<float>(2,0);	//Z
+		dt->translate.x = markers[i].Tvec.at<float>(0, 0);	//X
+		dt->translate.y = -markers[i].Tvec.at<float>(1, 0);	//Y
+		dt->translate.z = markers[i].Tvec.at<float>(2, 0);	//Z
 
-		cv::Mat Rot(3,3,CV_32FC1);
-		markers[i].Rvec.at<float>(0,0) = -markers[i].Rvec.at<float>(0,0);
+		cv::Mat Rot(3, 3, CV_32FC1);
+		markers[i].Rvec.at<float>(0, 0) = -markers[i].Rvec.at<float>(0, 0);
 		//markers[i].Rvec.at<float>(1,0) = markers[i].Rvec.at<float>(1,0); !!!!self!!!!
-		markers[i].Rvec.at<float>(2,0) = -markers[i].Rvec.at<float>(2,0);
+		markers[i].Rvec.at<float>(2, 0) = -markers[i].Rvec.at<float>(2, 0);
 		cv::Rodrigues(markers[i].Rvec, Rot);
 
 		rotation_matrix[0] = Rot.at<float>(0);

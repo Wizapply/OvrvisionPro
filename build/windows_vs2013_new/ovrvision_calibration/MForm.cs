@@ -17,6 +17,9 @@ namespace ovrvision_calibration
 		Thread UpdateThread = null;
         bool ThreadEnd = false;
 
+        //SettingForm
+        SettingForm settingForm;
+
         const int CalibrationImageNum = 25;
 
 		public MFrom()
@@ -26,6 +29,7 @@ namespace ovrvision_calibration
 
 			//Create Ovrvision Class
 			Ovrvision = new COvrvision();
+            settingForm = new SettingForm(Ovrvision);
 		}
 
 		private void runbutton_Click(object sender, EventArgs e)
@@ -44,6 +48,7 @@ namespace ovrvision_calibration
 					cameraPicRight.Image = Ovrvision.imageDataRight;
 
                     cabliButton.Enabled = true;
+                    buttonSetting.Enabled = true;
 				}
 				else
 				{	//false
@@ -68,6 +73,7 @@ namespace ovrvision_calibration
 					cameraPicLeft.Image = null;
 
                     cabliButton.Enabled = false;
+                    buttonSetting.Enabled = false;
 				}
 			}
 		}
@@ -88,6 +94,7 @@ namespace ovrvision_calibration
 					cameraPicLeft.Image = null;
 
                     cabliButton.Enabled = false;
+                    buttonSetting.Enabled = false;
 				}
 			}
 
@@ -209,5 +216,14 @@ namespace ovrvision_calibration
 		{
 
 		}
+
+        private void buttonSetting_Click(object sender, EventArgs e)
+        {
+            if (!settingForm.Visible)
+            {
+                settingForm.ApplyItem();
+                settingForm.Show();
+            }
+        }
 	}
 }

@@ -37,6 +37,7 @@
             this.chessPicture = new System.Windows.Forms.PictureBox();
             this.cameraPicRight = new System.Windows.Forms.PictureBox();
             this.cameraPicLeft = new System.Windows.Forms.PictureBox();
+            this.buttonSetting = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.chessPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cameraPicRight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cameraPicLeft)).BeginInit();
@@ -144,12 +145,24 @@
             this.cameraPicLeft.TabStop = false;
             this.cameraPicLeft.Paint += new System.Windows.Forms.PaintEventHandler(this.cameraPicLeft_Paint);
             // 
+            // buttonSetting
+            // 
+            this.buttonSetting.Enabled = false;
+            this.buttonSetting.Location = new System.Drawing.Point(766, 12);
+            this.buttonSetting.Name = "buttonSetting";
+            this.buttonSetting.Size = new System.Drawing.Size(104, 29);
+            this.buttonSetting.TabIndex = 10;
+            this.buttonSetting.Text = "Camera Setting";
+            this.buttonSetting.UseVisualStyleBackColor = true;
+            this.buttonSetting.Click += new System.EventHandler(this.buttonSetting_Click);
+            // 
             // MFrom
             // 
             this.AcceptButton = this.runbutton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1209, 662);
+            this.Controls.Add(this.buttonSetting);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
@@ -184,6 +197,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button buttonSetting;
 	}
 }
 

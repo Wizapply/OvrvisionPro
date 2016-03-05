@@ -612,7 +612,7 @@ namespace OVR
 					id,
 					0
 					);
-				SAMPLE_CHECK_ERRORS(err);
+				//SAMPLE_CHECK_ERRORS(err);
 				for (cl_uint j = 0; j < num_of_devices; j++)
 				{
 					devices.push_back(id[j]);
@@ -773,7 +773,7 @@ namespace OVR
 					clGetDeviceInfo(id[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(mem_size), &mem_size, NULL);
 					printf("\tMAX_MEM_ALLOC_SIZE: %ld MBytes\n", mem_size / (1024 * 1024));
 					// TODO: Determine which is dominant
-					if (512 <= mem_size / (1024 * 1024))
+					if (256 <= mem_size / (1024 * 1024))
 					{
 						memory = true;
 					}

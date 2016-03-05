@@ -201,7 +201,7 @@ public class COvrvisionUnity
         return camStatus;
     }
 
-    //Update right camera data
+    //Update camera data
     public void UpdateImage(System.IntPtr leftPtr, System.IntPtr rightPtr)
     {
         if (!camStatus)
@@ -218,6 +218,12 @@ public class COvrvisionUnity
 		//ovGetCamImageForUnityNative(leftPtr, rightPtr);
 		GL.IssuePluginEvent(ovGetCamImageForUnityNativeGLCall(leftPtr, rightPtr), 1);
     }
+
+	//For get pixel
+	public void GetImagePixelColor(System.IntPtr leftPtr, int eye)
+    {
+		ovGetCamImageBGRA(leftPtr, eye);
+	}
 
     //Close the Ovrvision
     public bool Close()

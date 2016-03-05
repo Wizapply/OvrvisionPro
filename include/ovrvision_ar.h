@@ -167,7 +167,8 @@ public:
 		@param pImageMat OpenCV Mat pointer. */
 	void SetImageOpenCVImage(ovMat* pImageMat);
 	/*!	@brief Run marker detection processing. */
-	void Render();	
+	void Render();
+
 	/*!	@brief Get the data size of AR markers.
 		@return size */
 	int				   GetMarkerDataSize();

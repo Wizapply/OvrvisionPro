@@ -22,6 +22,9 @@ public class Ovrvision : MonoBehaviour
 	private Texture2D CameraTexRight = null;
 	private Vector3 CameraRightGap;
 
+	private System.IntPtr CameraTexLeftPtr = System.IntPtr.Zero;
+	private System.IntPtr CameraTexRightPtr = System.IntPtr.Zero;
+
 	//public propaty
 	public int cameraMode = COvrvisionUnity.OV_CAMVR_FULL;
 	public bool useOvrvisionAR = false;
@@ -105,6 +108,9 @@ public class Ovrvision : MonoBehaviour
 
 		CameraTexLeft.Apply();
 		CameraTexRight.Apply();
+
+		CameraTexLeftPtr = CameraTexLeft.GetNativeTexturePtr();
+		CameraTexRightPtr = CameraTexRight.GetNativeTexturePtr();
 
 		//Mesh
 		Mesh m = CreateCameraPlaneMesh();
@@ -204,7 +210,7 @@ public class Ovrvision : MonoBehaviour
 		OvrPro.useOvrvisionAR = useOvrvisionAR;
 		OvrPro.useOvrvisionTrack = useOvrvisionTrack;
 
-		OvrPro.UpdateImage(CameraTexLeft.GetNativeTexturePtr(), CameraTexRight.GetNativeTexturePtr());
+		OvrPro.UpdateImage(CameraTexLeftPtr, CameraTexRightPtr);
 
 		if (useOvrvisionAR) OvrvisionARRender();
 		if (useOvrvisionTrack) OvrvisionTrackRender();
@@ -380,7 +386,7 @@ public class Ovrvision : MonoBehaviour
 		}
 	}
 
-	// get propaty
+	// get property
 	public Texture2D GetCameraTextureLeft()
 	{
 		return CameraTexLeft;
@@ -390,4 +396,5 @@ public class Ovrvision : MonoBehaviour
 	{
 		return CameraTexRight;
 	}
+
 }

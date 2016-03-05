@@ -13,6 +13,9 @@ public class CamImageCube : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		this.GetComponent<Renderer>().material.mainTexture = ovrObj.GetCameraTextureLeft();
+		Texture2D leftimage = ovrObj.GetCameraTextureLeft();
+		this.GetComponent<Renderer>().material.mainTexture = leftimage;
+
+		//Debug.Log(leftimage.GetPixel(100, 100).ToString()); //Debug
 	}
 }
