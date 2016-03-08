@@ -151,7 +151,9 @@ The usage should confirm the following video. <br />
 <b style="font-size:22px">URL : <a href="https://www.youtube.com/watch?v=wSjqImFmxDY">https://www.youtube.com/watch?v=wSjqImFmxDY</a></b>
 
 @section armarker AR Marker make tool
-- Coming Soon
+- Aruco Marker Generator
+HIRE : <a href="http://terpconnect.umd.edu/~jwelsh12/enes100/markergen.html" target="_blank">http://terpconnect.umd.edu/~jwelsh12/enes100/markergen.html</a>
+(C) terpconnect.umd.edu
 */
 
 
