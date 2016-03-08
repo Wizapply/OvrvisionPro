@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9F04A7CE1C8E6672004E046E /* CameraSetting.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9F04A7CD1C8E6672004E046E /* CameraSetting.xib */; };
 		9F35D4401C28E98C005F48E6 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F35D42E1C28E98C005F48E6 /* AppDelegate.mm */; };
 		9F35D4411C28E98C005F48E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D42F1C28E98C005F48E6 /* Assets.xcassets */; };
 		9F35D4431C28E98C005F48E6 /* chess_size.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 9F35D4311C28E98C005F48E6 /* chess_size.bmp */; };
@@ -30,7 +31,6 @@
 		9F35D4691C28EB69005F48E6 /* ovrvision_calibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F7D1C14073500CE8782 /* ovrvision_calibration.cpp */; };
 		9F35D46A1C28EB6E005F48E6 /* ovrvision_pro.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F851C14073500CE8782 /* ovrvision_pro.cpp */; };
 		9F35D46B1C28EB72005F48E6 /* ovrvision_ds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F811C14073500CE8782 /* ovrvision_ds.cpp */; };
-		9F35D46C1C28EB74005F48E6 /* ovrvision_linux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F831C14073500CE8782 /* ovrvision_linux.cpp */; };
 		9F35D46D1C28EB76005F48E6 /* ovrvision_setting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F861C14073500CE8782 /* ovrvision_setting.cpp */; };
 		9F35D46E1C28EB79005F48E6 /* ovrvision_tracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F881C14073500CE8782 /* ovrvision_tracking.cpp */; };
 		9F35D46F1C28EB8D005F48E6 /* ar_omp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F748C011C1C090C0054DC39 /* ar_omp.cpp */; };
@@ -92,8 +92,6 @@
 		9F508F911C14073500CE8782 /* ovrvision_calibration.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F508F7E1C14073500CE8782 /* ovrvision_calibration.h */; };
 		9F508F941C14073500CE8782 /* ovrvision_ds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F811C14073500CE8782 /* ovrvision_ds.cpp */; };
 		9F508F951C14073500CE8782 /* ovrvision_ds.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F508F821C14073500CE8782 /* ovrvision_ds.h */; };
-		9F508F961C14073500CE8782 /* ovrvision_linux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F831C14073500CE8782 /* ovrvision_linux.cpp */; };
-		9F508F971C14073500CE8782 /* ovrvision_linux.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F508F841C14073500CE8782 /* ovrvision_linux.h */; };
 		9F508F981C14073500CE8782 /* ovrvision_pro.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F851C14073500CE8782 /* ovrvision_pro.cpp */; };
 		9F508F991C14073500CE8782 /* ovrvision_setting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F508F861C14073500CE8782 /* ovrvision_setting.cpp */; };
 		9F508F9A1C14073500CE8782 /* ovrvision_setting.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F508F871C14073500CE8782 /* ovrvision_setting.h */; };
@@ -182,6 +180,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9F04A7CD1C8E6672004E046E /* CameraSetting.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CameraSetting.xib; sourceTree = "<group>"; };
 		9F35D41B1C28E94B005F48E6 /* ovrvision_calibration.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ovrvision_calibration.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F35D42C1C28E98C005F48E6 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9F35D42E1C28E98C005F48E6 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
@@ -217,8 +216,6 @@
 		9F508F801C14073500CE8782 /* ovrvision_csharp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; lineEnding = 2; name = ovrvision_csharp.cpp; path = ../../../src/lib_src/ovrvision_csharp.cpp; sourceTree = "<group>"; };
 		9F508F811C14073500CE8782 /* ovrvision_ds.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; lineEnding = 2; name = ovrvision_ds.cpp; path = ../../../src/lib_src/ovrvision_ds.cpp; sourceTree = "<group>"; };
 		9F508F821C14073500CE8782 /* ovrvision_ds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 2; name = ovrvision_ds.h; path = ../../../src/lib_src/ovrvision_ds.h; sourceTree = "<group>"; };
-		9F508F831C14073500CE8782 /* ovrvision_linux.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; lineEnding = 2; name = ovrvision_linux.cpp; path = ../../../src/lib_src/ovrvision_linux.cpp; sourceTree = "<group>"; };
-		9F508F841C14073500CE8782 /* ovrvision_linux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 2; name = ovrvision_linux.h; path = ../../../src/lib_src/ovrvision_linux.h; sourceTree = "<group>"; };
 		9F508F851C14073500CE8782 /* ovrvision_pro.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; lineEnding = 2; name = ovrvision_pro.cpp; path = ../../../src/lib_src/ovrvision_pro.cpp; sourceTree = "<group>"; };
 		9F508F861C14073500CE8782 /* ovrvision_setting.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; lineEnding = 2; name = ovrvision_setting.cpp; path = ../../../src/lib_src/ovrvision_setting.cpp; sourceTree = "<group>"; };
 		9F508F871C14073500CE8782 /* ovrvision_setting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 2; name = ovrvision_setting.h; path = ../../../src/lib_src/ovrvision_setting.h; sourceTree = "<group>"; };
@@ -432,6 +429,7 @@
 				9F35D43A1C28E98C005F48E6 /* HowToUseDelegate.m */,
 				9F35D43C1C28E98C005F48E6 /* Info.plist */,
 				9F35D43D1C28E98C005F48E6 /* main.m */,
+				9F04A7CD1C8E6672004E046E /* CameraSetting.xib */,
 			);
 			path = ovrvision_calibration;
 			sourceTree = "<group>";
@@ -533,8 +531,6 @@
 				9F508F7E1C14073500CE8782 /* ovrvision_calibration.h */,
 				9F508F811C14073500CE8782 /* ovrvision_ds.cpp */,
 				9F508F821C14073500CE8782 /* ovrvision_ds.h */,
-				9F508F831C14073500CE8782 /* ovrvision_linux.cpp */,
-				9F508F841C14073500CE8782 /* ovrvision_linux.h */,
 				9F508F851C14073500CE8782 /* ovrvision_pro.cpp */,
 				9F508F861C14073500CE8782 /* ovrvision_setting.cpp */,
 				9F508F871C14073500CE8782 /* ovrvision_setting.h */,
@@ -653,7 +649,6 @@
 				9F748C211C1C090C0054DC39 /* boarddetector.h in Headers */,
 				9F508F9A1C14073500CE8782 /* ovrvision_setting.h in Headers */,
 				9F8768151C1BAF82007D5456 /* OpenCL_kernel.h in Headers */,
-				9F508F971C14073500CE8782 /* ovrvision_linux.h in Headers */,
 				9F748C271C1C090C0054DC39 /* cvdrawingutils.h in Headers */,
 				9F8768141C1BAF82007D5456 /* OvrvisionProCL.h in Headers */,
 				9FB69D101C12B8330085BB68 /* ovrvision_tracking.h in Headers */,
@@ -791,6 +786,7 @@
 				9F35D4431C28E98C005F48E6 /* chess_size.bmp in Resources */,
 				9F35D44E1C28E98C005F48E6 /* sample.bmp in Resources */,
 				9F35D4451C28E98C005F48E6 /* ChessSizeForm.xib in Resources */,
+				9F04A7CE1C8E6672004E046E /* CameraSetting.xib in Resources */,
 				9F35D4491C28E98C005F48E6 /* HowToUse.xib in Resources */,
 				9F35D4441C28E98C005F48E6 /* chess4x7.bmp in Resources */,
 				9F35D4481C28E98C005F48E6 /* howtouse.bmp in Resources */,
@@ -860,7 +856,6 @@
 				9F35D4721C28EB90005F48E6 /* boarddetector.cpp in Sources */,
 				9F35D4741C28EB92005F48E6 /* chromaticmask.cpp in Sources */,
 				9F35D4701C28EB8E005F48E6 /* arucofidmarkers.cpp in Sources */,
-				9F35D46C1C28EB74005F48E6 /* ovrvision_linux.cpp in Sources */,
 				9F35D46A1C28EB6E005F48E6 /* ovrvision_pro.cpp in Sources */,
 				9F35D46D1C28EB76005F48E6 /* ovrvision_setting.cpp in Sources */,
 			);
@@ -885,7 +880,6 @@
 				9F748C191C1C090C0054DC39 /* ar_omp.cpp in Sources */,
 				9F508F981C14073500CE8782 /* ovrvision_pro.cpp in Sources */,
 				9F748C291C1C090C0054DC39 /* highlyreliablemarkers.cpp in Sources */,
-				9F508F961C14073500CE8782 /* ovrvision_linux.cpp in Sources */,
 				9F508F8C1C14073500CE8782 /* ovrvision_ar_metaio.cpp in Sources */,
 				9F508F941C14073500CE8782 /* ovrvision_ds.cpp in Sources */,
 				9F748C1C1C1C090C0054DC39 /* arucofidmarkers.cpp in Sources */,
