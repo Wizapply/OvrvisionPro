@@ -29,6 +29,7 @@
  *  Files : gpio_test_pcd8544.c
  *
 ***************************************************************************/
+#if 0
 
 #include <cyu3system.h>
 #include <cyu3os.h>
@@ -245,3 +246,5 @@ void PCD8544_LogoDraw(void)
 		PCD8544_Write(LCD_D, ovrlogo[i]);
 	}
 }
+
+#endif

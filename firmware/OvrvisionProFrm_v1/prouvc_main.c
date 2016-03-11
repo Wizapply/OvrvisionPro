@@ -365,7 +365,7 @@ static CyBool_t UVCApplnLPMRqtCB (CyU3PUsbLinkPowerMode link_mode)          /* U
  */
 void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t type, CyU3PDmaCBInput_t *input)
 {
-    if(type == CY_U3P_DMA_CB_PROD_EVENT)
+    if(type & CY_U3P_DMA_CB_PROD_EVENT)
     {
         CyU3PDmaBuffer_t    produced_buffer;
         CyU3PReturnStatus_t apiRetStatus;
@@ -396,7 +396,7 @@ void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t 
 		}
     }
 
-    if (type == CY_U3P_DMA_CB_CONS_EVENT)
+    if (type & CY_U3P_DMA_CB_CONS_EVENT)
     {
     	glDmaCount--;
         glStreamingStarted = CyTrue;
@@ -631,7 +631,7 @@ void UVCAppThread_Entry (uint32_t input)
 		{
 			/* If we have the end of frame signal and all of the committed data (including partial buffer)
 			 * has been read by the USB host; we can reset the DMA channel and prepare for the next video frame. */
-			if ((glHitFV == CyTrue) && (glDmaCount == 0))
+			if ((glHitFV == CyTrue) && (glDmaCount <= 0))
 			{
 				glHitFV = CyFalse;
 

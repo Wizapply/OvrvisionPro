@@ -128,9 +128,9 @@ CyU3PReturnStatus_t OV5653SensorInit(void)
 
 	//PLL Reset
 	WI2C(0x3102,0x05);
-	CyU3PBusyWait (5000);
+	CyU3PBusyWait (3000);
 	WI2C(0x3102,0x00);
-	CyU3PBusyWait (5000);
+	CyU3PBusyWait (3000);
 
 	return CY_U3P_SUCCESS;
 }
@@ -149,7 +149,7 @@ void OV5653SensorReset(void)
 	//WI2C(0x3008,0x42);
 	//CyU3PBusyWait (5000);	//5ms wait
 	/* Delay the allow the sensor to power up. */
-	CyU3PThreadSleep(30); //30ms
+	CyU3PThreadSleep(20); //20ms
 }
 
 // Test sensor
@@ -244,7 +244,7 @@ void OV5653SensorControl(unsigned char frameIdx)
 	switch(frameIdx) {
 		case FRAMEIDX_MODE_2560X1920AT15FPS:
 			WI2C(0x3800,0x01);
-			WI2C(0x3801,0xa4);
+			WI2C(0x3801,0x94);
 			WI2C(0x3802,0x00);
 			WI2C(0x3803,0x0a);
 			WI2C(0x3804,0x0a);
@@ -264,7 +264,7 @@ void OV5653SensorControl(unsigned char frameIdx)
 			break;
 		case FRAMEIDX_MODE_1920X1080AT30FPS:
 			WI2C(0x3800,0x01);
-			WI2C(0x3801,0xa4);
+			WI2C(0x3801,0x94);
 			WI2C(0x3802,0x00);
 			WI2C(0x3803,0x0a);
 			WI2C(0x3804,0x07);

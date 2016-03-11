@@ -245,10 +245,20 @@ How to remove when dust has adhered to the image sensor.<br />
 
 /*! @page page7 Release Notes
 @tableofcontents
+@section sdk10 Ovrvision SDK v1.61
+Date : 8/Mar/2016<br />
+<b>Notes</b>
+- The fault about GPU choice of OpenCL was corrected.
+- Improve performance of Unity5.
+- CameraSettings Button was added to the calibration tool.
+
+<b>Unimplementeds and issue</b>
+- Unreal Engine 4
+- A defect of a document.
 @section sdk9 Ovrvision SDK v1.6
 Date : 15/Feb/2016<br />
 <b>Notes</b>
-- Linux OS beta support (Ubuntu x86_64 only)
+- Linux OS beta support (Ubuntu 15.10 x64 only)
 - Arranged exsample projects. 
 - The bug displayed not to support although GPU is stacked was fixed.
 
