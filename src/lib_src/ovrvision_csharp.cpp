@@ -200,6 +200,14 @@ CSHARP_EXPORT void ovGetCamImageBGRA(unsigned char* pImage, int eye)
 	//Get image
 	g_ovOvrvision->GetCamImageBGRA(pImage, (OVR::Cameye)eye);
 }
+CSHARP_EXPORT unsigned char* ovGetCamImageBGRAPointer(int eye)
+{
+	if (g_ovOvrvision == NULL)
+		return NULL;
+
+	//Get image
+	return g_ovOvrvision->GetCamImageBGRA((OVR::Cameye)eye);
+}
 // int ovGetCamImageRGB(unsigned char* pImage, int eye)
 CSHARP_EXPORT void ovGetCamImageRGB(unsigned char* pImage, int eye)
 {
@@ -224,7 +232,6 @@ CSHARP_EXPORT void ovGetCamImageRGB(unsigned char* pImage, int eye)
 		srcj += offsetlen;
 	}
 }
-
 // int ovGetCamImageRGB(unsigned char* pImage, int eye)
 CSHARP_EXPORT void ovGetCamImageBGR(unsigned char* pImage, int eye)
 {

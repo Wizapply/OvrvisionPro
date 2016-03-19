@@ -27,8 +27,8 @@
         ovRelease = (ovRelease_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovRelease"));
         ovPreStoreCamData = (ovPreStoreCamData_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovPreStoreCamData"));
         ovGetCamImageBGRA = (ovGetCamImageBGRA_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetCamImageBGRA"));
+        ovGetCamImageBGRAPointer = (ovGetCamImageBGRAPointer_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetCamImageBGRAPointer"));
         ovGetCamImageRGB = (ovGetCamImageRGB_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetCamImageRGB"));
-        
         ovGetCamImageBGR = (ovGetCamImageBGR_ptr)CFBundleGetFunctionPointerForName(cfBundle, CFSTR("ovGetCamImageBGR"));
         ovGetCamImageForUnity = NULL;
         ovGetCamImageForUnityNative = NULL;

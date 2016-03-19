@@ -16,8 +16,8 @@ typedef int  (*ovClose_ptr)();
 typedef void (*ovRelease_ptr)();
 typedef void (*ovPreStoreCamData_ptr)(int qt);
 typedef void (*ovGetCamImageBGRA_ptr)(unsigned char*, int);
+typedef unsigned char* (*ovGetCamImageBGRAPointer_ptr)(int);
 typedef void (*ovGetCamImageRGB_ptr)(unsigned char*, int);
-
 typedef void (*ovGetCamImageBGR_ptr)(unsigned char*, int);
 typedef void (*ovGetCamImageForUnity_ptr)(unsigned char*, unsigned char*);
 
@@ -110,8 +110,8 @@ const static int CalibrationImageNum = 25;
     ovRelease_ptr ovRelease;
     ovPreStoreCamData_ptr ovPreStoreCamData;
     ovGetCamImageBGRA_ptr ovGetCamImageBGRA;
+	ovGetCamImageBGRAPointer_ptr ovGetCamImageBGRAPointer;
     ovGetCamImageRGB_ptr ovGetCamImageRGB;
-    
     ovGetCamImageBGR_ptr ovGetCamImageBGR;
     ovGetCamImageForUnity_ptr ovGetCamImageForUnity;
     
