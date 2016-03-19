@@ -109,7 +109,7 @@ extern "C" {
 #endif
 
 // Provide them with an address to a function of this signature.
-typedef void(* UnityRenderNative)(int eventID);
+typedef void(__stdcall * UnityRenderNative)(int eventID);
 
 // int ovOpen(void)
 CSHARP_EXPORT int ovOpen(int locationID, float arMeter, int type)
@@ -378,11 +378,11 @@ CSHARP_EXPORT void ovGetCamImageForUnityNative(void* pTexPtr_Left, void* pTexPtr
 	}
 }
 //for GL.IssuePluginEvent
-extern "C" void CSHARP_EXPORT ovGetCamImageForUnityNativeEvent(int eventID)
+static void __stdcall ovGetCamImageForUnityNativeEvent(int eventID)
 {
 	ovGetCamImageForUnityNative(g_callTexture2DLeft, g_callTexture2DRight);
 }
-extern "C" UnityRenderNative CSHARP_EXPORT ovGetCamImageForUnityNativeGLCall(void* pTexPtr_Left, void* pTexPtr_Right)
+CSHARP_EXPORT UnityRenderNative __stdcall ovGetCamImageForUnityNativeGLCall(void* pTexPtr_Left, void* pTexPtr_Right)
 {
 	g_callTexture2DLeft = pTexPtr_Left;
 	g_callTexture2DRight = pTexPtr_Right;

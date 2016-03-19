@@ -44,7 +44,7 @@ public class COvrvisionUnity
 
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern void ovGetCamImageForUnityNative(System.IntPtr pTexPtr_Left, System.IntPtr pTexPtr_Right);
-	[DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport("ovrvision", CharSet = CharSet.Ansi)]
 	static extern System.IntPtr ovGetCamImageForUnityNativeGLCall(System.IntPtr pTexPtr_Left, System.IntPtr pTexPtr_Right);
 
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -201,6 +201,7 @@ public class COvrvisionUnity
         return camStatus;
     }
 
+
     //Update camera data
     public void UpdateImage(System.IntPtr leftPtr, System.IntPtr rightPtr)
     {
@@ -217,7 +218,7 @@ public class COvrvisionUnity
 
 		//ovGetCamImageForUnityNative(leftPtr, rightPtr);
 		GL.IssuePluginEvent(ovGetCamImageForUnityNativeGLCall(leftPtr, rightPtr), 1);
-    }
+	}
 
 	//For get pixel
 	public void GetImagePixelColor(System.IntPtr leftPtr, int eye)

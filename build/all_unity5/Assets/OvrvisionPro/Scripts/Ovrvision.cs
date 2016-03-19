@@ -140,6 +140,8 @@ public class Ovrvision : MonoBehaviour
 			OvrPro.useOvrvisionTrack_Calib = true;
 			CameraPlaneRight.active = !OvrPro.useOvrvisionTrack_Calib;
 		}
+
+		//yield return StartCoroutine("CallPluginAtEndOfFrames");
 	}
 
 	private Mesh CreateCameraPlaneMesh()
@@ -175,8 +177,7 @@ public class Ovrvision : MonoBehaviour
 		return m;
 	}
 
-	// Update is called once per frame
-	void Update ()
+	void Update()
 	{
 		//camStatus
 		if (!OvrPro.camStatus)
