@@ -1,2 +1,5 @@
 # OvrvisionPro
-OvrvisionPro SDK
+OvrvisionPro SDK - Open Source Project
+
+MIT License
+Please read "LICENSE" file
