@@ -128,8 +128,8 @@ public class Ovrvision : MonoBehaviour
 		CameraRightGap = OvrPro.HMDCameraRightGap();
 
 		//Plane reset
-		CameraPlaneLeft.transform.localScale = new Vector3(OvrPro.aspectW, -1.0f, 1.0f);
-		CameraPlaneRight.transform.localScale = new Vector3(OvrPro.aspectW, -1.0f, 1.0f);
+		CameraPlaneLeft.transform.localScale = new Vector3(OvrPro.aspectW, -OvrPro.aspectH, 1.0f);
+		CameraPlaneRight.transform.localScale = new Vector3(OvrPro.aspectW, -OvrPro.aspectH, 1.0f);
 		CameraPlaneLeft.transform.localPosition = new Vector3(-0.032f, 0.0f, OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
 		CameraPlaneRight.transform.localPosition = new Vector3(CameraRightGap.x - 0.040f, 0.0f, OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
 

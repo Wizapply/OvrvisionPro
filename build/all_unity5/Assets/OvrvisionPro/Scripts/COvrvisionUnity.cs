@@ -93,9 +93,12 @@ public class COvrvisionUnity
 
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern float ovGetFocalPoint();
+	[DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+    static extern float ovGetImageBaseWidth();
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern float ovGetHMDRightGap(int at);
 
+	
     [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     static extern float ovSetCamSyncMode(bool at);
 
@@ -187,8 +190,8 @@ public class COvrvisionUnity
             imageSizeW = ovGetImageWidth();
             imageSizeH = ovGetImageHeight();
 
-			aspectW = (float)imageSizeW / (float)imageSizeH;
-			aspectH = (float)imageSizeH / (float)imageSizeW;
+			aspectW = (float)imageSizeW / GetImageBaseHeight(opentype);
+			aspectH = (float)imageSizeH / GetImageBaseHeight(opentype);
 			ovSetCamSyncMode(false);
 
             camStatus = true;
@@ -392,4 +395,28 @@ public class COvrvisionUnity
         return ovCalibGetImageCount();
     }
 
+	//base
+	private float GetImageBaseHeight(int opentype)
+	{
+		float res = 960.0f;
+		switch(opentype) {
+			case OV_CAM5MP_FULL: res = 1920.0f;
+				break;
+			case OV_CAM5MP_FHD: res = 1920.0f;
+				break;
+			case OV_CAMHD_FULL: res = 960.0f;
+				break;
+			case OV_CAMVR_FULL: res = 960.0f;
+				break;
+			case OV_CAMVR_WIDE: res = 960.0f;
+				break;
+			case OV_CAMVR_VGA: res = 480.0f;
+				break;
+			case OV_CAMVR_QVGA: res = 240.0f;
+				break;
+			default : break;
+		}
+
+		return res;
+	}
 }

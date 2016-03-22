@@ -185,7 +185,7 @@ void OV5653SensorControl(unsigned char frameIdx)
 
 	//Sensor reset command
 	WI2C(0x3103,0x93);		//PLL
-	CyU3PBusyWait (100);	//100us wait
+	CyU3PBusyWait (200);	//200us wait
 	WI2C(0x3017,0xff);
 	WI2C(0x3018,0xf0);
 	CyU3PBusyWait (100);	//100us wait
