@@ -64,7 +64,6 @@ CyBool_t        isUsbConnected = CyFalse;               /* Whether USB connectio
 CyU3PUSBSpeed_t usbSpeed = CY_U3P_NOT_CONNECTED;        /* Current USB connection speed. */
 CyBool_t        glClearFeatureRqtReceived = CyFalse;    /* Whether a CLEAR_FEATURE (stop streaming) request has been received. */
 CyBool_t        glStreamingStarted = CyFalse;           /* Whether USB host has started streaming data */
-uint8_t			glDmaError = 0;            				/* This flag when an error happens in the data transfer */
 
 /* UVC Probe Control Settings for a USB connection. */
 uint8_t glProbeCtrl[CY_FX_UVC_MAX_PROBE_SETTING] = {
@@ -124,8 +123,6 @@ volatile static int32_t glDmaCount = 0;                   /* Count of buffers re
 #define CY_FX_UVC_CAMERA_TERMINAL_ID    (uint8_t)(1)            /* wIndex value used to select Camera terminal. */
 #define CY_FX_UVC_PROCESSING_UNIT_ID    (uint8_t)(2)            /* wIndex value used to select Processing Unit. */
 #define CY_FX_UVC_EXTENSION_UNIT_ID     (uint8_t)(3)            /* wIndex value used to select Extension Unit. */
-
-#define DEBUG_DMAERROR_RANKDOWN_NUM		(4)
 
 //Events Define
 #define CY_FX_UVC_STREAM_EVENT                  (1 << 0)
@@ -328,14 +325,12 @@ static void UVCApplnUSBEventCB (CyU3PUsbEventType_t evtype, uint16_t evdata)
             CyU3PGpifDisable (CyTrue);
             glGpif_initialized = CyFalse;
             glStreamingStarted = CyFalse;
-            glDmaError = 0;
             UVCApplnAbortHandler();
             break;
         case CY_U3P_USB_EVENT_SUSPEND:
             CyU3PGpifDisable (CyTrue);
             glGpif_initialized = CyFalse;
             glStreamingStarted = CyFalse;
-            glDmaError = 0;
             UVCApplnAbortHandler();
             break;
         case CY_U3P_USB_EVENT_DISCONNECT:
@@ -343,7 +338,6 @@ static void UVCApplnUSBEventCB (CyU3PUsbEventType_t evtype, uint16_t evdata)
             glGpif_initialized = CyFalse;
             isUsbConnected = CyFalse;
             glStreamingStarted = CyFalse;
-            glDmaError = 0;
             UVCApplnAbortHandler();
             break;
         default:
@@ -377,6 +371,8 @@ void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t 
 			CyU3PMemCopy (produced_buffer.buffer - CY_FX_UVC_MAX_HEADER, (uint8_t *)glUVCHeader, CY_FX_UVC_MAX_HEADER);
 			if (produced_buffer.count < CY_FX_UVC_BUF_FULL_SIZE) {
                 glUVCHeader[1] ^= 0x01;	 /* Toggle UVC header FRAME ID bit */
+                glUVCHeader[1] &= 0xBF;	//Error bit off
+
 				(produced_buffer.buffer - CY_FX_UVC_MAX_HEADER)[1] |= 0x02; //EOF
 			}
 
@@ -385,7 +381,7 @@ void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t 
 			if (apiRetStatus == CY_U3P_SUCCESS)
 				glDmaCount++;
 			else {
-				glDmaError++;
+				glUVCHeader[1] |= 0x40;	 /* UVC header ERROR bit */
 #if DEBUG_DMAERROR_OUTPUT
 				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyTrue);
 #endif
@@ -417,7 +413,6 @@ static void UVCApplnInit (void)
 
     isUsbConnected = CyFalse;
     glClearFeatureRqtReceived = CyFalse;
-    glDmaError = CyFalse;
 
     /* Init the GPIO module */
     gpioClock.fastClkDiv = 2;
@@ -635,11 +630,8 @@ void UVCAppThread_Entry (uint32_t input)
 			{
 				glHitFV = CyFalse;
 
-				/* Frame down */
-				if(glDmaError > DEBUG_DMAERROR_RANKDOWN_NUM) {
-					OV5653SensorSetRelativeTimingHTS(0x0002);
-					glDmaError = 0;
-				}
+                CyU3PUsbSetEpNak (CY_FX_EP_BULK_VIDEO, CyTrue);
+                CyU3PBusyWait (50);
 
 				/* Reset USB EP and DMA Channel */
                 CyU3PUsbFlushEp(CY_FX_EP_BULK_VIDEO);
@@ -660,6 +652,8 @@ void UVCAppThread_Entry (uint32_t input)
 				/* Jump to the start state of the GPIF state machine. 257 is used as an
 				   arbitrary invalid state (> 255) number. */
                 CyU3PGpifSMSwitch (257, 0, 257, 0, 2);
+
+                CyU3PUsbSetEpNak (CY_FX_EP_BULK_VIDEO, CyFalse);
 			}
 		}
 		else
@@ -669,7 +663,6 @@ void UVCAppThread_Entry (uint32_t input)
 			{
 				glDmaCount = 0;
 				glHitFV = CyFalse;
-				glDmaError = 0;
 
 #if DEBUG_DMAERROR_OUTPUT
 				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyFalse);
