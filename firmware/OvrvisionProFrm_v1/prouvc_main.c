@@ -370,7 +370,7 @@ void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t 
 		{
 			CyU3PMemCopy (produced_buffer.buffer - CY_FX_UVC_MAX_HEADER, (uint8_t *)glUVCHeader, CY_FX_UVC_MAX_HEADER);
 			if (produced_buffer.count < CY_FX_UVC_BUF_FULL_SIZE) {
-                glUVCHeader[1] ^= 0x01;	 /* Toggle UVC header FRAME ID bit */
+                glUVCHeader[1] ^= 0x01;	/* Toggle UVC header FRAME ID bit */
                 glUVCHeader[1] &= 0xBF;	//Error bit off
 
 				(produced_buffer.buffer - CY_FX_UVC_MAX_HEADER)[1] |= 0x02; //EOF
