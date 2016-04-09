@@ -307,6 +307,7 @@ Done:
 	ovr_Destroy(HMD);
 
 	ovrvision.Close();
+	CleanCamPlane();
 
     // Retry on ovrError_DisplayLost
     return retryCreate || OVR_SUCCESS(result) || (result == ovrError_DisplayLost);

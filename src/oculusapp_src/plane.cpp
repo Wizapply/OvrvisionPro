@@ -75,7 +75,7 @@ static ID3D11Buffer* VertexBuffer = NULL;
 static ID3D11VertexShader* VertexShader = NULL;
 static ID3D11PixelShader* PixelShader = NULL;
 static ID3D11SamplerState* SampleLinear = NULL;
-static ID3D11Texture2D* Texture = NULL;
+static ID3D11Texture2D* Texture2d = NULL;
 static ID3D11ShaderResourceView* ShaderRC = NULL;
 
 int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext, int w, int h, float zsize)
@@ -184,7 +184,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 
-	if (FAILED(Device->CreateTexture2D(&texDesc, NULL, &Texture)))
+	if (FAILED(Device->CreateTexture2D(&texDesc, NULL, &Texture2d)))
 	{
 		MessageBox(0, L"Failed to create texture buffer", NULL, MB_OK);
 		return E_FAIL;
@@ -195,7 +195,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	srvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
-	if (FAILED(Device->CreateShaderResourceView(Texture, &srvDesc, &ShaderRC))){
+	if (FAILED(Device->CreateShaderResourceView(Texture2d, &srvDesc, &ShaderRC))){
 		MessageBox(0, L"Failed to create resource buffer", NULL, MB_OK);
 		return E_FAIL;
 	}
@@ -206,7 +206,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 int CleanCamPlane()
 {
 	Release(SampleLinear);
-	Release(Texture);
+	Release(Texture2d);
 	Release(ShaderRC);
 	Release(VertexShader);
 	Release(PixelShader);
@@ -218,19 +218,19 @@ int CleanCamPlane()
 
 int SetCamImage(ID3D11DeviceContext* DeviceContext, unsigned char* camImage, unsigned int imageRowsize)
 {
-	if (Texture == NULL)
+	if (Texture2d == NULL)
 		return S_FALSE;
 
 	D3D11_TEXTURE2D_DESC desc;
-	Texture->GetDesc(&desc);
-	DeviceContext->UpdateSubresource(Texture, 0, NULL, camImage, imageRowsize, 0);
+	Texture2d->GetDesc(&desc);
+	DeviceContext->UpdateSubresource(Texture2d, 0, NULL, camImage, imageRowsize, 0);
 
 	return S_OK;
 }
 
 int RendererCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext)
 {
-	if (Texture == NULL)
+	if (Texture2d == NULL)
 		return S_FALSE;
 
 	DeviceContext->VSSetShader(VertexShader, NULL, 0);
