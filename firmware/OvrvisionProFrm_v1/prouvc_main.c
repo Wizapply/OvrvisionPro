@@ -102,6 +102,7 @@ uint8_t volatile glUVCHeader[CY_FX_UVC_MAX_HEADER] =
 volatile static CyBool_t glHitFV = CyFalse;               /* Whether end of frame (FV) signal has been hit. */
 volatile static CyBool_t glGpif_initialized = CyFalse;    /* Whether the GPIF init function has been called. */
 volatile static int32_t glDmaCount = 0;                   /* Count of buffers received and committed during the current video frame. */
+volatile static int32_t glWDTCount = 0;                   /* Watch doc timer */
 
 //Define
 #define CY_FX_USB_UVC_SET_REQ_TYPE      (uint8_t)(0x21)         /* UVC Interface SET Request Type */
@@ -242,6 +243,7 @@ static CyBool_t UVCApplnUSBSetupCB (uint32_t setupdat0, uint32_t setupdat1)
                     CyU3PGpifDisable (CyTrue);
                     glGpif_initialized = CyFalse;
                     glStreamingStarted = CyFalse;
+
                     /* Place the EP in NAK mode before cleaning up the pipe. */
                     CyU3PUsbSetEpNak (CY_FX_EP_BULK_VIDEO, CyTrue);
                     CyU3PBusyWait (100);
@@ -370,9 +372,6 @@ void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t 
 		{
 			CyU3PMemCopy (produced_buffer.buffer - CY_FX_UVC_MAX_HEADER, (uint8_t *)glUVCHeader, CY_FX_UVC_MAX_HEADER);
 			if (produced_buffer.count < CY_FX_UVC_BUF_FULL_SIZE) {
-                glUVCHeader[1] ^= 0x01;	/* Toggle UVC header FRAME ID bit */
-                glUVCHeader[1] &= 0xBF;	//Error bit off
-
 				(produced_buffer.buffer - CY_FX_UVC_MAX_HEADER)[1] |= 0x02; //EOF
 			}
 
@@ -487,7 +486,7 @@ static void UVCApplnInit (void)
     	UVCAppErrorHandler (apiRetStatus);
 
     /* Setup the Callback to Handle the USB Setup Requests */
-    CyU3PUsbRegisterSetupCallback (UVCApplnUSBSetupCB, CyTrue);
+    CyU3PUsbRegisterSetupCallback (UVCApplnUSBSetupCB, CyFalse);
 
     /* Setup the Callback to Handle the USB Events */
     CyU3PUsbRegisterEventCallback (UVCApplnUSBEventCB);
@@ -621,17 +620,25 @@ void UVCAppThread_Entry (uint32_t input)
 
     for (;;)
     {
+    	//WDT
+    	if(glUVCHeader[1] & 0x40) {
+    		glWDTCount++;
+    		if(glWDTCount >= 100000) {
+				UVCApplnUSBSetupCB(CY_U3P_USB_TARGET_ENDPT | (CY_U3P_USB_SC_CLEAR_FEATURE<<8), CY_FX_EP_BULK_VIDEO);	//Reset
+    		}
+    	}else{
+    		glWDTCount = 0;
+    	}
+
     	 /* Waiting for the Video Stream Event */
-		if (CyU3PEventGet (&glFxUVCEvent, CY_FX_UVC_STREAM_EVENT, CYU3P_EVENT_AND, &flag, CYU3P_NO_WAIT) == CY_U3P_SUCCESS)
+		if (CyU3PEventGet (&glFxUVCEvent, CY_FX_UVC_STREAM_EVENT, CYU3P_EVENT_AND, &flag, CYU3P_NO_WAIT) == CY_U3P_SUCCESS
+				&& glGpif_initialized == CyTrue)
 		{
 			/* If we have the end of frame signal and all of the committed data (including partial buffer)
 			 * has been read by the USB host; we can reset the DMA channel and prepare for the next video frame. */
 			if ((glHitFV == CyTrue) && (glDmaCount <= 0))
 			{
 				glHitFV = CyFalse;
-
-                CyU3PUsbSetEpNak (CY_FX_EP_BULK_VIDEO, CyTrue);
-                CyU3PBusyWait (50);
 
 				/* Reset USB EP and DMA Channel */
                 CyU3PUsbFlushEp(CY_FX_EP_BULK_VIDEO);
@@ -649,11 +656,12 @@ void UVCAppThread_Entry (uint32_t input)
 				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyFalse);
 #endif
 
+                glUVCHeader[1] ^= 0x01;	/* Toggle UVC header FRAME ID bit */
+                glUVCHeader[1] &= 0xBF;	/* Error bit off */
+
 				/* Jump to the start state of the GPIF state machine. 257 is used as an
 				   arbitrary invalid state (> 255) number. */
                 CyU3PGpifSMSwitch (257, 0, 257, 0, 2);
-
-                CyU3PUsbSetEpNak (CY_FX_EP_BULK_VIDEO, CyFalse);
 			}
 		}
 		else
@@ -662,6 +670,7 @@ void UVCAppThread_Entry (uint32_t input)
 			if (CyU3PEventGet (&glFxUVCEvent, CY_FX_UVC_STREAM_ABORT_EVENT, CYU3P_EVENT_AND_CLEAR, &flag, CYU3P_NO_WAIT) == CY_U3P_SUCCESS)
 			{
 				glDmaCount = 0;
+				glWDTCount = 0;
 				glHitFV = CyFalse;
 
 #if DEBUG_DMAERROR_OUTPUT
@@ -680,6 +689,8 @@ void UVCAppThread_Entry (uint32_t input)
 					/* Flush the Endpoint memory */
 					CyU3PUsbFlushEp (CY_FX_EP_BULK_VIDEO);
 				}
+
+                glUVCHeader[1] = 0x8C;	//bit Reset
 
 				glClearFeatureRqtReceived = CyFalse;
 			}
