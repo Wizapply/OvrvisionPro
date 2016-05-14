@@ -55,6 +55,7 @@ void PCD8544_Clear(void);
 void PCD8544_Write(uint8_t dc, uint8_t data);
 void PCD8544_Character(char character);
 void PCD8544_String(char *characters);
+void PCD8544_UINT32(int val, int field_length);
 void PCD8544_GotoXY(uint8_t x, uint8_t y);
 void PCD8544_LogoDraw(void);
 

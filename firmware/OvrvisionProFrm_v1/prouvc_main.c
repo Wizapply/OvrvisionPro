@@ -46,7 +46,6 @@
 #include "ov5653_sensor.h"		// OV5653 sensor
 #include "eeprom_data.h"		// EEPROM User data
 #include "cyfxgpif2config.h"	// GPIF program design
-
 //#include "gpio_test_pcd8544.h"
 
 ////////////////////// Global Variables //////////////////////
@@ -164,7 +163,6 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
     if (event == CYU3P_GPIF_EVT_SM_INTERRUPT)
     {
         CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
-
         glHitFV = CyTrue; /* Flag is reset to indicate that the partial buffer was committed to USB */
 
         /* Verify that the current state is a terminal state for the GPIF state machine. */
@@ -190,7 +188,7 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
         }
     }
 }
-
+static int g_updatetime = 0;
 static CyBool_t UVCApplnUSBSetupCB (uint32_t setupdat0, uint32_t setupdat1)
 {
     CyBool_t uvcHandleReq = CyFalse;
@@ -202,6 +200,22 @@ static CyBool_t UVCApplnUSBSetupCB (uint32_t setupdat0, uint32_t setupdat1)
     wValue    = (uint16_t)((setupdat0 & CY_FX_USB_SETUP_VALUE_MASK) >> 16);
     wIndex    = (uint16_t)(setupdat1 & CY_FX_USB_SETUP_INDEX_MASK);
     wLength   = (uint16_t)((setupdat1 & CY_FX_USB_SETUP_LENGTH_MASK) >> 16);
+
+    /*
+    PCD8544_Clear();
+    PCD8544_GotoXY(0,0);
+    PCD8544_UINT32(bmReqType,5);
+    PCD8544_GotoXY(0,1);
+    PCD8544_UINT32(bRequest,5);
+    PCD8544_GotoXY(0,2);
+    PCD8544_UINT32(wValue,5);
+    PCD8544_GotoXY(0,3);
+    PCD8544_UINT32(wIndex,5);
+    PCD8544_GotoXY(0,4);
+    PCD8544_UINT32(wLength,5);
+    PCD8544_GotoXY(0,5);
+    PCD8544_UINT32(++g_updatetime,8);
+    */
 
     /* Check for UVC Class Requests */
     switch (bmReqType)
@@ -372,6 +386,8 @@ void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t 
 		{
 			CyU3PMemCopy (produced_buffer.buffer - CY_FX_UVC_MAX_HEADER, (uint8_t *)glUVCHeader, CY_FX_UVC_MAX_HEADER);
 			if (produced_buffer.count < CY_FX_UVC_BUF_FULL_SIZE) {
+                glUVCHeader[1] ^= 0x01;	/* Toggle UVC header FRAME ID bit */
+                glUVCHeader[1] &= 0xBF;	/* Error bit off */
 				(produced_buffer.buffer - CY_FX_UVC_MAX_HEADER)[1] |= 0x02; //EOF
 			}
 
@@ -486,7 +502,7 @@ static void UVCApplnInit (void)
     	UVCAppErrorHandler (apiRetStatus);
 
     /* Setup the Callback to Handle the USB Setup Requests */
-    CyU3PUsbRegisterSetupCallback (UVCApplnUSBSetupCB, CyFalse);
+    CyU3PUsbRegisterSetupCallback (UVCApplnUSBSetupCB, CyTrue);
 
     /* Setup the Callback to Handle the USB Events */
     CyU3PUsbRegisterEventCallback (UVCApplnUSBEventCB);
@@ -570,7 +586,6 @@ static void UVCApplnInit (void)
     apiRetStatus = CyU3PConnectState (CyTrue, CyTrue);
     if (apiRetStatus != CY_U3P_SUCCESS)
     	UVCAppErrorHandler (apiRetStatus);
-
     /*
     PCD8544_Initialise();
     PCD8544_Clear();
@@ -582,9 +597,8 @@ static void UVCApplnInit (void)
 
     PCD8544_GotoXY(0,3);
     PCD8544_String("GPIO Test!");
-
+*/
     //PCD8544_LogoDraw();
-    */
 }
 
 // UVC Application i2c Init
@@ -636,7 +650,7 @@ void UVCAppThread_Entry (uint32_t input)
 		{
 			/* If we have the end of frame signal and all of the committed data (including partial buffer)
 			 * has been read by the USB host; we can reset the DMA channel and prepare for the next video frame. */
-			if ((glHitFV == CyTrue) && (glDmaCount <= 0))
+			if ((glHitFV == CyTrue) && (glDmaCount == 0))
 			{
 				glHitFV = CyFalse;
 
@@ -655,7 +669,6 @@ void UVCAppThread_Entry (uint32_t input)
 #if DEBUG_DMAERROR_OUTPUT
 				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyFalse);
 #endif
-
                 glUVCHeader[1] ^= 0x01;	/* Toggle UVC header FRAME ID bit */
                 glUVCHeader[1] &= 0xBF;	/* Error bit off */
 

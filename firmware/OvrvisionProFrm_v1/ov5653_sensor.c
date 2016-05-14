@@ -547,7 +547,7 @@ void OV5653SensorControl(unsigned char frameIdx)
 	CyU3PBusyWait (100);	//100us wait
 	WI2C(0x3000,0x00);		//Start
 	WI2C(0x3002,0x00);
-	CyU3PBusyWait (100); //100us
+	CyU3PBusyWait (10); 	//10us
 }
 
 //Processing Unit specific UVC control function
@@ -566,6 +566,51 @@ uint16_t OV5653SensorGetExp() {
 void OV5653SensorSetExp(uint16_t v) {
 	uint8_t highBit = v >> 8;
 	uint8_t lowBit = v & 0x00FF;
+
+	switch(g_frameIdx) {
+		case FRAMEIDX_MODE_2560X1920AT15FPS:
+			if(v >= 32000 - 200)
+				v = 32000 - 200;
+			break;
+		case FRAMEIDX_MODE_1920X1080AT30FPS:
+			if(v >= 19019 - 200)
+				v = 19019 - 200;
+			break;
+		case FRAMEIDX_MODE_1280X960AT45FPS:
+			if(v >= 16002 - 200)
+				v = 16002 - 200;
+			break;
+		case FRAMEIDX_MODE_1280X800AT60FPS:
+			if(v >= 13054 - 200)
+				v = 13054 - 200;
+			break;
+		case FRAMEIDX_MODE_960X950AT60FPS:
+			if(v >= 15619 - 160)
+				v = 15619 - 160;
+			break;
+		case FRAMEIDX_MODE_640X480AT90FPS:
+			if(v >= 8002 - 120)
+				v = 8002 - 120;
+			break;
+		case FRAMEIDX_MODE_320X240AT120FPS:
+			if(v >= 4096 - 100)
+				v = 4096 - 100;
+			break;
+		//USB2.0
+		case FRAMEIDX_MODE_1280X960AT15FPS:
+			if(v >= 16000 - 200)
+				v = 16000 - 200;
+			break;
+		case FRAMEIDX_MODE_640X480AT30FPS:
+			if(v >= 8000 - 120)
+				v = 8000 - 120;
+			break;
+		default: break;
+	}
+
+	highBit = v >> 8;
+	lowBit = v & 0x00FF;
+
 	WI2C(0x3501,highBit);
 	WI2C(0x3502,lowBit);
 }
