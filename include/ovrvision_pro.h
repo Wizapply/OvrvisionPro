@@ -163,6 +163,10 @@ public:
 		@param eye OV_CAMEYE_LEFT or OV_CAMEYE_RIGHT */
 	void GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye);
 
+
+	//Callback
+	void SetCallbackImageFunction(void(*func)());
+
 	/*!	@brief Get camera image region of interest
 		@param pLeft Image buffer pointer for left eye
 		@param pRight Image buffer pointer for right eye

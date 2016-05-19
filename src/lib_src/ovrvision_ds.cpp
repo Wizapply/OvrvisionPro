@@ -94,9 +94,11 @@ public:
 		m_hEvent = CreateEvent(NULL, true, false, NULL);
 
 		m_LatestBufferLength = 0;
-
+		
 		m_pPixels = new unsigned char[OV_MAX_BUFFERNUMBYTE];
 		memset(m_pPixels,0x00,sizeof(unsigned char)*OV_MAX_BUFFERNUMBYTE);
+
+		m_get_callback = NULL;
 	}
 
 	~OVSampleGrabberCB()
@@ -136,6 +138,10 @@ public:
 			LeaveCriticalSection(&m_critSection);
 
 			SetEvent(m_hEvent);
+
+			//Callback
+			if (m_get_callback != NULL)
+				m_get_callback();
 		}
 
 		return S_OK;
@@ -150,6 +156,7 @@ public:
 	//Var
 	int m_LatestBufferLength;
 	unsigned char* m_pPixels;
+	void(*m_get_callback)(void);
 
 	//Thread var
 	CRITICAL_SECTION m_critSection;
@@ -731,6 +738,12 @@ int OvrvisionDirectShow::GetLatestPixelDataSize()
 int OvrvisionDirectShow::GetMaxPixelDataSize()
 {
 	return m_maxPixelDataSize;
+}
+
+//Callback
+void OvrvisionDirectShow::SetCallback(void(*func)())
+{
+	m_pSGCallback->m_get_callback = func;
 }
 
 };

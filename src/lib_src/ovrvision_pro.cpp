@@ -496,6 +496,17 @@ void OvrvisionPro::GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye)
 	memcpy(pImageBuf, m_pPixels[(int)eye], m_width*m_height*OV_PIXELSIZE_RGB);
 }
 
+void OvrvisionPro::SetCallbackImageFunction(void(*func)())
+{
+#if defined(WIN32)
+	m_pODS->SetCallback(func);
+#elif defined(MACOSX)
+	
+#elif defined(LINUX)
+	
+#endif
+}
+
 //Private method
 void OvrvisionPro::InitCameraSetting()
 {
