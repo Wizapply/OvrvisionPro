@@ -668,6 +668,13 @@ namespace OVR
 
 		return RESULT_OK;
 	}
+
+
+	//Callback
+	void OvrvisionVideo4Linux::SetCallback(void(*func)())
+	{
+		m_get_callback = func;
+	}
 };
 
 #endif // LINUX

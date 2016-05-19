@@ -503,7 +503,7 @@ void OvrvisionPro::SetCallbackImageFunction(void(*func)())
 #elif defined(MACOSX)
     [m_pOAV setCallback:(CALLBACK_FUNC*)func];
 #elif defined(LINUX)
-	
+	m_pOV4L->SetCallbak(func);
 #endif
 }
 
