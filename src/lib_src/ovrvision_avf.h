@@ -100,6 +100,8 @@ typedef enum ov_camseet {
 //PixelBufferQueue Array Num
 #define PBQARRAY_MAX    (64)
 
+typedef void *(CALLBACK_FUNC)(void);
+
 /////////// CLASS ///////////
 
 @interface OvrvisionAVFoundation : NSObject<AVCaptureVideoDataOutputSampleBufferDelegate> {
@@ -130,6 +132,9 @@ typedef enum ov_camseet {
     
     //Thread wait object
     NSCondition*    m_cond;
+    
+    //Callback Function
+    CALLBACK_FUNC* m_imageFunc;
 }
 
 //initialize
@@ -156,6 +161,8 @@ typedef enum ov_camseet {
 -(int)setCameraSetting:(CamSetting)proc value:(int)value automode:(bool)automode;
 //Get camera setting
 -(int)getCameraSetting:(CamSetting)proc value:(int*)value automode:(bool*)automode;
+
+-(void)setCallback:(CALLBACK_FUNC*)func;
 
 //private
 

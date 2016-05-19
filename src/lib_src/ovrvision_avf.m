@@ -93,6 +93,9 @@ const uvc_controls_t uvc_controls = {
         //waitforsignal
         m_cond = [[NSCondition alloc] init];
         
+        //callback
+        m_imageFunc = NULL;
+        
         iodataBuffer = 0;
         interface = nil;
     }
@@ -602,6 +605,11 @@ const uvc_controls_t uvc_controls = {
     return RESULT_OK;
 }
 
+-(void)setCallback:(CALLBACK_FUNC*)func;
+{
+    m_imageFunc = func;
+}
+
 //Private
 
 //AVCaptureVideoDataOutputSampleBufferDelegate
@@ -621,6 +629,10 @@ const uvc_controls_t uvc_controls = {
 
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     }
+    
+    if(m_imageFunc != NULL)
+        m_imageFunc();
+    
 }
 
 

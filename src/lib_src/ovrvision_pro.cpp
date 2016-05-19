@@ -501,7 +501,7 @@ void OvrvisionPro::SetCallbackImageFunction(void(*func)())
 #if defined(WIN32)
 	m_pODS->SetCallback(func);
 #elif defined(MACOSX)
-	
+    [m_pOAV setCallback:(CALLBACK_FUNC*)func];
 #elif defined(LINUX)
 	
 #endif
