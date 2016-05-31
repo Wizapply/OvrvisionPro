@@ -245,6 +245,16 @@ How to remove when dust has adhered to the image sensor.<br />
 
 /*! @page page7 Release Notes
 @tableofcontents
+@section sdk11 Ovrvision SDK v1.7
+Date : 31/May/2016<br />
+<b>Notes</b>
+- OvrvisionPro new firmware was released.
+- The callback function was added.
+- Oculus SDK 1.3.2 was supported. Work is possible at the release version Oculus Rift(CV1). 
+
+<b>Unimplementeds and issue</b>
+- Unreal Engine 4
+- A defect of a document.
 @section sdk10 Ovrvision SDK v1.61
 Date : 8/Mar/2016<br />
 <b>Notes</b>
