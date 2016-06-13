@@ -20,6 +20,8 @@ GLuint textureIDs[2];
 OVR::OvrvisionPro ovrvision;	// OvrvisionPro camera
 OVR::ROI size;
 
+using namespace OVR;
+
 GLvoid createObjects();
 
 
@@ -29,7 +31,7 @@ GLvoid initializeGL(GLsizei width, GLsizei height)
 	ovrvision.CheckGPU();
 
 	// Open with OpenGL sharing mode
-	if (ovrvision.Open(0, OVR::Camprop::OV_CAMHD_FULL, 0) == 0) 
+	if (ovrvision.Open(0, OV_CAMHD_FULL, 0) == 0) 
 		puts("Can't open OvrvisionPro");
 
 	//////////////////////////////////////////////////////////////////////////////
@@ -106,12 +108,12 @@ GLvoid createObjects()
 }
 
 
-GLvoid drawScene(GLvoid)
+GLvoid drawScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// テクスチャの更新
-	ovrvision.Capture(OVR::Camqt::OV_CAMQT_DMS);
+	ovrvision.Capture(OV_CAMQT_DMS);
 	glFinish();
 //	int64 start = cv::getTickCount();
 #ifdef HAND_TEXTURE
