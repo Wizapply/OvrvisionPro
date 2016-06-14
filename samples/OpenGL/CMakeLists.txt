@@ -5,7 +5,7 @@ set(LINUX 1)
 set(CMAKE_CXX_FLAGS "-DLINUX -D_OVRVISION_EXPORTS -lglut -lGLU -lGL")
 
 include_directories(../../3rdparty/OpenCL/amd/include ../../include ../../src/lib_src/)
-link_directories(../../build/linux/ovrvision /usr/local/cuda-7.5/lib64)
+link_directories(../../build/linux /usr/local/cuda-7.5/lib64)
 
 add_executable(GLUT 
 	glut.cpp
