@@ -101,10 +101,8 @@ namespace OVR
 			OvrvisionVideo4Linux*	m_pOV4L;
 #endif
 			//Frame buffer
-			unsigned short*	m_pFrame;
-
-			//Pixels
-			byte*			m_pPixels[OV_CAMNUM];
+			Mat buffer;
+			GpuMat gpuBuffer;
 
 			//Camera status data
 			int				m_width;

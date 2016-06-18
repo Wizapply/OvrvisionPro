@@ -33,10 +33,6 @@ namespace OVR
 #elif defined(LINUX)
 			m_pOV4L = new OvrvisionVideo4Linux();
 #endif
-
-			m_pFrame = NULL;
-			m_pPixels[0] = m_pPixels[1] = NULL;
-
 			m_width = 960;
 			m_height = 950;
 			m_framerate = 60;
@@ -168,9 +164,8 @@ namespace OVR
 			if (objs == 0)
 				return 0;
 
-			m_pFrame = new ushort[cam_width*cam_height];
-			m_pPixels[0] = new byte[cam_width*cam_height*OV_PIXELSIZE_RGB];
-			m_pPixels[1] = new byte[cam_width*cam_height*OV_PIXELSIZE_RGB];
+			buffer.create(cam_height, cam_width, CV_16UC1);
+			gpuBuffer.create(cam_height, cam_width, CV_16UC1);
 
 			//Opened
 			m_isOpen = true;
@@ -189,7 +184,7 @@ namespace OVR
 			m_expo_f = cam_expo_f;
 
 			//Initialize Camera system
-			InitCameraSetting();
+			//InitCameraSetting();
 
 			return objs;
 		}
@@ -207,15 +202,8 @@ namespace OVR
 #elif defined(LINUX)
 			m_pOV4L->DeleteDevice();
 #endif
-			if (m_pFrame) {
-				delete[] m_pFrame;
-				m_pFrame = NULL;
-			}
-			if (m_pPixels[0]) {
-				delete[] m_pPixels[0];
-				delete[] m_pPixels[1];
-				m_pPixels[0] = m_pPixels[1] = NULL;
-			}
+			buffer.release();
+			gpuBuffer.release();
 
 			m_isOpen = false;
 		}
@@ -225,6 +213,17 @@ namespace OVR
 		void OvrvisionPro::GetStereoImageBGRA(GpuMat &left, GpuMat &right)
 		{
 			// UNDER CONSTRUCTION
+#if defined(WIN32)
+			if (m_pODS->GetBayer16Image((uchar *)buffer.data, !m_isCameraSync) == RESULT_OK)
+#elif defined(MACOSX)
+			if ([m_pOAV getBayer16Image : (uchar *)m_pFrame blocking : !m_isCameraSync] == RESULT_OK)
+#elif defined(LINUX)
+			if (m_pOV4L->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK)
+#endif
+			{
+				gpuBuffer.upload(buffer);
+				bayerGB2BGR(gpuBuffer, left, right);
+			}
 		}
 	}
 }
