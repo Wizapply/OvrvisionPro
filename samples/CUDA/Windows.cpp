@@ -18,6 +18,7 @@ void drawTexture_cb(void* userdata)
 int main(int argc, char *argv[])
 {
 	GpuMat left(960, 1280, CV_8UC4), right(HEIGHT, WIDTH, CV_8UC4);
+	Mat l(960, 1280, CV_8UC4), r(960, 1280, CV_8UC4);
 	CUDA::OvrvisionPro ovrvision;
 	if (ovrvision.Open(0, OV_CAMHD_FULL, 0) == 0)
 		puts("Can't open OvrvisionPro");
@@ -31,9 +32,13 @@ int main(int argc, char *argv[])
 
 	for (bool loop = true; loop;)
 	{
+#ifdef _DEBUG
+		ovrvision.GetStereoImageBGRA(l, r);
+		imshow("Left", l);
+#else
 		ovrvision.GetStereoImageBGRA(left, right);
 		cv::updateWindow("highgui(Texture2D)");
-
+#endif
 		switch (waitKey(10))
 		{
 		case 'q':

@@ -33,6 +33,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_clear_eeprom", "o
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_oculus13_app", "ovrvision_oculus13_app.vcxproj", "{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Windows", "..\..\samples\CUDA\Windows.vcxproj", "{0C416327-DD8F-4342-8DA0-1FCC6766E091}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -150,6 +152,24 @@ Global
 		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Release|Win32.Build.0 = Release|Win32
 		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Release|x64.ActiveCfg = Release|x64
 		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Release|x64.Build.0 = Release|x64
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Debug|Win32.Build.0 = Debug|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Debug|x64.ActiveCfg = Debug|x64
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Debug|x64.Build.0 = Debug|x64
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.MetaioARRelease|Mixed Platforms.ActiveCfg = Release|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.MetaioARRelease|Mixed Platforms.Build.0 = Release|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.MetaioARRelease|Win32.ActiveCfg = Release|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.MetaioARRelease|Win32.Build.0 = Release|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.MetaioARRelease|x64.ActiveCfg = Release|x64
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.MetaioARRelease|x64.Build.0 = Release|x64
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Release|Win32.ActiveCfg = Release|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Release|Win32.Build.0 = Release|Win32
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Release|x64.ActiveCfg = Release|x64
+		{0C416327-DD8F-4342-8DA0-1FCC6766E091}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

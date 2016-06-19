@@ -166,6 +166,8 @@ namespace OVR
 
 			buffer.create(cam_height, cam_width, CV_16UC1);
 			gpuBuffer.create(cam_height, cam_width, CV_16UC1);
+			m_left.create(cam_height, cam_width, CV_8UC4);
+			m_right.create(cam_height, cam_width, CV_8UC4);
 
 			//Opened
 			m_isOpen = true;
@@ -204,6 +206,8 @@ namespace OVR
 #endif
 			buffer.release();
 			gpuBuffer.release();
+			m_left.release();
+			m_right.release();
 
 			m_isOpen = false;
 		}
@@ -221,8 +225,29 @@ namespace OVR
 			if (m_pOV4L->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK)
 #endif
 			{
+#ifdef _DEBUG
+				imshow("RAW", buffer);
+#endif
 				gpuBuffer.upload(buffer);
 				bayerGB2BGR(gpuBuffer, left, right);
+			}
+		}
+
+		void OvrvisionPro::GetStereoImageBGRA(Mat &left, Mat &right)
+		{
+			// UNDER CONSTRUCTION
+#if defined(WIN32)
+			if (m_pODS->GetBayer16Image((uchar *)buffer.data, !m_isCameraSync) == RESULT_OK)
+#elif defined(MACOSX)
+			if ([m_pOAV getBayer16Image : (uchar *)m_pFrame blocking : !m_isCameraSync] == RESULT_OK)
+#elif defined(LINUX)
+			if (m_pOV4L->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK)
+#endif
+			{
+				gpuBuffer.upload(buffer);
+				bayerGB2BGR(gpuBuffer, m_left, m_right);
+				m_left.download(left);
+				m_right.download(right);
 			}
 		}
 	}

@@ -90,6 +90,7 @@ namespace OVR
 			/*!	@brief Get camera image region of interest
 			 */
 			void GetStereoImageBGRA(GpuMat &left, GpuMat &right);
+			void GetStereoImageBGRA(Mat &left, Mat &right);
 
 		private:
 #ifdef WIN32
@@ -102,7 +103,7 @@ namespace OVR
 #endif
 			//Frame buffer
 			Mat buffer;
-			GpuMat gpuBuffer;
+			GpuMat gpuBuffer, m_left, m_right;
 
 			//Camera status data
 			int				m_width;
