@@ -166,8 +166,8 @@ namespace OVR
 
 			buffer.create(cam_height, cam_width, CV_16UC1);
 			gpuBuffer.create(cam_height, cam_width, CV_16UC1);
-			m_left.create(cam_height, cam_width, CV_8UC4);
-			m_right.create(cam_height, cam_width, CV_8UC4);
+			m_left.create(cam_height, cam_width, CV_8UC3);
+			m_right.create(cam_height, cam_width, CV_8UC3);
 
 			//Opened
 			m_isOpen = true;
@@ -226,7 +226,7 @@ namespace OVR
 #endif
 			{
 #ifdef _DEBUG
-				imshow("RAW", buffer);
+				//imshow("RAW", buffer);
 #endif
 				gpuBuffer.upload(buffer);
 				bayerGB2BGR(gpuBuffer, left, right);

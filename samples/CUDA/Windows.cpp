@@ -17,8 +17,8 @@ void drawTexture_cb(void* userdata)
 
 int main(int argc, char *argv[])
 {
-	GpuMat left(960, 1280, CV_8UC4), right(HEIGHT, WIDTH, CV_8UC4);
-	Mat l(960, 1280, CV_8UC4), r(960, 1280, CV_8UC4);
+	GpuMat left(960, 1280, CV_8UC3), right(HEIGHT, WIDTH, CV_8UC3);
+	Mat l(960, 1280, CV_8UC3), r(960, 1280, CV_8UC3);
 	CUDA::OvrvisionPro ovrvision;
 	if (ovrvision.Open(0, OV_CAMHD_FULL, 0) == 0)
 		puts("Can't open OvrvisionPro");
