@@ -23,7 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib_src\ovrvision_ds.cpp" />
-    <ClCompile Include="ovrvisonCUDA.cpp" />
+    <ClCompile Include="ovrvision_cuda.cpp" />
     <ClCompile Include="Windows.cpp" />
   </ItemGroup>
   <ItemGroup>

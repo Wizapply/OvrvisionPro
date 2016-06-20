@@ -220,9 +220,9 @@ namespace OVR
 #if defined(WIN32)
 			if (m_pODS->GetBayer16Image((uchar *)buffer.data, !m_isCameraSync) == RESULT_OK)
 #elif defined(MACOSX)
-			if ([m_pOAV getBayer16Image : (uchar *)m_pFrame blocking : !m_isCameraSync] == RESULT_OK)
+			if ([m_pOAV getBayer16Image : (uchar *)buffer.data blocking : !m_isCameraSync] == RESULT_OK)
 #elif defined(LINUX)
-			if (m_pOV4L->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK)
+			if (m_pOV4L->GetBayer16Image((uchar *)buffer.data, !m_isCameraSync) == RESULT_OK)
 #endif
 			{
 #ifdef _DEBUG
@@ -239,9 +239,9 @@ namespace OVR
 #if defined(WIN32)
 			if (m_pODS->GetBayer16Image((uchar *)buffer.data, !m_isCameraSync) == RESULT_OK)
 #elif defined(MACOSX)
-			if ([m_pOAV getBayer16Image : (uchar *)m_pFrame blocking : !m_isCameraSync] == RESULT_OK)
+			if ([m_pOAV getBayer16Image : (uchar *)buffer.data blocking : !m_isCameraSync] == RESULT_OK)
 #elif defined(LINUX)
-			if (m_pOV4L->GetBayer16Image((uchar *)m_pFrame, !m_isCameraSync) == RESULT_OK)
+			if (m_pOV4L->GetBayer16Image((uchar *)buffer.data, !m_isCameraSync) == RESULT_OK)
 #endif
 			{
 				gpuBuffer.upload(buffer);
