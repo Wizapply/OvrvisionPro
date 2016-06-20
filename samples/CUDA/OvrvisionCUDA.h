@@ -95,6 +95,72 @@ namespace OVR
 			void GetStereoImageBGRA(GpuMat &left, GpuMat &right);
 			void GetStereoImageBGRA(Mat &left, Mat &right);
 
+			//Camera Properties
+			/*!	@brief Get exposure value of the Ovrvision.
+			@return Exposure time. */
+			int GetCameraExposure();
+			/*!	@brief Set exposure of the Ovrvision.
+			@param value Exposure time. Range of 0 - 32767 */
+			void SetCameraExposure(int value);
+			/*!	@brief Set exposure of the Ovrvision.
+			@param value Exposure time per Sec. 60Hz Range of 30 - 240 frame, 50Hz Range of 25 - 200 frame
+			@return error, true or false */
+			bool SetCameraExposurePerSec(float fps);
+			/*!	@brief Get gain value of the Ovrvision.
+			@return gain value. */
+			int GetCameraGain();
+			/*!	@brief Set gain of the Ovrvision.
+			@param value gain. Range of 0 - 47 */
+			void SetCameraGain(int value);
+			/*!	@brief Get white balance R gain value of the Ovrvision.
+			@return R gain value. */
+			int GetCameraWhiteBalanceR();
+			/*!	@brief Set white balance R gain of the Ovrvision.
+			@param value R gain. Range of 0 - 4095 */
+			void SetCameraWhiteBalanceR(int value);
+			/*!	@brief Get white balance G gain value of the Ovrvision.
+			@return G gain value. */
+			int GetCameraWhiteBalanceG();
+			/*!	@brief Set white balance G gain of the Ovrvision.
+			@param value G gain. Range of 0 - 4095 */
+			void SetCameraWhiteBalanceG(int value);
+			/*!	@brief Get white balance B gain value of the Ovrvision.
+			@return B gain value. */
+			int GetCameraWhiteBalanceB();
+			/*!	@brief Set white balance B gain of the Ovrvision.
+			@param value B gain. Range of 0 - 4095 */
+			void SetCameraWhiteBalanceB(int value);
+			/*!	@brief Set backlight compensation(BLC) value of the Ovrvision.
+			@return blc value. */
+			int GetCameraBLC();
+			/*!	@brief Set backlight compensation(BLC) of the Ovrvision.
+			@param value BLC. Range of 0 - 255 */
+			void SetCameraBLC(int value);
+
+			/*!	@brief Get automatic mode of the Ovrvision White Balance.
+			@return It is true or false. */
+			bool GetCameraWhiteBalanceAuto();
+			/*!	@brief Set automatic mode of the Ovrvision White Balance.
+			@param value Mode.*/
+			void SetCameraWhiteBalanceAuto(bool value);
+
+			/*!	@brief Set sync mode for the Ovrvision.
+			@param value True is sync mode. */
+			void SetCameraSyncMode(bool value);
+
+			bool ReadEEPROM();
+			//Parameter EEPROM (Don't touch)
+			void UserDataAccessUnlock();
+			void UserDataAccessLock();
+			void UserDataAccessSelectAddress(unsigned int addr);
+			unsigned char UserDataAccessGetData();
+			void UserDataAccessSetData(unsigned char value);
+			void UserDataAccessSave();
+			void UserDataAccessCheckSumAddress();
+			//Save the present setup to EEPROM. (Don't touch)
+			bool CameraParamSaveEEPROM();
+			bool CameraParamResetEEPROM();
+
 		private:
 #ifdef WIN32
 			//DirectShow
@@ -118,6 +184,25 @@ namespace OVR
 
 			bool			m_isOpen;
 			bool			m_isCameraSync;
+
+			//Camera Setting
+			int	m_propExposure;			//Exposure
+			int	m_propGain;				//Gain
+			int	m_propBLC;				//BLC
+			int m_propWhiteBalanceR;	//WhiteBaranceR
+			int	m_propWhiteBalanceG;	//WhiteBaranceG
+			int	m_propWhiteBalanceB;	//WhiteBaranceB
+			char m_propWhiteBalanceAuto;
+
+			//UndistortSetting : External variable
+			Mat	m_leftCameraInstric;
+			Mat	m_rightCameraInstric;
+			Mat	m_leftCameraDistortion;
+			Mat	m_rightCameraDistortion;
+			Mat	m_R1;
+			Mat	m_R2;
+			Mat	m_trans;
+			Mat	m_focalPoint;
 
 			//initialize setting
 			void InitCameraSetting();

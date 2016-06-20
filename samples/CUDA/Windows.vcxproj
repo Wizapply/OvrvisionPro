@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\lib_src\ovrvision_ds.h" />
     <ClInclude Include="OvrvisionCUDA.h" />
+    <ClInclude Include="ovrvision_setting.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0C416327-DD8F-4342-8DA0-1FCC6766E091}</ProjectGuid>
