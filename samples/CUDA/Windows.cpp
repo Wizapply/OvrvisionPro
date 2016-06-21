@@ -46,6 +46,11 @@ int main(int argc, char *argv[])
 		case 'q':
 			loop = false;
 			break;
+
+		case ' ':
+			cv::namedWindow("highgui(OpenGL)", cv::WINDOW_AUTOSIZE | cv::WINDOW_OPENGL);
+			cv::imshow("highgui(OpenGL)", right);
+			break;
 		}
 	}
 	return 0;
