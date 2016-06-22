@@ -11,7 +11,7 @@ NVCC          := $(CUDA_PATH)/bin/nvcc -ccbin $(HOST_COMPILER)
 NVCCFLAGS   := -m${TARGET_SIZE}
 INCLUDES    := -I../../src/lib_src
 LIBRARIES   := -lm -lopencv_core -lopencv_highgui -lopencv_cudalegacy
-CCFLAGS     := -DLINUX -DGPU
+CCFLAGS     := -DLINUX
 LDFLAGS     :=
 GENCODE_FLAGS += -gencode arch=compute_$(HIGHEST_SM),code=compute_$(HIGHEST_SM)
 
