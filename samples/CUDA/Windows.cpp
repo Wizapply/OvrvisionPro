@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 		ovrvision.GetStereoImageBGRA(left, right);
 		right.download(r);
 		imshow("Right", r);
-		cv::updateWindow("highgui(Texture2D)");
+		//cv::updateWindow("highgui(Texture2D)");
 #endif
 		switch (waitKey(10))
 		{

@@ -5,7 +5,7 @@
 #include <opencv2/core/core.hpp>
 
 using namespace cv;
-#ifdef OPENCV_VERSION_2_4
+#ifdef GPU
 #include <opencv2/gpu/gpu.hpp>
 using namespace cv::gpu;
 #else

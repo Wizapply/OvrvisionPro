@@ -1,20 +1,22 @@
 //
-#if	defined(WIN32)
-#include "ovrvision_ds.h"	//!DirectShow
-#elif	defined(LINUX)
-#include "ovrvision_v4l.h"
-#endif
 
 #include <opencv2/core/core.hpp>
-
+using namespace std;
 using namespace cv;
-#ifdef OPENCV_VERSION_2_4
+#ifdef GPU
 #include <opencv2/gpu/gpu.hpp>
 using namespace cv::gpu;
 #else
 #include <opencv2/core/cuda.hpp>
 using namespace cv::cuda;
 #endif
+
+#if     defined(WIN32)
+#include "ovrvision_ds.h"       //!DirectShow
+#elif   defined(LINUX)
+#include "ovrvision_v4l.h"
+#endif
+
 
 namespace OVR
 {
