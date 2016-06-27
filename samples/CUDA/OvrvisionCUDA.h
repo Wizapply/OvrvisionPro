@@ -1,4 +1,9 @@
 //
+#if     defined(WIN32)
+#include "ovrvision_ds.h"       //!DirectShow
+#elif   defined(LINUX)
+#include "ovrvision_v4l.h"
+#endif
 
 #include <opencv2/core/core.hpp>
 using namespace std;
@@ -11,11 +16,6 @@ using namespace cv::gpu;
 using namespace cv::cuda;
 #endif
 
-#if     defined(WIN32)
-#include "ovrvision_ds.h"       //!DirectShow
-#elif   defined(LINUX)
-#include "ovrvision_v4l.h"
-#endif
 
 
 namespace OVR
