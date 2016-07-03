@@ -21,8 +21,9 @@
 
 #include "OpenCL_kernel.h" // kernel code declared here const char *kernel;
 
-#define TONE_CORRECTION	// Tone correction for improve skin color estimation
-#define MEDIAN_3x3	// Use Median 3x3 filter to denoise
+//#define TONE_CORRECTION	// Tone correction for improve skin color estimation
+//#define MEDIAN_3x3	// Use Median 3x3 filter to denoise
+//#define MEDIAN_5x5	// Use Median 3x3 filter to denoise
 //#define GAUSSIAN	// Use Gaussian filter to denoise
 
 using namespace std;
@@ -1358,6 +1359,10 @@ namespace OVR
 		mask[1] = clCreateImage(_context, CL_MEM_READ_WRITE, &_format8UC1, &_desc_scaled, 0, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
 
+		cl_uchar4	clear = { 255, 0, 0, 0 };
+		clEnqueueFillImage(_commandQueue, mask[0], &clear, origin, _scaledRegion, 0, NULL, NULL);
+		clEnqueueFillImage(_commandQueue, mask[1], &clear, origin, _scaledRegion, 0, NULL, NULL);
+
 		// Create mask of skin color region
 #if 1
 		SkinRegion(mask[0], mask[1], &event[0], &event[1]);
@@ -1821,8 +1826,12 @@ namespace OVR
 		size_t size[] = { width, height };
 
 		cl_event event[2];
-		GetHSVBlur(_L, _R, &event[0], &event[1]);
 
+#if defined(GAUSSIAN) || defined(MEDIAN_3x3) || defined(MEDIAN_5x5)
+		GetHSVBlur(_L, _R, &event[0], &event[1]);
+#else
+		GetHSV(_L, _R, &event[0], &event[1]);
+#endif
 		//int h_low = 13, h_high = 21;
 		//int s_low = 88, s_high = 136;
 

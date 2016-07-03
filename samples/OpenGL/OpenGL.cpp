@@ -10,7 +10,7 @@
 
 void SWAPBUFFERS();	// platform depend function
 
-//#define HAND_TEXTURE
+#define HAND_TEXTURE
 
 #define GL_API_CHECK(x)	x
 
