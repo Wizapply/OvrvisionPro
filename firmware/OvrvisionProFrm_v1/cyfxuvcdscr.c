@@ -479,7 +479,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	/* Super Speed Endpoint Companion Descriptor */
 	0x06,                           /* Descriptor size */
 	CY_U3P_SS_EP_COMPN_DESCR,       /* SS Endpoint Companion Descriptor Type */
-	CY_FX_EP_BULK_VIDEO_PKTS_COUNT-1, /* Max number of packets per burst: 16 */
+	CY_FX_EP_BULK_VIDEO_PKTS_COUNT-1, /* Max number of packets per burst: CY_FX_EP_BULK_VIDEO_PKTS_COUNT */
 	0x00,                           /* Attribute: Streams not defined */
 	0x00,                           /* No meaning for bulk */
 	0x00

@@ -188,7 +188,7 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
         }
     }
 }
-static int g_updatetime = 0;
+
 static CyBool_t UVCApplnUSBSetupCB (uint32_t setupdat0, uint32_t setupdat1)
 {
     CyBool_t uvcHandleReq = CyFalse;
