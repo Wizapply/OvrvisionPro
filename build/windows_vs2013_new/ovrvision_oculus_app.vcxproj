@@ -244,7 +244,7 @@
       <DebugInformationFormat />
     </ClCompile>
     <Link>
-      <AdditionalDependencies>LibOVR.lib;ovrvision64.lib;Shell32.lib</AdditionalDependencies>
+      <AdditionalDependencies>LibOVR.lib;ovrvision64.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x64;.\..\..\3rdparty\OculusSDK\LibOVR\Lib\Windows\x64\Release\VS2013;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
