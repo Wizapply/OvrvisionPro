@@ -214,8 +214,10 @@ Examplesフォルダ→vs2015又はvs2013のソリューションをVisualStudio
 */
 
 /*! @page page5 Use in Unity5
+Unity Editor should use Version 5.3 or more. <br />
+Unity Editorは必ずVersion 5.3以上をご利用ください。
 @image html into_unity1.jpg
-Explain the usage in the case of using OvrvisionPro in Unity5. <br />
+Explain the usage in the case of using OvrvisionPro in Unity5.3. <br />
 Unity5でOvrvisionProを使用する場合の使い方を説明します。
 @image html into_unity2.jpg
 First, please import UnityPackage of OvrvisionSDK.  <br />

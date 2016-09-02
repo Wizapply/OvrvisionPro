@@ -78,7 +78,7 @@ static ID3D11SamplerState* SampleLinear = NULL;
 static ID3D11Texture2D* Texture2d = NULL;
 static ID3D11ShaderResourceView* ShaderRC = NULL;
 
-int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext, int w, int h, float zsize)
+int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext, int w, int h, float zsize, float ipd)
 {
 	//Init
 	ID3DBlob *pCompiledShader = NULL;
@@ -131,7 +131,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	}
 	Release(pCompiledShader);
 
-	float aspect = (float)h / (float)w * 0.82f;
+	float aspect = (float)w / (float)h * 0.82f;
 
 	//Square polygon
 	SimpleVertex vertices[] =
@@ -140,10 +140,14 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 		VECTOR3(-zsize, zsize*aspect, 0.5f), VECTOR2(0, 0),
 		VECTOR3(zsize, -zsize*aspect, 0.5f), VECTOR2(1, 1),
 		VECTOR3(zsize, zsize*aspect, 0.5f), VECTOR2(1, 0),
+		VECTOR3(-zsize - ipd, -zsize*aspect, 0.5f), VECTOR2(0, 1),
+		VECTOR3(-zsize - ipd, zsize*aspect, 0.5f), VECTOR2(0, 0),
+		VECTOR3(zsize - ipd, -zsize*aspect, 0.5f), VECTOR2(1, 1),
+		VECTOR3(zsize - ipd, zsize*aspect, 0.5f), VECTOR2(1, 0),
 	};
 	D3D11_BUFFER_DESC bd;
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(SimpleVertex) * 4;
+	bd.ByteWidth = sizeof(SimpleVertex) * 8;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	bd.MiscFlags = 0;
@@ -228,7 +232,7 @@ int SetCamImage(ID3D11DeviceContext* DeviceContext, unsigned char* camImage, uns
 	return S_OK;
 }
 
-int RendererCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext)
+int RendererCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext, bool right)
 {
 	if (Texture2d == NULL)
 		return S_FALSE;
@@ -239,7 +243,10 @@ int RendererCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext)
 	DeviceContext->PSSetSamplers(0, 1, &SampleLinear);
 	DeviceContext->PSSetShaderResources(0, 1, &ShaderRC);
 
-	DeviceContext->Draw(4, 0);
+	if (right)
+		DeviceContext->Draw(4, 4);
+	else
+		DeviceContext->Draw(4, 0);
 
 	return S_OK;
 }

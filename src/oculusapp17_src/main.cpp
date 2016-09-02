@@ -33,8 +33,8 @@ limitations under the License.
 // OvrvisionPro
 #include <ovrvision_pro.h>
 
-extern int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext, int w, int h, float zsize);
-extern int RendererCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext);
+extern int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext, int w, int h, float zsize, float ipd);
+extern int RendererCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext, bool right);
 extern int SetCamImage(ID3D11DeviceContext* DeviceContext, unsigned char* camImage, unsigned int imagesize);
 extern int CleanCamPlane();
 
@@ -205,7 +205,7 @@ static bool MainLoop(bool retryCreate)
 
 		ovrvision.SetCameraSyncMode(false);
 
-		InitializeCamPlane(DIRECTX.Device, DIRECTX.Context, width, height, 1.0f);
+		InitializeCamPlane(DIRECTX.Device, DIRECTX.Context, width, height, 0.4f, 0.4f);
 	}
 
 	// Main loop
@@ -252,18 +252,13 @@ static bool MainLoop(bool retryCreate)
 				DIRECTX.SetViewport((float)eyeRenderViewport[eye].Pos.x, (float)eyeRenderViewport[eye].Pos.y,
 					(float)eyeRenderViewport[eye].Size.w, (float)eyeRenderViewport[eye].Size.h);
 
-				//Get the pose information in XM format
-				XMVECTOR eyeQuat = XMVectorSet(EyeRenderPose[eye].Orientation.x, EyeRenderPose[eye].Orientation.y,
-					EyeRenderPose[eye].Orientation.z, EyeRenderPose[eye].Orientation.w);
-				XMVECTOR eyePos = XMVectorSet(EyeRenderPose[eye].Position.x, EyeRenderPose[eye].Position.y, EyeRenderPose[eye].Position.z, 0);
-
 				//Camera View
 				if (eye == 0)
 					SetCamImage(DIRECTX.Context, ovrvision.GetCamImageBGRA(OVR::Cameye::OV_CAMEYE_LEFT), width*pixelsize);
 				else
 					SetCamImage(DIRECTX.Context, ovrvision.GetCamImageBGRA(OVR::Cameye::OV_CAMEYE_RIGHT), width*pixelsize);
 
-				RendererCamPlane(DIRECTX.Device, DIRECTX.Context);
+				RendererCamPlane(DIRECTX.Device, DIRECTX.Context, bool(eye));
 
 				// Commit rendering to the swap chain
 				pEyeRenderTexture[eye]->Commit();
