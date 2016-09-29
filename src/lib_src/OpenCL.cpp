@@ -340,13 +340,13 @@ namespace OVR
 	//{
 #pragma region CONSTRUCTOR_DESTRUCTOR
 		// Constructor
-	OvrvisionProOpenCL::OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode, void *pDevice)
+	OvrvisionProOpenCL::OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode, void *pDevice, const char *platform)
 		{
 			_width = width;
 			_height = height;
 			_sharing = mode;
 
-			if (SelectGPU("", "OpenCL C 1.2") == NULL) // Find OpenCL(version 1.2 and above) device 
+			if (SelectGPU(platform, "OpenCL C 1.2") == NULL) // Find OpenCL(version 1.2 and above) device 
 			{
                 throw std::runtime_error("Insufficient OpenCL version");
 			}
@@ -589,12 +589,33 @@ namespace OVR
 
 		cl_uint maxFreq = 0;
 		cl_uint maxUnits = 0;
+		size_t length;
 		bool device_found = false;
 		vector<cl_device_id> devices;
 
 		// Search GPU
 		for (cl_uint i = 0; i < num_of_platforms; i++)
 		{
+			if (platform != NULL)
+			{
+				std::string platformStr(platform);
+				char vendor[80];
+				if (clGetPlatformInfo(platforms[i], CL_PLATFORM_VENDOR, 80, vendor, &length) == CL_SUCCESS)
+				{
+					std::string thisPlatformStr(vendor);
+					if (platformStr.compare(thisPlatformStr) != 0)
+					{
+						// Skip because not the requested vendorID
+						continue;
+					}
+				}
+				else
+				{
+					// Unable to find Vendor ID, skipping
+					continue;
+				}
+			}
+
 			cl_uint num_of_devices = 0;
 			if (CL_SUCCESS == clGetDeviceIDs(
 				platforms[i],
@@ -616,7 +637,6 @@ namespace OVR
 				for (cl_uint j = 0; j < num_of_devices; j++)
 				{
 					devices.push_back(id[j]);
-					size_t length;
 					char buffer[32];
 					if (clGetDeviceInfo(id[j], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, &length) == CL_SUCCESS)
 					{

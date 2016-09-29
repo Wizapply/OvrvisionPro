@@ -144,10 +144,11 @@ public:
 	/*!	@brief Open the Ovrvision Pro
 		@param locationID Connection number
 		@param prop Camera property
+		@param pVendorName c style string with the vendor name ("NVIDIA Corporation", "Intel(R) Corporation", )
         @param deviceType (2:D3D11, 0:OpenGL, -1:Dont share)
 		@param pD3D11Device ptr to D3D11 device when deviceType == 2
 		@return If successful, the return value is 0< */
-	int Open(int locationID, OVR::Camprop prop, int deviceType = -1, void *pD3D11Device = NULL);
+	int Open(int locationID, OVR::Camprop prop, const char *pVendorName = NULL, int deviceType = -1, void *pD3D11Device = NULL);
 	/*!	@brief Close the Ovrvision Pro */
 	void Close();
 
