@@ -513,7 +513,7 @@ void OvrvisionPro::InitCameraSetting()
 	//Read files.
 	OvrvisionSetting ovrset(this);
 	if (ovrset.ReadEEPROM()) {
-
+		
 		//Read Set
 		SetCameraExposure(ovrset.m_propExposure);
 		SetCameraGain(ovrset.m_propGain);
