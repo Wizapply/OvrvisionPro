@@ -247,6 +247,15 @@ How to remove when dust has adhered to the image sensor.<br />
 
 /*! @page page7 Release Notes
 @tableofcontents
+@section sdk12 Ovrvision SDK v1.8
+Date : 12/Oct/2016<br />
+<b>Notes</b>
+- Oculus SDK 1.8 was supported. Work is possible at the release version Oculus Rift(CV1). 
+- Fixed the bug of Calibration Tool of Mac OS. 
+
+<b>Unimplementeds and issue</b>
+- Unreal Engine 4
+- A defect of a document.
 @section sdk11 Ovrvision SDK v1.7
 Date : 31/May/2016<br />
 <b>Notes</b>

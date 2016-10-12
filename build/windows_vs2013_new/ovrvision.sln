@@ -31,7 +31,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_clear_eeprom", "o
 		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0} = {3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_oculus_cv1_app", "ovrvision_oculus17_app.vcxproj", "{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_oculus_cv1_app", "ovrvision_oculuscv1_app.vcxproj", "{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
