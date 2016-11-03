@@ -669,8 +669,6 @@ void UVCAppThread_Entry (uint32_t input)
 #if DEBUG_DMAERROR_OUTPUT
 				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyFalse);
 #endif
-                glUVCHeader[1] ^= 0x01;	/* Toggle UVC header FRAME ID bit */
-                glUVCHeader[1] &= 0xBF;	/* Error bit off */
 
 				/* Jump to the start state of the GPIF state machine. 257 is used as an
 				   arbitrary invalid state (> 255) number. */
