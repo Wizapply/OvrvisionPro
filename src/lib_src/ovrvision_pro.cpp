@@ -316,6 +316,12 @@ void OvrvisionPro::UpdateImageTextures(void* left,void* right)
 #endif
 
 // Grayscaled images 1/2 scaled
+void OvrvisionPro::Grayscale(unsigned char *left, unsigned char *right)
+{
+	return m_pOpenCL->Grayscale(left, right, ORIGINAL);
+}
+
+// Grayscaled images 1/2 scaled
 void OvrvisionPro::GrayscaleHalf(unsigned char *left, unsigned char *right)
 {
 	return m_pOpenCL->Grayscale(left, right, HALF);

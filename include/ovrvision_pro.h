@@ -259,6 +259,8 @@ public:
 
 	// Grayscale image
 	/*!	@brief Grayscaled image of 1/2 scaled */
+	void Grayscale(unsigned char *left, unsigned char *right);		// 1/1 scaled
+	/*!	@brief Grayscaled image of 1/2 scaled */
 	void GrayscaleHalf(unsigned char *left, unsigned char *right);		// 1/2 scaled
 	/*!	@brief Grayscaled image of 1/4 scaled */
 	void GrayscaleFourth(unsigned char *left, unsigned char *right);	// 1/4 scaled

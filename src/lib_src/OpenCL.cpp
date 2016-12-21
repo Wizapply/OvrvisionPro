@@ -1932,9 +1932,13 @@ namespace OVR
 		clGetImageInfo(src, CL_IMAGE_WIDTH, sizeof(width), &width, NULL);
 		clGetImageInfo(src, CL_IMAGE_HEIGHT, sizeof(height), &height, NULL);
 
-		int scale = 2;
+		int scale = 1;
 		switch (scaling)
 		{
+		case ORIGINAL:
+			scale = 1;
+			break;
+
 		case HALF:
 			scale = 2;
 			break;
@@ -2003,11 +2007,15 @@ namespace OVR
 			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertGrayscale, 2, NULL, _scaledRegion, NULL, 0, NULL, event_r);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
-		else 
+		else
 		{
 			uint width = _width, height = _height;
 			switch (scaling)
 			{
+			case OVR::ORIGINAL:
+				width /= 1;
+				height /= 1;
+				break;
 			case OVR::HALF:
 				width /= 2;
 				height /= 2;
@@ -2035,7 +2043,6 @@ namespace OVR
 			cl_event event[2];
 			Resize(_l, l, scaling, &event[0]);
 			Resize(_r, r, scaling, &event[1]);
-
 			// Convert to HSV
 			//__kernel void convertGrayscale( 
 			//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
@@ -2064,6 +2071,10 @@ namespace OVR
 		uint width = _width, height = _height;
 		switch (scaling)
 		{
+		case OVR::ORIGINAL:
+			width /= 1;
+			height /= 1;
+			break;
 		case OVR::HALF:
 			width /= 2;
 			height /= 2;
