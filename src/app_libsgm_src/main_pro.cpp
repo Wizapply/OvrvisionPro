@@ -36,7 +36,7 @@ OVR::OvrvisionPro* g_pOvrvision;
 wzTexture g_screen_texture;
 int g_camWidth;
 int g_camHeight;
-OVR::Camqt g_processMode = OVR::OV_CAMQT_DMS;
+OVR::Camqt g_processMode = OVR::OV_CAMQT_DMSRMP;
 
 wzVector3  g_hmdGap;
 
@@ -142,23 +142,6 @@ void DrawLoop(void)
 	wzVector2 half_pos = { APPSCREEN_WIDTH / 2 / 2, APPSCREEN_HEIGHT / 2 };
 
 	/////// Operation ///////
-	if (wzGetKeyStateTrigger(WZ_KEY_P))
-	{
-		if (g_processMode == OVR::OV_CAMQT_DMS)
-			g_processMode = OVR::OV_CAMQT_DMSRMP;
-		else
-			g_processMode = OVR::OV_CAMQT_DMS;
-	}
-
-	if (wzGetKeyStateTrigger(WZ_KEY_O))
-	{
-		g_useOvrvisionAR ^= true;
-	}
-	if (wzGetKeyStateTrigger(WZ_KEY_I))
-	{
-		g_useOvrvisionTracking ^= true;
-		g_pOvrvision->SetCameraWhiteBalanceAuto(false);
-	}
 
 	/////// View ///////
 	if (g_pOvrvision->isOpen())
@@ -181,7 +164,7 @@ void DrawLoop(void)
 			for (int j = 0; j < g_camWidth; j++) {
 				int ds = (i*g_camWidth * 4) + (j * 4);
 				int os = (i*g_camWidth) + (j);
-				unsigned int data_dub = (unsigned int)g_output_data16[os]*2;
+				unsigned int data_dub = (unsigned int)g_output_data16[os]*4;
 				if (data_dub >= 256){
 					data_dub = 255;
 				}
@@ -199,7 +182,10 @@ void DrawLoop(void)
 		float view_width = APPSCREEN_WIDTH / 2;
 		float view_height = ((float)(APPSCREEN_WIDTH / 2) / (float)g_camWidth) * (float)g_camHeight;
 
-		// Left eye
+		view_width *= 1.4f;
+		view_height *= 1.4f;
+
+		// Depth eye
 		wzSetViewport(0, 0, APPSCREEN_WIDTH / 2, APPSCREEN_HEIGHT);
 		wzSetSpriteScSize(APPSCREEN_WIDTH / 2, APPSCREEN_HEIGHT);
 
@@ -211,7 +197,7 @@ void DrawLoop(void)
 		wzSetSpriteTexture(&g_screen_texture);
 		wzSpriteDraw();	//Draw
 
-		// Right eye
+		// Original eye
 		wzSetViewport(APPSCREEN_WIDTH / 2, 0, APPSCREEN_WIDTH / 2, APPSCREEN_HEIGHT);
 		wzSetSpriteScSize(APPSCREEN_WIDTH / 2, APPSCREEN_HEIGHT);
 
