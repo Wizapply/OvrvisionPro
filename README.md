@@ -1,6 +1,7 @@
 # OvrvisionPro
 OvrvisionPro SDK - Open Source Project
 
+## Licence
 MIT License
 Please read "LICENSE" file
 
@@ -17,4 +18,7 @@ Please read "LICENSE" file
 * src : Sources
 
 # How to Build
-Comming soon
+## Windows
+The program building method for Windows 
+## Mac OSX
+## Linux
