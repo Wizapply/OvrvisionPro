@@ -385,9 +385,7 @@ void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t 
 		while(apiRetStatus == CY_U3P_SUCCESS)
 		{
 			CyU3PMemCopy (produced_buffer.buffer - CY_FX_UVC_MAX_HEADER, (uint8_t *)glUVCHeader, CY_FX_UVC_MAX_HEADER);
-			if (produced_buffer.count < CY_FX_UVC_BUF_FULL_SIZE) {
-                glUVCHeader[1] ^= 0x01;	/* Toggle UVC header FRAME ID bit */
-                glUVCHeader[1] &= 0xBF;	/* Error bit off */
+			if ((produced_buffer.count < CY_FX_UVC_BUF_FULL_SIZE)) {
 				(produced_buffer.buffer - CY_FX_UVC_MAX_HEADER)[1] |= 0x02; //EOF
 			}
 
@@ -400,6 +398,7 @@ void UvcApplnDmaCallback (CyU3PDmaMultiChannel *multiChHandle, CyU3PDmaCbType_t 
 #if DEBUG_DMAERROR_OUTPUT
 				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyTrue);
 #endif
+				CyU3PDmaMultiChannelDiscardBuffer(multiChHandle); //Delete buffer
 				break;
 			}
 
@@ -634,10 +633,10 @@ void UVCAppThread_Entry (uint32_t input)
 
     for (;;)
     {
-    	//WDT
+    	//WDT for macos
     	if(glUVCHeader[1] & 0x40) {
     		glWDTCount++;
-    		if(glWDTCount >= 100000) {
+    		if(glWDTCount >= 120000) {
 				UVCApplnUSBSetupCB(CY_U3P_USB_TARGET_ENDPT | (CY_U3P_USB_SC_CLEAR_FEATURE<<8), CY_FX_EP_BULK_VIDEO);	//Reset
     		}
     	}else{
@@ -650,7 +649,7 @@ void UVCAppThread_Entry (uint32_t input)
 		{
 			/* If we have the end of frame signal and all of the committed data (including partial buffer)
 			 * has been read by the USB host; we can reset the DMA channel and prepare for the next video frame. */
-			if ((glHitFV == CyTrue) && (glDmaCount == 0))
+			if ((glHitFV == CyTrue) && (glDmaCount <= 0))
 			{
 				glHitFV = CyFalse;
 
@@ -665,6 +664,9 @@ void UVCAppThread_Entry (uint32_t input)
                 apiRetStatus = CyU3PDmaMultiChannelSetXfer (&glChHandleUVCStream, 0, 0);
                 if (apiRetStatus != CY_U3P_SUCCESS)
                 	UVCAppErrorHandler(apiRetStatus);
+
+                glUVCHeader[1] ^= 0x01;	/* Toggle UVC header FRAME ID bit */
+                glUVCHeader[1] &= 0xBF;	/* Error bit off */
 
 #if DEBUG_DMAERROR_OUTPUT
 				CyU3PGpioSetValue(OVRPRO_GPIO0_PIN, CyFalse);
@@ -1332,9 +1334,17 @@ int main (void)
 {
     CyU3PReturnStatus_t apiRetStatus;
     CyU3PIoMatrixConfig_t io_cfg;
+    CyU3PSysClockConfig_t clock_cfg;
+
+    clock_cfg.setSysClk400 = CyTrue;
+    clock_cfg.cpuClkDiv = 2;
+    clock_cfg.dmaClkDiv = 2;
+    clock_cfg.mmioClkDiv = 2;
+    clock_cfg.useStandbyClk = CyFalse;
+    clock_cfg.clkSrc = CY_U3P_SYS_CLK;
 
     /* Initialize the device */
-    apiRetStatus = CyU3PDeviceInit (0);
+    apiRetStatus = CyU3PDeviceInit (&clock_cfg);
     if (apiRetStatus != CY_U3P_SUCCESS) {
         goto handle_fatal_error;
     }

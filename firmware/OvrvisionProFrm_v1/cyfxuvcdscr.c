@@ -44,7 +44,7 @@ const uint8_t CyFxUSBDeviceDscrSS[] =
 	0x09,                           /* Maxpacket size for EP0 : 2^9 Bytes */
 	0x33,0x2C,                      /* Vendor ID*/
 	0x01,0x00,                      /* Product ID*/
-	0x04,0x01,                      /* Device release number */
+	0x05,0x01,                      /* Device release number */
 	0x01,                           /* Manufacture string index */
 	0x02,                           /* Product string index */
 	0x00,                           /* Serial number string index */
