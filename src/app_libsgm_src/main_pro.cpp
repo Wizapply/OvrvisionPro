@@ -45,7 +45,7 @@ bool g_useOvrvisionTracking = false;
 
 //SGM
 sgm::StereoSGM* g_ssgm;
-unsigned short* g_output_data16 = NULL;
+unsigned char* g_output_data8 = NULL;
 
 /* -- Function prototype ------------------------------------------------- */
 
@@ -104,8 +104,8 @@ int Initialize()
 	wzCreateTextureBuffer(&g_screen_texture, g_camWidth, g_camHeight, WZ_FORMATTYPE_BGRA_RGBA);
 
 	//SGM
-	g_output_data16 = new unsigned short[g_camWidth*g_camHeight];
-	g_ssgm = new sgm::StereoSGM(g_camWidth, g_camHeight, 64, 8, 16, sgm::EXECUTE_INOUT_HOST2HOST);
+	g_output_data8 = new unsigned char[g_camWidth*g_camHeight];
+	g_ssgm = new sgm::StereoSGM(g_camWidth, g_camHeight, 64, 8, 8, sgm::EXECUTE_INOUT_HOST2HOST);
 
 	/*------------------------------------------------------------------*/
 
@@ -122,7 +122,7 @@ int Terminate()
 	wzDeleteTexture(&g_screen_texture);
 
 	delete g_ssgm;
-	delete[] g_output_data16;
+	delete[] g_output_data8;
 
 	/*------------------------------------------------------------------*/
 
@@ -158,20 +158,37 @@ void DrawLoop(void)
 		g_pOvrvision->Grayscale(daad, daad2);
 
 		//SGM
-		g_ssgm->execute(daad, daad2, (void**)&g_output_data16);
+		g_ssgm->execute(daad, daad2, (void**)&g_output_data8);
 
 		for (int i = 0; i < g_camHeight; i++) {
 			for (int j = 0; j < g_camWidth; j++) {
+
 				int ds = (i*g_camWidth * 4) + (j * 4);
 				int os = (i*g_camWidth) + (j);
-				unsigned int data_dub = (unsigned int)g_output_data16[os]*4;
+				unsigned int data_dub = (unsigned int)g_output_data8[os] * 4;
 				if (data_dub >= 256){
 					data_dub = 255;
 				}
-				outputs[ds + 0] = (unsigned char)(data_dub);
-				outputs[ds + 1] = (unsigned char)(data_dub);
-				outputs[ds + 2] = (unsigned char)(data_dub);
-				outputs[ds + 3] = 0xFF;
+
+				if (j > g_camWidth / 2 - 30 && j < g_camWidth / 2 + 30 &&
+					i > g_camHeight / 2 - 2 && i < g_camHeight / 2 + 2) {
+					outputs[ds + 0] = 0x00;
+					outputs[ds + 1] = 0x00;
+					outputs[ds + 2] = 0xFF;
+					outputs[ds + 3] = 0xFF;
+				} else if(j > g_camWidth / 2 - 2 && j < g_camWidth / 2 + 2 &&
+					i > g_camHeight / 2 - 30 && i < g_camHeight / 2 + 30) {
+					outputs[ds + 0] = 0x00;
+					outputs[ds + 1] = 0x00;
+					outputs[ds + 2] = 0xFF;
+					outputs[ds + 3] = 0xFF;
+				}
+				else {
+					outputs[ds + 0] = (unsigned char)(data_dub);
+					outputs[ds + 1] = (unsigned char)(data_dub);
+					outputs[ds + 2] = (unsigned char)(data_dub);
+					outputs[ds + 3] = 0xFF;
+				}
 			}
 		}
 
@@ -226,6 +243,10 @@ void DrawLoop(void)
 
 	wzPrintf(20, 30, "Ovrvision Pro Depth DemoApp");
 	wzPrintf(20, 60, "Draw:%.2f", wzGetDrawFPS());
+
+	int post = (475 * g_camWidth) + (480);
+	float da = 58.0f * g_pOvrvision->GetCamFocalPoint() / (float)g_output_data8[post];
+	wzPrintf(20, 90, "DEPTH:%.1f mm", da);
 
 	//AR infomation
 	int row = 120;
