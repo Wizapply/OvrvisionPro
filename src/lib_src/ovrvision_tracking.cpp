@@ -1,4 +1,4 @@
-// ovrvision_tracking.cpp
+﻿// ovrvision_tracking.cpp
 //
 //MIT License
 //THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -35,7 +35,7 @@
 #pragma comment(lib, "libjasperd.lib")
 #pragma comment(lib, "strmiids.lib")
 #pragma comment(lib, "zlibd.lib")
-#pragma comment(lib, "opencv_highgui300d.lib")
+#pragma comment(lib, "opencv_highgui320d.lib")
 #else
 #pragma comment(lib, "Comctl32.lib")
 #pragma comment(lib, "IlmImf.lib")
@@ -47,7 +47,7 @@
 #pragma comment(lib, "libjasper.lib")
 #pragma comment(lib, "strmiids.lib")
 #pragma comment(lib, "zlib.lib")
-#pragma comment(lib, "opencv_highgui300.lib")
+#pragma comment(lib, "opencv_highgui320.lib")
 #endif
 //#define OV_CONFIG_USEOPENCL
 

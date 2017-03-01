@@ -77,7 +77,7 @@ OvrvisionAR::OvrvisionAR(float markersize_meter, int w, int h, float focalPoint)
 	cameramat.at<float>(7) = 0.0f;
 	cameramat.at<float>(8) = 1.0f;
 
-	cv::Mat distorsionCoeff(4,1,CV_32FC1,0);
+	cv::Mat distorsionCoeff(4,1,CV_32FC1);
 	m_cameraParam->setParams(cameramat,distorsionCoeff,cv::Size(m_width,m_height));	//set param
 }
 
