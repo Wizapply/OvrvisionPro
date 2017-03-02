@@ -19,6 +19,14 @@ Please read "LICENSE" file
 
 # How to Build
 ## Windows
-The program building method for Windows 
+
+```
+$ cd 3rdparty/opencv
+$ cmake -DBUILD_SHARED_LIBS=OFF .
+```
+
+Build 3rdparty/opencv/OpenCV.sln by Visual Studio 2015.  
+After, Build build/windows_vs2015/ovrvision.sln.
+
 ## Mac OSX
 ## Linux
