@@ -180,7 +180,7 @@ namespace ovrvision_calibration
 			else if (cabliButton.Text == "Create Parameters")
 			{
                 textBox1.AppendText(String.Format("Setup in the data..... "));
-				Ovrvision.CalibSolveStereoParameter();
+                Ovrvision.CalibSolveStereoParameter(opfCheckBox.Checked);
 				textBox1.AppendText(String.Format("OK!\r\n"));
                 Thread.Sleep(500); //0.5s wait
                 textBox1.AppendText(String.Format("The calibration params was saved successfully.\r\n"));

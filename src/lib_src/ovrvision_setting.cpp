@@ -367,7 +367,7 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 	cv::Mat distorsionCoeff(1, 8, CV_32FC1, 0.0);
 	cv::Size size(width, height);
 	cv::Size sizeCalibBase(1280, 960);
-	double m_focalPointScale = 1.00;
+	double m_focalPointScale = 1.00; 
 	//Rect roi; // Valid Region of Interest
 
 	//Adjustment calc
@@ -396,7 +396,7 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 
     // Stereo rectify maps need calibrated camera matrix and coeffs
 	if (eye == OV_CAMEYE_LEFT)
-	{ 
+	{
 		cv::Mat camPs = getOptimalNewCameraMatrix(cameramat, distorsionCoeff, size, 0, size, &m_leftROI, false);
 
 		//Calc clone

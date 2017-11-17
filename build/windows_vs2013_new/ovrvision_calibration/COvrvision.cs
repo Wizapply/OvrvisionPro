@@ -126,7 +126,7 @@ namespace ovrvision_calibration
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern int ovCalibFindChess();
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        static extern void ovCalibSolveStereoParameter();
+        static extern void ovCalibSolveStereoParameter(bool param_output);
         [DllImport("ovrvision", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         static extern int ovCalibGetImageCount();
 
@@ -415,9 +415,9 @@ namespace ovrvision_calibration
             return ovCalibFindChess();
         }
         //ovCalibSolveStereoParameter
-        public void CalibSolveStereoParameter()
+        public void CalibSolveStereoParameter(bool param_output)
         {
-            ovCalibSolveStereoParameter();
+            ovCalibSolveStereoParameter(param_output);
         }
         //ovCalibGetImageCount
         public int CalibGetImageCount()

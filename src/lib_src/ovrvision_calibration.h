@@ -49,6 +49,10 @@ typedef enum ov_cameraeye {
 } Cameye;
 #endif
 
+const double SensorSizeWidth = 4.529;
+const double SensorSizeHeight = 3.423;
+const double SensorSizeScale = 0.7;
+
 /////////// CLASS ///////////
 
 class OvrvisionCalibration
@@ -70,7 +74,7 @@ public:
 	void SolveStereoParameter();
 
 	//Save
-	void SaveCalibrationParameter(OvrvisionPro* ovrpro);
+	void SaveCalibrationParameter(OvrvisionPro* ovrpro, bool param_output = false);
 
 	int GetImageCount() const{ return m_image_count; }	
 
@@ -83,6 +87,7 @@ public:
 		cv::Mat distortion;
 		cv::Mat R;
 		cv::Mat P;
+		double focalPoint;
 	} m_cameraCalibration[OV_CAMNUM];
 
 private:

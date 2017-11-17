@@ -761,7 +761,7 @@ CSHARP_EXPORT int ovCalibFindChess()
 	return g_ovOvrvisionCalib->FindChessBoardCorners(pLeft, pRight);
 }
 
-CSHARP_EXPORT void ovCalibSolveStereoParameter()
+CSHARP_EXPORT void ovCalibSolveStereoParameter(bool param_output)
 {
 	if (g_ovOvrvision == NULL)
 		return;
@@ -769,7 +769,7 @@ CSHARP_EXPORT void ovCalibSolveStereoParameter()
 		return;
 
 	g_ovOvrvisionCalib->SolveStereoParameter();
-	g_ovOvrvisionCalib->SaveCalibrationParameter(g_ovOvrvision);	//default 
+	g_ovOvrvisionCalib->SaveCalibrationParameter(g_ovOvrvision, param_output);	//default 
 	//g_ovOvrvisionCalib->SaveCalibrationParameterToEEPROM();
 }
 
