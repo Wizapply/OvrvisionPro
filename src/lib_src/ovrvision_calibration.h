@@ -49,10 +49,6 @@ typedef enum ov_cameraeye {
 } Cameye;
 #endif
 
-const double SensorSizeWidth = 4.529;
-const double SensorSizeHeight = 3.423;
-const double SensorSizeScale = 0.7;
-
 /////////// CLASS ///////////
 
 class OvrvisionCalibration
@@ -83,11 +79,13 @@ public:
 	std::vector< std::vector<cv::Point2f> > m_subpix_corners_right;
 
 	struct {
+		cv::Size pixelSize;
 		cv::Mat intrinsic;
 		cv::Mat distortion;
 		cv::Mat R;
 		cv::Mat P;
 		double focalPoint;
+		double fovY;
 	} m_cameraCalibration[OV_CAMNUM];
 
 private:

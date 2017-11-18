@@ -125,6 +125,11 @@ typedef struct {
 	unsigned int height;	//!Height
 } ROI;
 
+//Sensor Define
+const double SensorSizeWidth = 4.529;
+const double SensorSizeHeight = 3.423;
+const double SensorSizeScale = 0.7;
+
 //unsigned char to byte
 typedef unsigned char byte;
 typedef unsigned char* pbyte;

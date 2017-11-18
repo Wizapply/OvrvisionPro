@@ -539,7 +539,8 @@ void OvrvisionPro::InitCameraSetting()
 #elif defined(LINUX)
 		usleep(50000);
 #endif
-		m_focalpoint = ovrset.m_focalPoint.at<float>(0);
+		//calc to Pixel
+		m_focalpoint = ovrset.m_focalPoint.at<float>(0) * ((ovrset.m_pixelSize.width / SensorSizeWidth) * SensorSizeScale);
 		m_rightgap[0] = (float)-ovrset.m_trans.at<double>(0);	//T:X
 		m_rightgap[1] = (float)ovrset.m_trans.at<double>(1);	//T:Y
 		m_rightgap[2] = (float)ovrset.m_trans.at<double>(2);	//T:Z

@@ -214,18 +214,19 @@ namespace OVR
 			m_cameraCalibration[OV_CAMEYE_RIGHT].intrinsic,
 			m_cameraCalibration[OV_CAMEYE_RIGHT].distortion, rvecs, tvecs);
 
-		double fovx = 0, fovy = 0;
+		double fovx = 0;
 		double focalLength = 0;
 		cv::Point2d principalPoint = (0, 0);
 		double aspectRatio = 0;
 
+		m_cameraCalibration[OV_CAMEYE_LEFT].pixelSize = m_image_size;
+		m_cameraCalibration[OV_CAMEYE_RIGHT].pixelSize = m_image_size;
+
 		cv::calibrationMatrixValues(m_cameraCalibration[OV_CAMEYE_LEFT].intrinsic, m_image_size, SensorSizeWidth, SensorSizeHeight,
-			fovx, fovy, m_cameraCalibration[OV_CAMEYE_LEFT].focalPoint, principalPoint, aspectRatio);
-		m_cameraCalibration[OV_CAMEYE_LEFT].focalPoint *= (m_image_size.width / SensorSizeWidth) * SensorSizeScale;
+			fovx, m_cameraCalibration[OV_CAMEYE_LEFT].fovY, m_cameraCalibration[OV_CAMEYE_LEFT].focalPoint, principalPoint, aspectRatio);
 
 		cv::calibrationMatrixValues(m_cameraCalibration[OV_CAMEYE_RIGHT].intrinsic, m_image_size, SensorSizeWidth, SensorSizeHeight,
-			fovx, fovy, m_cameraCalibration[OV_CAMEYE_RIGHT].focalPoint, principalPoint, aspectRatio);
-		m_cameraCalibration[OV_CAMEYE_RIGHT].focalPoint *= (m_image_size.width / SensorSizeWidth) * SensorSizeScale;
+			fovx, m_cameraCalibration[OV_CAMEYE_RIGHT].fovY, m_cameraCalibration[OV_CAMEYE_RIGHT].focalPoint, principalPoint, aspectRatio);
 
 		//intrinsic parameters
 		cv::TermCriteria criteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.001);
@@ -263,6 +264,7 @@ namespace OVR
 		//Read Set
 
 		//Save Calib Data
+		ovrset.m_pixelSize = m_cameraCalibration[OV_CAMEYE_LEFT].pixelSize;
 		ovrset.m_leftCameraInstric = m_cameraCalibration[OV_CAMEYE_LEFT].intrinsic;
 		ovrset.m_rightCameraInstric = m_cameraCalibration[OV_CAMEYE_RIGHT].intrinsic;
 		ovrset.m_leftCameraDistortion = m_cameraCalibration[OV_CAMEYE_LEFT].distortion;
@@ -287,6 +289,7 @@ namespace OVR
 #endif
 		if (param_output) {
 			FileStorage cvfs("./ovrvision_param_output.xml", CV_STORAGE_WRITE | CV_STORAGE_FORMAT_XML);
+			write(cvfs, "PixelSize", ovrset.m_pixelSize);
 			write(cvfs, "LeftCameraInstric", ovrset.m_leftCameraInstric);
 			write(cvfs, "RightCameraInstric", ovrset.m_rightCameraInstric);
 			write(cvfs, "LeftCameraDistortion", ovrset.m_leftCameraDistortion);
@@ -294,8 +297,10 @@ namespace OVR
 			write(cvfs, "R1", ovrset.m_R1);
 			write(cvfs, "R2", ovrset.m_R2);
 			write(cvfs, "T", ovrset.m_trans);
-			write(cvfs, "RightFocalPoint", m_cameraCalibration[OV_CAMEYE_LEFT].focalPoint);
-			write(cvfs, "LeftFocalPoint", m_cameraCalibration[OV_CAMEYE_RIGHT].focalPoint);
+			write(cvfs, "LeftFocalPoint", m_cameraCalibration[OV_CAMEYE_LEFT].focalPoint);
+			write(cvfs, "RightFocalPoint", m_cameraCalibration[OV_CAMEYE_RIGHT].focalPoint);
+			write(cvfs, "LeftFOVY", m_cameraCalibration[OV_CAMEYE_LEFT].fovY);
+			write(cvfs, "RightFOVY", m_cameraCalibration[OV_CAMEYE_RIGHT].fovY);
 			cvfs.release();
 		}
 	}

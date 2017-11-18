@@ -54,8 +54,6 @@ public class Ovrvision : MonoBehaviour
 	private const int MARKERGET_ARG10 = 10;
 	private const int MARKERGET_RECONFIGURE_NUM = 10;
 
-	private const float IMAGE_ZOFFSET = 0.02f;
-
 	// ------ Function ------
 
 	// Use this for initialization
@@ -130,9 +128,9 @@ public class Ovrvision : MonoBehaviour
 		//Plane reset
 		CameraPlaneLeft.transform.localScale = new Vector3(OvrPro.aspectW, -OvrPro.aspectH, 1.0f);
 		CameraPlaneRight.transform.localScale = new Vector3(OvrPro.aspectW, -OvrPro.aspectH, 1.0f);
-		CameraPlaneLeft.transform.localPosition = new Vector3(-0.032f, 0.0f, OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
-		float gapx = (CameraRightGap.x - 0.032f) * (282.6231f) / (OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
-		CameraPlaneRight.transform.localPosition = new Vector3(gapx * 0.001f, 0.0f, OvrPro.GetFloatPoint() + IMAGE_ZOFFSET);
+		CameraPlaneLeft.transform.localPosition = new Vector3(-0.032f, 0.0f, OvrPro.GetFloatPoint());
+		float gapx = (CameraRightGap.x - 0.032f) * (282.6231f) / (OvrPro.GetFloatPoint());
+		CameraPlaneRight.transform.localPosition = new Vector3(gapx * 0.001f, 0.0f, OvrPro.GetFloatPoint());
 
 		UnityEngine.XR.InputTracking.Recenter();
 
@@ -215,6 +213,12 @@ public class Ovrvision : MonoBehaviour
 		OvrPro.UpdateImage(CameraTexLeftPtr, CameraTexRightPtr);
 
 		if (useOvrvisionAR) OvrvisionARRender();
+		else
+		{
+			OvrvisionTracker[] otobjs = GameObject.FindObjectsOfType(typeof(OvrvisionTracker)) as OvrvisionTracker[];
+			foreach (OvrvisionTracker otobj in otobjs)
+				otobj.UpdateTransformNone();
+		}
 		if (useOvrvisionTrack) OvrvisionTrackRender();
 	}
 

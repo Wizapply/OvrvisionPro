@@ -47,6 +47,8 @@ void OvrvisionSetting::InitValue()
 	m_propWhiteBalanceB = 1536;	//WhitebalanceB
 	m_propWhiteBalanceAuto = 1; //WhitebalanceAuto
 
+	m_pixelSize = cv::Size(1280.0, 960.0);
+
 	m_leftCameraInstric = (cv::Mat_<double>(3,3)
 		<< 6.7970157255511901e+002, 0., 6.0536133655058381e+002, 0., 6.8042527485960966e+002, 5.5465392353996174e+002, 0., 0., 1.);
 	m_rightCameraInstric = (cv::Mat_<double>(3,3)
