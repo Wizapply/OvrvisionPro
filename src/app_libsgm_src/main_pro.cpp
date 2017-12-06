@@ -53,24 +53,24 @@ unsigned char* g_output_data8 = NULL;
 /* -- Functions ------------------------------------------------------------- */
 
 /*
- * Initialize application
- */
+* Initialize application
+*/
 int Initialize()
 {
 	int locationID = 0;
-    OVR::Camprop cameraMode = OVR::OV_CAMVR_FULL;
+	OVR::Camprop cameraMode = OVR::OV_CAMVR_FULL;
 
 #ifdef WIN32
 	AllocConsole();
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONIN$", "r", stdin);
 #endif
-    
+
 	if (__argc > 2) {
 		//__argv[0]; ApplicationPath
 		locationID = atoi(__argv[1]);
 		cameraMode = (OVR::Camprop)atoi(__argv[2]);
-        printf("Ovrvisin Pro mode changed. ID:%d, Mode:%d\n",locationID,cameraMode);
+		printf("Ovrvisin Pro mode changed. ID:%d, Mode:%d\n", locationID, cameraMode);
 	}
 
 	//Initialize Wizapply library 
@@ -79,7 +79,7 @@ int Initialize()
 	/*------------------------------------------------------------------*/
 
 	// Library setting
-	wzSetClearColor(0.0f,0.0f,0.0f,1);
+	wzSetClearColor(0.0f, 0.0f, 0.0f, 1);
 	wzSetSpriteScSize(APPSCREEN_WIDTH, APPSCREEN_HEIGHT);	// Sprite setting
 	wzSetCursorScSize(APPSCREEN_WIDTH, APPSCREEN_HEIGHT);	// Screen cursor setting
 
@@ -113,8 +113,8 @@ int Initialize()
 }
 
 /*
- * Application exit
- */
+* Application exit
+*/
 int Terminate()
 {
 	//Delete object
@@ -133,8 +133,8 @@ int Terminate()
 }
 
 /*
- * Draw Thread Function
- */
+* Draw Thread Function
+*/
 void DrawLoop(void)
 {
 	wzSetDepthTest(TRUE);		//Depth off
@@ -148,10 +148,10 @@ void DrawLoop(void)
 	{
 		unsigned char* daad = new unsigned char[g_camWidth*g_camHeight];
 		unsigned char* daad2 = new unsigned char[g_camWidth*g_camHeight];
-		unsigned char* outputs = new unsigned char[g_camWidth*g_camHeight*4];
+		unsigned char* outputs = new unsigned char[g_camWidth*g_camHeight * 4];
 
 		//Full Draw
-        g_pOvrvision->PreStoreCamData(g_processMode);
+		g_pOvrvision->PreStoreCamData(g_processMode);
 		unsigned char* p = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_LEFT);
 		unsigned char* p2 = g_pOvrvision->GetCamImageBGRA(OVR::OV_CAMEYE_RIGHT);
 
@@ -176,7 +176,8 @@ void DrawLoop(void)
 					outputs[ds + 1] = 0x00;
 					outputs[ds + 2] = 0xFF;
 					outputs[ds + 3] = 0xFF;
-				} else if(j > g_camWidth / 2 - 2 && j < g_camWidth / 2 + 2 &&
+				}
+				else if (j > g_camWidth / 2 - 2 && j < g_camWidth / 2 + 2 &&
 					i > g_camHeight / 2 - 30 && i < g_camHeight / 2 + 30) {
 					outputs[ds + 0] = 0x00;
 					outputs[ds + 1] = 0x00;
@@ -230,7 +231,8 @@ void DrawLoop(void)
 		delete[] daad2;
 		delete[] outputs;
 
-	} else 
+	}
+	else
 		wzClear();
 
 	// Debug infomation
@@ -245,8 +247,8 @@ void DrawLoop(void)
 	wzPrintf(20, 60, "Draw:%.2f", wzGetDrawFPS());
 
 	int post = (475 * g_camWidth) + (480);
-	float da = 58.0f * g_pOvrvision->GetCamFocalPoint() / (float)g_output_data8[post];
-	wzPrintf(20, 90, "DEPTH:%.1f mm", da);
+	float da = 60 / (1.0f - (float)g_output_data8[post] / 64.0f);
+	wzPrintf(20, 90, "DEPTH:%.2f mm", da);
 
 	//AR infomation
 	int row = 120;

@@ -35,6 +35,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_oculus_cv1_app", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_app_libsgm", "ovrvision_app_libsgm.vcxproj", "{1B0C4CE1-6426-49DB-93FB-51FE37DF6F96}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_libsgm", "ovrvision_libsgm.vcxproj", "{8C2079ED-A646-46F9-B1CE-3E83925FF389}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -58,7 +60,9 @@ Global
 		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Release|x64.ActiveCfg = Release|x64
 		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Release|x64.Build.0 = Release|x64
 		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Debug|Win32.Build.0 = Debug|Win32
 		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Debug|x64.ActiveCfg = Debug|x64
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Debug|x64.Build.0 = Debug|x64
 		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|Win32
 		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|x64
 		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Release|Win32.ActiveCfg = Release|Win32
@@ -90,7 +94,6 @@ Global
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Debug|x64.ActiveCfg = Debug|Win32
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.MetaioARRelease|Win32.ActiveCfg = Release|Win32
-		{E42951C1-45D8-4186-97FE-B66DA8834D64}.MetaioARRelease|Win32.Build.0 = Release|Win32
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.MetaioARRelease|x64.ActiveCfg = Release|Win32
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Release|Win32.ActiveCfg = Release|Win32
 		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Release|Win32.Build.0 = Release|Win32
@@ -100,9 +103,7 @@ Global
 		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Debug|x64.ActiveCfg = Debug|x64
 		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Debug|x64.Build.0 = Debug|x64
 		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|Win32
-		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.MetaioARRelease|Win32.Build.0 = MetaioARRelease|Win32
 		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|x64
-		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.MetaioARRelease|x64.Build.0 = MetaioARRelease|x64
 		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Release|Win32.ActiveCfg = Release|Win32
 		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Release|Win32.Build.0 = Release|Win32
 		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Release|x64.ActiveCfg = Release|x64
@@ -111,11 +112,16 @@ Global
 		{1B0C4CE1-6426-49DB-93FB-51FE37DF6F96}.Debug|x64.ActiveCfg = Debug|x64
 		{1B0C4CE1-6426-49DB-93FB-51FE37DF6F96}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|x64
 		{1B0C4CE1-6426-49DB-93FB-51FE37DF6F96}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|x64
-		{1B0C4CE1-6426-49DB-93FB-51FE37DF6F96}.MetaioARRelease|x64.Build.0 = MetaioARRelease|x64
 		{1B0C4CE1-6426-49DB-93FB-51FE37DF6F96}.Release|Win32.ActiveCfg = Release|x64
-		{1B0C4CE1-6426-49DB-93FB-51FE37DF6F96}.Release|Win32.Build.0 = Release|x64
 		{1B0C4CE1-6426-49DB-93FB-51FE37DF6F96}.Release|x64.ActiveCfg = Release|x64
 		{1B0C4CE1-6426-49DB-93FB-51FE37DF6F96}.Release|x64.Build.0 = Release|x64
+		{8C2079ED-A646-46F9-B1CE-3E83925FF389}.Debug|Win32.ActiveCfg = Debug|x64
+		{8C2079ED-A646-46F9-B1CE-3E83925FF389}.Debug|x64.ActiveCfg = Debug|x64
+		{8C2079ED-A646-46F9-B1CE-3E83925FF389}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|x64
+		{8C2079ED-A646-46F9-B1CE-3E83925FF389}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|x64
+		{8C2079ED-A646-46F9-B1CE-3E83925FF389}.Release|Win32.ActiveCfg = Release|x64
+		{8C2079ED-A646-46F9-B1CE-3E83925FF389}.Release|x64.ActiveCfg = Release|x64
+		{8C2079ED-A646-46F9-B1CE-3E83925FF389}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

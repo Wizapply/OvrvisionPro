@@ -16,7 +16,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1B0C4CE1-6426-49DB-93FB-51FE37DF6F96}</ProjectGuid>
-    <RootNamespace>example_wizapply</RootNamespace>
+    <RootNamespace>ovrvision_app_libsgm</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">

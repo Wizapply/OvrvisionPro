@@ -611,6 +611,11 @@ CSHARP_EXPORT int ovSaveCamStatusToEEPROM()
 	return g_ovOvrvision->CameraParamSaveEEPROM();
 }
 
+CSHARP_EXPORT void* ovOvrvisionProObject()
+{
+	return (void*)g_ovOvrvision;
+}
+
 ////////////// Ovrvision AR //////////////
 
 // void ovARRender(void)
