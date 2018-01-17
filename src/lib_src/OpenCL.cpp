@@ -620,7 +620,7 @@ namespace OVR
 					char buffer[32];
 					if (clGetDeviceInfo(id[j], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, &length) == CL_SUCCESS)
 					{
-						char devicename[80];
+						char devicename[128];
 						cl_uint freq, units;
 						clGetDeviceInfo(id[j], CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(cl_uint), &freq, &length);
 						clGetDeviceInfo(id[j], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint), &units, &length);
@@ -635,12 +635,13 @@ namespace OVR
 								maxFreq = freq;
 								maxUnits = units;
 								device_found = true;
+
+								//NVIDIA or AMD priority
+								clGetPlatformInfo(_platformId, CL_PLATFORM_NAME, sizeof(devicename), devicename, NULL);
+								if (strstr(devicename, "NVIDIA") != NULL) maxFreq *= 100;
+								if (strstr(devicename, "Advanced Micro Devices") != NULL) maxFreq *= 100;
+								if (strstr(devicename, "AMD") != NULL) maxFreq *= 100;
 							}
-						}
-						else
-						{
-							//clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
-							printf("%d Compute units %dMHz : %s\n", units, freq, buffer);
 						}
 					}
 				}
@@ -732,7 +733,7 @@ namespace OVR
 				{
 					cl_device_type t;
 					clGetDeviceInfo(devices[k], CL_DEVICE_TYPE, sizeof(t), &t, NULL);
-					//if (t == CL_DEVICE_TYPE_GPU)
+					if (t == CL_DEVICE_TYPE_GPU)
 					{
 						clGetDeviceInfo(devices[k], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
 						char buffer[32];
