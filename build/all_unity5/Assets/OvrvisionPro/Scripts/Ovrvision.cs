@@ -282,6 +282,9 @@ public class Ovrvision : MonoBehaviour
 	// Quit
 	void OnDestroy()
 	{
+		if (!OvrPro.camStatus)
+			return;
+
 		//Close camera
 		if(!OvrPro.Close())
 			Debug.LogError ("Ovrvision close error!!");

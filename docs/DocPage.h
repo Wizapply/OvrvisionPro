@@ -247,6 +247,13 @@ How to remove when dust has adhered to the image sensor.<br />
 
 /*! @page page7 Release Notes
 @tableofcontents
+@section sdk13 Ovrvision SDK v1.9
+Date : 19/Jan/2018<br />
+<b>Notes</b>
+- Fixed the bug of laptop PC with built-in Intel GPU. 
+- The calculation way of the focal length point was changed(Re-calibration necessity).
+- Supported ubuntu-64bit. 
+
 @section sdk12 Ovrvision SDK v1.8
 Date : 12/Oct/2016<br />
 <b>Notes</b>
