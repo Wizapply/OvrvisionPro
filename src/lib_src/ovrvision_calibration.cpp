@@ -216,7 +216,7 @@ namespace OVR
 
 		double fovx = 0;
 		double focalLength = 0;
-		cv::Point2d principalPoint = (0, 0);
+		cv::Point2d principalPoint(0.0, 0.0);
 		double aspectRatio = 0;
 
 		m_cameraCalibration[OV_CAMEYE_LEFT].pixelSize = m_image_size;
