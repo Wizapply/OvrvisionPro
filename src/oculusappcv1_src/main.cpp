@@ -198,7 +198,7 @@ static bool MainLoop(bool retryCreate)
 		cameraMode = (OVR::Camprop)atoi(__argv[2]);
 	}
 
-	if (ovrvision.Open(locationID, cameraMode,2, DIRECTX.Device)) {
+	if (ovrvision.Open(locationID, cameraMode,NULL,2, DIRECTX.Device)) {
 		width = ovrvision.GetCamWidth();
 		height = ovrvision.GetCamHeight();
 		pixelsize = ovrvision.GetCamPixelsize();

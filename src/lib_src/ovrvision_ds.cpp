@@ -472,6 +472,8 @@ int OvrvisionDirectShow::CreateDevice(usb_id vid, usb_id pid,
 		}
 	}
 
+	int iFormatSel = -1;
+
 	//Media setting
 	if(SUCCEEDED(hr) && m_pMediaControl != NULL)
 	{
@@ -484,6 +486,7 @@ int OvrvisionDirectShow::CreateDevice(usb_id vid, usb_id pid,
 		if(SUCCEEDED(ppEnum->Next(1, &pCameraOutPin, NULL)))
 		{
 			//Media config
+			
 			int iCount = 0, iSize = 0;
 			pCameraOutPin->QueryInterface(IID_IAMStreamConfig, (void**)&pAMSConfig);
 
@@ -506,7 +509,7 @@ int OvrvisionDirectShow::CreateDevice(usb_id vid, usb_id pid,
 					m_height = pVih->bmiHeader.biHeight;
 					m_rate = (int)framerate;
 
-					iFormat = iFormat;	//selected
+					iFormatSel = iFormat;	//selected
 				}
 
 				//mediatype free
@@ -518,6 +521,11 @@ int OvrvisionDirectShow::CreateDevice(usb_id vid, usb_id pid,
 			pCameraOutPin->Release();
 		}
 		ppEnum->Release();
+	}
+
+	if (iFormatSel == -1) {
+		m_devstatus = OV_DEVNONE;
+		return RESULT_FAILED;		//ERROR
 	}
 
 	//Data area allocation

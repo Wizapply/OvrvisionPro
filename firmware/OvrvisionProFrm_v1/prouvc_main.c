@@ -163,6 +163,7 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
     if (event == CYU3P_GPIF_EVT_SM_INTERRUPT)
     {
         CyU3PReturnStatus_t apiRetStatus = CY_U3P_SUCCESS;
+        glHitFV = CyTrue; /* Flag is reset to indicate that the partial buffer was committed to USB */
 
         /* Verify that the current state is a terminal state for the GPIF state machine. */
         switch (currentState)
@@ -172,12 +173,10 @@ static void UVCFxGpifCB (CyU3PGpifEventType event, uint8_t currentState)
 			   in the UVCAppThread_Entry function to succeed one more time with less than full producer buffer count */
             case PARTIAL_BUF_IN_SCK0:
             	apiRetStatus = CyU3PDmaMultiChannelSetWrapUp (&glChHandleUVCStream, 0);
-                glHitFV = CyTrue; /* Flag is reset to indicate that the partial buffer was committed to USB */
             	if(apiRetStatus != CY_U3P_SUCCESS) {/*nothing*/}
                 break;
             case PARTIAL_BUF_IN_SCK1:
             	apiRetStatus = CyU3PDmaMultiChannelSetWrapUp (&glChHandleUVCStream, 1);
-                glHitFV = CyTrue; /* Flag is reset to indicate that the partial buffer was committed to USB */
             	if(apiRetStatus != CY_U3P_SUCCESS) {/*nothing*/}
                 break;
             case FULL_BUF_IN_SCK0:
