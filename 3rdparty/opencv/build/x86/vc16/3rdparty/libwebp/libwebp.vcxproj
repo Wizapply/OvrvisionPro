@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6E09D9F0-E565-3730-8F11-6B79F106B7F5}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>libwebp</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\lib\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libwebp.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libwebpd</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\lib\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libwebp.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libwebp</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\cpu-features;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4244;4267</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_VARIADIC_MAX=10;WEBP_USE_THREAD;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_VARIADIC_MAX=10;WEBP_USE_THREAD;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\cpu-features;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\cpu-features;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\cpu-features;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4244;4267</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NDEBUG;_VARIADIC_MAX=10;WEBP_USE_THREAD;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NDEBUG;_VARIADIC_MAX=10;WEBP_USE_THREAD;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\cpu-features;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\cpu-features;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0/3rdparty/libwebp/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+C:\Users\SIMVR-PC2018002\Desktop\cmake-3.15.0-rc2-win64-x64\bin\cmake.exe -SC:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0 -BC:/Users/SIMVR-PC2018002/Desktop/OvrvisionProSDK/3rdparty/opencv/build/x86/vc16 --check-stamp-file C:/Users/SIMVR-PC2018002/Desktop/OvrvisionProSDK/3rdparty/opencv/build/x86/vc16/3rdparty/libwebp/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\libwebp\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0/3rdparty/libwebp/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+C:\Users\SIMVR-PC2018002\Desktop\cmake-3.15.0-rc2-win64-x64\bin\cmake.exe -SC:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0 -BC:/Users/SIMVR-PC2018002/Desktop/OvrvisionProSDK/3rdparty/opencv/build/x86/vc16 --check-stamp-file C:/Users/SIMVR-PC2018002/Desktop/OvrvisionProSDK/3rdparty/opencv/build/x86/vc16/3rdparty/libwebp/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\libwebp\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\alpha.c">
+      <ObjectFileName>$(IntDir)/dec/alpha.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\buffer.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\frame.c">
+      <ObjectFileName>$(IntDir)/dec/frame.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\idec.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\io.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\layer.c">
+      <ObjectFileName>$(IntDir)/dec/layer.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\quant.c">
+      <ObjectFileName>$(IntDir)/dec/quant.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\tree.c">
+      <ObjectFileName>$(IntDir)/dec/tree.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\vp8.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\vp8l.c">
+      <ObjectFileName>$(IntDir)/dec/vp8l.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\webp.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\cpu.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\dec.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\dec_neon.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\dec_sse2.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\enc.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\enc_neon.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\enc_sse2.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\lossless.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\upsampling.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\upsampling_neon.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\upsampling_sse2.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\yuv.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\alpha.c">
+      <ObjectFileName>$(IntDir)/enc/alpha.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\analysis.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\backward_references.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\config.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\cost.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\filter.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\frame.c">
+      <ObjectFileName>$(IntDir)/enc/frame.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\histogram.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\iterator.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\layer.c">
+      <ObjectFileName>$(IntDir)/enc/layer.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\picture.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\quant.c">
+      <ObjectFileName>$(IntDir)/enc/quant.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\syntax.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\token.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\tree.c">
+      <ObjectFileName>$(IntDir)/enc/tree.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\vp8l.c">
+      <ObjectFileName>$(IntDir)/enc/vp8l.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\webpenc.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\mux\muxedit.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\mux\muxinternal.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\mux\muxread.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\bit_reader.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\bit_writer.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\color_cache.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\filters.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\huffman.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\huffman_encode.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\quant_levels.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\quant_levels_dec.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\rescaler.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\thread.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\utils.c" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\decode_vp8.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\vp8i.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\vp8li.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\webpi.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\dsp.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\lossless.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\yuv.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\backward_references.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\cost.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\histogram.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\vp8enci.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\vp8li.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\mux\muxi.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\bit_reader.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\bit_writer.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\color_cache.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\filters.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\huffman.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\huffman_encode.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\quant_levels.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\quant_levels_dec.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\rescaler.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\thread.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\utils.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\decode.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\demux.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\encode.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\format_constants.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\mux.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\mux_types.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\types.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\ZERO_CHECK.vcxproj">
+      <Project>{6E39C476-C596-3453-A199-1637FA627027}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

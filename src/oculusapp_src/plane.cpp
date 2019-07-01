@@ -4,13 +4,8 @@
 // Include DirectX
 #include "Win32_DirectXAppUtil.h"
 
-// Need DirectX install
-#include "D3DX11async.h"
-
 // Include the Oculus SDK
 //#include "OVR_CAPI_D3D.h"
-
-#pragma comment(lib,"d3dx11.lib")
 
 //Shader
 LPCSTR g_planeShader =
@@ -85,7 +80,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	ID3DBlob *pErrors = NULL;
 
 	//Create Vertex Shader 
-	if (FAILED(D3DX11CompileFromMemory(g_planeShader, strlen(g_planeShader), NULL, NULL, NULL, "VSFunc", "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0, NULL, &pCompiledShader, &pErrors, NULL)))
+	if (FAILED(D3DCompile(g_planeShader, strlen(g_planeShader), NULL, NULL, NULL, "VSFunc", "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0, &pCompiledShader, &pErrors)))
 	{
 		MessageBox(0, L"Vertex Shader Read Error!", NULL, MB_OK);
 		MessageBox(0, L"Please install DirectX11 Runtime from the page of Microsoft.", NULL, MB_OK);
@@ -116,7 +111,7 @@ int InitializeCamPlane(ID3D11Device* Device, ID3D11DeviceContext* DeviceContext,
 	DeviceContext->IASetInputLayout(VertexLayout);
 
 	//Create Pixel shader
-	if (FAILED(D3DX11CompileFromMemory(g_planeShader, strlen(g_planeShader), NULL, NULL, NULL, "PSFunc", "ps_4_0", 0, 0, NULL, &pCompiledShader, &pErrors, NULL)))
+	if (FAILED(D3DCompile(g_planeShader, strlen(g_planeShader), NULL, NULL, NULL, "PSFunc", "ps_4_0", 0, 0, &pCompiledShader, &pErrors)))
 	{
 		MessageBox(0, L"Pixel Shader Read Error!", NULL, MB_OK);
 		MessageBox(0, (LPCWSTR)pErrors->GetBufferPointer(), NULL, MB_OK);

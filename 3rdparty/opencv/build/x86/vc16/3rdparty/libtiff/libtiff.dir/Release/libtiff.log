@@ -1,0 +1,82 @@
+﻿  Building Custom Rule C:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0/3rdparty/libtiff/CMakeLists.txt
+  tif_aux.c
+  tif_close.c
+  tif_codec.c
+  tif_color.c
+  tif_compress.c
+  tif_dir.c
+  tif_dirinfo.c
+  tif_dirread.c
+  tif_dirwrite.c
+  tif_dumpmode.c
+  tif_error.c
+  tif_extension.c
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(574,28): warning C4456:  'v' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(162,20): message :  'v' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(595,33): warning C4456:  'v' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(162,20): message :  'v' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(601,32): warning C4456:  'v' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(162,20): message :  'v' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(607,34): warning C4456:  'v' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(162,20): message :  'v' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(613,33): warning C4456:  'v' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(162,20): message :  'v' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(620,34): warning C4456:  'v' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(162,20): message :  'v' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(626,33): warning C4456:  'v' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(162,20): message :  'v' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(633,34): warning C4456:  'v' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(162,20): message :  'v' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(639,33): warning C4456:  'v' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(162,20): message :  'v' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(647,33): warning C4456:  'v' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(162,20): message :  'v' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(653,34): warning C4456:  'v' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(162,20): message :  'v' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(667,29): warning C4456:  'fip' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(164,22): message :  'fip' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(678,29): warning C4456:  'fip' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(164,22): message :  'fip' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(688,29): warning C4456:  'fip' を宣言すると、以前のローカル宣言が隠蔽されます
+  tif_fax3.c
+  tif_fax3sm.c
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dir.c(164,22): message :  'fip' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dirread.c(4570,23): warning C4456:  'm' を宣言すると、以前のローカル宣言が隠蔽されます
+  tif_flush.c
+  tif_getimage.c
+  tif_jbig.c
+  tif_jpeg_12.c
+  tif_jpeg.c
+  tif_luv.c
+  tif_lzma.c
+  tif_lzw.c
+  tif_next.c
+  tif_ojpeg.c
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_dirread.c(4529,18): message :  'm' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_getimage.c(1622,17): warning C4457:  'r' を宣言すると、関数パラメーターが隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_getimage.c(1614,1): message :  'r' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_getimage.c(1622,19): warning C4457:  'g' を宣言すると、関数パラメーターが隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_getimage.c(1614,1): message :  'g' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_getimage.c(1622,21): warning C4457:  'b' を宣言すると、関数パラメーターが隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_getimage.c(1614,1): message :  'b' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_getimage.c(1622,23): warning C4457:  'a' を宣言すると、関数パラメーターが隠蔽されます
+  tif_open.c
+  tif_packbits.c
+  tif_pixarlog.c
+  tif_predict.c
+  tif_print.c
+  tif_read.c
+  tif_strip.c
+  tif_swab.c
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_getimage.c(1614,1): message :  'a' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_print.c(567,15): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+  tif_thunder.c
+  tif_tile.c
+  tif_version.c
+  tif_warning.c
+  tif_write.c
+  tif_zip.c
+  tif_win32.c
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libtiff\tif_print.c(238,12): message :  'i' の宣言を確認してください
+  tif_stream.cxx
+  libtiff.vcxproj -> C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\lib\Release\libtiff.lib

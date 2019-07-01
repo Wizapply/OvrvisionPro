@@ -193,7 +193,7 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, const char *pVendorNam
 
 	//Initialize OpenCL system
 	try {
-		if (deviceType == 2 && pDevice != NULL)
+		if (deviceType == 1 && pDevice != NULL)
 		{
 			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, D3D11, pDevice, pVendorName); // When use D3D11 sharing texture
 		}
@@ -219,6 +219,11 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, const char *pVendorNam
 	}
 	//Opened
 	m_isOpen = true;
+
+	if (m_pOpenCL != NULL)
+	{
+		m_pOpenCL->CheckGPU();
+	}
 
 #if defined(WIN32)
 	m_pODS->StartTransfer();

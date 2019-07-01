@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\C#">
+      <UniqueIdentifier>{489bc474-01f1-46d2-b02e-5e9b46251784}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ArUco">
+      <UniqueIdentifier>{6735623e-031a-458b-b79d-f34e15979c16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\OpenCL">
+      <UniqueIdentifier>{834efb58-1a66-4a76-9d88-b838440c331b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_ar.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_ar_metaio.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rdparty\aruco\ar_omp.cpp">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rdparty\aruco\arucofidmarkers.cpp">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rdparty\aruco\board.cpp">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rdparty\aruco\boarddetector.cpp">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rdparty\aruco\cameraparameters.cpp">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rdparty\aruco\chromaticmask.cpp">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rdparty\aruco\cvdrawingutils.cpp">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rdparty\aruco\highlyreliablemarkers.cpp">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rdparty\aruco\marker.cpp">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rdparty\aruco\markerdetector.cpp">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rdparty\aruco\subpixelcorner.cpp">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_calibration.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_ds.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_pro.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_csharp.cpp">
+      <Filter>ソース ファイル\C#</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\OpenCL.cpp">
+      <Filter>ソース ファイル\OpenCL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_setting.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_csharp_unity.cpp">
+      <Filter>ソース ファイル\C#</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_tracking.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib_src\ovrvision_v4l.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\ovrvision_ar.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib_src\ovrvision_calibration.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib_src\ovrvision_ds.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib_src\ovrvision_setting.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\ar_omp.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\aruco.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\arucofidmarkers.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\board.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\boarddetector.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\cameraparameters.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\chromaticmask.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\cvdrawingutils.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\exports.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\highlyreliablemarkers.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\marker.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\markerdetector.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rdparty\aruco\subpixelcorner.h">
+      <Filter>ソース ファイル\ArUco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib_src\OpenCL_kernel.h">
+      <Filter>ソース ファイル\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib_src\OvrvisionProCL.h">
+      <Filter>ソース ファイル\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ovrvision_pro.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ovrvision_tracking.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib_src\ovrvision_avf.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib_src\ovrvision_handimage.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\lib_src\ovrvision_v4l.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\lib_src\ovrvision_avf.m">
+      <Filter>ソース ファイル</Filter>
+    </None>
+  </ItemGroup>
+</Project>
