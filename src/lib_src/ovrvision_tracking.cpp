@@ -17,10 +17,14 @@
 #include "ovrvision_tracking.h"
 
 #pragma warning(disable : 4819)
-#include <opencv/cv.h>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
+#include <opencv2/highgui.hpp>
+#if CV_MAJOR_VERSION == 4
+#define CV_LOAD_IMAGE_UNCHANGED cv::IMREAD_UNCHANGED
+#endif
 #pragma warning(default : 4819)
 
 //for cv::imshow
@@ -35,7 +39,7 @@
 #pragma comment(lib, "libjasperd.lib")
 #pragma comment(lib, "strmiids.lib")
 #pragma comment(lib, "zlibd.lib")
-#pragma comment(lib, "opencv_highgui300d.lib")
+//#pragma comment(lib, "opencv_highgui300d.lib")
 #else
 #pragma comment(lib, "Comctl32.lib")
 #pragma comment(lib, "IlmImf.lib")
@@ -47,7 +51,7 @@
 #pragma comment(lib, "libjasper.lib")
 #pragma comment(lib, "strmiids.lib")
 #pragma comment(lib, "zlib.lib")
-#pragma comment(lib, "opencv_highgui300.lib")
+//#pragma comment(lib, "opencv_highgui300.lib")
 #endif
 //#define OV_CONFIG_USEOPENCL
 

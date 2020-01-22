@@ -18,6 +18,13 @@
 //for eeprom system
 #include "ovrvision_pro.h"
 
+#if CV_MAJOR_VERSION == 4
+#include <opencv2/core/core_c.h>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
+//#define CV_STORAGE_READ cv::READ
+//#define CV_STORAGE_FORMAT_XML cv::FORMAT_XML
+#endif
 /////////// VARS AND DEFS ///////////
 
 //Group

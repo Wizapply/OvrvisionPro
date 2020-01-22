@@ -31,6 +31,7 @@
 
 
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
 
 #define CL_USE_DEPRECATED_OPENCL_1_2_APIS // We use OpenCL 1.2 functions
 #ifdef WIN32

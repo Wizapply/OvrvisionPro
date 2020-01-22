@@ -23,6 +23,7 @@
 //Marker 
 #ifdef _OVRVISION_EXPORTS
 #include <opencv2/opencv.hpp>
+#include <opencv2/calib3d/calib3d_c.h>
 //#include <opencv2/ocl/ocl.hpp>
 #else
 #error This source is only dll export.
