@@ -43,16 +43,13 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Debug|Win32.ActiveCfg = Debug|Win32
-		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Debug|Win32.Build.0 = Debug|Win32
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Debug|Win32.ActiveCfg = Debug|x64
 		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Debug|x64.ActiveCfg = Debug|x64
 		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Debug|x64.Build.0 = Debug|x64
-		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|Win32
-		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.MetaioARRelease|Win32.Build.0 = MetaioARRelease|Win32
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|x64
 		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|x64
 		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.MetaioARRelease|x64.Build.0 = MetaioARRelease|x64
-		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Release|Win32.ActiveCfg = Release|Win32
-		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Release|Win32.Build.0 = Release|Win32
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Release|Win32.ActiveCfg = Release|x64
 		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Release|x64.ActiveCfg = Release|x64
 		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Release|x64.Build.0 = Release|x64
 		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Debug|Win32.ActiveCfg = Debug|Win32

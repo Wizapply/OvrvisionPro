@@ -77,9 +77,11 @@ bool OvrvisionSetting::ReadEEPROM() {
 
 	if (m_pSystem == NULL)
 		return false;
-
+#if CV_MAJOR_VERSION == 4
+	cv::FileStorage cvfs("ovrvisionpro_conf.xml", FileStorage::READ | FileStorage::FORMAT_XML);
+#else
 	cv::FileStorage cvfs("ovrvisionpro_conf.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML);
-
+#endif
 	if (!cvfs.isOpened())
 	{
 		size_t i;
@@ -186,7 +188,7 @@ bool OvrvisionSetting::ReadEEPROM() {
 		int mode = 0;
 
 		//get data node
-		cv::FileNode data(cvfs.fs, NULL);
+		cv::FileNode data(cvfs.root());
 
 		mode = data["Mode"];
 

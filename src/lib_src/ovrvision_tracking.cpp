@@ -44,7 +44,11 @@
 #pragma comment(lib, "Comctl32.lib")
 #pragma comment(lib, "IlmImf.lib")
 #pragma comment(lib, "ippicvmt.lib")
+#if CV_MAJOR_VERSION == 4
+#pragma comment(lib, "libjpeg-turbo.lib")
+#else
 #pragma comment(lib, "libjpeg.lib")
+#endif
 #pragma comment(lib, "libpng.lib")
 #pragma comment(lib, "libtiff.lib")
 #pragma comment(lib, "libwebp.lib")
