@@ -43,7 +43,6 @@
 #pragma comment(lib, "libjasperd.lib")
 #pragma comment(lib, "strmiids.lib")
 #pragma comment(lib, "zlibd.lib")
-//#pragma comment(lib, "opencv_highgui300d.lib")
 #else
 #pragma comment(lib, "Comctl32.lib")
 #pragma comment(lib, "IlmImf.lib")
@@ -59,7 +58,6 @@
 #pragma comment(lib, "libjasper.lib")
 #pragma comment(lib, "strmiids.lib")
 #pragma comment(lib, "zlib.lib")
-//#pragma comment(lib, "opencv_highgui300.lib")
 #endif
 //#define OV_CONFIG_USEOPENCL
 
