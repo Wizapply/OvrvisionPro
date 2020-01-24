@@ -5,10 +5,6 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="MetaioARRelease|x64">
-      <Configuration>MetaioARRelease</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
@@ -26,12 +22,6 @@
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MetaioARRelease|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
@@ -42,15 +32,11 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\..\OpenCV\OpenCV_4.1.2_statlic.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='MetaioARRelease|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\..\OpenCV\OpenCV_4.1.2_statlic.props" />
+    <Import Project="..\..\..\..\..\..\..\opencv-4.1.2\OpenCV_4.1.2_statlic.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\..\OpenCV\OpenCV_4.1.2_statlic.props" />
+    <Import Project="..\..\..\..\..\..\..\opencv-4.1.2\OpenCV_4.1.2_statlic.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -63,12 +49,6 @@
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>.\..\..\bin\x64\</OutDir>
-    <IntDir>$(ProjectName)\$(Configuration)_$(Platform)\</IntDir>
-    <LinkIncremental>false</LinkIncremental>
-    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MetaioARRelease|x64'">
     <OutDir>.\..\..\bin\x64\</OutDir>
     <IntDir>$(ProjectName)\$(Configuration)_$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
@@ -92,9 +72,9 @@
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenGL32.lib;opencv_calib3d300d.lib;opencv_core300d.lib;opencv_hal300d.lib;opencv_features2d300d.lib;opencv_flann300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_ml300d.lib;opencv_objdetect300d.lib;opencv_photo300d.lib;opencv_shape300d.lib;opencv_stitching300d.lib;opencv_superres300d.lib;opencv_video300d.lib;opencv_videoio300d.lib;opencv_videostab300d.lib;zlibd.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenGL32.lib;strmiids.lib;ippiwd.lib;ittnotifyd.lib;zlibd.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ovrvisiond.dll</OutputFile>
-      <AdditionalLibraryDirectories>.\..\..\3rdparty\opencl\amd\lib\x64;.\..\..\3rdparty\ippicv\lib\intel64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\..\..\3rdparty\opencl\amd\lib\x86_64;.\..\..\3rdparty\ippicv\lib\intel64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
@@ -122,7 +102,7 @@
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenGL32.lib;strmiids.lib;ippicvmt.lib;opencv_calib3d412.lib;opencv_core412.lib;opencv_features2d412.lib;opencv_flann412.lib;opencv_highgui412.lib;opencv_imgcodecs412.lib;opencv_imgproc412.lib;opencv_objdetect412.lib;opencv_stitching412.lib;opencv_ml412.lib;opencv_photo412.lib;opencv_shape412.lib;opencv_superres412.lib;opencv_video412.lib;opencv_videoio412.lib;zlib.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenGL32.lib;strmiids.lib;ippiw.lib;ittnotify.lib;zlib.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ovrvision.dll</OutputFile>
       <AdditionalLibraryDirectories>.\..\..\3rdparty\opencl\amd\lib\x86_64;.\..\..\3rdparty\ippicv\lib\intel64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -134,39 +114,6 @@
     </Link>
     <PostBuildEvent>
       <Command>If Exist $(TargetDir)\ovrvision.dll copy $(TargetDir)\ovrvision.dll $(SolutionDir)..\all_unity5\Assets\OvrvisionPro\Plugins\x86_64\ovrvision.dll /Y /B</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MetaioARRelease|x64'">
-    <Midl>
-      <TargetEnvironment>X64</TargetEnvironment>
-    </Midl>
-    <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\..\..\include;.\..\..\3rdparty\aruco;.\..\..\3rdparty;.\..\..\3rdparty\opencl\amd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_OVRVISION_EXPORTS;OPENCV_VERSION_3;__OVRVISION_METAIO_AR__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalUsingDirectories>
-      </AdditionalUsingDirectories>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies>OpenGL32.lib;strmiids.lib;ippicvmt.lib;opencv_calib3d300.lib;opencv_core300.lib;opencv_hal300.lib;opencv_features2d300.lib;opencv_flann300.lib;opencv_highgui300.lib;opencv_imgcodecs300.lib;opencv_imgproc300.lib;opencv_ml300.lib;opencv_objdetect300.lib;opencv_photo300.lib;opencv_shape300.lib;opencv_stitching300.lib;opencv_superres300.lib;opencv_video300.lib;opencv_videoio300.lib;opencv_videostab300.lib;zlib.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)ovrvision_metaio.dll</OutputFile>
-      <AdditionalLibraryDirectories>.\..\..\3rdparty\opencv\build\x64\vc12\staticlib;.\..\..\3rdparty\opencl\amd\lib\x86_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <TargetMachine>MachineX64</TargetMachine>
-      <ImportLibrary>$(OutDir)ovrvision64.lib</ImportLibrary>
-    </Link>
-    <PostBuildEvent>
-      <Command>If Exist $(TargetDir)\ovrvision_metaio.dll copy $(TargetDir)\ovrvision_metaio.dll $(SolutionDir)..\all_unity5_metaio\Assets\OvrvisionPro\Plugins\x86_64\ovrvision.dll /Y /B</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

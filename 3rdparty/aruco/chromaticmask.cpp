@@ -27,6 +27,7 @@ or implied, of Rafael Muñoz Salinas.
 ********************************/
 
 #include "chromaticmask.h"
+#include <opencv2/imgproc/types_c.h>
 #include <set>
 // #include <omp.h>
 
