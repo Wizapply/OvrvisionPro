@@ -13,7 +13,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(OPENCV_DIR)\x64\vc16\staticlib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_world347d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_calib3d412d.lib;opencv_core412d.lib;opencv_features2d412d.lib;opencv_flann412d.lib;opencv_imgcodecs412d.lib;opencv_imgproc412d.lib;opencv_ml412d.lib;opencv_video412d.lib;opencv_videoio412d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
     </PostBuildEvent>
