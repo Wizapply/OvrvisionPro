@@ -659,6 +659,7 @@ int OvrvisionPro::GetCameraGain(){
 
 	return value;
 }
+
 void OvrvisionPro::SetCameraGain(int value){
 	if (!m_isOpen)
 		return;
@@ -677,6 +678,43 @@ void OvrvisionPro::SetCameraGain(int value){
 #elif defined(LINUX)
 	m_pOV4L->SetCameraSetting(OV_CAMSET_GAIN, value, false);
 #endif
+}
+
+/*!	@brief Set white balance gain of the Ovrvision.
+	@param value gain. Range of 1000K - 12000K */
+void OvrvisionPro::SetCameraWhiteBalanceKelvin(int kelvin)
+{
+	if (!m_isOpen)
+		return;
+
+	int temp = kelvin / 100;
+	int red, green, blue;
+
+	if (temp <= 66) {
+		red = 255;
+		green = temp;
+		green = 99.4708025861 * std::log(green) - 161.1195681661;
+
+		if (temp <= 19) {
+			blue = 0;
+		}
+		else {
+			blue = temp - 10;
+			blue = 138.5177312231 * std::log(blue) - 305.0447927307;
+		}
+
+	}
+	else {
+		red = temp - 60;
+		red = 329.698727446 * std::pow(red, -0.1332047592);
+		green = temp - 60;
+		green = 288.1221695283 * std::pow(green, -0.0755148492);
+		blue = 255;
+	}
+
+	SetCameraWhiteBalanceR(red * 16);
+	SetCameraWhiteBalanceG(green * 16);
+	SetCameraWhiteBalanceB(blue * 16);
 }
 
 int OvrvisionPro::GetCameraWhiteBalanceR(){

@@ -45,6 +45,14 @@ wzVector3  g_hmdGap;
 bool g_useOvrvisionAR = false;
 bool g_useOvrvisionTracking = false;
 
+
+FILE _iob[] = { *stdin, *stdout, *stderr };
+
+extern "C" FILE * __cdecl __iob_func(void)
+{
+	return _iob;
+}
+
 /* -- Function prototype ------------------------------------------------- */
 
 
