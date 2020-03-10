@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EF3D65E2-0F22-351D-BAF9-1D0A8056D29D}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>libpng</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\lib\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libpng.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libpngd</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\lib\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libpng.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libpng</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_VARIADIC_MAX=10;PNG_CONFIGURE_LIBPNG;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_VARIADIC_MAX=10;PNG_CONFIGURE_LIBPNG;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ProcessorNumber>8</ProcessorNumber>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NDEBUG;_VARIADIC_MAX=10;PNG_CONFIGURE_LIBPNG;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NDEBUG;_VARIADIC_MAX=10;PNG_CONFIGURE_LIBPNG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\zlib;C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng;C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0/3rdparty/libpng/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+C:\Users\SIMVR-PC2018002\Desktop\cmake-3.15.0-rc2-win64-x64\bin\cmake.exe -SC:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0 -BC:/Users/SIMVR-PC2018002/Desktop/OvrvisionProSDK/3rdparty/opencv/build/x86/vc16 --check-stamp-file C:/Users/SIMVR-PC2018002/Desktop/OvrvisionProSDK/3rdparty/opencv/build/x86/vc16/3rdparty/libpng/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\libpng\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0/3rdparty/libpng/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+C:\Users\SIMVR-PC2018002\Desktop\cmake-3.15.0-rc2-win64-x64\bin\cmake.exe -SC:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0 -BC:/Users/SIMVR-PC2018002/Desktop/OvrvisionProSDK/3rdparty/opencv/build/x86/vc16 --check-stamp-file C:/Users/SIMVR-PC2018002/Desktop/OvrvisionProSDK/3rdparty/opencv/build/x86/vc16/3rdparty/libpng/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\libpng\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\png.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngerror.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngget.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngmem.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngpread.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngread.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngrio.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngrtran.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngrutil.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngset.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngtrans.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngwio.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngwrite.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngwtran.c" />
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngwutil.c" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\png.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngconf.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngdebug.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pnginfo.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pnglibconf.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngpriv.h" />
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libpng\pngstruct.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\ZERO_CHECK.vcxproj">
+      <Project>{6E39C476-C596-3453-A199-1637FA627027}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\zlib\zlib.vcxproj">
+      <Project>{FB47AEAF-D912-33EF-A567-5F8B507EE899}</Project>
+      <Name>zlib</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

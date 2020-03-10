@@ -1,0 +1,10 @@
+^C:\USERS\SIMVR-PC2018002\DESKTOP\OPENCV-3.0.0\3RDPARTY\LIBTIFF\CMAKELISTS.TXT
+setlocal
+C:\Users\SIMVR-PC2018002\Desktop\cmake-3.15.0-rc2-win64-x64\bin\cmake.exe -SC:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0 -BC:/Users/SIMVR-PC2018002/Desktop/OvrvisionProSDK/3rdparty/opencv/build/x86/vc16 --check-stamp-file C:/Users/SIMVR-PC2018002/Desktop/OvrvisionProSDK/3rdparty/opencv/build/x86/vc16/3rdparty/libtiff/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

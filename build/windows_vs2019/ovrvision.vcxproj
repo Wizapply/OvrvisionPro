@@ -130,7 +130,11 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.\..\..\include;.\..\..\3rdparty\aruco;.\..\..\3rdparty\opencv\build\include;.\..\..\3rdparty;.\..\..\3rdparty\opencl\amd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_OVRVISION_EXPORTS;OPENCV_VERSION_3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+<<<<<<< HEAD
       <MinimalRebuild>true</MinimalRebuild>
+=======
+      <MinimalRebuild>false</MinimalRebuild>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -141,9 +145,15 @@
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
+<<<<<<< HEAD
       <AdditionalDependencies>OpenGL32.lib;opencv_calib3d300d.lib;opencv_core300d.lib;opencv_hal300d.lib;opencv_features2d300d.lib;opencv_flann300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_ml300d.lib;opencv_objdetect300d.lib;opencv_photo300d.lib;opencv_shape300d.lib;opencv_stitching300d.lib;opencv_superres300d.lib;opencv_video300d.lib;opencv_videoio300d.lib;opencv_videostab300d.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ovrvisiond.dll</OutputFile>
       <AdditionalLibraryDirectories>.\..\..\3rdparty\opencv\build\x86\vc16\staticlib;.\..\..\3rdparty\opencl\amd\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+=======
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenGL32.lib;opencv_calib3d300d.lib;opencv_core300d.lib;opencv_hal300d.lib;opencv_features2d300d.lib;opencv_flann300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_ml300d.lib;opencv_objdetect300d.lib;opencv_photo300d.lib;opencv_shape300d.lib;opencv_stitching300d.lib;opencv_superres300d.lib;opencv_video300d.lib;opencv_videoio300d.lib;opencv_videostab300d.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)ovrvisiond.dll</OutputFile>
+      <AdditionalLibraryDirectories>.\..\..\3rdparty\opencv\build\x86\vc16\lib\Debug;.\..\..\3rdparty\opencl\amd\lib\x86;.\..\..\3rdparty\opencv\build\x86\vc16\3rdparty\lib\Debug;.\..\..\3rdparty\ippicv\lib\ia32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -161,7 +171,11 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.\..\..\include;.\..\..\3rdparty\aruco;.\..\..\3rdparty\opencv\build\include;.\..\..\3rdparty;.\..\..\3rdparty\opencl\amd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_OVRVISION_EXPORTS;OPENCV_VERSION_3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+<<<<<<< HEAD
       <MinimalRebuild>true</MinimalRebuild>
+=======
+      <MinimalRebuild>false</MinimalRebuild>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader />
@@ -171,9 +185,15 @@
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
+<<<<<<< HEAD
       <AdditionalDependencies>OpenGL32.lib;strmiids.lib;ippicvmt.lib;opencv_calib3d300d.lib;opencv_core300d.lib;opencv_hal300d.lib;opencv_features2d300d.lib;opencv_flann300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_ml300d.lib;opencv_objdetect300d.lib;opencv_photo300d.lib;opencv_shape300d.lib;opencv_stitching300d.lib;opencv_superres300d.lib;opencv_video300d.lib;opencv_videoio300d.lib;opencv_videostab300d.lib;zlibd.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ovrvisiond.dll</OutputFile>
       <AdditionalLibraryDirectories>.\..\..\3rdparty\opencv\build\x64\vc16\staticlib;.\..\..\3rdparty\opencl\amd\lib\x86_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+=======
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenGL32.lib;opencv_calib3d300d.lib;opencv_core300d.lib;opencv_hal300d.lib;opencv_features2d300d.lib;opencv_flann300d.lib;opencv_highgui300d.lib;opencv_imgcodecs300d.lib;opencv_imgproc300d.lib;opencv_ml300d.lib;opencv_objdetect300d.lib;opencv_photo300d.lib;opencv_shape300d.lib;opencv_stitching300d.lib;opencv_superres300d.lib;opencv_video300d.lib;opencv_videoio300d.lib;opencv_videostab300d.lib;zlibd.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)ovrvisiond.dll</OutputFile>
+      <AdditionalLibraryDirectories>.\..\..\3rdparty\opencv\build\x64\vc16\lib\Debug;.\..\..\3rdparty\opencl\amd\lib\x64;.\..\..\3rdparty\opencv\build\x64\vc16\3rdparty\lib\Debug;.\..\..\3rdparty\ippicv\lib\intel64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
@@ -198,9 +218,15 @@
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
+<<<<<<< HEAD
       <AdditionalDependencies>OpenGL32.lib;opencv_calib3d300.lib;opencv_core300.lib;opencv_hal300.lib;opencv_features2d300.lib;opencv_flann300.lib;opencv_highgui300.lib;opencv_imgcodecs300.lib;opencv_imgproc300.lib;opencv_ml300.lib;opencv_objdetect300.lib;opencv_photo300.lib;opencv_shape300.lib;opencv_stitching300.lib;opencv_superres300.lib;opencv_video300.lib;opencv_videoio300.lib;opencv_videostab300.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ovrvision.dll</OutputFile>
       <AdditionalLibraryDirectories>.\..\..\3rdparty\opencv\build\x86\vc16\staticlib;.\..\..\3rdparty\opencl\amd\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+=======
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenGL32.lib;opencv_calib3d300.lib;opencv_core300.lib;opencv_hal300.lib;opencv_features2d300.lib;opencv_flann300.lib;opencv_highgui300.lib;opencv_imgcodecs300.lib;opencv_imgproc300.lib;opencv_ml300.lib;opencv_objdetect300.lib;opencv_photo300.lib;opencv_shape300.lib;opencv_stitching300.lib;opencv_superres300.lib;opencv_video300.lib;opencv_videoio300.lib;opencv_videostab300.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)ovrvision.dll</OutputFile>
+      <AdditionalLibraryDirectories>.\..\..\3rdparty\opencv\build\x86\vc16\lib\Release;.\..\..\3rdparty\opencl\amd\lib\x86;.\..\..\3rdparty\opencv\build\x86\vc16\3rdparty\lib\Release;.\..\..\3rdparty\ippicv\lib\ia32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -260,9 +286,15 @@
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
+<<<<<<< HEAD
       <AdditionalDependencies>OpenGL32.lib;strmiids.lib;ippicvmt.lib;opencv_calib3d300.lib;opencv_core300.lib;opencv_hal300.lib;opencv_features2d300.lib;opencv_flann300.lib;opencv_highgui300.lib;opencv_imgcodecs300.lib;opencv_imgproc300.lib;opencv_ml300.lib;opencv_objdetect300.lib;opencv_photo300.lib;opencv_shape300.lib;opencv_stitching300.lib;opencv_superres300.lib;opencv_video300.lib;opencv_videoio300.lib;opencv_videostab300.lib;zlib.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ovrvision.dll</OutputFile>
       <AdditionalLibraryDirectories>.\..\..\3rdparty\opencv\build\x64\vc16\staticlib;.\..\..\3rdparty\opencl\amd\lib\x86_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+=======
+      <AdditionalDependencies>legacy_stdio_definitions.lib;OpenGL32.lib;strmiids.lib;ippicvmt.lib;opencv_calib3d300.lib;opencv_core300.lib;opencv_hal300.lib;opencv_features2d300.lib;opencv_flann300.lib;opencv_highgui300.lib;opencv_imgcodecs300.lib;opencv_imgproc300.lib;opencv_ml300.lib;opencv_objdetect300.lib;opencv_photo300.lib;opencv_shape300.lib;opencv_stitching300.lib;opencv_superres300.lib;opencv_video300.lib;opencv_videoio300.lib;opencv_videostab300.lib;zlib.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)ovrvision.dll</OutputFile>
+      <AdditionalLibraryDirectories>.\..\..\3rdparty\opencv\build\x64\vc16\lib\Release;.\..\..\3rdparty\opencl\amd\lib\x64;.\..\..\3rdparty\opencv\build\x64\vc16\3rdparty\lib\Release;.\..\..\3rdparty\ippicv\lib\intel64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

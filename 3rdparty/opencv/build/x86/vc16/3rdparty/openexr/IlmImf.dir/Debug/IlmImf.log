@@ -1,0 +1,105 @@
+﻿  Building Custom Rule C:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0/3rdparty/openexr/CMakeLists.txt
+  half.cpp
+  IexBaseExc.cpp
+  IexThrowErrnoExc.cpp
+  ImfAcesFile.cpp
+  ImfAttribute.cpp
+  ImfB44Compressor.cpp
+  ImfBoxAttribute.cpp
+  ImfCRgbaFile.cpp
+  ImfChannelList.cpp
+  ImfChannelListAttribute.cpp
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(687,23): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(659,9): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(722,23): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(659,9): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(767,19): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(659,9): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(822,27): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(767,14): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(909,19): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(892,9): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(1004,23): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(892,9): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(1033,23): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+  ImfChromaticities.cpp
+  ImfChromaticitiesAttribute.cpp
+  ImfCompressionAttribute.cpp
+  ImfCompressor.cpp
+  ImfConvert.cpp
+  ImfDoubleAttribute.cpp
+  ImfEnvmap.cpp
+  ImfEnvmapAttribute.cpp
+  ImfFloatAttribute.cpp
+  ImfFrameBuffer.cpp
+  ImfFramesPerSecond.cpp
+  ImfHeader.cpp
+  ImfHuf.cpp
+  ImfIO.cpp
+  ImfInputFile.cpp
+  ImfIntAttribute.cpp
+  ImfKeyCode.cpp
+  ImfKeyCodeAttribute.cpp
+  ImfLineOrderAttribute.cpp
+  ImfLut.cpp
+  ImfMatrixAttribute.cpp
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfB44Compressor.cpp(892,9): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfInputFile.cpp(263,22): warning C4456:  'yStart' を宣言すると、以前のローカル宣言が隠蔽されます
+  ImfMisc.cpp
+  ImfMultiView.cpp
+  ImfOpaqueAttribute.cpp
+  ImfOutputFile.cpp
+  ImfPreviewImage.cpp
+  ImfPizCompressor.cpp
+  ImfPreviewImageAttribute.cpp
+  ImfPxr24Compressor.cpp
+  ImfRational.cpp
+  ImfRationalAttribute.cpp
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfInputFile.cpp(203,9): message :  'yStart' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(372,23): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(344,9): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(395,23): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(344,9): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(455,19): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(344,9): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(581,19): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(520,9): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(614,23): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(520,9): message :  'i' の宣言を確認してください
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(637,23): warning C4456:  'i' を宣言すると、以前のローカル宣言が隠蔽されます
+  ImfRgbaFile.cpp
+  ImfRgbaYca.cpp
+  ImfRleCompressor.cpp
+  ImfScanLineInputFile.cpp
+  ImfStandardAttributes.cpp
+  ImfStdIO.cpp
+  ImfStringAttribute.cpp
+  ImfStringVectorAttribute.cpp
+  ImfTestFile.cpp
+  ImfThreading.cpp
+  ImfTileDescriptionAttribute.cpp
+  ImfTileOffsets.cpp
+  ImfTiledInputFile.cpp
+  ImfTiledMisc.cpp
+  ImfTiledOutputFile.cpp
+  ImfTiledRgbaFile.cpp
+  ImfTimeCode.cpp
+  ImfTimeCodeAttribute.cpp
+  ImfVecAttribute.cpp
+  ImfVersion.cpp
+  ImfWav.cpp
+  ImfZipCompressor.cpp
+  IlmThread.cpp
+  IlmThreadMutex.cpp
+  IlmThreadMutexWin32.cpp
+  IlmThreadPool.cpp
+  IlmThreadSemaphore.cpp
+  IlmThreadSemaphoreWin32.cpp
+  IlmThreadWin32.cpp
+  ImathColorAlgo.cpp
+  ImathFun.cpp
+  ImathMatrixAlgo.cpp
+  ImathRandom.cpp
+  ImathVec.cpp
+C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\openexr\IlmImf\ImfPizCompressor.cpp(520,9): message :  'i' の宣言を確認してください
+  IlmImf.vcxproj -> C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\lib\Debug\IlmImfd.lib

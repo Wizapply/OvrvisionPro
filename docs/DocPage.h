@@ -117,7 +117,7 @@ You should do a calibration, because it connects with environment. <br />
 -# bin -> x86 or x64 -> <b>ovrvision_app.exe</b>を起動
 
 @section license SDK License
-Copyright(C) 2013-2016 Wizapply<br />
+Copyright(C) 2013-2019 Wizapply<br />
 <br />
 MIT License<br />
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR<br />
@@ -247,6 +247,13 @@ How to remove when dust has adhered to the image sensor.<br />
 
 /*! @page page7 Release Notes
 @tableofcontents
+@section sdk14 Ovrvision SDK v2.0
+Date : 1/July/2019<br />
+<b>Notes</b>
+- Build support for Visual Stduio 2019.
+- Fixed GPU(opencl) selection issues.
+- Fixed bugs in the OpenCL program.
+
 @section sdk13 Ovrvision SDK v1.9
 Date : 19/Jan/2018<br />
 <b>Notes</b>

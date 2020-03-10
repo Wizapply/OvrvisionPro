@@ -1,0 +1,17 @@
+﻿  Building Custom Rule C:/Users/SIMVR-PC2018002/Desktop/opencv-3.0.0/3rdparty/libpng/CMakeLists.txt
+  png.c
+  pngerror.c
+  pngget.c
+  pngmem.c
+  pngpread.c
+  pngread.c
+  pngrio.c
+  pngrtran.c
+  pngrutil.c
+  pngset.c
+  pngtrans.c
+  pngwio.c
+  pngwrite.c
+  pngwtran.c
+  pngwutil.c
+  libpng.vcxproj -> C:\Users\SIMVR-PC2018002\Desktop\OvrvisionProSDK\3rdparty\opencv\build\x86\vc16\3rdparty\lib\Debug\libpngd.lib

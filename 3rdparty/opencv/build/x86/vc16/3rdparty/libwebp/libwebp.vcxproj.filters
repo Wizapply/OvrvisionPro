@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\alpha.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\buffer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\frame.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\idec.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\io.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\layer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\quant.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\tree.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\vp8.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\vp8l.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\webp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\cpu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\dec.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\dec_neon.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\dec_sse2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\enc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\enc_neon.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\enc_sse2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\lossless.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\upsampling.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\upsampling_neon.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\upsampling_sse2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\yuv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\alpha.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\analysis.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\backward_references.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\config.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\cost.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\filter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\frame.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\histogram.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\iterator.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\layer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\picture.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\quant.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\syntax.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\token.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\tree.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\vp8l.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\webpenc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\mux\muxedit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\mux\muxinternal.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\mux\muxread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\bit_reader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\bit_writer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\color_cache.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\filters.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\huffman.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\huffman_encode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\quant_levels.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\quant_levels_dec.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\rescaler.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\thread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\decode_vp8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\vp8i.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\vp8li.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dec\webpi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\dsp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\lossless.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\dsp\yuv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\backward_references.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\cost.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\histogram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\vp8enci.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\enc\vp8li.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\mux\muxi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\bit_reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\bit_writer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\color_cache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\filters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\huffman.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\huffman_encode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\quant_levels.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\quant_levels_dec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\rescaler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\thread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\utils\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\decode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\demux.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\encode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\format_constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\mux.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\mux_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\webp\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\SIMVR-PC2018002\Desktop\opencv-3.0.0\3rdparty\libwebp\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{2902F4C7-EA82-3424-89A8-67313E657700}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{71351D5B-8EAC-3906-ACA4-BFEDEC0D0E42}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -16,9 +16,3 @@ Please read "LICENSE" file
 * package
 * samples The sample project for the SDK developing.
 * src : Sources
-
-# How to Build
-## Windows
-The program building method for Windows 
-## Mac OSX
-## Linux
