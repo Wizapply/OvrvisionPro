@@ -224,6 +224,9 @@ public:
 	/*!	@brief Set gain of the Ovrvision.
 		@param value gain. Range of 0 - 47 */
 	void SetCameraGain(int value);
+	/*!	@brief Set white balance gain of the Ovrvision.
+		@param value gain. Range of 1000K - 12000K */
+	void SetCameraWhiteBalanceKelvin(int kelvin);
 	/*!	@brief Get white balance R gain value of the Ovrvision.
 		@return R gain value. */
 	int GetCameraWhiteBalanceR();
