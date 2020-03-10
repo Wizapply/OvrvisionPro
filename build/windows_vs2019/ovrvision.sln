@@ -1,0 +1,114 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision", "ovrvision.vcxproj", "{93964603-90DE-4EA0-9BBB-816E91AA6D4E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_app", "ovrvision_app.vcxproj", "{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ovrvision_calibration", "ovrvision_calibration\ovrvision_calibration.csproj", "{DD5351C3-7463-428E-9598-29CF37003494}"
+	ProjectSection(ProjectDependencies) = postProject
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E} = {93964603-90DE-4EA0-9BBB-816E91AA6D4E}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ovrvision_app_csharp", "ovrvision_app_csharp\ovrvision_app_csharp.csproj", "{0AC0392B-425F-4D3D-9E90-20A3D3346EB8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E} = {93964603-90DE-4EA0-9BBB-816E91AA6D4E}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_oculus_app", "ovrvision_oculus_app.vcxproj", "{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0AC0392B-425F-4D3D-9E90-20A3D3346EB8} = {0AC0392B-425F-4D3D-9E90-20A3D3346EB8}
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647} = {FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}
+		{DD5351C3-7463-428E-9598-29CF37003494} = {DD5351C3-7463-428E-9598-29CF37003494}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_clear_eeprom", "ovrvision_clear_eeprom\ovrvision_clear_eeprom.vcxproj", "{E42951C1-45D8-4186-97FE-B66DA8834D64}"
+	ProjectSection(ProjectDependencies) = postProject
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E} = {93964603-90DE-4EA0-9BBB-816E91AA6D4E}
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647} = {FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}
+		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0} = {3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ovrvision_oculus_cv1_app", "ovrvision_oculuscv1_app.vcxproj", "{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		MetaioARRelease|Win32 = MetaioARRelease|Win32
+		MetaioARRelease|x64 = MetaioARRelease|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Debug|Win32.Build.0 = Debug|Win32
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Debug|x64.ActiveCfg = Debug|x64
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Debug|x64.Build.0 = Debug|x64
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|Win32
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.MetaioARRelease|Win32.Build.0 = MetaioARRelease|Win32
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|x64
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.MetaioARRelease|x64.Build.0 = MetaioARRelease|x64
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Release|Win32.ActiveCfg = Release|Win32
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Release|Win32.Build.0 = Release|Win32
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Release|x64.ActiveCfg = Release|x64
+		{93964603-90DE-4EA0-9BBB-816E91AA6D4E}.Release|x64.Build.0 = Release|x64
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Debug|Win32.Build.0 = Debug|Win32
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Debug|x64.ActiveCfg = Debug|x64
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Debug|x64.Build.0 = Debug|x64
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|Win32
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|x64
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Release|Win32.ActiveCfg = Release|Win32
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Release|Win32.Build.0 = Release|Win32
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Release|x64.ActiveCfg = Release|x64
+		{FC03EA7C-1DE4-40E0-86FB-69AFCBC4E647}.Release|x64.Build.0 = Release|x64
+		{DD5351C3-7463-428E-9598-29CF37003494}.Debug|Win32.ActiveCfg = Release|x86
+		{DD5351C3-7463-428E-9598-29CF37003494}.Debug|x64.ActiveCfg = Release|x86
+		{DD5351C3-7463-428E-9598-29CF37003494}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|x86
+		{DD5351C3-7463-428E-9598-29CF37003494}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|x86
+		{DD5351C3-7463-428E-9598-29CF37003494}.Release|Win32.ActiveCfg = Release|x86
+		{DD5351C3-7463-428E-9598-29CF37003494}.Release|Win32.Build.0 = Release|x86
+		{DD5351C3-7463-428E-9598-29CF37003494}.Release|x64.ActiveCfg = Release|x86
+		{0AC0392B-425F-4D3D-9E90-20A3D3346EB8}.Debug|Win32.ActiveCfg = Release|x86
+		{0AC0392B-425F-4D3D-9E90-20A3D3346EB8}.Debug|x64.ActiveCfg = Release|x86
+		{0AC0392B-425F-4D3D-9E90-20A3D3346EB8}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|x86
+		{0AC0392B-425F-4D3D-9E90-20A3D3346EB8}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|x86
+		{0AC0392B-425F-4D3D-9E90-20A3D3346EB8}.Release|Win32.ActiveCfg = Release|x86
+		{0AC0392B-425F-4D3D-9E90-20A3D3346EB8}.Release|Win32.Build.0 = Release|x86
+		{0AC0392B-425F-4D3D-9E90-20A3D3346EB8}.Release|x64.ActiveCfg = Release|x86
+		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}.Debug|x64.ActiveCfg = Debug|x64
+		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|Win32
+		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|x64
+		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}.Release|Win32.ActiveCfg = Release|Win32
+		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}.Release|Win32.Build.0 = Release|Win32
+		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}.Release|x64.ActiveCfg = Release|x64
+		{3FA81A91-B419-46A4-B5BB-5BD5C616D2A0}.Release|x64.Build.0 = Release|x64
+		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Debug|x64.ActiveCfg = Debug|Win32
+		{E42951C1-45D8-4186-97FE-B66DA8834D64}.MetaioARRelease|Win32.ActiveCfg = Release|Win32
+		{E42951C1-45D8-4186-97FE-B66DA8834D64}.MetaioARRelease|x64.ActiveCfg = Release|Win32
+		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Release|Win32.ActiveCfg = Release|Win32
+		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Release|Win32.Build.0 = Release|Win32
+		{E42951C1-45D8-4186-97FE-B66DA8834D64}.Release|x64.ActiveCfg = Release|Win32
+		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Debug|Win32.Build.0 = Debug|Win32
+		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Debug|x64.ActiveCfg = Debug|x64
+		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Debug|x64.Build.0 = Debug|x64
+		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.MetaioARRelease|Win32.ActiveCfg = MetaioARRelease|Win32
+		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.MetaioARRelease|x64.ActiveCfg = MetaioARRelease|x64
+		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Release|Win32.ActiveCfg = Release|Win32
+		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Release|Win32.Build.0 = Release|Win32
+		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Release|x64.ActiveCfg = Release|x64
+		{E9B00D42-41F2-47DE-8003-B1D6FD7B8886}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B5301D11-D1D7-418C-B85D-5A92A86902EA}
+	EndGlobalSection
+EndGlobal
