@@ -18,11 +18,6 @@
 //for eeprom system
 #include "ovrvision_pro.h"
 
-#if CV_MAJOR_VERSION == 4
-#include <opencv2/core/core_c.h>
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc/imgproc_c.h>
-#endif
 /////////// VARS AND DEFS ///////////
 
 //Group
@@ -52,6 +47,8 @@ void OvrvisionSetting::InitValue()
 	m_propWhiteBalanceB = 1536;	//WhitebalanceB
 	m_propWhiteBalanceAuto = 1; //WhitebalanceAuto
 
+	m_pixelSize = cv::Size(1280.0, 960.0);
+
 	m_leftCameraInstric = (cv::Mat_<double>(3,3)
 		<< 6.7970157255511901e+002, 0., 6.0536133655058381e+002, 0., 6.8042527485960966e+002, 5.5465392353996174e+002, 0., 0., 1.);
 	m_rightCameraInstric = (cv::Mat_<double>(3,3)
@@ -67,7 +64,7 @@ void OvrvisionSetting::InitValue()
 	m_trans = (cv::Mat_<double>(1,3)
 		<< -6.1249914523852240e+001, 7.5758816805225948e-001, 1.6870717314641153e+000);
 	m_focalPoint = (cv::Mat_<float>(1, 1)
-		<< 428.0f);
+		<< 2.5f);
 }
 
 //Read EEPROM Setting
@@ -75,11 +72,9 @@ bool OvrvisionSetting::ReadEEPROM() {
 
 	if (m_pSystem == NULL)
 		return false;
-#if CV_MAJOR_VERSION == 4
-	cv::FileStorage cvfs("ovrvisionpro_conf.xml", FileStorage::READ | FileStorage::FORMAT_XML);
-#else
-	cv::FileStorage cvfs("ovrvisionpro_conf.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML);
-#endif
+
+	cv::FileStorage cvfs(".\\ovrvisionpro_conf.xml", CV_STORAGE_READ | CV_STORAGE_FORMAT_XML);
+
 	if (!cvfs.isOpened())
 	{
 		size_t i;
@@ -186,7 +181,7 @@ bool OvrvisionSetting::ReadEEPROM() {
 		int mode = 0;
 
 		//get data node
-		cv::FileNode data(cvfs.root());
+		cv::FileNode data(cvfs.fs, NULL);
 
 		mode = data["Mode"];
 
@@ -374,7 +369,7 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 	cv::Mat distorsionCoeff(1, 8, CV_32FC1, 0.0);
 	cv::Size size(width, height);
 	cv::Size sizeCalibBase(1280, 960);
-	double m_focalPointScale = 1.00;
+	double m_focalPointScale = 1.00; 
 	//Rect roi; // Valid Region of Interest
 
 	//Adjustment calc
@@ -403,7 +398,7 @@ void OvrvisionSetting::GetUndistortionMatrix(Cameye eye, ovMat &mapX, ovMat &map
 
     // Stereo rectify maps need calibrated camera matrix and coeffs
 	if (eye == OV_CAMEYE_LEFT)
-	{ 
+	{
 		cv::Mat camPs = getOptimalNewCameraMatrix(cameramat, distorsionCoeff, size, 0, size, &m_leftROI, false);
 
 		//Calc clone

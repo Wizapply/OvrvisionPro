@@ -117,7 +117,7 @@ You should do a calibration, because it connects with environment. <br />
 -# bin -> x86 or x64 -> <b>ovrvision_app.exe</b>を起動
 
 @section license SDK License
-Copyright(C) 2013-2016 Wizapply<br />
+Copyright(C) 2013-2019 Wizapply<br />
 <br />
 MIT License<br />
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR<br />
@@ -214,8 +214,10 @@ Examplesフォルダ→vs2015又はvs2013のソリューションをVisualStudio
 */
 
 /*! @page page5 Use in Unity5
+Unity Editor should use Version 5.3 or more. <br />
+Unity Editorは必ずVersion 5.3以上をご利用ください。
 @image html into_unity1.jpg
-Explain the usage in the case of using OvrvisionPro in Unity5. <br />
+Explain the usage in the case of using OvrvisionPro in Unity5.3. <br />
 Unity5でOvrvisionProを使用する場合の使い方を説明します。
 @image html into_unity2.jpg
 First, please import UnityPackage of OvrvisionSDK.  <br />
@@ -245,6 +247,39 @@ How to remove when dust has adhered to the image sensor.<br />
 
 /*! @page page7 Release Notes
 @tableofcontents
+@section sdk14 Ovrvision SDK v2.0
+Date : 1/July/2019<br />
+<b>Notes</b>
+- Build support for Visual Stduio 2019.
+- Fixed GPU(opencl) selection issues.
+- Fixed bugs in the OpenCL program.
+
+@section sdk13 Ovrvision SDK v1.9
+Date : 19/Jan/2018<br />
+<b>Notes</b>
+- Fixed the bug of laptop PC with built-in Intel GPU. 
+- The calculation way of the focal length point was changed(Re-calibration necessity).
+- Supported ubuntu-64bit. 
+
+@section sdk12 Ovrvision SDK v1.8
+Date : 12/Oct/2016<br />
+<b>Notes</b>
+- Oculus SDK 1.8 was supported. Work is possible at the release version Oculus Rift(CV1). 
+- Fixed the bug of Calibration Tool of Mac OS. 
+
+<b>Unimplementeds and issue</b>
+- Unreal Engine 4
+- A defect of a document.
+@section sdk11 Ovrvision SDK v1.7
+Date : 31/May/2016<br />
+<b>Notes</b>
+- OvrvisionPro new firmware was released.
+- The callback function was added.
+- Oculus SDK 1.3.2 was supported. Work is possible at the release version Oculus Rift(CV1). 
+
+<b>Unimplementeds and issue</b>
+- Unreal Engine 4
+- A defect of a document.
 @section sdk10 Ovrvision SDK v1.61
 Date : 8/Mar/2016<br />
 <b>Notes</b>

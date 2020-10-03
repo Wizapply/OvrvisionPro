@@ -15,13 +15,4 @@
 /build/all_unity5_metaio/Assets/OvrvisionPro/Plugins/ovrvision.bundle
 /build/all_unity5/Library
 /build/all_unity5_metaio/Library
-/build/windows_vs2019/.vs
-/build/windows_vs2013/.vs
-/build/windows_vs2013/x64
-*.obj
-*.tlog
-*.ipch
-*.db
-*.log
-*.pdb
-*.opendb
+metaioar_clv2

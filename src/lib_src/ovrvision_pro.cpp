@@ -83,7 +83,7 @@ OvrvisionPro::~OvrvisionPro()
 
 //Initialize
 //Open the Ovrvision
-int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *pDevice)
+int OvrvisionPro::Open(int locationID, OVR::Camprop prop, const char *pVendorName, int deviceType, void *pDevice)
 {
 	int objs = 0;
 	int challenge;
@@ -193,17 +193,17 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 
 	//Initialize OpenCL system
 	try {
-		if (deviceType == 2 && pDevice != NULL)
+		if (deviceType == 1 && pDevice != NULL)
 		{
-			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, D3D11, pDevice); // When use D3D11 sharing texture
+			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, D3D11, pDevice, pVendorName); // When use D3D11 sharing texture
 		}
 		else if (deviceType == 0)
 		{
-			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, OPENGL);    // When use OpenGL sharing texture
+			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, OPENGL, NULL, pVendorName);    // When use OpenGL sharing texture
 		}
 		else
 		{
-			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height);
+			m_pOpenCL = new OvrvisionProOpenCL(cam_width, cam_height, NONE, NULL, pVendorName);
 		}
     }
 	catch (std::exception ex)
@@ -219,6 +219,11 @@ int OvrvisionPro::Open(int locationID, OVR::Camprop prop, int deviceType, void *
 	}
 	//Opened
 	m_isOpen = true;
+
+	if (m_pOpenCL != NULL)
+	{
+		m_pOpenCL->CheckGPU();
+	}
 
 #if defined(WIN32)
 	m_pODS->StartTransfer();
@@ -314,6 +319,12 @@ void OvrvisionPro::UpdateImageTextures(void* left,void* right)
 	m_pOpenCL->UpdateImageTextures((TEXTURE)left, (TEXTURE)right);
 }
 #endif
+
+// Grayscaled images 1/2 scaled
+void OvrvisionPro::Grayscale(unsigned char *left, unsigned char *right)
+{
+	return m_pOpenCL->Grayscale(left, right, ORIGINAL);
+}
 
 // Grayscaled images 1/2 scaled
 void OvrvisionPro::GrayscaleHalf(unsigned char *left, unsigned char *right)
@@ -496,13 +507,24 @@ void OvrvisionPro::GetCamImageBGRA(unsigned char* pImageBuf, OVR::Cameye eye)
 	memcpy(pImageBuf, m_pPixels[(int)eye], m_width*m_height*OV_PIXELSIZE_RGB);
 }
 
+void OvrvisionPro::SetCallbackImageFunction(void(*func)())
+{
+#if defined(WIN32)
+	m_pODS->SetCallback(func);
+#elif defined(MACOSX)
+    [m_pOAV setCallback:(CALLBACK_FUNC*)func];
+#elif defined(LINUX)
+	m_pOV4L->SetCallback(func);
+#endif
+}
+
 //Private method
 void OvrvisionPro::InitCameraSetting()
 {
 	//Read files.
 	OvrvisionSetting ovrset(this);
 	if (ovrset.ReadEEPROM()) {
-
+		
 		//Read Set
 		SetCameraExposure(ovrset.m_propExposure);
 		SetCameraGain(ovrset.m_propGain);
@@ -522,6 +544,8 @@ void OvrvisionPro::InitCameraSetting()
 #elif defined(LINUX)
 		usleep(50000);
 #endif
+		//calc to Pixel
+		ovrset.m_focalPoint.at<float>(0) *= ((ovrset.m_pixelSize.width / SensorSizeWidth) * SensorSizeScale);
 		m_focalpoint = ovrset.m_focalPoint.at<float>(0);
 		m_rightgap[0] = (float)-ovrset.m_trans.at<double>(0);	//T:X
 		m_rightgap[1] = (float)ovrset.m_trans.at<double>(1);	//T:Y
@@ -640,6 +664,7 @@ int OvrvisionPro::GetCameraGain(){
 
 	return value;
 }
+
 void OvrvisionPro::SetCameraGain(int value){
 	if (!m_isOpen)
 		return;
@@ -658,6 +683,43 @@ void OvrvisionPro::SetCameraGain(int value){
 #elif defined(LINUX)
 	m_pOV4L->SetCameraSetting(OV_CAMSET_GAIN, value, false);
 #endif
+}
+
+/*!	@brief Set white balance gain of the Ovrvision.
+	@param value gain. Range of 1000K - 12000K */
+void OvrvisionPro::SetCameraWhiteBalanceKelvin(int kelvin)
+{
+	if (!m_isOpen)
+		return;
+
+	int temp = kelvin / 100;
+	int red, green, blue;
+
+	if (temp <= 66) {
+		red = 255;
+		green = temp;
+		green = 99.4708025861 * std::log(green) - 161.1195681661;
+
+		if (temp <= 19) {
+			blue = 0;
+		}
+		else {
+			blue = temp - 10;
+			blue = 138.5177312231 * std::log(blue) - 305.0447927307;
+		}
+
+	}
+	else {
+		red = temp - 60;
+		red = 329.698727446 * std::pow(red, -0.1332047592);
+		green = temp - 60;
+		green = 288.1221695283 * std::pow(green, -0.0755148492);
+		blue = 255;
+	}
+
+	SetCameraWhiteBalanceR(red * 16);
+	SetCameraWhiteBalanceG(green * 16);
+	SetCameraWhiteBalanceB(blue * 16);
 }
 
 int OvrvisionPro::GetCameraWhiteBalanceR(){

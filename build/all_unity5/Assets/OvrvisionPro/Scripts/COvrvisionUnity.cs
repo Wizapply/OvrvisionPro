@@ -168,6 +168,8 @@ public class COvrvisionUnity
     public int imageSizeW, imageSizeH;
 	public float aspectW, aspectH;
 
+	private const float IMAGE_ZOFFSET = 0.02f;
+
     ////////////// COvrvision ////////////////////////////////////////////
 
     //Class
@@ -351,7 +353,7 @@ public class COvrvisionUnity
 		if (!camStatus)
 			return 0.0f;
 
-		return ovGetFocalPoint() * 0.001f;	//1/1000
+		return (ovGetFocalPoint() * 0.001f) + IMAGE_ZOFFSET;	//1/1000
 	}
 
 	//AR

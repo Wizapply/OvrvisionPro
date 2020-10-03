@@ -17,7 +17,6 @@
 /////////// INCLUDE ///////////
 
 #include "ovrvision_ar.h"
-#include <opencv2/imgproc/types_c.h>
 
 /////////// VARS AND DEFS ///////////
 

@@ -41,10 +41,10 @@ const uint8_t CyFxUSBDeviceDscrSS[] =
 	0xEF,                           /* Device Class */
 	0x02,                           /* Device Sub-class */
 	0x01,                           /* Device protocol */
-	0x09,                           /* Maxpacket size for EP0 : 2^9 Bytes */
+	0x06,                           /* Maxpacket size for EP0 : 2^6 Bytes */
 	0x33,0x2C,                      /* Vendor ID*/
 	0x01,0x00,                      /* Product ID*/
-	0x03,0x01,                      /* Device release number */
+	0x05,0x01,                      /* Device release number */
 	0x01,                           /* Manufacture string index */
 	0x02,                           /* Product string index */
 	0x00,                           /* Serial number string index */
@@ -63,7 +63,7 @@ const uint8_t CyFxUSBDeviceDscrHS[] =
 	0x40,                           /* Maxpacket size for EP0 : 64 bytes */
 	0x33,0x2C,                      /* Vendor ID*/
 	0x01,0x00,                      /* Product ID*/
-	0x03,0x01,                      /* Device release number */
+	0x05,0x01,                      /* Device release number */
 	0x01,                           /* Manufacture string index */
 	0x02,                           /* Product string index */
 	0x00,                           /* Serial number string index */
@@ -164,7 +164,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	0x01,                           /* Configuration number */
 	0x00,                           /* Configuration string index */
 	0x80,                           /* Config characteristics - Bus powered */
-	0x4B,                           /* Max power consumption of device (in 8mA unit) : 600mA */
+	0x2D,                           /* Max power consumption of device (in 8mA unit) : 360mA */
 
 	/* Interface Association Descriptor */
 	0x08,                           /* Descriptor Size */
@@ -479,7 +479,7 @@ const uint8_t CyFxUSBSSConfigDscr[] =
 	/* Super Speed Endpoint Companion Descriptor */
 	0x06,                           /* Descriptor size */
 	CY_U3P_SS_EP_COMPN_DESCR,       /* SS Endpoint Companion Descriptor Type */
-	CY_FX_EP_BULK_VIDEO_PKTS_COUNT-1, /* Max number of packets per burst: 16 */
+	CY_FX_EP_BULK_VIDEO_PKTS_COUNT-1, /* Max number of packets per burst: CY_FX_EP_BULK_VIDEO_PKTS_COUNT */
 	0x00,                           /* Attribute: Streams not defined */
 	0x00,                           /* No meaning for bulk */
 	0x00
@@ -496,7 +496,7 @@ const uint8_t CyFxUSBHSConfigDscr[] =
 	0x01,                           /* Configuration number */
 	0x00,                           /* COnfiguration string index */
 	0x80,                           /* Config characteristics - Bus powered */
-	0xFA,                           /* Max power consumption of device (in 2mA unit) : 500mA */
+	0xB4,                           /* Max power consumption of device (in 2mA unit) : 360mA */
 
 	/* Interface Association Descriptor */
 	0x08,                           /* Descriptor Size */
@@ -723,8 +723,8 @@ const uint8_t CyFxUSBHSConfigDscr[] =
 	CY_U3P_USB_ENDPNT_DESCR,        /* Endpoint Descriptor Type */
 	CY_FX_EP_BULK_VIDEO,            /* Endpoint address and description */
 	0x02,                           /* BULK End point */
-	(uint8_t)(512 & 0x00FF),        /* High speed max packet size is always 512 bytes. */
-	(uint8_t)((512 & 0xFF00)>>8),
+	CY_FX_EP_BULK_VIDEO_PKT_SIZE_L, /* EP MaxPcktSize: 512B */
+	(CY_FX_EP_BULK_VIDEO_PKT_SIZE_H >> 1), /* EP MaxPcktSize: 512B */
 	0x01                            /* Servicing interval for data transfers */
 };
 

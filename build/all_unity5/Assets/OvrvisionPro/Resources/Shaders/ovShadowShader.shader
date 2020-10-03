@@ -1,4 +1,6 @@
-﻿Shader "Ovrvision/ovShadowShader" {
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Ovrvision/ovShadowShader" {
 Properties { 
 	_MainTex ("Base (RGB) TransGloss (A)", 2D) = "white" {}
 } 
@@ -27,7 +29,7 @@ SubShader {
 			v2f vert (appdata_base v) {
 				v2f o;
 				o.uv_MainTex = TRANSFORM_TEX(v.texcoord, _MainTex);
-				o.pos = mul (UNITY_MATRIX_MVP, v.vertex);
+				o.pos = UnityObjectToClipPos (v.vertex);
 				TRANSFER_SHADOW(o);
 				return o;
 			}

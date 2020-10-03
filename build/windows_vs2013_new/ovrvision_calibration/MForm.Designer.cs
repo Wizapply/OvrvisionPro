@@ -38,6 +38,7 @@
             this.cameraPicRight = new System.Windows.Forms.PictureBox();
             this.cameraPicLeft = new System.Windows.Forms.PictureBox();
             this.buttonSetting = new System.Windows.Forms.Button();
+            this.opfCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.chessPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cameraPicRight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cameraPicLeft)).BeginInit();
@@ -156,12 +157,23 @@
             this.buttonSetting.UseVisualStyleBackColor = true;
             this.buttonSetting.Click += new System.EventHandler(this.buttonSetting_Click);
             // 
+            // opfCheckBox
+            // 
+            this.opfCheckBox.AutoSize = true;
+            this.opfCheckBox.Location = new System.Drawing.Point(623, 19);
+            this.opfCheckBox.Name = "opfCheckBox";
+            this.opfCheckBox.Size = new System.Drawing.Size(137, 16);
+            this.opfCheckBox.TabIndex = 11;
+            this.opfCheckBox.Text = "Output Parameter File";
+            this.opfCheckBox.UseVisualStyleBackColor = true;
+            // 
             // MFrom
             // 
             this.AcceptButton = this.runbutton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1209, 662);
+            this.Controls.Add(this.opfCheckBox);
             this.Controls.Add(this.buttonSetting);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox1);
@@ -198,6 +210,7 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button buttonSetting;
+        private System.Windows.Forms.CheckBox opfCheckBox;
 	}
 }
 

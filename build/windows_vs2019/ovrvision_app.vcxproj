@@ -127,7 +127,11 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.\..\..\3rdparty\wizapply;.\..\..\include;.\..\..\3rdparty\LibOVR\Include;.\..\..\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;DEVELOPBUILD;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+<<<<<<< HEAD
+      <MinimalRebuild>true</MinimalRebuild>
+=======
       <MinimalRebuild>false</MinimalRebuild>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader />
@@ -135,7 +139,11 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
+<<<<<<< HEAD
+      <AdditionalDependencies>wizapply_win32d.lib;ovrvisiond.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+=======
       <AdditionalDependencies>legacy_stdio_definitions.lib;wizapply_win32d.lib;ovrvisiond.lib;%(AdditionalDependencies)</AdditionalDependencies>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <OutputFile>$(OutDir)$(ProjectName)_debug.exe</OutputFile>
       <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -155,7 +163,11 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.\..\..\3rdparty\wizapply;.\..\..\include;.\..\..\3rdparty\LibOVR\Include;.\..\..\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;DEVELOPBUILD;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+<<<<<<< HEAD
+      <MinimalRebuild>true</MinimalRebuild>
+=======
       <MinimalRebuild>false</MinimalRebuild>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader />
@@ -163,7 +175,11 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
+<<<<<<< HEAD
+      <AdditionalDependencies>wizapply_win64d.lib;ovrvision64d.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+=======
       <AdditionalDependencies>legacy_stdio_definitions.lib;wizapply_win64d.lib;ovrvision64d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <OutputFile>$(OutDir)$(ProjectName)_debug.exe</OutputFile>
       <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -188,7 +204,11 @@
       <DebugInformationFormat />
     </ClCompile>
     <Link>
+<<<<<<< HEAD
+      <AdditionalDependencies>wizapply_win32.lib;ovrvision.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+=======
       <AdditionalDependencies>legacy_stdio_definitions.lib;wizapply_win32.lib;ovrvision.lib;%(AdditionalDependencies)</AdditionalDependencies>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -242,7 +262,11 @@
       <DebugInformationFormat />
     </ClCompile>
     <Link>
+<<<<<<< HEAD
+      <AdditionalDependencies>wizapply_win64.lib;ovrvision64.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+=======
       <AdditionalDependencies>legacy_stdio_definitions.lib;wizapply_win64.lib;ovrvision64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+>>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
       <AdditionalLibraryDirectories>.\..\..\3rdparty\wizapply;.\..\..\bin\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>

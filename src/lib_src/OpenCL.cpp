@@ -18,7 +18,6 @@
 #include <stdexcept>
 
 #include "OvrvisionProCL.h"
-
 #include "OpenCL_kernel.h" // kernel code declared here const char *kernel;
 
 #define TONE_CORRECTION	// Tone correction for improve skin color estimation
@@ -340,13 +339,13 @@ namespace OVR
 	//{
 #pragma region CONSTRUCTOR_DESTRUCTOR
 		// Constructor
-	OvrvisionProOpenCL::OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode, void *pDevice)
+	OvrvisionProOpenCL::OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode, void *pDevice, const char *platform)
 		{
 			_width = width;
 			_height = height;
 			_sharing = mode;
 
-			if (SelectGPU("", "OpenCL C 1.2") == NULL) // Find OpenCL(version 1.2 and above) device 
+			if (SelectGPU(platform, "OpenCL C 1.2") == NULL) // Find OpenCL(version 1.2 and above) device 
 			{
                 throw std::runtime_error("Insufficient OpenCL version");
 			}
@@ -512,7 +511,7 @@ namespace OVR
 		size_t size = strlen(kernel);
 		_program = clCreateProgramWithSource(_context, 1, (const char **)&kernel, &size, &_errorCode);
 		SAMPLE_CHECK_ERRORS(_errorCode);
-		_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
+		_errorCode = clBuildProgram(_program, 1, &_deviceId, "-cl-std=CL1.2", NULL, NULL);
 		if (_errorCode == CL_BUILD_PROGRAM_FAILURE)
 		{
 			// Determine the size of the log
@@ -589,12 +588,33 @@ namespace OVR
 
 		cl_uint maxFreq = 0;
 		cl_uint maxUnits = 0;
+		size_t length;
 		bool device_found = false;
 		vector<cl_device_id> devices;
 
 		// Search GPU
 		for (cl_uint i = 0; i < num_of_platforms; i++)
 		{
+			char vendor[80];
+			if (clGetPlatformInfo(platforms[i], CL_PLATFORM_VENDOR, 80, vendor, &length) == CL_SUCCESS)
+			{
+				if (platform != NULL)
+				{
+					std::string platformStr(platform);
+					std::string thisPlatformStr(vendor);
+					if (platformStr.compare(thisPlatformStr) != 0)
+					{
+						// Skip because not the requested vendorID
+						continue;
+					}
+				}
+			}
+			else
+			{
+				// Unable to find Vendor ID, skipping
+				continue;
+			}
+
 			cl_uint num_of_devices = 0;
 			if (CL_SUCCESS == clGetDeviceIDs(
 				platforms[i],
@@ -616,18 +636,22 @@ namespace OVR
 				for (cl_uint j = 0; j < num_of_devices; j++)
 				{
 					devices.push_back(id[j]);
-					size_t length;
 					char buffer[32];
 					if (clGetDeviceInfo(id[j], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, &length) == CL_SUCCESS)
 					{
-						char devicename[80];
+						char devicename[128];
 						cl_uint freq, units;
 						clGetDeviceInfo(id[j], CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(cl_uint), &freq, &length);
 						clGetDeviceInfo(id[j], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint), &units, &length);
 						clGetDeviceInfo(id[j], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
-						printf("%s %d Compute units %dMHz : %s\n", devicename, units, freq, buffer);
+						printf("%s %s %d Compute units %dMHz : %s\n", vendor, devicename, units, freq, buffer);
 						if (strcmp(buffer, version) >= 0)
 						{
+							//NVIDIA or AMD GPU priority
+							if (strstr(vendor, "NVIDIA") != NULL) units *= 2000;
+							if (strstr(vendor, "Advanced Micro Devices") != NULL) units *= 1000;
+							if (strstr(vendor, "AMD") != NULL) units *= 1000;
+
 							if ((maxFreq * maxUnits) < (freq * units))
 							{
 								_platformId = platforms[i];
@@ -636,11 +660,6 @@ namespace OVR
 								maxUnits = units;
 								device_found = true;
 							}
-						}
-						else
-						{
-							//clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
-							printf("%d Compute units %dMHz : %s\n", units, freq, buffer);
 						}
 					}
 				}
@@ -668,6 +687,8 @@ namespace OVR
 		err = clGetPlatformIDs(num_of_platforms, &platforms[0], 0);
 		SAMPLE_CHECK_ERRORS(err);
 
+		int platformNum = 0;
+		
 		for (cl_uint i = 0; i < num_of_platforms; i++)
 		{
 			char devicename[80];
@@ -698,7 +719,7 @@ namespace OVR
 						clGetDeviceInfo(devices[k], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
 						char buffer[32];
 						clGetDeviceInfo(devices[k], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, NULL);
-						printf("\t%s %s\n", devicename, buffer);
+						printf("  %s %s\n", devicename, buffer);
 					}
 				}
 			}
@@ -732,12 +753,14 @@ namespace OVR
 				{
 					cl_device_type t;
 					clGetDeviceInfo(devices[k], CL_DEVICE_TYPE, sizeof(t), &t, NULL);
-					//if (t == CL_DEVICE_TYPE_GPU)
+					if (t == CL_DEVICE_TYPE_GPU)
 					{
+						platformNum++;
+
 						clGetDeviceInfo(devices[k], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
 						char buffer[32];
 						clGetDeviceInfo(devices[k], CL_DEVICE_OPENCL_C_VERSION, sizeof(buffer), buffer, NULL);
-						printf("\t%s %s\n", devicename, buffer);
+						printf("  %s %s\n", devicename, buffer);
 					}
 				}
 			}
@@ -754,7 +777,7 @@ namespace OVR
 				for (cl_uint j = 0; j < num_of_devices; j++)
 				{
 					clGetDeviceInfo(id[j], CL_DEVICE_NAME, sizeof(devicename), devicename, NULL);
-					printf("\tGPU: %s\n", devicename);
+					printf("  GPU: %s\n", devicename);
 
 					// Check version
 					char buffer[32];
@@ -764,14 +787,14 @@ namespace OVR
 						{
 							version = true;
 						}
-						printf("\tOpenCL: %s\n", buffer);
+						printf("  OpenCL: %s\n", buffer);
 					}
 
 					// Check memory capacity
 					clGetDeviceInfo(id[j], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(mem_size), &mem_size, NULL);
-					printf("\tGLOBAL_MEM_SIZE: %ld MBytes\n", mem_size / (1024 * 1024));
+					printf("  GLOBAL_MEM_SIZE: %lld MBytes\n", mem_size / (1024 * 1024));
 					clGetDeviceInfo(id[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(mem_size), &mem_size, NULL);
-					printf("\tMAX_MEM_ALLOC_SIZE: %ld MBytes\n", mem_size / (1024 * 1024));
+					printf("  MAX_MEM_ALLOC_SIZE: %lld MBytes\n", mem_size / (1024 * 1024));
 					// TODO: Determine which is dominant
 					if (256 <= mem_size / (1024 * 1024))
 					{
@@ -788,29 +811,27 @@ namespace OVR
 					if (strstr(extensions, "cl_khr_gl_sharing") != NULL)
 					{
 						gl_sharing = true;
-						printf("\tcl_khr_gl_sharing\n");
+						printf("  cl_khr_gl_sharing\n");
 					}
-#ifdef MACOSX
 					else if (strstr(extensions, "cl_APPLE_gl_sharing") != NULL)
 					{
 						gl_sharing = true;
-						printf("\tcl_APPLE_gl_sharing\n");
+						printf("  cl_APPLE_gl_sharing\n");
 					}
-#endif // MACOSX
 #ifdef WIN32
 					if (strstr(extensions, "cl_nv_d3d11_sharing") != NULL)
 					{
 						d3d11_sharing = true;
-						printf("\tcl_nv_d3d11_sharing\n");
+						printf("  cl_nv_d3d11_sharing\n");
 					}
 					else if (strstr(extensions, "cl_khr_d3d11_sharing") != NULL)
 					{
 						d3d11_sharing = true;
-						printf("\tcl_khr_d3d11_sharing\n");
+						printf("  cl_khr_d3d11_sharing\n");
 					}
 #endif
 #ifdef _DEBUG
-					puts(extensions);
+					printf(extensions);
 #endif		
 
 				}
@@ -818,32 +839,34 @@ namespace OVR
 				if (gl_sharing && memory && version && d3d11_sharing)
 				{
 					result = true;
-					printf("\tOvrvisionPro: Positive\n\n");
+					printf("  OvrvisionPro: Positive\n\n");
 				}
 #else
 				if (gl_sharing && memory && version)
 				{
 					result = true;
-					printf("\tOvrvisionPro: Positive\n\n");
+					printf("  OvrvisionPro: Positive\n\n");
 				}
 #endif
 				else if (256 <= mem_size / (1024 * 1024))
 				{
-					printf("\tOvrvisionPro: Depend on resolution\n\n");
+					printf("  OvrvisionPro: Depend on resolution\n\n");
 				}
 				else
 				{
-					printf("\tOvrvisionPro: Negative\n\n");
+					printf("  OvrvisionPro: Negative\n\n");
 				}
 			}
 		}
+
+		printf("OpenCL support devices: %d\n", platformNum);
 		return result;
 	}
 
 #ifdef WIN32
 	void __stdcall createContextCallback(const char *message, const void *data, size_t size, void *userdata)
 	{
-		printf("clCreateContext: %d %s\n", size, message);
+		printf("clCreateContext: %d %s\n", (int)size, message);
 		OutputDebugStringA(message);
 	}
 #endif
@@ -919,7 +942,7 @@ namespace OVR
 #ifdef _DEBUG
 		char buffer[80];
 		clGetDeviceInfo(_deviceId, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
-		printf("DEVICE: %s\n", buffer);
+		printf("DEVICE: %s\n\n", buffer);
 #endif
 	}
 
@@ -1027,10 +1050,8 @@ namespace OVR
 			if (pclCreateFromD3D11Texture2DKHR != NULL)
 				return true;
 		}
-		return false;
-#else
-        return false;
 #endif
+		return false;
 	}
 
 	// Create textures
@@ -1071,6 +1092,7 @@ namespace OVR
 		{
 			if (_vendorD3D11 == NVIDIA)
 			{
+				
 				_errorCode = pclEnqueueAcquireD3D11ObjectsNV(_commandQueue, 2, _texture, 0, NULL, NULL);
 				SAMPLE_CHECK_ERRORS(_errorCode);
 				SkinImages(_texture[0], _texture[1], &event[0], &event[1]);
@@ -1323,7 +1345,7 @@ namespace OVR
 		*/
 		if (_vendorD3D11 == NVIDIA)
 		{
-			return pclCreateFromD3D11Texture2DNV(_context, CL_MEM_WRITE_ONLY, texture, 0, &_errorCode);
+			return false;// pclCreateFromD3D11Texture2DNV(_context, CL_MEM_WRITE_ONLY, texture, 0, &_errorCode);
 		}
 		else
 		{
@@ -1932,9 +1954,13 @@ namespace OVR
 		clGetImageInfo(src, CL_IMAGE_WIDTH, sizeof(width), &width, NULL);
 		clGetImageInfo(src, CL_IMAGE_HEIGHT, sizeof(height), &height, NULL);
 
-		int scale = 2;
+		int scale = 1;
 		switch (scaling)
 		{
+		case ORIGINAL:
+			scale = 1;
+			break;
+
 		case HALF:
 			scale = 2;
 			break;
@@ -2003,11 +2029,15 @@ namespace OVR
 			_errorCode = clEnqueueNDRangeKernel(_commandQueue, _convertGrayscale, 2, NULL, _scaledRegion, NULL, 0, NULL, event_r);
 			SAMPLE_CHECK_ERRORS(_errorCode);
 		}
-		else 
+		else
 		{
 			uint width = _width, height = _height;
 			switch (scaling)
 			{
+			case OVR::ORIGINAL:
+				width /= 1;
+				height /= 1;
+				break;
 			case OVR::HALF:
 				width /= 2;
 				height /= 2;
@@ -2035,7 +2065,6 @@ namespace OVR
 			cl_event event[2];
 			Resize(_l, l, scaling, &event[0]);
 			Resize(_r, r, scaling, &event[1]);
-
 			// Convert to HSV
 			//__kernel void convertGrayscale( 
 			//		__read_only image2d_t src,	// CL_UNSIGNED_INT8 x 4
@@ -2064,6 +2093,10 @@ namespace OVR
 		uint width = _width, height = _height;
 		switch (scaling)
 		{
+		case OVR::ORIGINAL:
+			width /= 1;
+			height /= 1;
+			break;
 		case OVR::HALF:
 			width /= 2;
 			height /= 2;
@@ -2632,7 +2665,7 @@ namespace OVR
 				fclose(file);
 				_program = clCreateProgramWithSource(_context, 1, (const char **)&buffer, &size, &_errorCode);
 				SAMPLE_CHECK_ERRORS(_errorCode);
-				_errorCode = clBuildProgram(_program, 1, &_deviceId, "", NULL, NULL);
+				_errorCode = clBuildProgram(_program, 1, &_deviceId, "-cl-std=CL1.2", NULL, NULL);
 				if (_errorCode == CL_BUILD_PROGRAM_FAILURE)
 				{
 					// Determine the size of the log

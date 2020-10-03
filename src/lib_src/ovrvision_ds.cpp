@@ -94,9 +94,11 @@ public:
 		m_hEvent = CreateEvent(NULL, true, false, NULL);
 
 		m_LatestBufferLength = 0;
-
+		
 		m_pPixels = new unsigned char[OV_MAX_BUFFERNUMBYTE];
 		memset(m_pPixels,0x00,sizeof(unsigned char)*OV_MAX_BUFFERNUMBYTE);
+
+		m_get_callback = NULL;
 	}
 
 	~OVSampleGrabberCB()
@@ -136,6 +138,10 @@ public:
 			LeaveCriticalSection(&m_critSection);
 
 			SetEvent(m_hEvent);
+
+			//Callback
+			if (m_get_callback != NULL)
+				m_get_callback();
 		}
 
 		return S_OK;
@@ -150,6 +156,7 @@ public:
 	//Var
 	int m_LatestBufferLength;
 	unsigned char* m_pPixels;
+	void(*m_get_callback)(void);
 
 	//Thread var
 	CRITICAL_SECTION m_critSection;
@@ -465,6 +472,8 @@ int OvrvisionDirectShow::CreateDevice(usb_id vid, usb_id pid,
 		}
 	}
 
+	int iFormatSel = -1;
+
 	//Media setting
 	if(SUCCEEDED(hr) && m_pMediaControl != NULL)
 	{
@@ -477,6 +486,7 @@ int OvrvisionDirectShow::CreateDevice(usb_id vid, usb_id pid,
 		if(SUCCEEDED(ppEnum->Next(1, &pCameraOutPin, NULL)))
 		{
 			//Media config
+			
 			int iCount = 0, iSize = 0;
 			pCameraOutPin->QueryInterface(IID_IAMStreamConfig, (void**)&pAMSConfig);
 
@@ -499,7 +509,7 @@ int OvrvisionDirectShow::CreateDevice(usb_id vid, usb_id pid,
 					m_height = pVih->bmiHeader.biHeight;
 					m_rate = (int)framerate;
 
-					iFormat = iFormat;	//selected
+					iFormatSel = iFormat;	//selected
 				}
 
 				//mediatype free
@@ -511,6 +521,11 @@ int OvrvisionDirectShow::CreateDevice(usb_id vid, usb_id pid,
 			pCameraOutPin->Release();
 		}
 		ppEnum->Release();
+	}
+
+	if (iFormatSel == -1) {
+		m_devstatus = OV_DEVNONE;
+		return RESULT_FAILED;		//ERROR
 	}
 
 	//Data area allocation
@@ -731,6 +746,12 @@ int OvrvisionDirectShow::GetLatestPixelDataSize()
 int OvrvisionDirectShow::GetMaxPixelDataSize()
 {
 	return m_maxPixelDataSize;
+}
+
+//Callback
+void OvrvisionDirectShow::SetCallback(void(*func)())
+{
+	m_pSGCallback->m_get_callback = func;
 }
 
 };

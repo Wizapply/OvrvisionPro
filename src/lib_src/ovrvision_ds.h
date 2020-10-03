@@ -118,6 +118,9 @@ public:
 	int GetLatestPixelDataSize();
 	int GetMaxPixelDataSize();
 
+	//Callback
+	void SetCallback(void(*func)());
+
 private:
 	//Device status
 	DevStatus		m_devstatus;

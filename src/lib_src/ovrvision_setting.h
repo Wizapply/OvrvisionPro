@@ -89,6 +89,7 @@ public:
 	char m_propWhiteBalanceAuto;
 
 	//UndistortSetting : External variable
+	cv::Size m_pixelSize;
 	ovMat	m_leftCameraInstric;
 	ovMat	m_rightCameraInstric;
 	ovMat	m_leftCameraDistortion;

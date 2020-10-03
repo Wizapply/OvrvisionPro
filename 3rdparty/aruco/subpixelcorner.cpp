@@ -1,9 +1,5 @@
 #include "subpixelcorner.h"
 #include <opencv2/imgproc/imgproc.hpp>
-#if CV_MAJOR_VERSION == 4
-#include <opencv2/core/types_c.h>
-#endif
-
 using namespace cv;
 
 namespace aruco {

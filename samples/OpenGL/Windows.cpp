@@ -18,8 +18,8 @@ HDC   ghDC;
 HGLRC ghRC;
 
 
-#define WIDTH           800
-#define HEIGHT          600 
+#define WIDTH           640
+#define HEIGHT          480 
 
 LONG WINAPI MainWndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL bSetupPixelFormat(HDC);
@@ -50,7 +50,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		WIDTH,
+		WIDTH * 2,
 		HEIGHT,
 		NULL,
 		NULL,

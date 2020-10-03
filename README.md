@@ -1,6 +1,7 @@
 # OvrvisionPro
 OvrvisionPro SDK - Open Source Project
 
+## Licence
 MIT License
 Please read "LICENSE" file
 
@@ -15,6 +16,3 @@ Please read "LICENSE" file
 * package
 * samples The sample project for the SDK developing.
 * src : Sources
-
-# How to Build
-Comming soon

@@ -107,6 +107,9 @@ public:
 
 	void EnumFormats();
 
+	//Callback
+	void SetCallback(void(*func)());
+
 protected:
 	int SearchDevice(const char *name);
 	int Init();
@@ -121,6 +124,8 @@ private:
 	bool _cropVertical;
 	bool _cropHorizontal;
 	struct v4l2_format _format;
+
+	void(*m_get_callback)(void);
 };
 
 }; // namespave OVR

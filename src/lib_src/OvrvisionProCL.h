@@ -31,8 +31,8 @@
 
 
 #include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc_c.h>
 
+#define CL_TARGET_OPENCL_VERSION 120
 #define CL_USE_DEPRECATED_OPENCL_1_2_APIS // We use OpenCL 1.2 functions
 #ifdef WIN32
 // OpenCL header
@@ -87,9 +87,10 @@ namespace OVR
 
 	// Scaling
 	enum SCALING {
-		HALF,	// 1/2
-		FOURTH,	// 1/4
-		EIGHTH	// 1/8
+		ORIGINAL,	// 1/1
+		HALF,		// 1/2
+		FOURTH,		// 1/4
+		EIGHTH		// 1/8
 	};
 
 	// Extension vendor 
@@ -129,8 +130,9 @@ namespace OVR
                 @param width of image
                 @param height of image
                 @param mode of sharing with D3D11 or OpenGL 
-                @param pDevice for D3D11 */
-			OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode = NONE, void *pDevice = NULL);
+                @param pDevice for D3D11 
+                @param pVendorID for requesting GPU from given vendor*/
+			OvrvisionProOpenCL(int width, int height, enum SHARING_MODE mode = NONE, void *pDevice = NULL, const char *platform = NULL);
 			~OvrvisionProOpenCL();
 
 			/*! @brief release resources */

@@ -29,7 +29,7 @@
  *  Files : gpio_test_pcd8544.c
  *
 ***************************************************************************/
-#if 0
+#if 1
 
 #include <cyu3system.h>
 #include <cyu3os.h>
@@ -231,6 +231,32 @@ void PCD8544_String(char *characters)
   {
 	  PCD8544_Character(*characters++);
   }
+}
+
+void PCD8544_UINT32(int val, int field_length)
+{
+	int8_t str[10] = {0,0,0,0,0,0,0,0,0,0};
+	int8_t i = 9, j = 0;
+
+	if(val == 0 && field_length < 1)
+	{
+		PCD8544_Character('0');
+		return;
+	}
+	while(val)
+	{
+		str[i] = val % 10;
+		val = val / 10;
+		i--;
+	}
+
+	if(field_length == -1)
+		while(str[j] == 0) j++;
+	else
+		j = 10 - field_length;
+
+	for(i = j; i < 10; i++)
+		PCD8544_Character('0' + str[i]);
 }
 
 void PCD8544_GotoXY(uint8_t x, uint8_t y)

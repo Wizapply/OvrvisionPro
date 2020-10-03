@@ -23,7 +23,6 @@
 //Marker 
 #ifdef _OVRVISION_EXPORTS
 #include <opencv2/opencv.hpp>
-#include <opencv2/calib3d/calib3d_c.h>
 //#include <opencv2/ocl/ocl.hpp>
 #else
 #error This source is only dll export.
@@ -71,7 +70,7 @@ public:
 	void SolveStereoParameter();
 
 	//Save
-	void SaveCalibrationParameter(OvrvisionPro* ovrpro);
+	void SaveCalibrationParameter(OvrvisionPro* ovrpro, bool param_output = false);
 
 	int GetImageCount() const{ return m_image_count; }	
 
@@ -80,10 +79,13 @@ public:
 	std::vector< std::vector<cv::Point2f> > m_subpix_corners_right;
 
 	struct {
+		cv::Size pixelSize;
 		cv::Mat intrinsic;
 		cv::Mat distortion;
 		cv::Mat R;
 		cv::Mat P;
+		double focalPoint;
+		double fovY;
 	} m_cameraCalibration[OV_CAMNUM];
 
 private:
