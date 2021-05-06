@@ -33,7 +33,7 @@
 #include <opencv2/core/core.hpp>
 
 #define CL_TARGET_OPENCL_VERSION 120
-#define CL_USE_DEPRECATED_OPENCL_1_2_APIS // We use OpenCL 1.2 functions
+
 #ifdef WIN32
 // OpenCL header
 #include <CL/opencl.h>			// OpenCL and its extensions

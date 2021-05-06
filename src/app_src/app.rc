@@ -7,11 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-<<<<<<< HEAD
 #include <winres.h>
-=======
-#include "winres.h"
->>>>>>> c37414ac8779fa995b2aa740ebe902a5783ec70e
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS

@@ -596,7 +596,7 @@ namespace OVR
 		for (cl_uint i = 0; i < num_of_platforms; i++)
 		{
 			char vendor[80];
-			if (clGetPlatformInfo(platforms[i], CL_PLATFORM_VENDOR, 80, vendor, &length) == CL_SUCCESS)
+			if (clGetPlatformInfo(platforms[i], CL_PLATFORM_VENDOR, sizeof(vendor), vendor, &length) == CL_SUCCESS)
 			{
 				if (platform != NULL)
 				{

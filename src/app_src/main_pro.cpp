@@ -24,8 +24,8 @@
 /* -- Macro definition ------------------------------------------------------- */
 
 //Application screen size
-#define APPSCREEN_WIDTH		(1920)
-#define APPSCREEN_HEIGHT	(1080)
+#define APPSCREEN_WIDTH		(1280)
+#define APPSCREEN_HEIGHT	(720)
 
 /* -- Global variable definition ----------------------------------------------- */
 
